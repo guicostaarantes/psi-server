@@ -1,0 +1,14 @@
+input AuthenticateUserInput {
+    email: String!
+    password: String!
+    ipAddress: String!
+}
+
+type Token {
+    token: String!
+    expiresAt: Int!
+}
+
+extend type Query {
+    AuthenticateUser(input: AuthenticateUserInput!): Token!
+}

@@ -1,0 +1,54 @@
+enum Role {
+    COORDINATOR
+    PSYCHOLOGIST
+    PATIENT
+}
+
+input CreateUserInput {
+    email: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+    role: Role!
+}
+
+input CreatePatientInput {
+    email: String!
+    firstName: String!
+    lastName: String!
+}
+
+input UpdateUserInput {
+    firstName: String
+    lastName: String
+    role: Role
+}
+
+input UpdatePatientInput {
+    firstName: String
+    lastName: String
+}
+
+type User {
+    email: String!
+    firstName: String!
+    lastName: String!
+    role: Role!
+}
+
+type Query {
+    GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    GetOwnUser: User!
+}
+
+type Mutation {
+    CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+    UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+    DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    CreatePatient(input: CreatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    UpdatePatient(id: ID!, input: UpdatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    UpdateOwnUser(input: UpdateUserInput!): Boolean
+}
+
+directive @hasRole(role: [Role!]!) on FIELD_DEFINITION
