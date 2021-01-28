@@ -95,6 +95,7 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 	if r.processPendingMailsService == nil {
 		r.processPendingMailsService = &mails_services.ProcessPendingMailsService{
 			DatabaseUtil: r.DatabaseUtil,
+			MailUtil:     r.MailUtil,
 		}
 	}
 	return r.processPendingMailsService
