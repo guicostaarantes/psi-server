@@ -50,7 +50,7 @@ type ComplexityRoot struct {
 		CreatePatient          func(childComplexity int, input model.CreatePatientInput) int
 		CreateUserWithPassword func(childComplexity int, input model.CreateUserInput) int
 		DeactivateUser         func(childComplexity int, id string) int
-		ProcessMail            func(childComplexity int) int
+		ProcessPendingMail     func(childComplexity int) int
 		UpdateOwnUser          func(childComplexity int, input model.UpdateUserInput) int
 		UpdatePatient          func(childComplexity int, id string, input model.UpdatePatientInput) int
 		UpdateUser             func(childComplexity int, id string, input model.UpdateUserInput) int
@@ -83,7 +83,7 @@ type MutationResolver interface {
 	CreatePatient(ctx context.Context, input model.CreatePatientInput) (*bool, error)
 	UpdatePatient(ctx context.Context, id string, input model.UpdatePatientInput) (*bool, error)
 	UpdateOwnUser(ctx context.Context, input model.UpdateUserInput) (*bool, error)
-	ProcessMail(ctx context.Context) (*bool, error)
+	ProcessPendingMail(ctx context.Context) (*bool, error)
 }
 type QueryResolver interface {
 	GetUser(ctx context.Context, id string) (*model.User, error)
@@ -154,12 +154,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeactivateUser(childComplexity, args["id"].(string)), true
 
-	case "Mutation.ProcessMail":
-		if e.complexity.Mutation.ProcessMail == nil {
+	case "Mutation.ProcessPendingMail":
+		if e.complexity.Mutation.ProcessPendingMail == nil {
 			break
 		}
 
-		return e.complexity.Mutation.ProcessMail(childComplexity), true
+		return e.complexity.Mutation.ProcessPendingMail(childComplexity), true
 
 	case "Mutation.UpdateOwnUser":
 		if e.complexity.Mutation.UpdateOwnUser == nil {
@@ -349,7 +349,7 @@ extend type Query {
     AuthenticateUser(input: AuthenticateUserInput!): Token!
 }`, BuiltIn: false},
 	{Name: "graph/schema/mail.graphqls", Input: `extend type Mutation {
-    ProcessMail: Boolean
+    ProcessPendingMail: Boolean @hasRole(role: [COORDINATOR])
 }`, BuiltIn: false},
 	{Name: "graph/schema/users.graphqls", Input: `enum Role {
     COORDINATOR
@@ -1050,7 +1050,7 @@ func (ec *executionContext) _Mutation_UpdateOwnUser(ctx context.Context, field g
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_ProcessMail(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_ProcessPendingMail(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1067,8 +1067,32 @@ func (ec *executionContext) _Mutation_ProcessMail(ctx context.Context, field gra
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ProcessMail(rctx)
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().ProcessPendingMail(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2818,8 +2842,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_UpdatePatient(ctx, field)
 		case "UpdateOwnUser":
 			out.Values[i] = ec._Mutation_UpdateOwnUser(ctx, field)
-		case "ProcessMail":
-			out.Values[i] = ec._Mutation_ProcessMail(ctx, field)
+		case "ProcessPendingMail":
+			out.Values[i] = ec._Mutation_ProcessPendingMail(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

@@ -7,7 +7,7 @@ import (
 	"context"
 )
 
-func (r *mutationResolver) ProcessMail(ctx context.Context) (*bool, error) {
+func (r *mutationResolver) ProcessPendingMail(ctx context.Context) (*bool, error) {
 	serviceErr := ProcessPendingMailsService.Execute()
 
 	if serviceErr != nil {
