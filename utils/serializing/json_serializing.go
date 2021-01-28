@@ -33,7 +33,7 @@ func (j jsonSerializer) VariableToBytes(provider interface{}) ([]byte, error) {
 	return response, nil
 }
 
-// JSONSerializerUtil is an implementation of ISerializingUtil that uses enconding/json
-var JSONSerializerUtil = jsonSerializer{
+// JSONSerializingUtil is an implementation of ISerializingUtil that uses enconding/json
+var JSONSerializingUtil = jsonSerializer{
 	loggingUtil: logging.PrintLogUtil,
 }

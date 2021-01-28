@@ -16,56 +16,97 @@ import (
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
-type Resolver struct{}
-
-var databaseUtil = database.MongoDatabaseUtil
-var hashUtil = hash.BcryptHashUtil
-var identifierUtil = identifier.UUIDIdentifierUtil
-var mailUtil = mail.SMTPMailUtil
-var matchUtil = match.RegexpMatchUtil
-var serializingUtil = serializing.JSONSerializerUtil
-var tokenUtil = token.RngTokenUtil
-var secondsToExpire = int64(1800)
-
-var ActivateUserService = &users_services.ActivateUserService{
-	DatabaseUtil: databaseUtil,
+type Resolver struct {
+	DatabaseUtil                  database.IDatabaseUtil
+	HashUtil                      hash.IHashUtil
+	IdentifierUtil                identifier.IIdentifierUtil
+	MailUtil                      mail.IMailUtil
+	MatchUtil                     match.IMatchUtil
+	SerializingUtil               serializing.ISerializingUtil
+	TokenUtil                     token.ITokenUtil
+	SecondsToExpire               int64
+	activateUserService           *users_services.ActivateUserService
+	authenticateUserService       *users_services.AuthenticateUserService
+	createUserService             *users_services.CreateUserService
+	createUserWithPasswordService *users_services.CreateUserWithPasswordService
+	getUserByIdService            *users_services.GetUserByIdService
+	processPendingMailsService    *mails_services.ProcessPendingMailsService
+	validateUserTokenService      *users_services.ValidateUserTokenService
 }
 
-var AuthenticateUserService = &users_services.AuthenticateUserService{
-	DatabaseUtil:    databaseUtil,
-	HashUtil:        hashUtil,
-	IdentifierUtil:  identifierUtil,
-	SerializingUtil: serializingUtil,
-	TokenUtil:       tokenUtil,
-	SecondsToExpire: secondsToExpire,
+func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
+	if r.activateUserService == nil {
+		r.activateUserService = &users_services.ActivateUserService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.activateUserService
 }
 
-var CreateUserService = &users_services.CreateUserService{
-	DatabaseUtil:    databaseUtil,
-	IdentifierUtil:  identifierUtil,
-	MatchUtil:       matchUtil,
-	SerializingUtil: serializingUtil,
+func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserService {
+	if r.authenticateUserService == nil {
+		r.authenticateUserService = &users_services.AuthenticateUserService{
+			DatabaseUtil:    r.DatabaseUtil,
+			HashUtil:        r.HashUtil,
+			IdentifierUtil:  r.IdentifierUtil,
+			SerializingUtil: r.SerializingUtil,
+			TokenUtil:       r.TokenUtil,
+			SecondsToExpire: r.SecondsToExpire,
+		}
+	}
+	return r.authenticateUserService
 }
 
-var CreateUserWithPasswordService = &users_services.CreateUserWithPasswordService{
-	DatabaseUtil:    databaseUtil,
-	HashUtil:        hashUtil,
-	IdentifierUtil:  identifierUtil,
-	MatchUtil:       matchUtil,
-	SerializingUtil: serializingUtil,
+func (r *Resolver) CreateUserService() *users_services.CreateUserService {
+	if r.createUserService == nil {
+		r.createUserService = &users_services.CreateUserService{
+			DatabaseUtil:    r.DatabaseUtil,
+			IdentifierUtil:  r.IdentifierUtil,
+			MatchUtil:       r.MatchUtil,
+			SerializingUtil: r.SerializingUtil,
+		}
+	}
+	return r.createUserService
 }
 
-var GetUserByIdService = &users_services.GetUserByIdService{
-	DatabaseUtil: databaseUtil,
+func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWithPasswordService {
+	if r.createUserWithPasswordService == nil {
+		r.createUserWithPasswordService = &users_services.CreateUserWithPasswordService{
+			DatabaseUtil:    r.DatabaseUtil,
+			HashUtil:        r.HashUtil,
+			IdentifierUtil:  r.IdentifierUtil,
+			MatchUtil:       r.MatchUtil,
+			SerializingUtil: r.SerializingUtil,
+		}
+	}
+	return r.createUserWithPasswordService
 }
 
-var ProcessPendingMailsService = &mails_services.ProcessPendingMailsService{
-	DatabaseUtil: databaseUtil,
-	MailUtil:     mailUtil,
+func (r *Resolver) GetUserByIdService() *users_services.GetUserByIdService {
+	if r.getUserByIdService == nil {
+		r.getUserByIdService = &users_services.GetUserByIdService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getUserByIdService
 }
 
-var ValidateUserTokenService = &users_services.ValidateUserTokenService{
-	DatabaseUtil:    databaseUtil,
-	SerializingUtil: serializingUtil,
-	SecondsToExpire: secondsToExpire,
+func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMailsService {
+	if r.processPendingMailsService == nil {
+		r.processPendingMailsService = &mails_services.ProcessPendingMailsService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.processPendingMailsService
+}
+
+func (r *Resolver) ValidateUserTokenService() *users_services.ValidateUserTokenService {
+	if r.validateUserTokenService == nil {
+		r.validateUserTokenService = &users_services.ValidateUserTokenService{
+			DatabaseUtil:    r.DatabaseUtil,
+			SerializingUtil: r.SerializingUtil,
+			SecondsToExpire: r.SecondsToExpire,
+		}
+	}
+	return r.validateUserTokenService
 }

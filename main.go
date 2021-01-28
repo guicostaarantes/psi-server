@@ -15,6 +15,13 @@ import (
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	"github.com/guicostaarantes/psi-server/graph/generated/model"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
+	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/hash"
+	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/mail"
+	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/serializing"
+	"github.com/guicostaarantes/psi-server/utils/token"
 )
 
 const defaultPort = "8082"
@@ -25,7 +32,18 @@ func main() {
 		port = defaultPort
 	}
 
-	c := generated.Config{Resolvers: &resolvers.Resolver{}}
+	res := &resolvers.Resolver{
+		DatabaseUtil:    database.MongoDatabaseUtil,
+		HashUtil:        hash.BcryptHashUtil,
+		IdentifierUtil:  identifier.UUIDIdentifierUtil,
+		MailUtil:        mail.SMTPMailUtil,
+		MatchUtil:       match.RegexpMatchUtil,
+		SerializingUtil: serializing.JSONSerializingUtil,
+		TokenUtil:       token.RngTokenUtil,
+		SecondsToExpire: int64(1800),
+	}
+
+	c := generated.Config{Resolvers: res}
 
 	c.Directives.HasRole = func(ctx context.Context, obj interface{}, next graphql.Resolver, role []model.Role) (interface{}, error) {
 		userID := fmt.Sprintf("%v", ctx.Value("userID"))
@@ -34,7 +52,7 @@ func main() {
 			return nil, errors.New("forbidden")
 		}
 
-		user, userErr := resolvers.GetUserByIdService.Execute(userID)
+		user, userErr := res.GetUserByIdService().Execute(userID)
 		if userErr != nil {
 			return nil, errors.New("forbidden")
 		}
@@ -59,7 +77,7 @@ func main() {
 				return
 			}
 
-			userID, tokenErr := resolvers.ValidateUserTokenService.Execute(token)
+			userID, tokenErr := res.ValidateUserTokenService().Execute(token)
 			if tokenErr != nil {
 				ctx := context.WithValue(r.Context(), "userID", "")
 				r = r.WithContext(ctx)

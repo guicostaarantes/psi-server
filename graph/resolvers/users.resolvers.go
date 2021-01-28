@@ -13,7 +13,7 @@ import (
 )
 
 func (r *mutationResolver) CreateUserWithPassword(ctx context.Context, input model.CreateUserInput) (*bool, error) {
-	serviceErr := CreateUserWithPasswordService.Execute(&users_models.CreateUserWithPasswordInput{
+	serviceErr := r.CreateUserWithPasswordService().Execute(&users_models.CreateUserWithPasswordInput{
 		Email:     input.Email,
 		Password:  input.Password,
 		FirstName: input.FirstName,
@@ -33,7 +33,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input mode
 }
 
 func (r *mutationResolver) DeactivateUser(ctx context.Context, id string) (*bool, error) {
-	serviceErr := ActivateUserService.Execute(id, false)
+	serviceErr := r.ActivateUserService().Execute(id, false)
 
 	if serviceErr != nil {
 		return nil, serviceErr
@@ -43,7 +43,7 @@ func (r *mutationResolver) DeactivateUser(ctx context.Context, id string) (*bool
 }
 
 func (r *mutationResolver) ActivateUser(ctx context.Context, id string) (*bool, error) {
-	serviceErr := ActivateUserService.Execute(id, true)
+	serviceErr := r.ActivateUserService().Execute(id, true)
 
 	if serviceErr != nil {
 		return nil, serviceErr
@@ -53,7 +53,7 @@ func (r *mutationResolver) ActivateUser(ctx context.Context, id string) (*bool, 
 }
 
 func (r *mutationResolver) CreatePatient(ctx context.Context, input model.CreatePatientInput) (*bool, error) {
-	serviceErr := CreateUserService.Execute(&users_models.CreateUserInput{
+	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
 		Email:     input.Email,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,

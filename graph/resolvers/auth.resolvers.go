@@ -11,7 +11,7 @@ import (
 )
 
 func (r *queryResolver) AuthenticateUser(ctx context.Context, input model.AuthenticateUserInput) (*model.Token, error) {
-	auth, err := AuthenticateUserService.Execute(&users_models.AuthenticateUserInput{
+	auth, err := r.AuthenticateUserService().Execute(&users_models.AuthenticateUserInput{
 		Email:     input.Email,
 		Password:  input.Password,
 		IPAddress: input.IPAddress,

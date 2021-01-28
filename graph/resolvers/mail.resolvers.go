@@ -8,7 +8,7 @@ import (
 )
 
 func (r *mutationResolver) ProcessPendingMail(ctx context.Context) (*bool, error) {
-	serviceErr := ProcessPendingMailsService.Execute()
+	serviceErr := r.ProcessPendingMailsService().Execute()
 
 	if serviceErr != nil {
 		return nil, serviceErr
