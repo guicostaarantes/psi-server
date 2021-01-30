@@ -12,36 +12,6 @@ import (
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 )
 
-func (r *mutationResolver) CreateUserWithPassword(ctx context.Context, input model.CreateUserInput) (*bool, error) {
-	serviceErr := r.CreateUserWithPasswordService().Execute(&users_models.CreateUserWithPasswordInput{
-		Email:     input.Email,
-		Password:  input.Password,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Role:      string(input.Role),
-	})
-
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
-
-	return nil, nil
-}
-
-func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*bool, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *mutationResolver) DeactivateUser(ctx context.Context, id string) (*bool, error) {
-	serviceErr := r.ActivateUserService().Execute(id, false)
-
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
-
-	return nil, nil
-}
-
 func (r *mutationResolver) ActivateUser(ctx context.Context, id string) (*bool, error) {
 	serviceErr := r.ActivateUserService().Execute(id, true)
 
@@ -67,19 +37,62 @@ func (r *mutationResolver) CreatePatient(ctx context.Context, input model.Create
 	return nil, nil
 }
 
-func (r *mutationResolver) UpdatePatient(ctx context.Context, id string, input model.UpdatePatientInput) (*bool, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateUserWithPassword(ctx context.Context, input model.CreateUserInput) (*bool, error) {
+	serviceErr := r.CreateUserWithPasswordService().Execute(&users_models.CreateUserWithPasswordInput{
+		Email:     input.Email,
+		Password:  input.Password,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Role:      string(input.Role),
+	})
+
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
+func (r *mutationResolver) DeactivateUser(ctx context.Context, id string) (*bool, error) {
+	serviceErr := r.ActivateUserService().Execute(id, false)
+
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
+func (r *mutationResolver) ResetPassword(ctx context.Context, input model.ResetPasswordInput) (*bool, error) {
+	serviceErr := r.ResetPasswordService().Execute(&users_models.ResetPasswordInput{
+		Token:    input.Token,
+		Password: input.Password,
+	})
+
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
 }
 
 func (r *mutationResolver) UpdateOwnUser(ctx context.Context, input model.UpdateUserInput) (*bool, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
+func (r *mutationResolver) UpdatePatient(ctx context.Context, id string, input model.UpdatePatientInput) (*bool, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*bool, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) GetOwnUser(ctx context.Context) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

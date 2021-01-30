@@ -7,3 +7,8 @@ type ResetPassword struct {
 	IssuedAt  int64  `json:"issuedAt" bson:"issuedAt"`
 	ExpiresAt int64  `json:"expiresAt" bson:"expiresAt"`
 }
+
+type ResetPasswordInput struct {
+	Token    string `json:"token" bson:"token"`
+	Password string `json:"password" bson:"password"`
+}

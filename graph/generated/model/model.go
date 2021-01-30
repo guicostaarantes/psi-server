@@ -28,6 +28,11 @@ type CreateUserInput struct {
 	Role      Role   `json:"role"`
 }
 
+type ResetPasswordInput struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
 type Token struct {
 	Token     string `json:"token"`
 	ExpiresAt int64  `json:"expiresAt"`

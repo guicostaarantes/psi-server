@@ -32,6 +32,7 @@ type Resolver struct {
 	createUserWithPasswordService *users_services.CreateUserWithPasswordService
 	getUserByIdService            *users_services.GetUserByIdService
 	processPendingMailsService    *mails_services.ProcessPendingMailsService
+	resetPasswordService          *users_services.ResetPasswordService
 	validateUserTokenService      *users_services.ValidateUserTokenService
 }
 
@@ -102,6 +103,16 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 		}
 	}
 	return r.processPendingMailsService
+}
+
+func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
+	if r.resetPasswordService == nil {
+		r.resetPasswordService = &users_services.ResetPasswordService{
+			DatabaseUtil: r.DatabaseUtil,
+			HashUtil:     r.HashUtil,
+		}
+	}
+	return r.resetPasswordService
 }
 
 func (r *Resolver) ValidateUserTokenService() *users_services.ValidateUserTokenService {

@@ -18,6 +18,11 @@ input CreatePatientInput {
     lastName: String!
 }
 
+input ResetPasswordInput {
+    token: String!
+    password: String!
+}
+
 input UpdateUserInput {
     firstName: String
     lastName: String
@@ -37,18 +42,19 @@ type User {
 }
 
 type Query {
-    GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     GetOwnUser: User!
+    GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 type Mutation {
-    CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
-    UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
-    DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     CreatePatient(input: CreatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    UpdatePatient(id: ID!, input: UpdatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+    DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    ResetPassword(input: ResetPasswordInput!): Boolean
     UpdateOwnUser(input: UpdateUserInput!): Boolean
+    UpdatePatient(id: ID!, input: UpdatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 
 directive @hasRole(role: [Role!]!) on FIELD_DEFINITION
