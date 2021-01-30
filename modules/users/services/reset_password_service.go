@@ -32,7 +32,7 @@ func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 		return findTokenErr
 	}
 
-	if reset.UserID == "" || reset.ExpiresAt < time.Now().Unix() {
+	if reset.UserID == "" || reset.ExpiresAt < time.Now().Unix() || reset.Redeemed {
 		return errors.New("invalid token")
 	}
 
@@ -59,7 +59,7 @@ func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 		return updateUserErr
 	}
 
-	reset.ExpiresAt = time.Now().Unix()
+	reset.Redeemed = true
 
 	expireTokenErr := r.DatabaseUtil.UpdateOne("psi_db", "resets", "token", resetInput.Token, reset)
 	if expireTokenErr != nil {

@@ -75,6 +75,7 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),
 		Token:     token,
+		Redeemed:  false,
 	}
 
 	_, mailID, mailIDErr := s.IdentifierUtil.GenerateIdentifier()

@@ -63,6 +63,7 @@ func (a AskResetPasswordService) Execute(email string) error {
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(a.SecondsToCooldown)).Unix(),
 		Token:     token,
+		Redeemed:  false,
 	}
 
 	_, mailID, mailIDErr := a.IdentifierUtil.GenerateIdentifier()
