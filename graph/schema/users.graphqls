@@ -48,6 +48,7 @@ type Query {
 
 type Mutation {
     ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    AskResetPassword(email: String!): Boolean
     CreatePatient(input: CreatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])

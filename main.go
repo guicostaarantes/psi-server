@@ -35,15 +35,16 @@ func main() {
 	}
 
 	res := &resolvers.Resolver{
-		DatabaseUtil:         database.MongoDatabaseUtil,
-		HashUtil:             hash.BcryptHashUtil,
-		IdentifierUtil:       identifier.UUIDIdentifierUtil,
-		MailUtil:             mail.SMTPMailUtil,
-		MatchUtil:            match.RegexpMatchUtil,
-		SerializingUtil:      serializing.JSONSerializingUtil,
-		TokenUtil:            token.RngTokenUtil,
-		SecondsToExpire:      int64(1800),
-		SecondsToExpireReset: int64(86400),
+		DatabaseUtil:           database.MongoDatabaseUtil,
+		HashUtil:               hash.BcryptHashUtil,
+		IdentifierUtil:         identifier.UUIDIdentifierUtil,
+		MailUtil:               mail.SMTPMailUtil,
+		MatchUtil:              match.RegexpMatchUtil,
+		SerializingUtil:        serializing.JSONSerializingUtil,
+		TokenUtil:              token.RngTokenUtil,
+		SecondsToCooldownReset: int64(86400),
+		SecondsToExpire:        int64(1800),
+		SecondsToExpireReset:   int64(86400),
 	}
 
 	bootstrapUser := os.Getenv("PSI_BOOTSTRAP_USER")

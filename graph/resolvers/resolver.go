@@ -24,9 +24,11 @@ type Resolver struct {
 	MatchUtil                     match.IMatchUtil
 	SerializingUtil               serializing.ISerializingUtil
 	TokenUtil                     token.ITokenUtil
+	SecondsToCooldownReset        int64
 	SecondsToExpire               int64
 	SecondsToExpireReset          int64
 	activateUserService           *users_services.ActivateUserService
+	askResetPasswordService       *users_services.AskResetPasswordService
 	authenticateUserService       *users_services.AuthenticateUserService
 	createUserService             *users_services.CreateUserService
 	createUserWithPasswordService *users_services.CreateUserWithPasswordService
@@ -43,6 +45,19 @@ func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
 		}
 	}
 	return r.activateUserService
+}
+
+func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordService {
+	if r.askResetPasswordService == nil {
+		r.askResetPasswordService = &users_services.AskResetPasswordService{
+			DatabaseUtil:      r.DatabaseUtil,
+			IdentifierUtil:    r.IdentifierUtil,
+			TokenUtil:         r.TokenUtil,
+			SecondsToCooldown: r.SecondsToCooldownReset,
+			SecondsToExpire:   r.SecondsToExpire,
+		}
+	}
+	return r.askResetPasswordService
 }
 
 func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserService {

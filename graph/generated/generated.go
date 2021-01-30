@@ -47,6 +47,7 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Mutation struct {
 		ActivateUser           func(childComplexity int, id string) int
+		AskResetPassword       func(childComplexity int, email string) int
 		CreatePatient          func(childComplexity int, input model.CreatePatientInput) int
 		CreateUserWithPassword func(childComplexity int, input model.CreateUserInput) int
 		DeactivateUser         func(childComplexity int, id string) int
@@ -78,6 +79,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	ActivateUser(ctx context.Context, id string) (*bool, error)
+	AskResetPassword(ctx context.Context, email string) (*bool, error)
 	CreatePatient(ctx context.Context, input model.CreatePatientInput) (*bool, error)
 	CreateUserWithPassword(ctx context.Context, input model.CreateUserInput) (*bool, error)
 	DeactivateUser(ctx context.Context, id string) (*bool, error)
@@ -119,6 +121,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ActivateUser(childComplexity, args["id"].(string)), true
+
+	case "Mutation.AskResetPassword":
+		if e.complexity.Mutation.AskResetPassword == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_AskResetPassword_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AskResetPassword(childComplexity, args["email"].(string)), true
 
 	case "Mutation.CreatePatient":
 		if e.complexity.Mutation.CreatePatient == nil {
@@ -415,6 +429,7 @@ type Query {
 
 type Mutation {
     ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    AskResetPassword(email: String!): Boolean
     CreatePatient(input: CreatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
@@ -459,6 +474,21 @@ func (ec *executionContext) field_Mutation_ActivateUser_args(ctx context.Context
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_AskResetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["email"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["email"] = arg0
 	return args, nil
 }
 
@@ -718,6 +748,45 @@ func (ec *executionContext) _Mutation_ActivateUser(ctx context.Context, field gr
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_AskResetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_AskResetPassword_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AskResetPassword(rctx, args["email"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2932,6 +3001,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "ActivateUser":
 			out.Values[i] = ec._Mutation_ActivateUser(ctx, field)
+		case "AskResetPassword":
+			out.Values[i] = ec._Mutation_AskResetPassword(ctx, field)
 		case "CreatePatient":
 			out.Values[i] = ec._Mutation_CreatePatient(ctx, field)
 		case "CreateUserWithPassword":

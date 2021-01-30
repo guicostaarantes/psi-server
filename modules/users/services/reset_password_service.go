@@ -59,9 +59,11 @@ func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 		return updateUserErr
 	}
 
-	deleteTokenErr := r.DatabaseUtil.DeleteOne("psi_db", "resets", "token", resetInput.Token)
-	if deleteTokenErr != nil {
-		return deleteTokenErr
+	reset.ExpiresAt = time.Now().Unix()
+
+	expireTokenErr := r.DatabaseUtil.UpdateOne("psi_db", "resets", "token", resetInput.Token, reset)
+	if expireTokenErr != nil {
+		return expireTokenErr
 	}
 
 	return nil

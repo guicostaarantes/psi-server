@@ -22,6 +22,16 @@ func (r *mutationResolver) ActivateUser(ctx context.Context, id string) (*bool, 
 	return nil, nil
 }
 
+func (r *mutationResolver) AskResetPassword(ctx context.Context, email string) (*bool, error) {
+	serviceErr := r.AskResetPasswordService().Execute(email)
+
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
 func (r *mutationResolver) CreatePatient(ctx context.Context, input model.CreatePatientInput) (*bool, error) {
 	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
 		Email:     input.Email,
