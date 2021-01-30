@@ -28,6 +28,9 @@ func (h bcryptHasher) Compare(plain string, hashed string) error {
 		if compareErr.Error() == "crypto/bcrypt: hashedPassword is not the hash of the given password" {
 			return errors.New(h.wrongPasswordError)
 		}
+		if compareErr.Error() == "crypto/bcrypt: hashedSecret too short to be a bcrypted password" {
+			return errors.New(h.wrongPasswordError)
+		}
 		h.loggingUtil.Error("1f3b1849", compareErr)
 		return errors.New("internal server error")
 	}
