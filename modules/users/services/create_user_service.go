@@ -90,9 +90,9 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 	buff := new(bytes.Buffer)
 
 	templ.Execute(buff, map[string]string{
-		"SiteURL":  os.Getenv("PSI_SITE_URL"),
-		"Token":    token,
-		"UserName": user.FirstName + " " + user.LastName,
+		"FirstName": user.FirstName,
+		"SiteURL":   os.Getenv("PSI_SITE_URL"),
+		"Token":     token,
 	})
 
 	mail := &mails_models.TransientMailMessage{

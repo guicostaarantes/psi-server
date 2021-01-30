@@ -1,4 +1,4 @@
-<h1>Oi {{ .UserName }}</h1>
+<h2>Oi {{ .FirstName }}</h2>
 <p>Você recebeu esse email pois se cadastrou no Saúde Mental Para Todos.</p>
-<p>Para confirmarmos que este email é realmente seu, clique no botão abaixo e vamos criar uma senha pra você acessar nosso site.</p>
-<a href="{{ .SiteURL }}/cadastro/{{ .Token }}">Criar uma senha</a>
+<p>Para confirmarmos que este email é realmente seu, clique no botão abaixo e crie uma senha pra você acessar nosso site.</p>
+<a href="{{ .SiteURL }}/cadastro?token={{ .Token }}">Criar uma senha</a>
