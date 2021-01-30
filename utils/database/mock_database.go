@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 )
 
 func mockDBClientFactory() map[string]map[string][][]byte {
@@ -13,8 +12,7 @@ func mockDBClientFactory() map[string]map[string][][]byte {
 }
 
 type mockDBClient struct {
-	client           map[string]map[string][][]byte
-	noDocumentsError string
+	client map[string]map[string][][]byte
 }
 
 type cursorStruct struct {
@@ -23,7 +21,6 @@ type cursorStruct struct {
 }
 
 func (c *cursorStruct) Decode(receiver interface{}) error {
-	fmt.Println(string(c.results[c.current]))
 	json.Unmarshal(c.results[c.current], &receiver)
 	return nil
 }
@@ -126,6 +123,5 @@ func (m mockDBClient) DeleteOne(database string, table string, field string, mat
 
 // MockDatabaseUtil is an implementation of IDatabaseUtil that stores data locally. Should not be used if not for testing purposes.
 var MockDatabaseUtil = mockDBClient{
-	client:           mockDBClientFactory(),
-	noDocumentsError: "mockDB: no documents in result",
+	client: mockDBClientFactory(),
 }
