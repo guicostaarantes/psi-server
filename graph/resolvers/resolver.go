@@ -25,6 +25,7 @@ type Resolver struct {
 	SerializingUtil               serializing.ISerializingUtil
 	TokenUtil                     token.ITokenUtil
 	SecondsToExpire               int64
+	SecondsToExpireReset          int64
 	activateUserService           *users_services.ActivateUserService
 	authenticateUserService       *users_services.AuthenticateUserService
 	createUserService             *users_services.CreateUserService
@@ -64,6 +65,8 @@ func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 			IdentifierUtil:  r.IdentifierUtil,
 			MatchUtil:       r.MatchUtil,
 			SerializingUtil: r.SerializingUtil,
+			TokenUtil:       r.TokenUtil,
+			SecondsToExpire: r.SecondsToExpire,
 		}
 	}
 	return r.createUserService

@@ -4,7 +4,7 @@ package users_models
 type User struct {
 	ID        string `json:"id" bson:"id"`
 	Email     string `json:"email" bson:"email"`
-	Password  string `json:"password,omitempty" bson:"password"`
+	Password  string `json:"password" bson:"password"`
 	Active    bool   `json:"active" bson:"active"`
 	FirstName string `json:"firstName" bson:"firstName"`
 	LastName  string `json:"lastName" bson:"lastName"`

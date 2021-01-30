@@ -2,12 +2,12 @@ package users_models
 
 // Authentication is the schema for saving successful authentication attempts for a user
 type Authentication struct {
-	ID        string `json:"id,omitempty" bson:"id,omitempty"`
-	UserID    string `json:"userId,omitempty" bson:"userId,omitempty"`
-	IPAddress string `json:"ipAddress,omitempty" bson:"ipAddress,omitempty"`
-	IssuedAt  int64  `json:"issuedAt,omitempty" bson:"issuedAt,omitempty"`
-	ExpiresAt int64  `json:"expiresAt,omitempty" bson:"expiresAt,omitempty"`
-	Token     string `json:"token,omitempty" bson:"token,omitempty"`
+	ID        string `json:"id" bson:"id"`
+	UserID    string `json:"userId" bson:"userId"`
+	IPAddress string `json:"ipAddress" bson:"ipAddress"`
+	IssuedAt  int64  `json:"issuedAt" bson:"issuedAt"`
+	ExpiresAt int64  `json:"expiresAt" bson:"expiresAt"`
+	Token     string `json:"token" bson:"token"`
 }
 
 // BadAuthentication is the schema for saving UNsuccessful authentication attempts for a user

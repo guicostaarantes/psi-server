@@ -1,7 +1,11 @@
 package users_services
 
 import (
+	"bytes"
 	"errors"
+	"html/template"
+	"os"
+	"time"
 
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
@@ -9,6 +13,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
+	"github.com/guicostaarantes/psi-server/utils/token"
 )
 
 // CreateUserService is a service that creates users and sends emails so that the owner can assign a password
@@ -17,6 +22,8 @@ type CreateUserService struct {
 	IdentifierUtil  identifier.IIdentifierUtil
 	MatchUtil       match.IMatchUtil
 	SerializingUtil serializing.ISerializingUtil
+	TokenUtil       token.ITokenUtil
+	SecondsToExpire int64
 }
 
 // Execute is the method that runs the business logic of the service
@@ -38,13 +45,13 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		return errors.New("user with same email already exists")
 	}
 
-	_, id, idErr := s.IdentifierUtil.GenerateIdentifier()
-	if idErr != nil {
-		return idErr
+	_, userID, userIdErr := s.IdentifierUtil.GenerateIdentifier()
+	if userIdErr != nil {
+		return userIdErr
 	}
 
 	user := &models.User{
-		ID:        id,
+		ID:        userID,
 		Email:     userInput.Email,
 		Active:    true,
 		FirstName: userInput.FirstName,
@@ -52,20 +59,51 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		Role:      userInput.Role,
 	}
 
-	_, mailId, mailIdErr := s.IdentifierUtil.GenerateIdentifier()
-	if mailIdErr != nil {
-		return mailIdErr
+	_, resetTokenID, resetTokenIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if resetTokenIDErr != nil {
+		return resetTokenIDErr
 	}
 
+	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToExpire)
+	if tokenErr != nil {
+		return tokenErr
+	}
+
+	reset := &models.ResetPassword{
+		ID:        resetTokenID,
+		UserID:    userID,
+		IssuedAt:  time.Now().Unix(),
+		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),
+		Token:     token,
+	}
+
+	_, mailID, mailIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if mailIDErr != nil {
+		return mailIDErr
+	}
+
+	templ, templErr := template.ParseFiles("templates/create_user_email.html")
+	if templErr != nil {
+		return templErr
+	}
+
+	buff := new(bytes.Buffer)
+
+	templ.Execute(buff, map[string]string{
+		"SiteURL":  os.Getenv("PSI_SITE_URL"),
+		"Token":    token,
+		"UserName": user.FirstName + " " + user.LastName,
+	})
+
 	mail := &mails_models.TransientMailMessage{
-		ID:          mailId,
+		ID:          mailID,
 		FromAddress: "relacionamento@psi.com.br",
 		FromName:    "Relacionamento PSI",
-		To:          []string{userInput.Email},
+		To:          []string{user.Email},
 		Cc:          []string{},
 		Cco:         []string{},
-		Subject:     "Hello",
-		Html:        "Hello there",
+		Subject:     "Bem-vindo ao PSI",
+		Html:        buff.String(),
 		Processed:   false,
 	}
 
@@ -74,9 +112,14 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		return writeMailErr
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("psi_db", "users", user)
-	if writeErr != nil {
-		return writeErr
+	writeResetErr := s.DatabaseUtil.InsertOne("psi_db", "resets", reset)
+	if writeResetErr != nil {
+		return writeResetErr
+	}
+
+	writeUserErr := s.DatabaseUtil.InsertOne("psi_db", "users", user)
+	if writeUserErr != nil {
+		return writeUserErr
 	}
 
 	return nil
