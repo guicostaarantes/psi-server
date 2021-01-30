@@ -82,7 +82,7 @@ func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 			MatchUtil:       r.MatchUtil,
 			SerializingUtil: r.SerializingUtil,
 			TokenUtil:       r.TokenUtil,
-			SecondsToExpire: r.SecondsToExpire,
+			SecondsToExpire: r.SecondsToExpireReset,
 		}
 	}
 	return r.createUserService
