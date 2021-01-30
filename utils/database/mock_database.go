@@ -7,19 +7,7 @@ import (
 )
 
 func mockDBClientFactory() map[string]map[string][][]byte {
-	store := map[string]map[string][][]byte{
-		"psi_db": {
-			"users": [][]byte{
-				[]byte("{\"id\":\"6cf0d43d-ee8b-4118-bdaf-b17cad8f940b\"," +
-					"\"email\":\"coordinator@psi.com.br\"," +
-					"\"password\":\"$2a$08$F5hF0g4mM6Y0RzsOcw819e.jVMU/XTKpMgYQcEGVK03ay6Vkna9VG\"," +
-					"\"active\":true," +
-					"\"firstName\":\"Guilherme\"," +
-					"\"lastName\":\"Arantes\"," +
-					"\"role\":\"COORDINATOR\"}"),
-			},
-		},
-	}
+	store := map[string]map[string][][]byte{}
 
 	return store
 }

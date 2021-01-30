@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -15,6 +16,7 @@ import (
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	"github.com/guicostaarantes/psi-server/graph/generated/model"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
@@ -42,6 +44,20 @@ func main() {
 		TokenUtil:            token.RngTokenUtil,
 		SecondsToExpire:      int64(1800),
 		SecondsToExpireReset: int64(86400),
+	}
+
+	bootstrapUser := os.Getenv("PSI_BOOTSTRAP_USER")
+	bootstrap := strings.Split(bootstrapUser, "|")
+
+	if len(bootstrap) == 2 {
+		fmt.Println("Bootstrap user identified")
+		res.CreateUserWithPasswordService().Execute(&users_models.CreateUserWithPasswordInput{
+			Email:     bootstrap[0],
+			Password:  bootstrap[1],
+			FirstName: "Bootstrap",
+			LastName:  "User",
+			Role:      "COORDINATOR",
+		})
 	}
 
 	c := generated.Config{Resolvers: res}
