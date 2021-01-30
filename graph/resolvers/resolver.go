@@ -110,6 +110,7 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 		r.resetPasswordService = &users_services.ResetPasswordService{
 			DatabaseUtil: r.DatabaseUtil,
 			HashUtil:     r.HashUtil,
+			MatchUtil:    r.MatchUtil,
 		}
 	}
 	return r.resetPasswordService

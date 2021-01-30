@@ -7,16 +7,23 @@ import (
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
+	"github.com/guicostaarantes/psi-server/utils/match"
 )
 
 // ResetPasswordService is a service that (re)sets the password for a user based on a token sent to their email
 type ResetPasswordService struct {
 	DatabaseUtil database.IDatabaseUtil
+	MatchUtil    match.IMatchUtil
 	HashUtil     hash.IHashUtil
 }
 
 // Execute is the method that runs the business logic of the service
 func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) error {
+
+	passwordErr := r.MatchUtil.IsPasswordStrong(resetInput.Password)
+	if passwordErr != nil {
+		return passwordErr
+	}
 
 	reset := &models.ResetPassword{}
 
@@ -50,6 +57,11 @@ func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 	updateUserErr := r.DatabaseUtil.UpdateOne("psi_db", "users", "id", reset.UserID, user)
 	if updateUserErr != nil {
 		return updateUserErr
+	}
+
+	deleteTokenErr := r.DatabaseUtil.DeleteOne("psi_db", "resets", "token", resetInput.Token)
+	if deleteTokenErr != nil {
+		return deleteTokenErr
 	}
 
 	return nil
