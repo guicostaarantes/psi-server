@@ -69,6 +69,21 @@ func (m mockDBClient) FindMany(database string, table string, field string, matc
 	return &cursor, nil
 }
 
+func (m mockDBClient) FindAll(database string, table string) (ICursor, error) {
+	cursor := cursorStruct{
+		results: [][]byte{},
+		current: -1,
+	}
+
+	value := map[string]interface{}{}
+	for _, v := range m.client[database][table] {
+		json.Unmarshal(v, &value)
+		cursor.results = append(cursor.results, v)
+	}
+
+	return &cursor, nil
+}
+
 func (m mockDBClient) InsertOne(database string, table string, provider interface{}) error {
 	if m.client[database] == nil {
 		m.client[database] = make(map[string][][]byte)

@@ -76,6 +76,19 @@ func (m mongoClient) FindMany(database string, table string, field string, match
 	return cursor, nil
 }
 
+func (m mongoClient) FindAll(database string, table string) (ICursor, error) {
+	collection := m.client.Database(database).Collection(table)
+
+	cursor, mongoErr := collection.Find(m.context, bson.D{})
+
+	if mongoErr != nil && mongoErr.Error() != m.noDocumentsError {
+		m.loggingUtil.Error("d98dc14d", mongoErr)
+		return nil, errors.New("internal server error")
+	}
+
+	return cursor, nil
+}
+
 func (m mongoClient) InsertOne(database string, table string, provider interface{}) error {
 	collection := m.client.Database(database).Collection(table)
 
