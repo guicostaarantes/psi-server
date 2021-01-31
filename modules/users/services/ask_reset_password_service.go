@@ -43,13 +43,8 @@ func (a AskResetPasswordService) Execute(email string) error {
 		return findTokenErr
 	}
 
-	if existsReset.ID != "" && existsReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(a.SecondsToCooldown)).Unix() {
+	if existsReset.UserID != "" && existsReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(a.SecondsToCooldown)).Unix() {
 		return nil
-	}
-
-	_, resetTokenID, resetTokenIDErr := a.IdentifierUtil.GenerateIdentifier()
-	if resetTokenIDErr != nil {
-		return resetTokenIDErr
 	}
 
 	token, tokenErr := a.TokenUtil.GenerateToken(user.ID, a.SecondsToCooldown)
@@ -58,7 +53,6 @@ func (a AskResetPasswordService) Execute(email string) error {
 	}
 
 	reset := &models.ResetPassword{
-		ID:        resetTokenID,
 		UserID:    user.ID,
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(a.SecondsToCooldown)).Unix(),

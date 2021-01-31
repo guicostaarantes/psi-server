@@ -2,7 +2,6 @@ package users_models
 
 // Authentication is the schema for saving successful authentication attempts for a user
 type Authentication struct {
-	ID        string `json:"id" bson:"id"`
 	UserID    string `json:"userId" bson:"userId"`
 	IPAddress string `json:"ipAddress" bson:"ipAddress"`
 	IssuedAt  int64  `json:"issuedAt" bson:"issuedAt"`

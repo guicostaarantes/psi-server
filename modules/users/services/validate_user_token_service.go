@@ -26,7 +26,7 @@ func (v ValidateUserTokenService) Execute(token string) (string, error) {
 		return "", findErr
 	}
 
-	if auth.ID == "" || auth.ExpiresAt < time.Now().Unix() {
+	if auth.UserID == "" || auth.ExpiresAt < time.Now().Unix() {
 		return "", errors.New("invalid token")
 	}
 

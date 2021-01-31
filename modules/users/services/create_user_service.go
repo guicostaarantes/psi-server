@@ -59,18 +59,12 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		Role:      userInput.Role,
 	}
 
-	_, resetTokenID, resetTokenIDErr := s.IdentifierUtil.GenerateIdentifier()
-	if resetTokenIDErr != nil {
-		return resetTokenIDErr
-	}
-
 	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToExpire)
 	if tokenErr != nil {
 		return tokenErr
 	}
 
 	reset := &models.ResetPassword{
-		ID:        resetTokenID,
 		UserID:    userID,
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),

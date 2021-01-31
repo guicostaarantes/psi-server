@@ -7,7 +7,6 @@ import (
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
-	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -16,7 +15,6 @@ import (
 type AuthenticateUserService struct {
 	DatabaseUtil    database.IDatabaseUtil
 	HashUtil        hash.IHashUtil
-	IdentifierUtil  identifier.IIdentifierUtil
 	SerializingUtil serializing.ISerializingUtil
 	TokenUtil       token.ITokenUtil
 	SecondsToExpire int64
@@ -53,13 +51,7 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 		return nil, tokenErr
 	}
 
-	_, id, idErr := s.IdentifierUtil.GenerateIdentifier()
-	if idErr != nil {
-		return nil, idErr
-	}
-
 	auth := &models.Authentication{
-		ID:        id,
 		UserID:    user.ID,
 		IPAddress: authInput.IPAddress,
 		IssuedAt:  time.Now().Unix(),
