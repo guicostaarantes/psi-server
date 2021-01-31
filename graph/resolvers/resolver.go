@@ -8,6 +8,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/merge"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -22,6 +23,7 @@ type Resolver struct {
 	IdentifierUtil                identifier.IIdentifierUtil
 	MailUtil                      mail.IMailUtil
 	MatchUtil                     match.IMatchUtil
+	MergeUtil                     merge.IMergeUtil
 	SerializingUtil               serializing.ISerializingUtil
 	TokenUtil                     token.ITokenUtil
 	SecondsToCooldownReset        int64
@@ -35,6 +37,7 @@ type Resolver struct {
 	getUserByIdService            *users_services.GetUserByIdService
 	processPendingMailsService    *mails_services.ProcessPendingMailsService
 	resetPasswordService          *users_services.ResetPasswordService
+	updateUserService             *users_services.UpdateUserService
 	validateUserTokenService      *users_services.ValidateUserTokenService
 }
 
@@ -129,6 +132,16 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 		}
 	}
 	return r.resetPasswordService
+}
+
+func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
+	if r.updateUserService == nil {
+		r.updateUserService = &users_services.UpdateUserService{
+			DatabaseUtil: r.DatabaseUtil,
+			MergeUtil:    r.MergeUtil,
+		}
+	}
+	return r.updateUserService
 }
 
 func (r *Resolver) ValidateUserTokenService() *users_services.ValidateUserTokenService {

@@ -38,15 +38,15 @@ type Token struct {
 	ExpiresAt int64  `json:"expiresAt"`
 }
 
-type UpdatePatientInput struct {
-	FirstName *string `json:"firstName"`
-	LastName  *string `json:"lastName"`
+type UpdateOwnUserInput struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 type UpdateUserInput struct {
-	FirstName *string `json:"firstName"`
-	LastName  *string `json:"lastName"`
-	Role      *Role   `json:"role"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Role      Role   `json:"role"`
 }
 
 type User struct {

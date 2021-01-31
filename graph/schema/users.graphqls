@@ -23,15 +23,15 @@ input ResetPasswordInput {
     password: String!
 }
 
-input UpdateUserInput {
-    firstName: String
-    lastName: String
-    role: Role
+input UpdateOwnUserInput {
+    firstName: String!
+    lastName: String!
 }
 
-input UpdatePatientInput {
-    firstName: String
-    lastName: String
+input UpdateUserInput {
+    firstName: String!
+    lastName: String!
+    role: Role!
 }
 
 type User {
@@ -53,8 +53,7 @@ type Mutation {
     CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     ResetPassword(input: ResetPasswordInput!): Boolean
-    UpdateOwnUser(input: UpdateUserInput!): Boolean
-    UpdatePatient(id: ID!, input: UpdatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    UpdateOwnUser(input: UpdateOwnUserInput!): Boolean
     UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 

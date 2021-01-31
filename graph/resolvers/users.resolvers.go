@@ -86,16 +86,38 @@ func (r *mutationResolver) ResetPassword(ctx context.Context, input model.ResetP
 	return nil, nil
 }
 
-func (r *mutationResolver) UpdateOwnUser(ctx context.Context, input model.UpdateUserInput) (*bool, error) {
-	panic(fmt.Errorf("not implemented"))
-}
+func (r *mutationResolver) UpdateOwnUser(ctx context.Context, input model.UpdateOwnUserInput) (*bool, error) {
+	userID := ctx.Value("userID").(string)
 
-func (r *mutationResolver) UpdatePatient(ctx context.Context, id string, input model.UpdatePatientInput) (*bool, error) {
-	panic(fmt.Errorf("not implemented"))
+	serviceInput := &users_models.UpdateUserInput{}
+
+	mergeErr := r.MergeUtil.Merge(serviceInput, &input)
+	if mergeErr != nil {
+		return nil, mergeErr
+	}
+
+	serviceErr := r.UpdateUserService().Execute(userID, serviceInput)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*bool, error) {
-	panic(fmt.Errorf("not implemented"))
+	serviceInput := &users_models.UpdateUserInput{}
+
+	mergeErr := r.MergeUtil.Merge(serviceInput, &input)
+	if mergeErr != nil {
+		return nil, mergeErr
+	}
+
+	serviceErr := r.UpdateUserService().Execute(id, serviceInput)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
 }
 
 func (r *queryResolver) GetOwnUser(ctx context.Context) (*model.User, error) {
@@ -114,13 +136,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (*bool, error) {
-	panic(fmt.Errorf("not implemented"))
-}

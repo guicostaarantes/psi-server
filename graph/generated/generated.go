@@ -53,8 +53,7 @@ type ComplexityRoot struct {
 		DeactivateUser         func(childComplexity int, id string) int
 		ProcessPendingMail     func(childComplexity int) int
 		ResetPassword          func(childComplexity int, input model.ResetPasswordInput) int
-		UpdateOwnUser          func(childComplexity int, input model.UpdateUserInput) int
-		UpdatePatient          func(childComplexity int, id string, input model.UpdatePatientInput) int
+		UpdateOwnUser          func(childComplexity int, input model.UpdateOwnUserInput) int
 		UpdateUser             func(childComplexity int, id string, input model.UpdateUserInput) int
 	}
 
@@ -84,8 +83,7 @@ type MutationResolver interface {
 	CreateUserWithPassword(ctx context.Context, input model.CreateUserInput) (*bool, error)
 	DeactivateUser(ctx context.Context, id string) (*bool, error)
 	ResetPassword(ctx context.Context, input model.ResetPasswordInput) (*bool, error)
-	UpdateOwnUser(ctx context.Context, input model.UpdateUserInput) (*bool, error)
-	UpdatePatient(ctx context.Context, id string, input model.UpdatePatientInput) (*bool, error)
+	UpdateOwnUser(ctx context.Context, input model.UpdateOwnUserInput) (*bool, error)
 	UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*bool, error)
 	ProcessPendingMail(ctx context.Context) (*bool, error)
 }
@@ -199,19 +197,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateOwnUser(childComplexity, args["input"].(model.UpdateUserInput)), true
-
-	case "Mutation.UpdatePatient":
-		if e.complexity.Mutation.UpdatePatient == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_UpdatePatient_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UpdatePatient(childComplexity, args["id"].(string), args["input"].(model.UpdatePatientInput)), true
+		return e.complexity.Mutation.UpdateOwnUser(childComplexity, args["input"].(model.UpdateOwnUserInput)), true
 
 	case "Mutation.UpdateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -404,15 +390,15 @@ input ResetPasswordInput {
     password: String!
 }
 
-input UpdateUserInput {
-    firstName: String
-    lastName: String
-    role: Role
+input UpdateOwnUserInput {
+    firstName: String!
+    lastName: String!
 }
 
-input UpdatePatientInput {
-    firstName: String
-    lastName: String
+input UpdateUserInput {
+    firstName: String!
+    lastName: String!
+    role: Role!
 }
 
 type User {
@@ -434,8 +420,7 @@ type Mutation {
     CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     ResetPassword(input: ResetPasswordInput!): Boolean
-    UpdateOwnUser(input: UpdateUserInput!): Boolean
-    UpdatePatient(id: ID!, input: UpdatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    UpdateOwnUser(input: UpdateOwnUserInput!): Boolean
     UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 
@@ -555,39 +540,15 @@ func (ec *executionContext) field_Mutation_ResetPassword_args(ctx context.Contex
 func (ec *executionContext) field_Mutation_UpdateOwnUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.UpdateUserInput
+	var arg0 model.UpdateOwnUserInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdateUserInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateOwnUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdateOwnUserInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_UpdatePatient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	var arg1 model.UpdatePatientInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNUpdatePatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdatePatientInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg1
 	return args, nil
 }
 
@@ -1053,70 +1014,7 @@ func (ec *executionContext) _Mutation_UpdateOwnUser(ctx context.Context, field g
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateOwnUser(rctx, args["input"].(model.UpdateUserInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_UpdatePatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_UpdatePatient_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdatePatient(rctx, args["id"].(string), args["input"].(model.UpdatePatientInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+		return ec.resolvers.Mutation().UpdateOwnUser(rctx, args["input"].(model.UpdateOwnUserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2912,8 +2810,8 @@ func (ec *executionContext) unmarshalInputResetPasswordInput(ctx context.Context
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdatePatientInput(ctx context.Context, obj interface{}) (model.UpdatePatientInput, error) {
-	var it model.UpdatePatientInput
+func (ec *executionContext) unmarshalInputUpdateOwnUserInput(ctx context.Context, obj interface{}) (model.UpdateOwnUserInput, error) {
+	var it model.UpdateOwnUserInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -2922,7 +2820,7 @@ func (ec *executionContext) unmarshalInputUpdatePatientInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstName"))
-			it.FirstName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.FirstName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2930,7 +2828,7 @@ func (ec *executionContext) unmarshalInputUpdatePatientInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastName"))
-			it.LastName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.LastName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2950,7 +2848,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstName"))
-			it.FirstName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.FirstName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2958,7 +2856,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastName"))
-			it.LastName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.LastName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2966,7 +2864,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
-			it.Role, err = ec.unmarshalORole2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRole(ctx, v)
+			it.Role, err = ec.unmarshalNRole2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRole(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3013,8 +2911,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_ResetPassword(ctx, field)
 		case "UpdateOwnUser":
 			out.Values[i] = ec._Mutation_UpdateOwnUser(ctx, field)
-		case "UpdatePatient":
-			out.Values[i] = ec._Mutation_UpdatePatient(ctx, field)
 		case "UpdateUser":
 			out.Values[i] = ec._Mutation_UpdateUser(ctx, field)
 		case "ProcessPendingMail":
@@ -3583,8 +3479,8 @@ func (ec *executionContext) marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋps
 	return ec._Token(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNUpdatePatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdatePatientInput(ctx context.Context, v interface{}) (model.UpdatePatientInput, error) {
-	res, err := ec.unmarshalInputUpdatePatientInput(ctx, v)
+func (ec *executionContext) unmarshalNUpdateOwnUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdateOwnUserInput(ctx context.Context, v interface{}) (model.UpdateOwnUserInput, error) {
+	res, err := ec.unmarshalInputUpdateOwnUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3858,22 +3754,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
-}
-
-func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRole(ctx context.Context, v interface{}) (*model.Role, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var res = new(model.Role)
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return v
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
