@@ -34,6 +34,7 @@ type Resolver struct {
 	authenticateUserService       *users_services.AuthenticateUserService
 	createUserService             *users_services.CreateUserService
 	createUserWithPasswordService *users_services.CreateUserWithPasswordService
+	getUsersByRoleService         *users_services.GetUsersByRoleService
 	getUserByIdService            *users_services.GetUserByIdService
 	processPendingMailsService    *mails_services.ProcessPendingMailsService
 	resetPasswordService          *users_services.ResetPasswordService
@@ -102,6 +103,15 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 		}
 	}
 	return r.createUserWithPasswordService
+}
+
+func (r *Resolver) GetUsersByRoleService() *users_services.GetUsersByRoleService {
+	if r.getUsersByRoleService == nil {
+		r.getUsersByRoleService = &users_services.GetUsersByRoleService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getUsersByRoleService
 }
 
 func (r *Resolver) GetUserByIdService() *users_services.GetUserByIdService {

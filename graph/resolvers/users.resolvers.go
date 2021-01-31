@@ -121,11 +121,57 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input mode
 }
 
 func (r *queryResolver) GetOwnUser(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	userID := ctx.Value("userID").(string)
+
+	user := model.User{}
+
+	serviceUser, serviceErr := r.GetUserByIdService().Execute(userID)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	mergeErr := r.MergeUtil.Merge(&user, serviceUser)
+	if mergeErr != nil {
+		return nil, mergeErr
+	}
+
+	fmt.Printf("%#v \n", user)
+
+	return &user, nil
 }
 
 func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user := model.User{}
+
+	serviceUser, serviceErr := r.GetUserByIdService().Execute(id)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	mergeErr := r.MergeUtil.Merge(&user, serviceUser)
+	if mergeErr != nil {
+		return nil, mergeErr
+	}
+
+	fmt.Printf("%#v \n", user)
+
+	return &user, nil
+}
+
+func (r *queryResolver) ListUsersByRole(ctx context.Context, role model.Role) ([]*model.User, error) {
+	users := []*model.User{}
+
+	serviceUsers, serviceErr := r.GetUsersByRoleService().Execute(string(role))
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	mergeErr := r.MergeUtil.Merge(&users, serviceUsers)
+	if mergeErr != nil {
+		return nil, mergeErr
+	}
+
+	return users, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

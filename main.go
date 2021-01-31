@@ -93,6 +93,8 @@ func main() {
 			token := r.Header.Get("Authorization")
 
 			if token == "" {
+				ctx := context.WithValue(r.Context(), "userID", "")
+				r = r.WithContext(ctx)
 				next.ServeHTTP(w, r)
 				return
 			}

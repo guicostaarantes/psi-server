@@ -42,8 +42,9 @@ type User {
 }
 
 type Query {
-    GetOwnUser: User!
+    GetOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    ListUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 type Mutation {
@@ -53,7 +54,7 @@ type Mutation {
     CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     ResetPassword(input: ResetPasswordInput!): Boolean
-    UpdateOwnUser(input: UpdateOwnUserInput!): Boolean
+    UpdateOwnUser(input: UpdateOwnUserInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 
