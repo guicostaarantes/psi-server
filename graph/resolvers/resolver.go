@@ -69,7 +69,6 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 		r.authenticateUserService = &users_services.AuthenticateUserService{
 			DatabaseUtil:    r.DatabaseUtil,
 			HashUtil:        r.HashUtil,
-			IdentifierUtil:  r.IdentifierUtil,
 			SerializingUtil: r.SerializingUtil,
 			TokenUtil:       r.TokenUtil,
 			SecondsToExpire: r.SecondsToExpire,
