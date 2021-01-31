@@ -1,6 +1,8 @@
 package users_services
 
 import (
+	"errors"
+
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/merge"
@@ -20,6 +22,10 @@ func (s UpdateUserService) Execute(userID string, userInput *models.UpdateUserIn
 	findErr := s.DatabaseUtil.FindOne("psi_db", "users", "id", userID, &user)
 	if findErr != nil {
 		return findErr
+	}
+
+	if user.ID != "" {
+		return errors.New("resource not found")
 	}
 
 	mergeErr := s.MergeUtil.Merge(&user, userInput)
