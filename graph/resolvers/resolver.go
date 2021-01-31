@@ -83,6 +83,7 @@ func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 			DatabaseUtil:    r.DatabaseUtil,
 			IdentifierUtil:  r.IdentifierUtil,
 			MatchUtil:       r.MatchUtil,
+			MergeUtil:       r.MergeUtil,
 			SerializingUtil: r.SerializingUtil,
 			TokenUtil:       r.TokenUtil,
 			SecondsToExpire: r.SecondsToExpireReset,
@@ -98,6 +99,7 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 			HashUtil:        r.HashUtil,
 			IdentifierUtil:  r.IdentifierUtil,
 			MatchUtil:       r.MatchUtil,
+			MergeUtil:       r.MergeUtil,
 			SerializingUtil: r.SerializingUtil,
 		}
 	}

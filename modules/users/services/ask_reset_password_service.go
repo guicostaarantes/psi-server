@@ -23,11 +23,11 @@ type AskResetPasswordService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (a AskResetPasswordService) Execute(email string) error {
+func (s AskResetPasswordService) Execute(email string) error {
 
 	user := &models.User{}
 
-	findUserErr := a.DatabaseUtil.FindOne("psi_db", "users", "email", email, user)
+	findUserErr := s.DatabaseUtil.FindOne("psi_db", "users", "email", email, user)
 	if findUserErr != nil {
 		return findUserErr
 	}
@@ -38,16 +38,16 @@ func (a AskResetPasswordService) Execute(email string) error {
 
 	existsReset := &models.ResetPassword{}
 
-	findTokenErr := a.DatabaseUtil.FindOne("psi_db", "resets", "userId", user.ID, existsReset)
+	findTokenErr := s.DatabaseUtil.FindOne("psi_db", "resets", "userId", user.ID, existsReset)
 	if findTokenErr != nil {
 		return findTokenErr
 	}
 
-	if existsReset.UserID != "" && existsReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(a.SecondsToCooldown)).Unix() {
+	if existsReset.UserID != "" && existsReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(s.SecondsToCooldown)).Unix() {
 		return nil
 	}
 
-	token, tokenErr := a.TokenUtil.GenerateToken(user.ID, a.SecondsToCooldown)
+	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToCooldown)
 	if tokenErr != nil {
 		return tokenErr
 	}
@@ -55,12 +55,12 @@ func (a AskResetPasswordService) Execute(email string) error {
 	reset := &models.ResetPassword{
 		UserID:    user.ID,
 		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Second * time.Duration(a.SecondsToCooldown)).Unix(),
+		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToCooldown)).Unix(),
 		Token:     token,
 		Redeemed:  false,
 	}
 
-	_, mailID, mailIDErr := a.IdentifierUtil.GenerateIdentifier()
+	_, mailID, mailIDErr := s.IdentifierUtil.GenerateIdentifier()
 	if mailIDErr != nil {
 		return mailIDErr
 	}
@@ -90,12 +90,12 @@ func (a AskResetPasswordService) Execute(email string) error {
 		Processed:   false,
 	}
 
-	writeMailErr := a.DatabaseUtil.InsertOne("psi_db", "mails", mail)
+	writeMailErr := s.DatabaseUtil.InsertOne("psi_db", "mails", mail)
 	if writeMailErr != nil {
 		return writeMailErr
 	}
 
-	writeResetErr := a.DatabaseUtil.InsertOne("psi_db", "resets", reset)
+	writeResetErr := s.DatabaseUtil.InsertOne("psi_db", "resets", reset)
 	if writeResetErr != nil {
 		return writeResetErr
 	}

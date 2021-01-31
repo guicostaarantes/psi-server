@@ -8,6 +8,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/merge"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 )
 
@@ -17,6 +18,7 @@ type CreateUserWithPasswordService struct {
 	HashUtil        hash.IHashUtil
 	IdentifierUtil  identifier.IIdentifierUtil
 	MatchUtil       match.IMatchUtil
+	MergeUtil       merge.IMergeUtil
 	SerializingUtil serializing.ISerializingUtil
 }
 
@@ -55,14 +57,16 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 	}
 
 	user := &models.User{
-		ID:        string(id),
-		Email:     userInput.Email,
-		Active:    true,
-		Password:  hashedPwd,
-		FirstName: userInput.FirstName,
-		LastName:  userInput.LastName,
-		Role:      userInput.Role,
+		ID:     id,
+		Active: true,
 	}
+
+	mergeErr := s.MergeUtil.Merge(&user, userInput)
+	if mergeErr != nil {
+		return mergeErr
+	}
+
+	user.Password = hashedPwd
 
 	writeErr := s.DatabaseUtil.InsertOne("psi_db", "users", user)
 	if writeErr != nil {

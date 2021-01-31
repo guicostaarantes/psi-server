@@ -11,18 +11,18 @@ type ActivateUserService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (v ActivateUserService) Execute(userID string, active bool) error {
+func (s ActivateUserService) Execute(userID string, active bool) error {
 
 	user := models.User{}
 
-	findErr := v.DatabaseUtil.FindOne("psi_db", "users", "id", userID, &user)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "users", "id", userID, &user)
 	if findErr != nil {
 		return findErr
 	}
 
 	user.Active = active
 
-	updateErr := v.DatabaseUtil.UpdateOne("psi_db", "auths", "id", userID, user)
+	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "auths", "id", userID, user)
 	if updateErr != nil {
 		return updateErr
 	}

@@ -18,16 +18,16 @@ type ResetPasswordService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) error {
+func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) error {
 
-	passwordErr := r.MatchUtil.IsPasswordStrong(resetInput.Password)
+	passwordErr := s.MatchUtil.IsPasswordStrong(resetInput.Password)
 	if passwordErr != nil {
 		return passwordErr
 	}
 
 	reset := &models.ResetPassword{}
 
-	findTokenErr := r.DatabaseUtil.FindOne("psi_db", "resets", "token", resetInput.Token, reset)
+	findTokenErr := s.DatabaseUtil.FindOne("psi_db", "resets", "token", resetInput.Token, reset)
 	if findTokenErr != nil {
 		return findTokenErr
 	}
@@ -38,7 +38,7 @@ func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 
 	user := &models.User{}
 
-	findUserErr := r.DatabaseUtil.FindOne("psi_db", "users", "id", reset.UserID, user)
+	findUserErr := s.DatabaseUtil.FindOne("psi_db", "users", "id", reset.UserID, user)
 	if findUserErr != nil {
 		return findUserErr
 	}
@@ -47,21 +47,21 @@ func (r ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 		return errors.New("invalid token")
 	}
 
-	hashedPwd, hashErr := r.HashUtil.Hash(resetInput.Password)
+	hashedPwd, hashErr := s.HashUtil.Hash(resetInput.Password)
 	if hashErr != nil {
 		return hashErr
 	}
 
 	user.Password = hashedPwd
 
-	updateUserErr := r.DatabaseUtil.UpdateOne("psi_db", "users", "id", reset.UserID, user)
+	updateUserErr := s.DatabaseUtil.UpdateOne("psi_db", "users", "id", reset.UserID, user)
 	if updateUserErr != nil {
 		return updateUserErr
 	}
 
 	reset.Redeemed = true
 
-	expireTokenErr := r.DatabaseUtil.UpdateOne("psi_db", "resets", "token", resetInput.Token, reset)
+	expireTokenErr := s.DatabaseUtil.UpdateOne("psi_db", "resets", "token", resetInput.Token, reset)
 	if expireTokenErr != nil {
 		return expireTokenErr
 	}

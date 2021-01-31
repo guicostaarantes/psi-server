@@ -17,11 +17,11 @@ type ValidateUserTokenService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (v ValidateUserTokenService) Execute(token string) (string, error) {
+func (s ValidateUserTokenService) Execute(token string) (string, error) {
 
 	auth := models.Authentication{}
 
-	findErr := v.DatabaseUtil.FindOne("psi_db", "auths", "token", token, &auth)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "auths", "token", token, &auth)
 	if findErr != nil {
 		return "", findErr
 	}
@@ -30,9 +30,9 @@ func (v ValidateUserTokenService) Execute(token string) (string, error) {
 		return "", errors.New("invalid token")
 	}
 
-	auth.ExpiresAt = time.Now().Unix() + v.SecondsToExpire
+	auth.ExpiresAt = time.Now().Unix() + s.SecondsToExpire
 
-	updateErr := v.DatabaseUtil.UpdateOne("psi_db", "auths", "token", token, auth)
+	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "auths", "token", token, auth)
 	if updateErr != nil {
 		return "", updateErr
 	}
