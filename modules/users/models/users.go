@@ -11,13 +11,6 @@ type User struct {
 	Role      string `json:"role" bson:"role"`
 }
 
-// GetUserInput is the schema for information needed to get a user
-type GetUserInput struct {
-	ID    string `json:"firstName" bson:"firstName"`
-	Email string `json:"lastName" bson:"lastName"`
-	Role  string `json:"role" bson:"role"`
-}
-
 // CreateUserInput is the schema for information needed to create a user
 type CreateUserInput struct {
 	Email     string `json:"email" bson:"email"`
