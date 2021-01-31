@@ -120,6 +120,23 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input mode
 	return nil, nil
 }
 
+func (r *queryResolver) AuthenticateUser(ctx context.Context, input model.AuthenticateUserInput) (*model.Token, error) {
+	auth, err := r.AuthenticateUserService().Execute(&users_models.AuthenticateUserInput{
+		Email:     input.Email,
+		Password:  input.Password,
+		IPAddress: input.IPAddress,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Token{
+		Token:     auth.Token,
+		ExpiresAt: auth.ExpiresAt,
+	}, nil
+}
+
 func (r *queryResolver) GetOwnUser(ctx context.Context) (*model.User, error) {
 	userID := ctx.Value("userID").(string)
 
@@ -134,8 +151,6 @@ func (r *queryResolver) GetOwnUser(ctx context.Context) (*model.User, error) {
 	if mergeErr != nil {
 		return nil, mergeErr
 	}
-
-	fmt.Printf("%#v \n", user)
 
 	return &user, nil
 }

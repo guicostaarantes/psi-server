@@ -4,6 +4,12 @@ enum Role {
     PATIENT
 }
 
+input AuthenticateUserInput {
+    email: String!
+    password: String!
+    ipAddress: String!
+}
+
 input CreateUserInput {
     email: String!
     password: String!
@@ -41,7 +47,13 @@ type User {
     role: Role!
 }
 
+type Token {
+    token: String!
+    expiresAt: Int!
+}
+
 type Query {
+    AuthenticateUser(input: AuthenticateUserInput!): Token!
     GetOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     ListUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])

@@ -89,10 +89,10 @@ type MutationResolver interface {
 	ProcessPendingMail(ctx context.Context) (*bool, error)
 }
 type QueryResolver interface {
+	AuthenticateUser(ctx context.Context, input model.AuthenticateUserInput) (*model.Token, error)
 	GetOwnUser(ctx context.Context) (*model.User, error)
 	GetUser(ctx context.Context, id string) (*model.User, error)
 	ListUsersByRole(ctx context.Context, role model.Role) ([]*model.User, error)
-	AuthenticateUser(ctx context.Context, input model.AuthenticateUserInput) (*model.Token, error)
 }
 
 type executableSchema struct {
@@ -362,20 +362,6 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema/auth.graphqls", Input: `input AuthenticateUserInput {
-    email: String!
-    password: String!
-    ipAddress: String!
-}
-
-type Token {
-    token: String!
-    expiresAt: Int!
-}
-
-extend type Query {
-    AuthenticateUser(input: AuthenticateUserInput!): Token!
-}`, BuiltIn: false},
 	{Name: "graph/schema/mail.graphqls", Input: `extend type Mutation {
     ProcessPendingMail: Boolean @hasRole(role: [COORDINATOR])
 }`, BuiltIn: false},
@@ -383,6 +369,12 @@ extend type Query {
     COORDINATOR
     PSYCHOLOGIST
     PATIENT
+}
+
+input AuthenticateUserInput {
+    email: String!
+    password: String!
+    ipAddress: String!
 }
 
 input CreateUserInput {
@@ -422,7 +414,13 @@ type User {
     role: Role!
 }
 
+type Token {
+    token: String!
+    expiresAt: Int!
+}
+
 type Query {
+    AuthenticateUser(input: AuthenticateUserInput!): Token!
     GetOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     ListUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
@@ -1201,6 +1199,48 @@ func (ec *executionContext) _Mutation_ProcessPendingMail(ctx context.Context, fi
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_AuthenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_AuthenticateUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AuthenticateUser(rctx, args["input"].(model.AuthenticateUserInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Token)
+	fc.Result = res
+	return ec.marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐToken(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_GetOwnUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1390,48 +1430,6 @@ func (ec *executionContext) _Query_ListUsersByRole(ctx context.Context, field gr
 	res := resTmp.([]*model.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUserᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_AuthenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_AuthenticateUser_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AuthenticateUser(rctx, args["input"].(model.AuthenticateUserInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Token)
-	fc.Result = res
-	return ec.marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3085,6 +3083,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "AuthenticateUser":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_AuthenticateUser(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "GetOwnUser":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -3122,20 +3134,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_ListUsersByRole(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "AuthenticateUser":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_AuthenticateUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
