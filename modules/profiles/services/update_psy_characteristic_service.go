@@ -36,7 +36,7 @@ func (s UpdatePsyCharacteristicService) Execute(id string, psyCharInput *models.
 		return mergeErr
 	}
 
-	psyChar.Values = strings.Join(psyCharInput.Values, ",")
+	psyChar.PossibleValues = strings.Join(psyCharInput.Values, ",")
 
 	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologist_characteristics", map[string]interface{}{"id": id}, psyChar)
 	if writeErr != nil {

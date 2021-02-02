@@ -45,7 +45,7 @@ func (s CreatePsyCharacteristicService) Execute(psyCharInput *models.CreatePsyCh
 		return mergeErr
 	}
 
-	psyChar.Values = strings.Join(psyCharInput.Values, ",")
+	psyChar.PossibleValues = strings.Join(psyCharInput.PossibleValues, ",")
 
 	writeErr := s.DatabaseUtil.InsertOne("psi_db", "psychologist_characteristics", psyChar)
 	if writeErr != nil {
