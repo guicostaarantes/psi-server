@@ -109,3 +109,25 @@ func (r *mutationResolver) UpdatePsyCharacteristic(ctx context.Context, id strin
 
 	return nil, nil
 }
+
+func (r *queryResolver) GetPsyCharacteristics(ctx context.Context) ([]*model.PsyCharacteristic, error) {
+	characteristics, serviceErr := r.GetPsyCharacteristicsService().Execute()
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	response := []*model.PsyCharacteristic{}
+
+	for _, char := range characteristics {
+		resp := &model.PsyCharacteristic{}
+
+		mergeErr := r.MergeUtil.Merge(resp, char)
+		if mergeErr != nil {
+			return nil, mergeErr
+		}
+
+		response = append(response, resp)
+	}
+
+	return response, nil
+}

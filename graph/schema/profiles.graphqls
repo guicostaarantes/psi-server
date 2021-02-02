@@ -31,6 +31,17 @@ input UpdatePsyCharacteristicInput {
     values: [String!]!
 }
 
+type PsyCharacteristic {
+    id: ID!
+    name: String!
+    many: Boolean!
+    possibleValues: [String!]!
+}
+
+extend type Query {
+    GetPsyCharacteristics: [PsyCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+}
+
 extend type Mutation {
     CreateOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     CreatePsyCharacteristic(input: CreatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])

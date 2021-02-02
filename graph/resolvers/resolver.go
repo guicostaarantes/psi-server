@@ -37,6 +37,7 @@ type Resolver struct {
 	createPsychologistService         *profiles_services.CreatePsychologistService
 	createUserService                 *users_services.CreateUserService
 	createUserWithPasswordService     *users_services.CreateUserWithPasswordService
+	getPsyCharacteristicsService      *profiles_services.GetPsyCharacteristicsService
 	getPsychologistByUserIDService    *profiles_services.GetPsychologistByUserIDService
 	getUsersByRoleService             *users_services.GetUsersByRoleService
 	getUserByIdService                *users_services.GetUserByIdService
@@ -133,6 +134,15 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 		}
 	}
 	return r.createUserWithPasswordService
+}
+
+func (r *Resolver) GetPsyCharacteristicsService() *profiles_services.GetPsyCharacteristicsService {
+	if r.getPsyCharacteristicsService == nil {
+		r.getPsyCharacteristicsService = &profiles_services.GetPsyCharacteristicsService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsyCharacteristicsService
 }
 
 func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsychologistByUserIDService {

@@ -51,6 +51,13 @@ type CreateUserInput struct {
 	Role      Role   `json:"role"`
 }
 
+type PsyCharacteristic struct {
+	ID             string   `json:"id"`
+	Name           string   `json:"name"`
+	Many           bool     `json:"many"`
+	PossibleValues []string `json:"possibleValues"`
+}
+
 type ResetPasswordInput struct {
 	Token    string `json:"token"`
 	Password string `json:"password"`
