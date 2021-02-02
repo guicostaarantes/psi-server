@@ -56,6 +56,11 @@ type ResetPasswordInput struct {
 	Password string `json:"password"`
 }
 
+type SetOwnPsyCharacteristicChoiceInput struct {
+	CharacteristicName string   `json:"characteristicName"`
+	Values             []string `json:"values"`
+}
+
 type Token struct {
 	Token     string `json:"token"`
 	ExpiresAt int64  `json:"expiresAt"`

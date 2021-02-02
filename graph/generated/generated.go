@@ -46,20 +46,21 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		ActivateUser                 func(childComplexity int, id string) int
-		AskResetPassword             func(childComplexity int, email string) int
-		CreateOwnPsychologistProfile func(childComplexity int, input model.CreateOwnPsychologistProfileInput) int
-		CreatePatientUser            func(childComplexity int, input model.CreatePatientUserInput) int
-		CreatePsyCharacteristic      func(childComplexity int, input model.CreatePsyCharacteristicInput) int
-		CreatePsychologistUser       func(childComplexity int, input model.CreatePsychologistUserInput) int
-		CreateUserWithPassword       func(childComplexity int, input model.CreateUserInput) int
-		DeactivateUser               func(childComplexity int, id string) int
-		ProcessPendingMail           func(childComplexity int) int
-		ResetPassword                func(childComplexity int, input model.ResetPasswordInput) int
-		UpdateOwnPsychologistProfile func(childComplexity int, input model.UpdateOwnPsychologistProfileInput) int
-		UpdateOwnUser                func(childComplexity int, input model.UpdateOwnUserInput) int
-		UpdatePsyCharacteristic      func(childComplexity int, id string, input model.UpdatePsyCharacteristicInput) int
-		UpdateUser                   func(childComplexity int, id string, input model.UpdateUserInput) int
+		ActivateUser                  func(childComplexity int, id string) int
+		AskResetPassword              func(childComplexity int, email string) int
+		CreateOwnPsychologistProfile  func(childComplexity int, input model.CreateOwnPsychologistProfileInput) int
+		CreatePatientUser             func(childComplexity int, input model.CreatePatientUserInput) int
+		CreatePsyCharacteristic       func(childComplexity int, input model.CreatePsyCharacteristicInput) int
+		CreatePsychologistUser        func(childComplexity int, input model.CreatePsychologistUserInput) int
+		CreateUserWithPassword        func(childComplexity int, input model.CreateUserInput) int
+		DeactivateUser                func(childComplexity int, id string) int
+		ProcessPendingMail            func(childComplexity int) int
+		ResetPassword                 func(childComplexity int, input model.ResetPasswordInput) int
+		SetOwnPsyCharacteristicChoice func(childComplexity int, input model.SetOwnPsyCharacteristicChoiceInput) int
+		UpdateOwnPsychologistProfile  func(childComplexity int, input model.UpdateOwnPsychologistProfileInput) int
+		UpdateOwnUser                 func(childComplexity int, input model.UpdateOwnUserInput) int
+		UpdatePsyCharacteristic       func(childComplexity int, id string, input model.UpdatePsyCharacteristicInput) int
+		UpdateUser                    func(childComplexity int, id string, input model.UpdateUserInput) int
 	}
 
 	Query struct {
@@ -95,6 +96,7 @@ type MutationResolver interface {
 	ProcessPendingMail(ctx context.Context) (*bool, error)
 	CreateOwnPsychologistProfile(ctx context.Context, input model.CreateOwnPsychologistProfileInput) (*bool, error)
 	CreatePsyCharacteristic(ctx context.Context, input model.CreatePsyCharacteristicInput) (*bool, error)
+	SetOwnPsyCharacteristicChoice(ctx context.Context, input model.SetOwnPsyCharacteristicChoiceInput) (*bool, error)
 	UpdateOwnPsychologistProfile(ctx context.Context, input model.UpdateOwnPsychologistProfileInput) (*bool, error)
 	UpdatePsyCharacteristic(ctx context.Context, id string, input model.UpdatePsyCharacteristicInput) (*bool, error)
 }
@@ -234,6 +236,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ResetPassword(childComplexity, args["input"].(model.ResetPasswordInput)), true
+
+	case "Mutation.SetOwnPsyCharacteristicChoice":
+		if e.complexity.Mutation.SetOwnPsyCharacteristicChoice == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_SetOwnPsyCharacteristicChoice_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetOwnPsyCharacteristicChoice(childComplexity, args["input"].(model.SetOwnPsyCharacteristicChoiceInput)), true
 
 	case "Mutation.UpdateOwnPsychologistProfile":
 		if e.complexity.Mutation.UpdateOwnPsychologistProfile == nil {
@@ -446,6 +460,11 @@ input CreatePsychologistInput {
     city: String!
 }
 
+input SetOwnPsyCharacteristicChoiceInput {
+    characteristicName: String!
+    values: [String!]!
+}
+
 input UpdateOwnPsychologistProfileInput {
     birthDate: Int!
     city: String!
@@ -466,6 +485,7 @@ input UpdatePsyCharacteristicInput {
 extend type Mutation {
     CreateOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     CreatePsyCharacteristic(input: CreatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+    SetOwnPsyCharacteristicChoice(input: SetOwnPsyCharacteristicChoiceInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     UpdateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     UpdatePsyCharacteristic(id: ID!, input: UpdatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
 }`, BuiltIn: false},
@@ -698,6 +718,21 @@ func (ec *executionContext) field_Mutation_ResetPassword_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNResetPasswordInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐResetPasswordInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_SetOwnPsyCharacteristicChoice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SetOwnPsyCharacteristicChoiceInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSetOwnPsyCharacteristicChoiceInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐSetOwnPsyCharacteristicChoiceInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1526,6 +1561,69 @@ func (ec *executionContext) _Mutation_CreatePsyCharacteristic(ctx context.Contex
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_SetOwnPsyCharacteristicChoice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_SetOwnPsyCharacteristicChoice_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().SetOwnPsyCharacteristicChoice(rctx, args["input"].(model.SetOwnPsyCharacteristicChoiceInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
 			if err != nil {
 				return nil, err
 			}
@@ -3574,6 +3672,34 @@ func (ec *executionContext) unmarshalInputResetPasswordInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSetOwnPsyCharacteristicChoiceInput(ctx context.Context, obj interface{}) (model.SetOwnPsyCharacteristicChoiceInput, error) {
+	var it model.SetOwnPsyCharacteristicChoiceInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "characteristicName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("characteristicName"))
+			it.CharacteristicName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "values":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("values"))
+			it.Values, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateOwnPsychologistProfileInput(ctx context.Context, obj interface{}) (model.UpdateOwnPsychologistProfileInput, error) {
 	var it model.UpdateOwnPsychologistProfileInput
 	var asMap = obj.(map[string]interface{})
@@ -3749,6 +3875,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_CreateOwnPsychologistProfile(ctx, field)
 		case "CreatePsyCharacteristic":
 			out.Values[i] = ec._Mutation_CreatePsyCharacteristic(ctx, field)
+		case "SetOwnPsyCharacteristicChoice":
+			out.Values[i] = ec._Mutation_SetOwnPsyCharacteristicChoice(ctx, field)
 		case "UpdateOwnPsychologistProfile":
 			out.Values[i] = ec._Mutation_UpdateOwnPsychologistProfile(ctx, field)
 		case "UpdatePsyCharacteristic":
@@ -4315,6 +4443,11 @@ func (ec *executionContext) marshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsi
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalNSetOwnPsyCharacteristicChoiceInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐSetOwnPsyCharacteristicChoiceInput(ctx context.Context, v interface{}) (model.SetOwnPsyCharacteristicChoiceInput, error) {
+	res, err := ec.unmarshalInputSetOwnPsyCharacteristicChoiceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

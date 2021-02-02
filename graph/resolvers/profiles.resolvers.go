@@ -46,6 +46,31 @@ func (r *mutationResolver) CreatePsyCharacteristic(ctx context.Context, input mo
 	return nil, nil
 }
 
+func (r *mutationResolver) SetOwnPsyCharacteristicChoice(ctx context.Context, input model.SetOwnPsyCharacteristicChoiceInput) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
+	if servicePsyErr != nil {
+		return nil, servicePsyErr
+	}
+
+	serviceInput := &profiles_models.SetPsyCharacteristicChoiceInput{
+		PsychologistID: servicePsy.ID,
+	}
+
+	mergeErr := r.MergeUtil.Merge(serviceInput, &input)
+	if mergeErr != nil {
+		return nil, mergeErr
+	}
+
+	serviceErr := r.SetPsyCharacteristicChoiceService().Execute(serviceInput)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
 func (r *mutationResolver) UpdateOwnPsychologistProfile(ctx context.Context, input model.UpdateOwnPsychologistProfileInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
