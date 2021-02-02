@@ -14,7 +14,30 @@ type AuthenticateUserInput struct {
 	IPAddress string `json:"ipAddress"`
 }
 
-type CreatePatientInput struct {
+type CreateOwnPsychologistProfileInput struct {
+	BirthDate int64  `json:"birthDate"`
+	City      string `json:"city"`
+}
+
+type CreatePatientUserInput struct {
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
+type CreatePsyCharacteristicInput struct {
+	Name   string   `json:"name"`
+	Many   bool     `json:"many"`
+	Values []string `json:"values"`
+}
+
+type CreatePsychologistInput struct {
+	UserID    string `json:"userId"`
+	BirthDate int64  `json:"birthDate"`
+	City      string `json:"city"`
+}
+
+type CreatePsychologistUserInput struct {
 	Email     string `json:"email"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
@@ -38,9 +61,20 @@ type Token struct {
 	ExpiresAt int64  `json:"expiresAt"`
 }
 
+type UpdateOwnPsychologistProfileInput struct {
+	BirthDate int64  `json:"birthDate"`
+	City      string `json:"city"`
+}
+
 type UpdateOwnUserInput struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
+}
+
+type UpdatePsyCharacteristicInput struct {
+	Name   string   `json:"name"`
+	Many   bool     `json:"many"`
+	Values []string `json:"values"`
 }
 
 type UpdateUserInput struct {

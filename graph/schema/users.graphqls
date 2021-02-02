@@ -18,7 +18,13 @@ input CreateUserInput {
     role: Role!
 }
 
-input CreatePatientInput {
+input CreatePatientUserInput {
+    email: String!
+    firstName: String!
+    lastName: String!
+}
+
+input CreatePsychologistUserInput {
     email: String!
     firstName: String!
     lastName: String!
@@ -62,7 +68,8 @@ type Query {
 type Mutation {
     ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     AskResetPassword(email: String!): Boolean
-    CreatePatient(input: CreatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    CreatePatientUser(input: CreatePatientUserInput!): Boolean
+    CreatePsychologistUser(input: CreatePsychologistUserInput!): Boolean @hasRole(role: [COORDINATOR])
     CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     ResetPassword(input: ResetPasswordInput!): Boolean

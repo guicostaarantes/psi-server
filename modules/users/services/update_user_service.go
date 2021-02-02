@@ -24,7 +24,7 @@ func (s UpdateUserService) Execute(userID string, userInput *models.UpdateUserIn
 		return findErr
 	}
 
-	if user.ID != "" {
+	if user.ID == "" {
 		return errors.New("resource not found")
 	}
 

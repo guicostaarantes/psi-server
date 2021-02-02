@@ -46,15 +46,20 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		ActivateUser           func(childComplexity int, id string) int
-		AskResetPassword       func(childComplexity int, email string) int
-		CreatePatient          func(childComplexity int, input model.CreatePatientInput) int
-		CreateUserWithPassword func(childComplexity int, input model.CreateUserInput) int
-		DeactivateUser         func(childComplexity int, id string) int
-		ProcessPendingMail     func(childComplexity int) int
-		ResetPassword          func(childComplexity int, input model.ResetPasswordInput) int
-		UpdateOwnUser          func(childComplexity int, input model.UpdateOwnUserInput) int
-		UpdateUser             func(childComplexity int, id string, input model.UpdateUserInput) int
+		ActivateUser                 func(childComplexity int, id string) int
+		AskResetPassword             func(childComplexity int, email string) int
+		CreateOwnPsychologistProfile func(childComplexity int, input model.CreateOwnPsychologistProfileInput) int
+		CreatePatientUser            func(childComplexity int, input model.CreatePatientUserInput) int
+		CreatePsyCharacteristic      func(childComplexity int, input model.CreatePsyCharacteristicInput) int
+		CreatePsychologistUser       func(childComplexity int, input model.CreatePsychologistUserInput) int
+		CreateUserWithPassword       func(childComplexity int, input model.CreateUserInput) int
+		DeactivateUser               func(childComplexity int, id string) int
+		ProcessPendingMail           func(childComplexity int) int
+		ResetPassword                func(childComplexity int, input model.ResetPasswordInput) int
+		UpdateOwnPsychologistProfile func(childComplexity int, input model.UpdateOwnPsychologistProfileInput) int
+		UpdateOwnUser                func(childComplexity int, input model.UpdateOwnUserInput) int
+		UpdatePsyCharacteristic      func(childComplexity int, id string, input model.UpdatePsyCharacteristicInput) int
+		UpdateUser                   func(childComplexity int, id string, input model.UpdateUserInput) int
 	}
 
 	Query struct {
@@ -80,13 +85,18 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	ActivateUser(ctx context.Context, id string) (*bool, error)
 	AskResetPassword(ctx context.Context, email string) (*bool, error)
-	CreatePatient(ctx context.Context, input model.CreatePatientInput) (*bool, error)
+	CreatePatientUser(ctx context.Context, input model.CreatePatientUserInput) (*bool, error)
+	CreatePsychologistUser(ctx context.Context, input model.CreatePsychologistUserInput) (*bool, error)
 	CreateUserWithPassword(ctx context.Context, input model.CreateUserInput) (*bool, error)
 	DeactivateUser(ctx context.Context, id string) (*bool, error)
 	ResetPassword(ctx context.Context, input model.ResetPasswordInput) (*bool, error)
 	UpdateOwnUser(ctx context.Context, input model.UpdateOwnUserInput) (*bool, error)
 	UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*bool, error)
 	ProcessPendingMail(ctx context.Context) (*bool, error)
+	CreateOwnPsychologistProfile(ctx context.Context, input model.CreateOwnPsychologistProfileInput) (*bool, error)
+	CreatePsyCharacteristic(ctx context.Context, input model.CreatePsyCharacteristicInput) (*bool, error)
+	UpdateOwnPsychologistProfile(ctx context.Context, input model.UpdateOwnPsychologistProfileInput) (*bool, error)
+	UpdatePsyCharacteristic(ctx context.Context, id string, input model.UpdatePsyCharacteristicInput) (*bool, error)
 }
 type QueryResolver interface {
 	AuthenticateUser(ctx context.Context, input model.AuthenticateUserInput) (*model.Token, error)
@@ -134,17 +144,53 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AskResetPassword(childComplexity, args["email"].(string)), true
 
-	case "Mutation.CreatePatient":
-		if e.complexity.Mutation.CreatePatient == nil {
+	case "Mutation.CreateOwnPsychologistProfile":
+		if e.complexity.Mutation.CreateOwnPsychologistProfile == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_CreatePatient_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_CreateOwnPsychologistProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreatePatient(childComplexity, args["input"].(model.CreatePatientInput)), true
+		return e.complexity.Mutation.CreateOwnPsychologistProfile(childComplexity, args["input"].(model.CreateOwnPsychologistProfileInput)), true
+
+	case "Mutation.CreatePatientUser":
+		if e.complexity.Mutation.CreatePatientUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_CreatePatientUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePatientUser(childComplexity, args["input"].(model.CreatePatientUserInput)), true
+
+	case "Mutation.CreatePsyCharacteristic":
+		if e.complexity.Mutation.CreatePsyCharacteristic == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_CreatePsyCharacteristic_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePsyCharacteristic(childComplexity, args["input"].(model.CreatePsyCharacteristicInput)), true
+
+	case "Mutation.CreatePsychologistUser":
+		if e.complexity.Mutation.CreatePsychologistUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_CreatePsychologistUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePsychologistUser(childComplexity, args["input"].(model.CreatePsychologistUserInput)), true
 
 	case "Mutation.CreateUserWithPassword":
 		if e.complexity.Mutation.CreateUserWithPassword == nil {
@@ -189,6 +235,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ResetPassword(childComplexity, args["input"].(model.ResetPasswordInput)), true
 
+	case "Mutation.UpdateOwnPsychologistProfile":
+		if e.complexity.Mutation.UpdateOwnPsychologistProfile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_UpdateOwnPsychologistProfile_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateOwnPsychologistProfile(childComplexity, args["input"].(model.UpdateOwnPsychologistProfileInput)), true
+
 	case "Mutation.UpdateOwnUser":
 		if e.complexity.Mutation.UpdateOwnUser == nil {
 			break
@@ -200,6 +258,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateOwnUser(childComplexity, args["input"].(model.UpdateOwnUserInput)), true
+
+	case "Mutation.UpdatePsyCharacteristic":
+		if e.complexity.Mutation.UpdatePsyCharacteristic == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_UpdatePsyCharacteristic_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdatePsyCharacteristic(childComplexity, args["id"].(string), args["input"].(model.UpdatePsyCharacteristicInput)), true
 
 	case "Mutation.UpdateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -365,6 +435,40 @@ var sources = []*ast.Source{
 	{Name: "graph/schema/mail.graphqls", Input: `extend type Mutation {
     ProcessPendingMail: Boolean @hasRole(role: [COORDINATOR])
 }`, BuiltIn: false},
+	{Name: "graph/schema/profiles.graphqls", Input: `input CreateOwnPsychologistProfileInput {
+    birthDate: Int!
+    city: String!
+}
+
+input CreatePsychologistInput {
+    userId: String!
+    birthDate: Int!
+    city: String!
+}
+
+input UpdateOwnPsychologistProfileInput {
+    birthDate: Int!
+    city: String!
+}
+
+input CreatePsyCharacteristicInput {
+    name: String!
+    many: Boolean!
+    values: [String!]!
+}
+
+input UpdatePsyCharacteristicInput {
+    name: String!
+    many: Boolean!
+    values: [String!]!
+}
+
+extend type Mutation {
+    CreateOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    CreatePsyCharacteristic(input: CreatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+    UpdateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    UpdatePsyCharacteristic(id: ID!, input: UpdatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+}`, BuiltIn: false},
 	{Name: "graph/schema/users.graphqls", Input: `enum Role {
     COORDINATOR
     PSYCHOLOGIST
@@ -385,7 +489,13 @@ input CreateUserInput {
     role: Role!
 }
 
-input CreatePatientInput {
+input CreatePatientUserInput {
+    email: String!
+    firstName: String!
+    lastName: String!
+}
+
+input CreatePsychologistUserInput {
     email: String!
     firstName: String!
     lastName: String!
@@ -429,7 +539,8 @@ type Query {
 type Mutation {
     ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     AskResetPassword(email: String!): Boolean
-    CreatePatient(input: CreatePatientInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    CreatePatientUser(input: CreatePatientUserInput!): Boolean
+    CreatePsychologistUser(input: CreatePsychologistUserInput!): Boolean @hasRole(role: [COORDINATOR])
     CreateUserWithPassword(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     ResetPassword(input: ResetPasswordInput!): Boolean
@@ -490,13 +601,58 @@ func (ec *executionContext) field_Mutation_AskResetPassword_args(ctx context.Con
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_CreatePatient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_CreateOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.CreatePatientInput
+	var arg0 model.CreateOwnPsychologistProfileInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreatePatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePatientInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreateOwnPsychologistProfileInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_CreatePatientUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreatePatientUserInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreatePatientUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePatientUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_CreatePsyCharacteristic_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreatePsyCharacteristicInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreatePsyCharacteristicInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePsyCharacteristicInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_CreatePsychologistUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreatePsychologistUserInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreatePsychologistUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePsychologistUserInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -550,6 +706,21 @@ func (ec *executionContext) field_Mutation_ResetPassword_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_UpdateOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateOwnPsychologistProfileInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdateOwnPsychologistProfileInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_UpdateOwnUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -562,6 +733,30 @@ func (ec *executionContext) field_Mutation_UpdateOwnUser_args(ctx context.Contex
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_UpdatePsyCharacteristic_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 model.UpdatePsyCharacteristicInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdatePsyCharacteristicInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdatePsyCharacteristicInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -789,7 +984,7 @@ func (ec *executionContext) _Mutation_AskResetPassword(ctx context.Context, fiel
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_CreatePatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_CreatePatientUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -806,7 +1001,46 @@ func (ec *executionContext) _Mutation_CreatePatient(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_CreatePatient_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_CreatePatientUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreatePatientUser(rctx, args["input"].(model.CreatePatientUserInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_CreatePsychologistUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_CreatePsychologistUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -815,10 +1049,10 @@ func (ec *executionContext) _Mutation_CreatePatient(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreatePatient(rctx, args["input"].(model.CreatePatientInput))
+			return ec.resolvers.Mutation().CreatePsychologistUser(rctx, args["input"].(model.CreatePsychologistUserInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
 			if err != nil {
 				return nil, err
 			}
@@ -1163,6 +1397,258 @@ func (ec *executionContext) _Mutation_ProcessPendingMail(ctx context.Context, fi
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().ProcessPendingMail(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_CreateOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_CreateOwnPsychologistProfile_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateOwnPsychologistProfile(rctx, args["input"].(model.CreateOwnPsychologistProfileInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_CreatePsyCharacteristic(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_CreatePsyCharacteristic_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreatePsyCharacteristic(rctx, args["input"].(model.CreatePsyCharacteristicInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_UpdateOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_UpdateOwnPsychologistProfile_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdateOwnPsychologistProfile(rctx, args["input"].(model.UpdateOwnPsychologistProfileInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_UpdatePsyCharacteristic(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_UpdatePsyCharacteristic_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdatePsyCharacteristic(rctx, args["id"].(string), args["input"].(model.UpdatePsyCharacteristicInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
@@ -2836,8 +3322,144 @@ func (ec *executionContext) unmarshalInputAuthenticateUserInput(ctx context.Cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreatePatientInput(ctx context.Context, obj interface{}) (model.CreatePatientInput, error) {
-	var it model.CreatePatientInput
+func (ec *executionContext) unmarshalInputCreateOwnPsychologistProfileInput(ctx context.Context, obj interface{}) (model.CreateOwnPsychologistProfileInput, error) {
+	var it model.CreateOwnPsychologistProfileInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "birthDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
+			it.BirthDate, err = ec.unmarshalNInt2int64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "city":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
+			it.City, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreatePatientUserInput(ctx context.Context, obj interface{}) (model.CreatePatientUserInput, error) {
+	var it model.CreatePatientUserInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "firstName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstName"))
+			it.FirstName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "lastName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastName"))
+			it.LastName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreatePsyCharacteristicInput(ctx context.Context, obj interface{}) (model.CreatePsyCharacteristicInput, error) {
+	var it model.CreatePsyCharacteristicInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "many":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("many"))
+			it.Many, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "values":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("values"))
+			it.Values, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreatePsychologistInput(ctx context.Context, obj interface{}) (model.CreatePsychologistInput, error) {
+	var it model.CreatePsychologistInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "birthDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
+			it.BirthDate, err = ec.unmarshalNInt2int64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "city":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
+			it.City, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreatePsychologistUserInput(ctx context.Context, obj interface{}) (model.CreatePsychologistUserInput, error) {
+	var it model.CreatePsychologistUserInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -2952,6 +3574,34 @@ func (ec *executionContext) unmarshalInputResetPasswordInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateOwnPsychologistProfileInput(ctx context.Context, obj interface{}) (model.UpdateOwnPsychologistProfileInput, error) {
+	var it model.UpdateOwnPsychologistProfileInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "birthDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
+			it.BirthDate, err = ec.unmarshalNInt2int64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "city":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
+			it.City, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateOwnUserInput(ctx context.Context, obj interface{}) (model.UpdateOwnUserInput, error) {
 	var it model.UpdateOwnUserInput
 	var asMap = obj.(map[string]interface{})
@@ -2971,6 +3621,42 @@ func (ec *executionContext) unmarshalInputUpdateOwnUserInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastName"))
 			it.LastName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdatePsyCharacteristicInput(ctx context.Context, obj interface{}) (model.UpdatePsyCharacteristicInput, error) {
+	var it model.UpdatePsyCharacteristicInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "many":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("many"))
+			it.Many, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "values":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("values"))
+			it.Values, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3043,8 +3729,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_ActivateUser(ctx, field)
 		case "AskResetPassword":
 			out.Values[i] = ec._Mutation_AskResetPassword(ctx, field)
-		case "CreatePatient":
-			out.Values[i] = ec._Mutation_CreatePatient(ctx, field)
+		case "CreatePatientUser":
+			out.Values[i] = ec._Mutation_CreatePatientUser(ctx, field)
+		case "CreatePsychologistUser":
+			out.Values[i] = ec._Mutation_CreatePsychologistUser(ctx, field)
 		case "CreateUserWithPassword":
 			out.Values[i] = ec._Mutation_CreateUserWithPassword(ctx, field)
 		case "DeactivateUser":
@@ -3057,6 +3745,14 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_UpdateUser(ctx, field)
 		case "ProcessPendingMail":
 			out.Values[i] = ec._Mutation_ProcessPendingMail(ctx, field)
+		case "CreateOwnPsychologistProfile":
+			out.Values[i] = ec._Mutation_CreateOwnPsychologistProfile(ctx, field)
+		case "CreatePsyCharacteristic":
+			out.Values[i] = ec._Mutation_CreatePsyCharacteristic(ctx, field)
+		case "UpdateOwnPsychologistProfile":
+			out.Values[i] = ec._Mutation_UpdateOwnPsychologistProfile(ctx, field)
+		case "UpdatePsyCharacteristic":
+			out.Values[i] = ec._Mutation_UpdatePsyCharacteristic(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3493,8 +4189,23 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCreatePatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePatientInput(ctx context.Context, v interface{}) (model.CreatePatientInput, error) {
-	res, err := ec.unmarshalInputCreatePatientInput(ctx, v)
+func (ec *executionContext) unmarshalNCreateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreateOwnPsychologistProfileInput(ctx context.Context, v interface{}) (model.CreateOwnPsychologistProfileInput, error) {
+	res, err := ec.unmarshalInputCreateOwnPsychologistProfileInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreatePatientUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePatientUserInput(ctx context.Context, v interface{}) (model.CreatePatientUserInput, error) {
+	res, err := ec.unmarshalInputCreatePatientUserInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreatePsyCharacteristicInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePsyCharacteristicInput(ctx context.Context, v interface{}) (model.CreatePsyCharacteristicInput, error) {
+	res, err := ec.unmarshalInputCreatePsyCharacteristicInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreatePsychologistUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐCreatePsychologistUserInput(ctx context.Context, v interface{}) (model.CreatePsychologistUserInput, error) {
+	res, err := ec.unmarshalInputCreatePsychologistUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3621,6 +4332,36 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNToken2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐToken(ctx context.Context, sel ast.SelectionSet, v model.Token) graphql.Marshaler {
 	return ec._Token(ctx, sel, &v)
 }
@@ -3635,8 +4376,18 @@ func (ec *executionContext) marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋps
 	return ec._Token(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNUpdateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdateOwnPsychologistProfileInput(ctx context.Context, v interface{}) (model.UpdateOwnPsychologistProfileInput, error) {
+	res, err := ec.unmarshalInputUpdateOwnPsychologistProfileInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateOwnUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdateOwnUserInput(ctx context.Context, v interface{}) (model.UpdateOwnUserInput, error) {
 	res, err := ec.unmarshalInputUpdateOwnUserInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdatePsyCharacteristicInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋgraphᚋgeneratedᚋmodelᚐUpdatePsyCharacteristicInput(ctx context.Context, v interface{}) (model.UpdatePsyCharacteristicInput, error) {
+	res, err := ec.unmarshalInputUpdatePsyCharacteristicInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

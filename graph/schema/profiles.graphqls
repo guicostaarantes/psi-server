@@ -1,0 +1,34 @@
+input CreateOwnPsychologistProfileInput {
+    birthDate: Int!
+    city: String!
+}
+
+input CreatePsychologistInput {
+    userId: String!
+    birthDate: Int!
+    city: String!
+}
+
+input UpdateOwnPsychologistProfileInput {
+    birthDate: Int!
+    city: String!
+}
+
+input CreatePsyCharacteristicInput {
+    name: String!
+    many: Boolean!
+    values: [String!]!
+}
+
+input UpdatePsyCharacteristicInput {
+    name: String!
+    many: Boolean!
+    values: [String!]!
+}
+
+extend type Mutation {
+    CreateOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    CreatePsyCharacteristic(input: CreatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+    UpdateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    UpdatePsyCharacteristic(id: ID!, input: UpdatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+}

@@ -32,12 +32,27 @@ func (r *mutationResolver) AskResetPassword(ctx context.Context, email string) (
 	return nil, nil
 }
 
-func (r *mutationResolver) CreatePatient(ctx context.Context, input model.CreatePatientInput) (*bool, error) {
+func (r *mutationResolver) CreatePatientUser(ctx context.Context, input model.CreatePatientUserInput) (*bool, error) {
 	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
 		Email:     input.Email,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Role:      "PATIENT",
+	})
+
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
+func (r *mutationResolver) CreatePsychologistUser(ctx context.Context, input model.CreatePsychologistUserInput) (*bool, error) {
+	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
+		Email:     input.Email,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Role:      "PSYCHOLOGIST",
 	})
 
 	if serviceErr != nil {

@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
+	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
 	users_services "github.com/guicostaarantes/psi-server/modules/users/services"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
@@ -18,28 +19,33 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	DatabaseUtil                  database.IDatabaseUtil
-	HashUtil                      hash.IHashUtil
-	IdentifierUtil                identifier.IIdentifierUtil
-	MailUtil                      mail.IMailUtil
-	MatchUtil                     match.IMatchUtil
-	MergeUtil                     merge.IMergeUtil
-	SerializingUtil               serializing.ISerializingUtil
-	TokenUtil                     token.ITokenUtil
-	SecondsToCooldownReset        int64
-	SecondsToExpire               int64
-	SecondsToExpireReset          int64
-	activateUserService           *users_services.ActivateUserService
-	askResetPasswordService       *users_services.AskResetPasswordService
-	authenticateUserService       *users_services.AuthenticateUserService
-	createUserService             *users_services.CreateUserService
-	createUserWithPasswordService *users_services.CreateUserWithPasswordService
-	getUsersByRoleService         *users_services.GetUsersByRoleService
-	getUserByIdService            *users_services.GetUserByIdService
-	processPendingMailsService    *mails_services.ProcessPendingMailsService
-	resetPasswordService          *users_services.ResetPasswordService
-	updateUserService             *users_services.UpdateUserService
-	validateUserTokenService      *users_services.ValidateUserTokenService
+	DatabaseUtil                   database.IDatabaseUtil
+	HashUtil                       hash.IHashUtil
+	IdentifierUtil                 identifier.IIdentifierUtil
+	MailUtil                       mail.IMailUtil
+	MatchUtil                      match.IMatchUtil
+	MergeUtil                      merge.IMergeUtil
+	SerializingUtil                serializing.ISerializingUtil
+	TokenUtil                      token.ITokenUtil
+	SecondsToCooldownReset         int64
+	SecondsToExpire                int64
+	SecondsToExpireReset           int64
+	activateUserService            *users_services.ActivateUserService
+	askResetPasswordService        *users_services.AskResetPasswordService
+	authenticateUserService        *users_services.AuthenticateUserService
+	createPsyCharacteristicService *profiles_services.CreatePsyCharacteristicService
+	createPsychologistService      *profiles_services.CreatePsychologistService
+	createUserService              *users_services.CreateUserService
+	createUserWithPasswordService  *users_services.CreateUserWithPasswordService
+	getPsychologistByUserIDService *profiles_services.GetPsychologistByUserIDService
+	getUsersByRoleService          *users_services.GetUsersByRoleService
+	getUserByIdService             *users_services.GetUserByIdService
+	processPendingMailsService     *mails_services.ProcessPendingMailsService
+	resetPasswordService           *users_services.ResetPasswordService
+	updatePsyCharacteristicService *profiles_services.UpdatePsyCharacteristicService
+	updatePsychologistService      *profiles_services.UpdatePsychologistService
+	updateUserService              *users_services.UpdateUserService
+	validateUserTokenService       *users_services.ValidateUserTokenService
 }
 
 func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
@@ -77,6 +83,28 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 	return r.authenticateUserService
 }
 
+func (r *Resolver) CreatePsyCharacteristicService() *profiles_services.CreatePsyCharacteristicService {
+	if r.createPsyCharacteristicService == nil {
+		r.createPsyCharacteristicService = &profiles_services.CreatePsyCharacteristicService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			MergeUtil:      r.MergeUtil,
+		}
+	}
+	return r.createPsyCharacteristicService
+}
+
+func (r *Resolver) CreatePsychologistService() *profiles_services.CreatePsychologistService {
+	if r.createPsychologistService == nil {
+		r.createPsychologistService = &profiles_services.CreatePsychologistService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			MergeUtil:      r.MergeUtil,
+		}
+	}
+	return r.createPsychologistService
+}
+
 func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 	if r.createUserService == nil {
 		r.createUserService = &users_services.CreateUserService{
@@ -104,6 +132,15 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 		}
 	}
 	return r.createUserWithPasswordService
+}
+
+func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsychologistByUserIDService {
+	if r.getPsychologistByUserIDService == nil {
+		r.getPsychologistByUserIDService = &profiles_services.GetPsychologistByUserIDService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsychologistByUserIDService
 }
 
 func (r *Resolver) GetUsersByRoleService() *users_services.GetUsersByRoleService {
@@ -143,6 +180,27 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 		}
 	}
 	return r.resetPasswordService
+}
+
+func (r *Resolver) UpdatePsyCharacteristicService() *profiles_services.UpdatePsyCharacteristicService {
+	if r.updatePsyCharacteristicService == nil {
+		r.updatePsyCharacteristicService = &profiles_services.UpdatePsyCharacteristicService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			MergeUtil:      r.MergeUtil,
+		}
+	}
+	return r.updatePsyCharacteristicService
+}
+
+func (r *Resolver) UpdatePsychologistService() *profiles_services.UpdatePsychologistService {
+	if r.updatePsychologistService == nil {
+		r.updatePsychologistService = &profiles_services.UpdatePsychologistService{
+			DatabaseUtil: r.DatabaseUtil,
+			MergeUtil:    r.MergeUtil,
+		}
+	}
+	return r.updatePsychologistService
 }
 
 func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
