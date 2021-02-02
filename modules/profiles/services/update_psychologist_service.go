@@ -19,7 +19,7 @@ func (s UpdatePsychologistService) Execute(id string, psyInput *models.UpdatePsy
 
 	psy := models.Psychologist{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", "id", id, &psy)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
 	if findErr != nil {
 		return findErr
 	}
@@ -33,7 +33,7 @@ func (s UpdatePsychologistService) Execute(id string, psyInput *models.UpdatePsy
 		return mergeErr
 	}
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologists", "id", id, psy)
+	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologists", map[string]interface{}{"id": id}, psy)
 	if writeErr != nil {
 		return writeErr
 	}

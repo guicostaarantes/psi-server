@@ -39,20 +39,25 @@ func (c *cursorStruct) Close(ctx context.Context) error {
 	return nil
 }
 
-func (m mockDBClient) FindOne(database string, table string, field string, match interface{}, receiver interface{}) error {
+func (m mockDBClient) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
 	value := map[string]interface{}{}
 	for _, v := range m.client[database][table] {
 		json.Unmarshal(v, &value)
-		if value[field] == match {
+		matching := true
+		for matchKey, matchValue := range matches {
+			if value[matchKey] != matchValue {
+				matching = false
+			}
+		}
+		if matching {
 			json.Unmarshal(v, &receiver)
-			return nil
 		}
 	}
 
 	return nil
 }
 
-func (m mockDBClient) FindMany(database string, table string, field string, match interface{}) (ICursor, error) {
+func (m mockDBClient) FindMany(database string, table string, matches map[string]interface{}) (ICursor, error) {
 	cursor := cursorStruct{
 		results: [][]byte{},
 		current: -1,
@@ -61,24 +66,15 @@ func (m mockDBClient) FindMany(database string, table string, field string, matc
 	value := map[string]interface{}{}
 	for _, v := range m.client[database][table] {
 		json.Unmarshal(v, &value)
-		if value[field] == match {
+		matching := true
+		for matchKey, matchValue := range matches {
+			if value[matchKey] != matchValue {
+				matching = false
+			}
+		}
+		if matching {
 			cursor.results = append(cursor.results, v)
 		}
-	}
-
-	return &cursor, nil
-}
-
-func (m mockDBClient) FindAll(database string, table string) (ICursor, error) {
-	cursor := cursorStruct{
-		results: [][]byte{},
-		current: -1,
-	}
-
-	value := map[string]interface{}{}
-	for _, v := range m.client[database][table] {
-		json.Unmarshal(v, &value)
-		cursor.results = append(cursor.results, v)
 	}
 
 	return &cursor, nil
@@ -105,11 +101,17 @@ func (m mockDBClient) InsertOne(database string, table string, provider interfac
 	return nil
 }
 
-func (m mockDBClient) UpdateOne(database string, table string, field string, match interface{}, provider interface{}) error {
+func (m mockDBClient) UpdateOne(database string, table string, matches map[string]interface{}, provider interface{}) error {
 	value := map[string]interface{}{}
 	for k, v := range m.client[database][table] {
 		json.Unmarshal(v, &value)
-		if value[field] == match {
+		matching := true
+		for matchKey, matchValue := range matches {
+			if value[matchKey] != matchValue {
+				matching = false
+			}
+		}
+		if matching {
 			value, marshalErr := json.Marshal(provider)
 			if marshalErr != nil {
 				return marshalErr
@@ -122,11 +124,17 @@ func (m mockDBClient) UpdateOne(database string, table string, field string, mat
 	return nil
 }
 
-func (m mockDBClient) DeleteOne(database string, table string, field string, match interface{}) error {
+func (m mockDBClient) DeleteOne(database string, table string, matches map[string]interface{}) error {
 	value := map[string]interface{}{}
 	for k, v := range m.client[database][table] {
 		json.Unmarshal(v, &value)
-		if value[field] == match {
+		matching := true
+		for matchKey, matchValue := range matches {
+			if value[matchKey] != matchValue {
+				matching = false
+			}
+		}
+		if matching {
 			newTable := append(m.client[database][table][:k], m.client[database][table][k+1:]...)
 			m.client[database][table] = newTable
 			return nil

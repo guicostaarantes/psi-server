@@ -15,14 +15,14 @@ func (s ActivateUserService) Execute(userID string, active bool) error {
 
 	user := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "users", "id", userID, &user)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"id": userID}, &user)
 	if findErr != nil {
 		return findErr
 	}
 
 	user.Active = active
 
-	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "auths", "id", userID, user)
+	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "auths", map[string]interface{}{"id": userID}, user)
 	if updateErr != nil {
 		return updateErr
 	}

@@ -27,7 +27,7 @@ func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 
 	reset := &models.ResetPassword{}
 
-	findTokenErr := s.DatabaseUtil.FindOne("psi_db", "resets", "token", resetInput.Token, reset)
+	findTokenErr := s.DatabaseUtil.FindOne("psi_db", "resets", map[string]interface{}{"token": resetInput.Token}, reset)
 	if findTokenErr != nil {
 		return findTokenErr
 	}
@@ -38,7 +38,7 @@ func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 
 	user := &models.User{}
 
-	findUserErr := s.DatabaseUtil.FindOne("psi_db", "users", "id", reset.UserID, user)
+	findUserErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"id": reset.UserID}, user)
 	if findUserErr != nil {
 		return findUserErr
 	}
@@ -54,14 +54,14 @@ func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 
 	user.Password = hashedPwd
 
-	updateUserErr := s.DatabaseUtil.UpdateOne("psi_db", "users", "id", reset.UserID, user)
+	updateUserErr := s.DatabaseUtil.UpdateOne("psi_db", "users", map[string]interface{}{"id": reset.UserID}, user)
 	if updateUserErr != nil {
 		return updateUserErr
 	}
 
 	reset.Redeemed = true
 
-	expireTokenErr := s.DatabaseUtil.UpdateOne("psi_db", "resets", "token", resetInput.Token, reset)
+	expireTokenErr := s.DatabaseUtil.UpdateOne("psi_db", "resets", map[string]interface{}{"token": resetInput.Token}, reset)
 	if expireTokenErr != nil {
 		return expireTokenErr
 	}

@@ -17,7 +17,7 @@ func (s GetUserByIdService) Execute(id string) (*models.User, error) {
 
 	user := &models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "users", "id", id, user)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"id": id}, user)
 	if findErr != nil {
 		return nil, findErr
 	}

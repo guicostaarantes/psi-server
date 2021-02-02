@@ -29,7 +29,7 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 
 	user := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "users", "email", authInput.Email, &user)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"email": authInput.Email}, &user)
 	if findErr != nil {
 		return nil, findErr
 	}
@@ -59,7 +59,7 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 		Token:     token,
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteOne("psi_db", "auths", "userId", auth.UserID)
+	deleteErr := s.DatabaseUtil.DeleteOne("psi_db", "auths", map[string]interface{}{"userId": auth.UserID})
 	if deleteErr != nil {
 		return nil, deleteErr
 	}

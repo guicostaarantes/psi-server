@@ -22,7 +22,7 @@ func (s UpdatePsyCharacteristicService) Execute(id string, psyCharInput *models.
 
 	psyChar := models.PsyCharacteristic{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", "id", id, &psyChar)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", map[string]interface{}{"id": id}, &psyChar)
 	if findErr != nil {
 		return findErr
 	}
@@ -38,7 +38,7 @@ func (s UpdatePsyCharacteristicService) Execute(id string, psyCharInput *models.
 
 	psyChar.Values = strings.Join(psyCharInput.Values, ",")
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologist_characteristics", "id", id, psyChar)
+	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologist_characteristics", map[string]interface{}{"id": id}, psyChar)
 	if writeErr != nil {
 		return writeErr
 	}

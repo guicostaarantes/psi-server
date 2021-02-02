@@ -27,7 +27,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 
 	user := &models.User{}
 
-	findUserErr := s.DatabaseUtil.FindOne("psi_db", "users", "email", email, user)
+	findUserErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"email": email}, user)
 	if findUserErr != nil {
 		return findUserErr
 	}
@@ -38,7 +38,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 
 	existsReset := &models.ResetPassword{}
 
-	findTokenErr := s.DatabaseUtil.FindOne("psi_db", "resets", "userId", user.ID, existsReset)
+	findTokenErr := s.DatabaseUtil.FindOne("psi_db", "resets", map[string]interface{}{"userId": user.ID}, existsReset)
 	if findTokenErr != nil {
 		return findTokenErr
 	}

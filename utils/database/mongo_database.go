@@ -46,10 +46,13 @@ type mongoClient struct {
 	noDocumentsError string
 }
 
-func (m mongoClient) FindOne(database string, table string, field string, match interface{}, receiver interface{}) error {
+func (m mongoClient) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
 	collection := m.client.Database(database).Collection(table)
 
-	filter := bson.D{primitive.E{Key: field, Value: match}}
+	filter := bson.D{}
+	for k, v := range matches {
+		filter = append(filter, primitive.E{Key: k, Value: v})
+	}
 
 	mongoErr := collection.FindOne(m.context, filter).Decode(receiver)
 
@@ -61,25 +64,15 @@ func (m mongoClient) FindOne(database string, table string, field string, match 
 	return nil
 }
 
-func (m mongoClient) FindMany(database string, table string, field string, match interface{}) (ICursor, error) {
+func (m mongoClient) FindMany(database string, table string, matches map[string]interface{}) (ICursor, error) {
 	collection := m.client.Database(database).Collection(table)
 
-	filter := bson.D{primitive.E{Key: field, Value: match}}
-
-	cursor, mongoErr := collection.Find(m.context, filter)
-
-	if mongoErr != nil && mongoErr.Error() != m.noDocumentsError {
-		m.loggingUtil.Error("d98dc14d", mongoErr)
-		return nil, errors.New("internal server error")
+	filter := bson.D{}
+	for k, v := range matches {
+		filter = append(filter, primitive.E{Key: k, Value: v})
 	}
 
-	return cursor, nil
-}
-
-func (m mongoClient) FindAll(database string, table string) (ICursor, error) {
-	collection := m.client.Database(database).Collection(table)
-
-	cursor, mongoErr := collection.Find(m.context, bson.D{})
+	cursor, mongoErr := collection.Find(m.context, filter)
 
 	if mongoErr != nil && mongoErr.Error() != m.noDocumentsError {
 		m.loggingUtil.Error("d98dc14d", mongoErr)
@@ -102,10 +95,13 @@ func (m mongoClient) InsertOne(database string, table string, provider interface
 	return nil
 }
 
-func (m mongoClient) UpdateOne(database string, table string, field string, match interface{}, provider interface{}) error {
+func (m mongoClient) UpdateOne(database string, table string, matches map[string]interface{}, provider interface{}) error {
 	collection := m.client.Database(database).Collection(table)
 
-	filter := bson.D{primitive.E{Key: field, Value: match}}
+	filter := bson.D{}
+	for k, v := range matches {
+		filter = append(filter, primitive.E{Key: k, Value: v})
+	}
 
 	update := bson.M{
 		"$set": provider,
@@ -121,10 +117,13 @@ func (m mongoClient) UpdateOne(database string, table string, field string, matc
 	return nil
 }
 
-func (m mongoClient) DeleteOne(database string, table string, field string, match interface{}) error {
+func (m mongoClient) DeleteOne(database string, table string, matches map[string]interface{}) error {
 	collection := m.client.Database(database).Collection(table)
 
-	filter := bson.D{primitive.E{Key: field, Value: match}}
+	filter := bson.D{}
+	for k, v := range matches {
+		filter = append(filter, primitive.E{Key: k, Value: v})
+	}
 
 	_, deleteErr := collection.DeleteOne(m.context, filter)
 

@@ -21,7 +21,7 @@ func (s CreatePsychologistService) Execute(psyInput *models.CreatePsychologistIn
 
 	psyWithSameUserID := models.Psychologist{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", "userId", psyInput.UserID, &psyWithSameUserID)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"userId": psyInput.UserID}, &psyWithSameUserID)
 	if findErr != nil {
 		return findErr
 	}

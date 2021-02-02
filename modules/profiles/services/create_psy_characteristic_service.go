@@ -22,7 +22,7 @@ func (s CreatePsyCharacteristicService) Execute(psyCharInput *models.CreatePsyCh
 
 	psyCharWithSameName := models.PsyCharacteristic{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", "name", psyCharInput.Name, &psyCharWithSameName)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", map[string]interface{}{"name": psyCharInput.Name}, &psyCharWithSameName)
 	if findErr != nil {
 		return findErr
 	}

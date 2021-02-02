@@ -37,7 +37,7 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 
 	userWithSameEmail := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "users", "email", userInput.Email, &userWithSameEmail)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"email": userInput.Email}, &userWithSameEmail)
 	if findErr != nil {
 		return findErr
 	}

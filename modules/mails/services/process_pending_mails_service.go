@@ -22,7 +22,7 @@ func (p ProcessPendingMailsService) Execute() error {
 
 	defer cancel()
 
-	cursor, findErr := p.DatabaseUtil.FindMany("psi_db", "mails", "processed", false)
+	cursor, findErr := p.DatabaseUtil.FindMany("psi_db", "mails", map[string]interface{}{"processed": false})
 	if findErr != nil {
 		return findErr
 	}
@@ -53,7 +53,7 @@ func (p ProcessPendingMailsService) Execute() error {
 
 		dbmsg.Processed = true
 
-		updateErr := p.DatabaseUtil.UpdateOne("psi_db", "mails", "id", dbmsg.ID, dbmsg)
+		updateErr := p.DatabaseUtil.UpdateOne("psi_db", "mails", map[string]interface{}{"id": dbmsg.ID}, dbmsg)
 		if updateErr != nil {
 			return updateErr
 		}
