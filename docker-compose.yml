@@ -20,11 +20,16 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: pass
     depends_on:
       - mongo
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - 1025:1025
+      - 8082:8025
   app:
     build: .
     image: psi-server:0.1.0
     ports:
-      - 8082:8082
+      - 8080:8080
     environment:
       PSI_BOOTSTRAP_USER: coordinator@psi.com.br|Abc123!@#
       PSI_MONGO_HOST: mongo
@@ -32,9 +37,9 @@ services:
       PSI_MONGO_USERNAME: root
       PSI_MONGO_PASSWORD: pass
       PSI_SITE_URL: https://www.psi.com.br
-      PSI_SMTP_HOST: smtp.ethereal.email
-      PSI_SMTP_PORT: 587
-      PSI_SMTP_USERNAME: jeffry.hane@ethereal.email
-      PSI_SMTP_PASSWORD: A65MQcx1AVgT8gAVFg
+      PSI_SMTP_HOST: mailhog
+      PSI_SMTP_PORT: 1025
+      PSI_SMTP_USERNAME:
+      PSI_SMTP_PASSWORD:
     depends_on:
       - mongo
