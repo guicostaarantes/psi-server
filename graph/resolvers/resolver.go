@@ -19,35 +19,36 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	DatabaseUtil                      database.IDatabaseUtil
-	HashUtil                          hash.IHashUtil
-	IdentifierUtil                    identifier.IIdentifierUtil
-	MailUtil                          mail.IMailUtil
-	MatchUtil                         match.IMatchUtil
-	MergeUtil                         merge.IMergeUtil
-	SerializingUtil                   serializing.ISerializingUtil
-	TokenUtil                         token.ITokenUtil
-	SecondsToCooldownReset            int64
-	SecondsToExpire                   int64
-	SecondsToExpireReset              int64
-	activateUserService               *users_services.ActivateUserService
-	askResetPasswordService           *users_services.AskResetPasswordService
-	authenticateUserService           *users_services.AuthenticateUserService
-	createPsyCharacteristicService    *profiles_services.CreatePsyCharacteristicService
-	createPsychologistService         *profiles_services.CreatePsychologistService
-	createUserService                 *users_services.CreateUserService
-	createUserWithPasswordService     *users_services.CreateUserWithPasswordService
-	getPsyCharacteristicsService      *profiles_services.GetPsyCharacteristicsService
-	getPsychologistByUserIDService    *profiles_services.GetPsychologistByUserIDService
-	getUsersByRoleService             *users_services.GetUsersByRoleService
-	getUserByIdService                *users_services.GetUserByIdService
-	processPendingMailsService        *mails_services.ProcessPendingMailsService
-	resetPasswordService              *users_services.ResetPasswordService
-	setPsyCharacteristicChoiceService *profiles_services.SetPsyCharacteristicChoiceService
-	updatePsyCharacteristicService    *profiles_services.UpdatePsyCharacteristicService
-	updatePsychologistService         *profiles_services.UpdatePsychologistService
-	updateUserService                 *users_services.UpdateUserService
-	validateUserTokenService          *users_services.ValidateUserTokenService
+	DatabaseUtil                        database.IDatabaseUtil
+	HashUtil                            hash.IHashUtil
+	IdentifierUtil                      identifier.IIdentifierUtil
+	MailUtil                            mail.IMailUtil
+	MatchUtil                           match.IMatchUtil
+	MergeUtil                           merge.IMergeUtil
+	SerializingUtil                     serializing.ISerializingUtil
+	TokenUtil                           token.ITokenUtil
+	SecondsToCooldownReset              int64
+	SecondsToExpire                     int64
+	SecondsToExpireReset                int64
+	activateUserService                 *users_services.ActivateUserService
+	askResetPasswordService             *users_services.AskResetPasswordService
+	authenticateUserService             *users_services.AuthenticateUserService
+	createPsyCharacteristicService      *profiles_services.CreatePsyCharacteristicService
+	createPsychologistService           *profiles_services.CreatePsychologistService
+	createUserService                   *users_services.CreateUserService
+	createUserWithPasswordService       *users_services.CreateUserWithPasswordService
+	getPsyCharacteristicsByPsyIDService *profiles_services.GetPsyCharacteristicsByPsyIDService
+	getPsyCharacteristicsService        *profiles_services.GetPsyCharacteristicsService
+	getPsychologistByUserIDService      *profiles_services.GetPsychologistByUserIDService
+	getUsersByRoleService               *users_services.GetUsersByRoleService
+	getUserByIdService                  *users_services.GetUserByIdService
+	processPendingMailsService          *mails_services.ProcessPendingMailsService
+	resetPasswordService                *users_services.ResetPasswordService
+	setPsyCharacteristicChoiceService   *profiles_services.SetPsyCharacteristicChoiceService
+	updatePsyCharacteristicService      *profiles_services.UpdatePsyCharacteristicService
+	updatePsychologistService           *profiles_services.UpdatePsychologistService
+	updateUserService                   *users_services.UpdateUserService
+	validateUserTokenService            *users_services.ValidateUserTokenService
 }
 
 func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
@@ -134,6 +135,15 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 		}
 	}
 	return r.createUserWithPasswordService
+}
+
+func (r *Resolver) GetPsyCharacteristicsByPsyIDService() *profiles_services.GetPsyCharacteristicsByPsyIDService {
+	if r.getPsyCharacteristicsByPsyIDService == nil {
+		r.getPsyCharacteristicsByPsyIDService = &profiles_services.GetPsyCharacteristicsByPsyIDService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsyCharacteristicsByPsyIDService
 }
 
 func (r *Resolver) GetPsyCharacteristicsService() *profiles_services.GetPsyCharacteristicsService {

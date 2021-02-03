@@ -31,6 +31,20 @@ input UpdatePsyCharacteristicInput {
     values: [String!]!
 }
 
+type PsychologistProfile {
+    id: ID!
+    birthDate: Int!
+    city: String!
+    characteristics: [PsyCharacteristicChoice!]!
+}
+
+type PsyCharacteristicChoice {
+    name: String!
+    many: Boolean!
+    values: [String!]!
+    possibleValues: [String!]!
+}
+
 type PsyCharacteristic {
     id: ID!
     name: String!
@@ -39,6 +53,7 @@ type PsyCharacteristic {
 }
 
 extend type Query {
+    GetOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     GetPsyCharacteristics: [PsyCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 

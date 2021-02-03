@@ -58,6 +58,20 @@ type PsyCharacteristic struct {
 	PossibleValues []string `json:"possibleValues"`
 }
 
+type PsyCharacteristicChoice struct {
+	Name           string   `json:"name"`
+	Many           bool     `json:"many"`
+	Values         []string `json:"values"`
+	PossibleValues []string `json:"possibleValues"`
+}
+
+type PsychologistProfile struct {
+	ID              string                     `json:"id"`
+	BirthDate       int64                      `json:"birthDate"`
+	City            string                     `json:"city"`
+	Characteristics []*PsyCharacteristicChoice `json:"characteristics"`
+}
+
 type ResetPasswordInput struct {
 	Token    string `json:"token"`
 	Password string `json:"password"`

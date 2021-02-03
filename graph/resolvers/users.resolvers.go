@@ -5,7 +5,6 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	"github.com/guicostaarantes/psi-server/graph/generated/model"
@@ -182,8 +181,6 @@ func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, er
 	if mergeErr != nil {
 		return nil, mergeErr
 	}
-
-	fmt.Printf("%#v \n", user)
 
 	return &user, nil
 }
