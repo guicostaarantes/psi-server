@@ -72,7 +72,7 @@ func main() {
 			return nil, errors.New("forbidden")
 		}
 
-		user, userErr := res.GetUserByIdService().Execute(userID)
+		user, userErr := res.GetUserByIDService().Execute(userID)
 		if userErr != nil {
 			return nil, errors.New("forbidden")
 		}

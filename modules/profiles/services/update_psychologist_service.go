@@ -1,4 +1,4 @@
-package profiles_services
+package services
 
 import (
 	"errors"

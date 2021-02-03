@@ -38,14 +38,14 @@ func (p ProcessPendingMailsService) Execute() error {
 			return decodeErr
 		}
 
-		sendErr := p.MailUtil.Send(mail.MailMessage{
+		sendErr := p.MailUtil.Send(mail.Message{
 			FromAddress: dbmsg.FromAddress,
 			FromName:    dbmsg.FromName,
 			To:          dbmsg.To,
 			Cc:          dbmsg.Cc,
 			Cco:         dbmsg.Cco,
 			Subject:     dbmsg.Subject,
-			Html:        dbmsg.Html,
+			HTML:        dbmsg.Html,
 		})
 		if sendErr != nil {
 			return sendErr

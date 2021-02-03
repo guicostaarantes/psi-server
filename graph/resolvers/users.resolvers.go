@@ -156,7 +156,7 @@ func (r *queryResolver) GetOwnUser(ctx context.Context) (*model.User, error) {
 
 	user := model.User{}
 
-	serviceUser, serviceErr := r.GetUserByIdService().Execute(userID)
+	serviceUser, serviceErr := r.GetUserByIDService().Execute(userID)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -172,7 +172,7 @@ func (r *queryResolver) GetOwnUser(ctx context.Context) (*model.User, error) {
 func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
 	user := model.User{}
 
-	serviceUser, serviceErr := r.GetUserByIdService().Execute(id)
+	serviceUser, serviceErr := r.GetUserByIDService().Execute(id)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}

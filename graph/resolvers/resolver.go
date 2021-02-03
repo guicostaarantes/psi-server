@@ -18,6 +18,7 @@ import (
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
+// Resolver receives all utils and registers all services within the application
 type Resolver struct {
 	DatabaseUtil                        database.IDatabaseUtil
 	HashUtil                            hash.IHashUtil
@@ -41,7 +42,7 @@ type Resolver struct {
 	getPsyCharacteristicsService        *profiles_services.GetPsyCharacteristicsService
 	getPsychologistByUserIDService      *profiles_services.GetPsychologistByUserIDService
 	getUsersByRoleService               *users_services.GetUsersByRoleService
-	getUserByIdService                  *users_services.GetUserByIdService
+	getUserByIDService                  *users_services.GetUserByIDService
 	processPendingMailsService          *mails_services.ProcessPendingMailsService
 	resetPasswordService                *users_services.ResetPasswordService
 	setPsyCharacteristicChoiceService   *profiles_services.SetPsyCharacteristicChoiceService
@@ -51,6 +52,7 @@ type Resolver struct {
 	validateUserTokenService            *users_services.ValidateUserTokenService
 }
 
+// ActivateUserService gets or sets the service with same name
 func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
 	if r.activateUserService == nil {
 		r.activateUserService = &users_services.ActivateUserService{
@@ -60,6 +62,7 @@ func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
 	return r.activateUserService
 }
 
+// AskResetPasswordService gets or sets the service with same name
 func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordService {
 	if r.askResetPasswordService == nil {
 		r.askResetPasswordService = &users_services.AskResetPasswordService{
@@ -73,6 +76,7 @@ func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordSer
 	return r.askResetPasswordService
 }
 
+// AuthenticateUserService gets or sets the service with same name
 func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserService {
 	if r.authenticateUserService == nil {
 		r.authenticateUserService = &users_services.AuthenticateUserService{
@@ -86,6 +90,7 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 	return r.authenticateUserService
 }
 
+// CreatePsyCharacteristicService gets or sets the service with same name
 func (r *Resolver) CreatePsyCharacteristicService() *profiles_services.CreatePsyCharacteristicService {
 	if r.createPsyCharacteristicService == nil {
 		r.createPsyCharacteristicService = &profiles_services.CreatePsyCharacteristicService{
@@ -97,6 +102,7 @@ func (r *Resolver) CreatePsyCharacteristicService() *profiles_services.CreatePsy
 	return r.createPsyCharacteristicService
 }
 
+// CreatePsychologistService gets or sets the service with same name
 func (r *Resolver) CreatePsychologistService() *profiles_services.CreatePsychologistService {
 	if r.createPsychologistService == nil {
 		r.createPsychologistService = &profiles_services.CreatePsychologistService{
@@ -108,6 +114,7 @@ func (r *Resolver) CreatePsychologistService() *profiles_services.CreatePsycholo
 	return r.createPsychologistService
 }
 
+// CreateUserService gets or sets the service with same name
 func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 	if r.createUserService == nil {
 		r.createUserService = &users_services.CreateUserService{
@@ -123,6 +130,7 @@ func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 	return r.createUserService
 }
 
+// CreateUserWithPasswordService gets or sets the service with same name
 func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWithPasswordService {
 	if r.createUserWithPasswordService == nil {
 		r.createUserWithPasswordService = &users_services.CreateUserWithPasswordService{
@@ -137,6 +145,7 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 	return r.createUserWithPasswordService
 }
 
+// GetPsyCharacteristicsByPsyIDService gets or sets the service with same name
 func (r *Resolver) GetPsyCharacteristicsByPsyIDService() *profiles_services.GetPsyCharacteristicsByPsyIDService {
 	if r.getPsyCharacteristicsByPsyIDService == nil {
 		r.getPsyCharacteristicsByPsyIDService = &profiles_services.GetPsyCharacteristicsByPsyIDService{
@@ -146,6 +155,7 @@ func (r *Resolver) GetPsyCharacteristicsByPsyIDService() *profiles_services.GetP
 	return r.getPsyCharacteristicsByPsyIDService
 }
 
+// GetPsyCharacteristicsService gets or sets the service with same name
 func (r *Resolver) GetPsyCharacteristicsService() *profiles_services.GetPsyCharacteristicsService {
 	if r.getPsyCharacteristicsService == nil {
 		r.getPsyCharacteristicsService = &profiles_services.GetPsyCharacteristicsService{
@@ -155,6 +165,7 @@ func (r *Resolver) GetPsyCharacteristicsService() *profiles_services.GetPsyChara
 	return r.getPsyCharacteristicsService
 }
 
+// GetPsychologistByUserIDService gets or sets the service with same name
 func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsychologistByUserIDService {
 	if r.getPsychologistByUserIDService == nil {
 		r.getPsychologistByUserIDService = &profiles_services.GetPsychologistByUserIDService{
@@ -164,6 +175,7 @@ func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsycho
 	return r.getPsychologistByUserIDService
 }
 
+// GetUsersByRoleService gets or sets the service with same name
 func (r *Resolver) GetUsersByRoleService() *users_services.GetUsersByRoleService {
 	if r.getUsersByRoleService == nil {
 		r.getUsersByRoleService = &users_services.GetUsersByRoleService{
@@ -173,15 +185,17 @@ func (r *Resolver) GetUsersByRoleService() *users_services.GetUsersByRoleService
 	return r.getUsersByRoleService
 }
 
-func (r *Resolver) GetUserByIdService() *users_services.GetUserByIdService {
-	if r.getUserByIdService == nil {
-		r.getUserByIdService = &users_services.GetUserByIdService{
+// GetUserByIDService gets or sets the service with same name
+func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService {
+	if r.getUserByIDService == nil {
+		r.getUserByIDService = &users_services.GetUserByIDService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
-	return r.getUserByIdService
+	return r.getUserByIDService
 }
 
+// SetPsyCharacteristicChoiceService gets or sets the service with same name
 func (r *Resolver) SetPsyCharacteristicChoiceService() *profiles_services.SetPsyCharacteristicChoiceService {
 	if r.setPsyCharacteristicChoiceService == nil {
 		r.setPsyCharacteristicChoiceService = &profiles_services.SetPsyCharacteristicChoiceService{
@@ -192,6 +206,7 @@ func (r *Resolver) SetPsyCharacteristicChoiceService() *profiles_services.SetPsy
 	return r.setPsyCharacteristicChoiceService
 }
 
+// ProcessPendingMailsService gets or sets the service with same name
 func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMailsService {
 	if r.processPendingMailsService == nil {
 		r.processPendingMailsService = &mails_services.ProcessPendingMailsService{
@@ -202,6 +217,7 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 	return r.processPendingMailsService
 }
 
+// ResetPasswordService gets or sets the service with same name
 func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 	if r.resetPasswordService == nil {
 		r.resetPasswordService = &users_services.ResetPasswordService{
@@ -213,6 +229,7 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 	return r.resetPasswordService
 }
 
+// UpdatePsyCharacteristicService gets or sets the service with same name
 func (r *Resolver) UpdatePsyCharacteristicService() *profiles_services.UpdatePsyCharacteristicService {
 	if r.updatePsyCharacteristicService == nil {
 		r.updatePsyCharacteristicService = &profiles_services.UpdatePsyCharacteristicService{
@@ -224,6 +241,7 @@ func (r *Resolver) UpdatePsyCharacteristicService() *profiles_services.UpdatePsy
 	return r.updatePsyCharacteristicService
 }
 
+// UpdatePsychologistService gets or sets the service with same name
 func (r *Resolver) UpdatePsychologistService() *profiles_services.UpdatePsychologistService {
 	if r.updatePsychologistService == nil {
 		r.updatePsychologistService = &profiles_services.UpdatePsychologistService{
@@ -234,6 +252,7 @@ func (r *Resolver) UpdatePsychologistService() *profiles_services.UpdatePsycholo
 	return r.updatePsychologistService
 }
 
+// UpdateUserService gets or sets the service with same name
 func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
 	if r.updateUserService == nil {
 		r.updateUserService = &users_services.UpdateUserService{
@@ -244,6 +263,7 @@ func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
 	return r.updateUserService
 }
 
+// ValidateUserTokenService gets or sets the service with same name
 func (r *Resolver) ValidateUserTokenService() *users_services.ValidateUserTokenService {
 	if r.validateUserTokenService == nil {
 		r.validateUserTokenService = &users_services.ValidateUserTokenService{

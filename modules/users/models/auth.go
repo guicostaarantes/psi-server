@@ -1,4 +1,4 @@
-package users_models
+package models
 
 // Authentication is the schema for saving successful authentication attempts for a user
 type Authentication struct {

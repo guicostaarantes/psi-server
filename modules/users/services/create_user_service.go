@@ -1,4 +1,4 @@
-package users_services
+package services
 
 import (
 	"bytes"
@@ -47,9 +47,9 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		return errors.New("user with same email already exists")
 	}
 
-	_, userID, userIdErr := s.IdentifierUtil.GenerateIdentifier()
-	if userIdErr != nil {
-		return userIdErr
+	_, userID, userIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if userIDErr != nil {
+		return userIDErr
 	}
 
 	user := &models.User{

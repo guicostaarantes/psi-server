@@ -11,6 +11,7 @@ type IDatabaseUtil interface {
 	DeleteOne(database string, table string, matches map[string]interface{}) error
 }
 
+// ICursor is an abstraction of an entity for navigating multiple results of a database query
 type ICursor interface {
 	Decode(receiver interface{}) error
 	Next(ctx context.Context) bool

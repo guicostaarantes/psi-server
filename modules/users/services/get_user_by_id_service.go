@@ -1,4 +1,4 @@
-package users_services
+package services
 
 import (
 	"errors"
@@ -7,13 +7,13 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// GetUserByIdService is a service that gets the user by userId
-type GetUserByIdService struct {
+// GetUserByIDService is a service that gets the user by userId
+type GetUserByIDService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetUserByIdService) Execute(id string) (*models.User, error) {
+func (s GetUserByIDService) Execute(id string) (*models.User, error) {
 
 	user := &models.User{}
 

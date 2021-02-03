@@ -1,4 +1,4 @@
-package users_models
+package models
 
 // User is the schema for a user in the database
 type User struct {

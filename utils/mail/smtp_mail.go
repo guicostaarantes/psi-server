@@ -13,7 +13,7 @@ type smtpMailer struct {
 	loggingUtil logging.ILoggingUtil
 }
 
-func (s smtpMailer) Send(msg MailMessage) error {
+func (s smtpMailer) Send(msg Message) error {
 	envSMTPPort, _ := strconv.Atoi(os.Getenv("PSI_SMTP_PORT"))
 
 	dialer := gomail.NewDialer(os.Getenv("PSI_SMTP_HOST"), envSMTPPort, os.Getenv("PSI_SMTP_USERNAME"), os.Getenv("PSI_SMTP_PASSWORD"))
@@ -24,7 +24,7 @@ func (s smtpMailer) Send(msg MailMessage) error {
 	gomsg.SetHeader("Cc", msg.Cc...)
 	gomsg.SetHeader("Cco", msg.Cco...)
 	gomsg.SetHeader("Subject", msg.Subject)
-	gomsg.SetBody("text/html", msg.Html)
+	gomsg.SetBody("text/html", msg.HTML)
 
 	sendErr := dialer.DialAndSend(gomsg)
 	if sendErr != nil {

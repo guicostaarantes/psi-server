@@ -1,4 +1,4 @@
-package profiles_services
+package services
 
 import (
 	"errors"
@@ -31,9 +31,9 @@ func (s CreatePsyCharacteristicService) Execute(psyCharInput *models.CreatePsyCh
 		return errors.New("cannot create two psychologist characteristics with the same name")
 	}
 
-	_, psyID, psyIdErr := s.IdentifierUtil.GenerateIdentifier()
-	if psyIdErr != nil {
-		return psyIdErr
+	_, psyID, psyIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if psyIDErr != nil {
+		return psyIDErr
 	}
 
 	psyChar := &models.PsyCharacteristic{

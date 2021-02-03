@@ -1,4 +1,4 @@
-package users_services
+package services
 
 import (
 	"context"

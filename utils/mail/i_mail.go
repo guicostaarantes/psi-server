@@ -2,16 +2,16 @@ package mail
 
 // IMailUtil is an abstraction for a email sender
 type IMailUtil interface {
-	Send(msg MailMessage) error
+	Send(msg Message) error
 }
 
-// MailMessage holds the payload of a mail message
-type MailMessage struct {
+// Message holds the payload of a mail message
+type Message struct {
 	FromAddress string   `json:"fromAddress" bson:"fromAddress"`
 	FromName    string   `json:"fromName" bson:"fromName"`
 	To          []string `json:"to" bson:"to"`
 	Cc          []string `json:"cc" bson:"cc"`
 	Cco         []string `json:"cco" bson:"cco"`
 	Subject     string   `json:"subject" bson:"subject"`
-	Html        string   `json:"html" bson:"html"`
+	HTML        string   `json:"html" bson:"html"`
 }

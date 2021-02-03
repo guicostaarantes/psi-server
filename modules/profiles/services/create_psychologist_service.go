@@ -1,4 +1,4 @@
-package profiles_services
+package services
 
 import (
 	"errors"
@@ -30,9 +30,9 @@ func (s CreatePsychologistService) Execute(psyInput *models.CreatePsychologistIn
 		return errors.New("cannot create two psychologist profiles for the same user")
 	}
 
-	_, psyID, psyIdErr := s.IdentifierUtil.GenerateIdentifier()
-	if psyIdErr != nil {
-		return psyIdErr
+	_, psyID, psyIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if psyIDErr != nil {
+		return psyIDErr
 	}
 
 	psy := &models.Psychologist{

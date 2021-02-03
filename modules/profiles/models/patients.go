@@ -1,4 +1,4 @@
-package profiles_models
+package models
 
 // Patient is the schema for the profile of a patient
 type Patient struct {

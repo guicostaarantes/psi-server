@@ -1,4 +1,4 @@
-package profiles_models
+package models
 
 // Psychologist is the schema for the profile of a psychologist
 type Psychologist struct {
