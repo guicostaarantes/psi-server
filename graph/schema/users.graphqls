@@ -78,3 +78,5 @@ type Mutation {
 }
 
 directive @hasRole(role: [Role!]!) on FIELD_DEFINITION
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION
+    | FIELD_DEFINITION

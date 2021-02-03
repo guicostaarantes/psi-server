@@ -613,7 +613,7 @@ type PsychologistProfile {
     id: ID!
     birthDate: Int!
     city: String!
-    characteristics: [PsyCharacteristicChoice!]!
+    characteristics: [PsyCharacteristicChoice!]! @goField(forceResolver: true)
 }
 
 type PsyCharacteristicChoice {
@@ -721,7 +721,9 @@ type Mutation {
     UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 
-directive @hasRole(role: [Role!]!) on FIELD_DEFINITION`, BuiltIn: false},
+directive @hasRole(role: [Role!]!) on FIELD_DEFINITION
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION
+    | FIELD_DEFINITION`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 

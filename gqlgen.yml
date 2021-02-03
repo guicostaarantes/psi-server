@@ -23,7 +23,3 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
-  PsychologistProfile:
-    fields:
-      characteristics:
-        resolver: true
