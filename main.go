@@ -14,7 +14,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/guicostaarantes/psi-server/graph/generated"
-	"github.com/guicostaarantes/psi-server/graph/generated/model"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
@@ -65,7 +64,7 @@ func main() {
 
 	c := generated.Config{Resolvers: res}
 
-	c.Directives.HasRole = func(ctx context.Context, obj interface{}, next graphql.Resolver, role []model.Role) (interface{}, error) {
+	c.Directives.HasRole = func(ctx context.Context, obj interface{}, next graphql.Resolver, role []users_models.Role) (interface{}, error) {
 		userID := fmt.Sprintf("%v", ctx.Value("userID"))
 
 		if userID == "" {
@@ -78,7 +77,7 @@ func main() {
 		}
 
 		for _, v := range role {
-			if v == model.Role(user.Role) {
+			if v == user.Role {
 				return next(ctx)
 			}
 		}

@@ -9,13 +9,6 @@ type Authentication struct {
 	Token     string `json:"token" bson:"token"`
 }
 
-// BadAuthentication is the schema for saving UNsuccessful authentication attempts for a user
-type BadAuthentication struct {
-	UserID    string `json:"userId" bson:"userId"`
-	IPAddress string `json:"ipAddress" bson:"ipAddress"`
-	IssuedAt  int64  `json:"issuedAt" bson:"issuedAt"`
-}
-
 // AuthenticateUserInput is the schema for information needed to authenticate a user
 type AuthenticateUserInput struct {
 	Email     string `json:"email" bson:"email"`

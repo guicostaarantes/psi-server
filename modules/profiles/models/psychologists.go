@@ -52,9 +52,9 @@ type SetPsyCharacteristicChoiceInput struct {
 
 // UpdatePsyCharacteristicInput is the schema for information needed to create a characteristic of a psychologist and its possible values
 type UpdatePsyCharacteristicInput struct {
-	Name   string   `json:"name" bson:"name"`
-	Many   bool     `json:"many" bson:"many"`
-	Values []string `json:"values" bson:"values"`
+	Name           string   `json:"name" bson:"name"`
+	Many           bool     `json:"many" bson:"many"`
+	PossibleValues []string `json:"possibleValues" bson:"possibleValues"`
 }
 
 // PsyCharacteristicResponse is the schema for a characteristic of a psychologist and its possible values to be returned to the user

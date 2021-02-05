@@ -1,51 +1,51 @@
-input CreateOwnPsychologistProfileInput {
+input CreateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
     birthDate: Int!
     city: String!
 }
 
-input CreatePsychologistInput {
+input CreatePsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
     userId: String!
     birthDate: Int!
     city: String!
 }
 
-input SetOwnPsyCharacteristicChoiceInput {
+input SetOwnPsyCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPsyCharacteristicChoiceInput") {
     characteristicName: String!
     values: [String!]!
 }
 
-input UpdateOwnPsychologistProfileInput {
+input UpdateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
     birthDate: Int!
     city: String!
 }
 
-input CreatePsyCharacteristicInput {
+input CreatePsyCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsyCharacteristicInput") {
     name: String!
     many: Boolean!
-    values: [String!]!
+    possibleValues: [String!]!
 }
 
-input UpdatePsyCharacteristicInput {
+input UpdatePsyCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsyCharacteristicInput") {
     name: String!
     many: Boolean!
-    values: [String!]!
+    possibleValues: [String!]!
 }
 
-type PsychologistProfile {
+type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
     id: ID!
     birthDate: Int!
     city: String!
-    characteristics: [PsyCharacteristicChoice!]! @goField(forceResolver: true)
+    characteristics: [PsyCharacteristicChoice!]!
 }
 
-type PsyCharacteristicChoice {
+type PsyCharacteristicChoice @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsyCharacteristicChoiceResponse") {
     name: String!
     many: Boolean!
     values: [String!]!
     possibleValues: [String!]!
 }
 
-type PsyCharacteristic {
+type PsyCharacteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsyCharacteristicResponse") {
     id: ID!
     name: String!
     many: Boolean!
