@@ -65,7 +65,7 @@ func main() {
 	c := generated.Config{Resolvers: res}
 
 	c.Directives.HasRole = func(ctx context.Context, obj interface{}, next graphql.Resolver, role []users_models.Role) (interface{}, error) {
-		userID := fmt.Sprintf("%v", ctx.Value("userID"))
+		userID := ctx.Value("userID").(string)
 
 		if userID == "" {
 			return nil, errors.New("forbidden")
