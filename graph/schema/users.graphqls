@@ -53,22 +53,22 @@ type Token @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/
 }
 
 type Query {
-    AuthenticateUser(input: AuthenticateUserInput!): Token!
-    GetOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    ListUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    authenticateUser(input: AuthenticateUserInput!): Token!
+    getOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    getUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    listUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 type Mutation {
-    ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
-    AskResetPassword(email: String!): Boolean
-    CreatePatientUser(input: CreateUserInput!): Boolean
-    CreatePsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
-    CreateUserWithPassword(input: CreateUserWithPasswordInput!): Boolean @hasRole(role: [COORDINATOR])
-    DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
-    ResetPassword(input: ResetPasswordInput!): Boolean
-    UpdateOwnUser(input: UpdateOwnUserInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+    activateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    askResetPassword(email: String!): Boolean
+    createPatientUser(input: CreateUserInput!): Boolean
+    createPsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+    createUserWithPassword(input: CreateUserWithPasswordInput!): Boolean @hasRole(role: [COORDINATOR])
+    deactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    resetPassword(input: ResetPasswordInput!): Boolean
+    updateOwnUser(input: UpdateOwnUserInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    updateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 
 directive @hasRole(role: [Role!]!) on FIELD_DEFINITION

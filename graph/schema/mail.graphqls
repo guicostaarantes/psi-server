@@ -1,3 +1,3 @@
 extend type Mutation {
-    ProcessPendingMail: Boolean @hasRole(role: [COORDINATOR])
+    processPendingMail: Boolean @hasRole(role: [COORDINATOR])
 }

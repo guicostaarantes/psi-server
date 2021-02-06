@@ -152,175 +152,175 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Mutation.ActivateUser":
+	case "Mutation.activateUser":
 		if e.complexity.Mutation.ActivateUser == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_ActivateUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_activateUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.ActivateUser(childComplexity, args["id"].(string)), true
 
-	case "Mutation.AskResetPassword":
+	case "Mutation.askResetPassword":
 		if e.complexity.Mutation.AskResetPassword == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_AskResetPassword_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_askResetPassword_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.AskResetPassword(childComplexity, args["email"].(string)), true
 
-	case "Mutation.CreateOwnPsychologistProfile":
+	case "Mutation.createOwnPsychologistProfile":
 		if e.complexity.Mutation.CreateOwnPsychologistProfile == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_CreateOwnPsychologistProfile_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createOwnPsychologistProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.CreateOwnPsychologistProfile(childComplexity, args["input"].(models1.CreatePsychologistInput)), true
 
-	case "Mutation.CreatePatientUser":
+	case "Mutation.createPatientUser":
 		if e.complexity.Mutation.CreatePatientUser == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_CreatePatientUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createPatientUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.CreatePatientUser(childComplexity, args["input"].(models.CreateUserInput)), true
 
-	case "Mutation.CreatePsyCharacteristic":
+	case "Mutation.createPsyCharacteristic":
 		if e.complexity.Mutation.CreatePsyCharacteristic == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_CreatePsyCharacteristic_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createPsyCharacteristic_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.CreatePsyCharacteristic(childComplexity, args["input"].(models1.CreatePsyCharacteristicInput)), true
 
-	case "Mutation.CreatePsychologistUser":
+	case "Mutation.createPsychologistUser":
 		if e.complexity.Mutation.CreatePsychologistUser == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_CreatePsychologistUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createPsychologistUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.CreatePsychologistUser(childComplexity, args["input"].(models.CreateUserInput)), true
 
-	case "Mutation.CreateUserWithPassword":
+	case "Mutation.createUserWithPassword":
 		if e.complexity.Mutation.CreateUserWithPassword == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_CreateUserWithPassword_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createUserWithPassword_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.CreateUserWithPassword(childComplexity, args["input"].(models.CreateUserWithPasswordInput)), true
 
-	case "Mutation.DeactivateUser":
+	case "Mutation.deactivateUser":
 		if e.complexity.Mutation.DeactivateUser == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_DeactivateUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_deactivateUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.DeactivateUser(childComplexity, args["id"].(string)), true
 
-	case "Mutation.ProcessPendingMail":
+	case "Mutation.processPendingMail":
 		if e.complexity.Mutation.ProcessPendingMail == nil {
 			break
 		}
 
 		return e.complexity.Mutation.ProcessPendingMail(childComplexity), true
 
-	case "Mutation.ResetPassword":
+	case "Mutation.resetPassword":
 		if e.complexity.Mutation.ResetPassword == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_ResetPassword_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_resetPassword_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.ResetPassword(childComplexity, args["input"].(models.ResetPasswordInput)), true
 
-	case "Mutation.SetOwnPsyCharacteristicChoice":
+	case "Mutation.setOwnPsyCharacteristicChoice":
 		if e.complexity.Mutation.SetOwnPsyCharacteristicChoice == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_SetOwnPsyCharacteristicChoice_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_setOwnPsyCharacteristicChoice_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.SetOwnPsyCharacteristicChoice(childComplexity, args["input"].(models1.SetPsyCharacteristicChoiceInput)), true
 
-	case "Mutation.UpdateOwnPsychologistProfile":
+	case "Mutation.updateOwnPsychologistProfile":
 		if e.complexity.Mutation.UpdateOwnPsychologistProfile == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_UpdateOwnPsychologistProfile_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateOwnPsychologistProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.UpdateOwnPsychologistProfile(childComplexity, args["input"].(models1.UpdatePsychologistInput)), true
 
-	case "Mutation.UpdateOwnUser":
+	case "Mutation.updateOwnUser":
 		if e.complexity.Mutation.UpdateOwnUser == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_UpdateOwnUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateOwnUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.UpdateOwnUser(childComplexity, args["input"].(models.UpdateUserInput)), true
 
-	case "Mutation.UpdatePsyCharacteristic":
+	case "Mutation.updatePsyCharacteristic":
 		if e.complexity.Mutation.UpdatePsyCharacteristic == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_UpdatePsyCharacteristic_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updatePsyCharacteristic_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Mutation.UpdatePsyCharacteristic(childComplexity, args["id"].(string), args["input"].(models1.UpdatePsyCharacteristicInput)), true
 
-	case "Mutation.UpdateUser":
+	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_UpdateUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -411,57 +411,57 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistProfile.ID(childComplexity), true
 
-	case "Query.AuthenticateUser":
+	case "Query.authenticateUser":
 		if e.complexity.Query.AuthenticateUser == nil {
 			break
 		}
 
-		args, err := ec.field_Query_AuthenticateUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_authenticateUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Query.AuthenticateUser(childComplexity, args["input"].(models.AuthenticateUserInput)), true
 
-	case "Query.GetOwnPsychologistProfile":
+	case "Query.getOwnPsychologistProfile":
 		if e.complexity.Query.GetOwnPsychologistProfile == nil {
 			break
 		}
 
 		return e.complexity.Query.GetOwnPsychologistProfile(childComplexity), true
 
-	case "Query.GetOwnUser":
+	case "Query.getOwnUser":
 		if e.complexity.Query.GetOwnUser == nil {
 			break
 		}
 
 		return e.complexity.Query.GetOwnUser(childComplexity), true
 
-	case "Query.GetPsyCharacteristics":
+	case "Query.getPsyCharacteristics":
 		if e.complexity.Query.GetPsyCharacteristics == nil {
 			break
 		}
 
 		return e.complexity.Query.GetPsyCharacteristics(childComplexity), true
 
-	case "Query.GetUser":
+	case "Query.getUser":
 		if e.complexity.Query.GetUser == nil {
 			break
 		}
 
-		args, err := ec.field_Query_GetUser_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_getUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
 		return e.complexity.Query.GetUser(childComplexity, args["id"].(string)), true
 
-	case "Query.ListUsersByRole":
+	case "Query.listUsersByRole":
 		if e.complexity.Query.ListUsersByRole == nil {
 			break
 		}
 
-		args, err := ec.field_Query_ListUsersByRole_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_listUsersByRole_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -575,7 +575,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "graph/schema/mail.graphqls", Input: `extend type Mutation {
-    ProcessPendingMail: Boolean @hasRole(role: [COORDINATOR])
+    processPendingMail: Boolean @hasRole(role: [COORDINATOR])
 }`, BuiltIn: false},
 	{Name: "graph/schema/profiles.graphqls", Input: `input CreateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
     birthDate: Int!
@@ -632,16 +632,16 @@ type PsyCharacteristic @goModel(model: "github.com/guicostaarantes/psi-server/mo
 }
 
 extend type Query {
-    GetOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    GetPsyCharacteristics: [PsyCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    getPsyCharacteristics: [PsyCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 extend type Mutation {
-    CreateOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    CreatePsyCharacteristic(input: CreatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
-    SetOwnPsyCharacteristicChoice(input: SetOwnPsyCharacteristicChoiceInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    UpdateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    UpdatePsyCharacteristic(id: ID!, input: UpdatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+    createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    createPsyCharacteristic(input: CreatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+    setOwnPsyCharacteristicChoice(input: SetOwnPsyCharacteristicChoiceInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    updatePsyCharacteristic(id: ID!, input: UpdatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
 }`, BuiltIn: false},
 	{Name: "graph/schema/users.graphqls", Input: `enum Role @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.Role") {
     COORDINATOR
@@ -698,22 +698,22 @@ type Token @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/
 }
 
 type Query {
-    AuthenticateUser(input: AuthenticateUserInput!): Token!
-    GetOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    GetUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    ListUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    authenticateUser(input: AuthenticateUserInput!): Token!
+    getOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    getUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    listUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 type Mutation {
-    ActivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
-    AskResetPassword(email: String!): Boolean
-    CreatePatientUser(input: CreateUserInput!): Boolean
-    CreatePsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
-    CreateUserWithPassword(input: CreateUserWithPasswordInput!): Boolean @hasRole(role: [COORDINATOR])
-    DeactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
-    ResetPassword(input: ResetPasswordInput!): Boolean
-    UpdateOwnUser(input: UpdateOwnUserInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    UpdateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+    activateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    askResetPassword(email: String!): Boolean
+    createPatientUser(input: CreateUserInput!): Boolean
+    createPsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+    createUserWithPassword(input: CreateUserWithPasswordInput!): Boolean @hasRole(role: [COORDINATOR])
+    deactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
+    resetPassword(input: ResetPasswordInput!): Boolean
+    updateOwnUser(input: UpdateOwnUserInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    updateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 
 directive @hasRole(role: [Role!]!) on FIELD_DEFINITION
@@ -747,7 +747,7 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_ActivateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_activateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -762,7 +762,7 @@ func (ec *executionContext) field_Mutation_ActivateUser_args(ctx context.Context
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_AskResetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_askResetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -777,7 +777,7 @@ func (ec *executionContext) field_Mutation_AskResetPassword_args(ctx context.Con
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_CreateOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.CreatePsychologistInput
@@ -792,7 +792,7 @@ func (ec *executionContext) field_Mutation_CreateOwnPsychologistProfile_args(ctx
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_CreatePatientUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createPatientUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.CreateUserInput
@@ -807,7 +807,7 @@ func (ec *executionContext) field_Mutation_CreatePatientUser_args(ctx context.Co
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_CreatePsyCharacteristic_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createPsyCharacteristic_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.CreatePsyCharacteristicInput
@@ -822,7 +822,7 @@ func (ec *executionContext) field_Mutation_CreatePsyCharacteristic_args(ctx cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_CreatePsychologistUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createPsychologistUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.CreateUserInput
@@ -837,7 +837,7 @@ func (ec *executionContext) field_Mutation_CreatePsychologistUser_args(ctx conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_CreateUserWithPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createUserWithPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.CreateUserWithPasswordInput
@@ -852,7 +852,7 @@ func (ec *executionContext) field_Mutation_CreateUserWithPassword_args(ctx conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_DeactivateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_deactivateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -867,7 +867,7 @@ func (ec *executionContext) field_Mutation_DeactivateUser_args(ctx context.Conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_ResetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_resetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.ResetPasswordInput
@@ -882,7 +882,7 @@ func (ec *executionContext) field_Mutation_ResetPassword_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_SetOwnPsyCharacteristicChoice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_setOwnPsyCharacteristicChoice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.SetPsyCharacteristicChoiceInput
@@ -897,7 +897,7 @@ func (ec *executionContext) field_Mutation_SetOwnPsyCharacteristicChoice_args(ct
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_UpdateOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.UpdatePsychologistInput
@@ -912,7 +912,7 @@ func (ec *executionContext) field_Mutation_UpdateOwnPsychologistProfile_args(ctx
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_UpdateOwnUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateOwnUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.UpdateUserInput
@@ -927,7 +927,7 @@ func (ec *executionContext) field_Mutation_UpdateOwnUser_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_UpdatePsyCharacteristic_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updatePsyCharacteristic_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -951,7 +951,7 @@ func (ec *executionContext) field_Mutation_UpdatePsyCharacteristic_args(ctx cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_UpdateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -975,7 +975,22 @@ func (ec *executionContext) field_Mutation_UpdateUser_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_AuthenticateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["name"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_authenticateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.AuthenticateUserInput
@@ -990,7 +1005,7 @@ func (ec *executionContext) field_Query_AuthenticateUser_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_GetUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1005,7 +1020,7 @@ func (ec *executionContext) field_Query_GetUser_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_ListUsersByRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_listUsersByRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.Role
@@ -1017,21 +1032,6 @@ func (ec *executionContext) field_Query_ListUsersByRole_args(ctx context.Context
 		}
 	}
 	args["role"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["name"] = arg0
 	return args, nil
 }
 
@@ -1073,7 +1073,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Mutation_ActivateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_activateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1090,7 +1090,7 @@ func (ec *executionContext) _Mutation_ActivateUser(ctx context.Context, field gr
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_ActivateUser_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_activateUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1136,7 +1136,7 @@ func (ec *executionContext) _Mutation_ActivateUser(ctx context.Context, field gr
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_AskResetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_askResetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1153,7 +1153,7 @@ func (ec *executionContext) _Mutation_AskResetPassword(ctx context.Context, fiel
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_AskResetPassword_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_askResetPassword_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1175,7 +1175,7 @@ func (ec *executionContext) _Mutation_AskResetPassword(ctx context.Context, fiel
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_CreatePatientUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createPatientUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1192,7 +1192,7 @@ func (ec *executionContext) _Mutation_CreatePatientUser(ctx context.Context, fie
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_CreatePatientUser_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createPatientUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1214,7 +1214,7 @@ func (ec *executionContext) _Mutation_CreatePatientUser(ctx context.Context, fie
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_CreatePsychologistUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createPsychologistUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1231,7 +1231,7 @@ func (ec *executionContext) _Mutation_CreatePsychologistUser(ctx context.Context
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_CreatePsychologistUser_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createPsychologistUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1277,7 +1277,7 @@ func (ec *executionContext) _Mutation_CreatePsychologistUser(ctx context.Context
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_CreateUserWithPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createUserWithPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1294,7 +1294,7 @@ func (ec *executionContext) _Mutation_CreateUserWithPassword(ctx context.Context
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_CreateUserWithPassword_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createUserWithPassword_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1340,7 +1340,7 @@ func (ec *executionContext) _Mutation_CreateUserWithPassword(ctx context.Context
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_DeactivateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_deactivateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1357,7 +1357,7 @@ func (ec *executionContext) _Mutation_DeactivateUser(ctx context.Context, field 
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_DeactivateUser_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_deactivateUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1403,7 +1403,7 @@ func (ec *executionContext) _Mutation_DeactivateUser(ctx context.Context, field 
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_ResetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_resetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1420,7 +1420,7 @@ func (ec *executionContext) _Mutation_ResetPassword(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_ResetPassword_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_resetPassword_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1442,7 +1442,7 @@ func (ec *executionContext) _Mutation_ResetPassword(ctx context.Context, field g
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_UpdateOwnUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updateOwnUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1459,7 +1459,7 @@ func (ec *executionContext) _Mutation_UpdateOwnUser(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_UpdateOwnUser_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updateOwnUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1505,7 +1505,7 @@ func (ec *executionContext) _Mutation_UpdateOwnUser(ctx context.Context, field g
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_UpdateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1522,7 +1522,7 @@ func (ec *executionContext) _Mutation_UpdateUser(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_UpdateUser_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updateUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1568,7 +1568,7 @@ func (ec *executionContext) _Mutation_UpdateUser(ctx context.Context, field grap
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_ProcessPendingMail(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_processPendingMail(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1624,7 +1624,7 @@ func (ec *executionContext) _Mutation_ProcessPendingMail(ctx context.Context, fi
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_CreateOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1641,7 +1641,7 @@ func (ec *executionContext) _Mutation_CreateOwnPsychologistProfile(ctx context.C
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_CreateOwnPsychologistProfile_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createOwnPsychologistProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1687,7 +1687,7 @@ func (ec *executionContext) _Mutation_CreateOwnPsychologistProfile(ctx context.C
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_CreatePsyCharacteristic(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createPsyCharacteristic(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1704,7 +1704,7 @@ func (ec *executionContext) _Mutation_CreatePsyCharacteristic(ctx context.Contex
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_CreatePsyCharacteristic_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createPsyCharacteristic_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1750,7 +1750,7 @@ func (ec *executionContext) _Mutation_CreatePsyCharacteristic(ctx context.Contex
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_SetOwnPsyCharacteristicChoice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setOwnPsyCharacteristicChoice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1767,7 +1767,7 @@ func (ec *executionContext) _Mutation_SetOwnPsyCharacteristicChoice(ctx context.
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_SetOwnPsyCharacteristicChoice_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setOwnPsyCharacteristicChoice_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1813,7 +1813,7 @@ func (ec *executionContext) _Mutation_SetOwnPsyCharacteristicChoice(ctx context.
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_UpdateOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updateOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1830,7 +1830,7 @@ func (ec *executionContext) _Mutation_UpdateOwnPsychologistProfile(ctx context.C
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_UpdateOwnPsychologistProfile_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updateOwnPsychologistProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1876,7 +1876,7 @@ func (ec *executionContext) _Mutation_UpdateOwnPsychologistProfile(ctx context.C
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_UpdatePsyCharacteristic(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updatePsyCharacteristic(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1893,7 +1893,7 @@ func (ec *executionContext) _Mutation_UpdatePsyCharacteristic(ctx context.Contex
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_UpdatePsyCharacteristic_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updatePsyCharacteristic_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2359,7 +2359,7 @@ func (ec *executionContext) _PsychologistProfile_characteristics(ctx context.Con
 	return ec.marshalNPsyCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsyCharacteristicChoiceResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_AuthenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_authenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2376,7 +2376,7 @@ func (ec *executionContext) _Query_AuthenticateUser(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_AuthenticateUser_args(ctx, rawArgs)
+	args, err := ec.field_Query_authenticateUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2401,7 +2401,7 @@ func (ec *executionContext) _Query_AuthenticateUser(ctx context.Context, field g
 	return ec.marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐAuthentication(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_GetOwnUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getOwnUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2460,7 +2460,7 @@ func (ec *executionContext) _Query_GetOwnUser(ctx context.Context, field graphql
 	return ec.marshalNUser2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_GetUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2477,7 +2477,7 @@ func (ec *executionContext) _Query_GetUser(ctx context.Context, field graphql.Co
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_GetUser_args(ctx, rawArgs)
+	args, err := ec.field_Query_getUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2526,7 +2526,7 @@ func (ec *executionContext) _Query_GetUser(ctx context.Context, field graphql.Co
 	return ec.marshalNUser2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_ListUsersByRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_listUsersByRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2543,7 +2543,7 @@ func (ec *executionContext) _Query_ListUsersByRole(ctx context.Context, field gr
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_ListUsersByRole_args(ctx, rawArgs)
+	args, err := ec.field_Query_listUsersByRole_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2592,7 +2592,7 @@ func (ec *executionContext) _Query_ListUsersByRole(ctx context.Context, field gr
 	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐUserᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_GetOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2651,7 +2651,7 @@ func (ec *executionContext) _Query_GetOwnPsychologistProfile(ctx context.Context
 	return ec.marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_GetPsyCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getPsyCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4509,36 +4509,36 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "ActivateUser":
-			out.Values[i] = ec._Mutation_ActivateUser(ctx, field)
-		case "AskResetPassword":
-			out.Values[i] = ec._Mutation_AskResetPassword(ctx, field)
-		case "CreatePatientUser":
-			out.Values[i] = ec._Mutation_CreatePatientUser(ctx, field)
-		case "CreatePsychologistUser":
-			out.Values[i] = ec._Mutation_CreatePsychologistUser(ctx, field)
-		case "CreateUserWithPassword":
-			out.Values[i] = ec._Mutation_CreateUserWithPassword(ctx, field)
-		case "DeactivateUser":
-			out.Values[i] = ec._Mutation_DeactivateUser(ctx, field)
-		case "ResetPassword":
-			out.Values[i] = ec._Mutation_ResetPassword(ctx, field)
-		case "UpdateOwnUser":
-			out.Values[i] = ec._Mutation_UpdateOwnUser(ctx, field)
-		case "UpdateUser":
-			out.Values[i] = ec._Mutation_UpdateUser(ctx, field)
-		case "ProcessPendingMail":
-			out.Values[i] = ec._Mutation_ProcessPendingMail(ctx, field)
-		case "CreateOwnPsychologistProfile":
-			out.Values[i] = ec._Mutation_CreateOwnPsychologistProfile(ctx, field)
-		case "CreatePsyCharacteristic":
-			out.Values[i] = ec._Mutation_CreatePsyCharacteristic(ctx, field)
-		case "SetOwnPsyCharacteristicChoice":
-			out.Values[i] = ec._Mutation_SetOwnPsyCharacteristicChoice(ctx, field)
-		case "UpdateOwnPsychologistProfile":
-			out.Values[i] = ec._Mutation_UpdateOwnPsychologistProfile(ctx, field)
-		case "UpdatePsyCharacteristic":
-			out.Values[i] = ec._Mutation_UpdatePsyCharacteristic(ctx, field)
+		case "activateUser":
+			out.Values[i] = ec._Mutation_activateUser(ctx, field)
+		case "askResetPassword":
+			out.Values[i] = ec._Mutation_askResetPassword(ctx, field)
+		case "createPatientUser":
+			out.Values[i] = ec._Mutation_createPatientUser(ctx, field)
+		case "createPsychologistUser":
+			out.Values[i] = ec._Mutation_createPsychologistUser(ctx, field)
+		case "createUserWithPassword":
+			out.Values[i] = ec._Mutation_createUserWithPassword(ctx, field)
+		case "deactivateUser":
+			out.Values[i] = ec._Mutation_deactivateUser(ctx, field)
+		case "resetPassword":
+			out.Values[i] = ec._Mutation_resetPassword(ctx, field)
+		case "updateOwnUser":
+			out.Values[i] = ec._Mutation_updateOwnUser(ctx, field)
+		case "updateUser":
+			out.Values[i] = ec._Mutation_updateUser(ctx, field)
+		case "processPendingMail":
+			out.Values[i] = ec._Mutation_processPendingMail(ctx, field)
+		case "createOwnPsychologistProfile":
+			out.Values[i] = ec._Mutation_createOwnPsychologistProfile(ctx, field)
+		case "createPsyCharacteristic":
+			out.Values[i] = ec._Mutation_createPsyCharacteristic(ctx, field)
+		case "setOwnPsyCharacteristicChoice":
+			out.Values[i] = ec._Mutation_setOwnPsyCharacteristicChoice(ctx, field)
+		case "updateOwnPsychologistProfile":
+			out.Values[i] = ec._Mutation_updateOwnPsychologistProfile(ctx, field)
+		case "updatePsyCharacteristic":
+			out.Values[i] = ec._Mutation_updatePsyCharacteristic(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4700,7 +4700,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "AuthenticateUser":
+		case "authenticateUser":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -4708,13 +4708,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_AuthenticateUser(ctx, field)
+				res = ec._Query_authenticateUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "GetOwnUser":
+		case "getOwnUser":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -4722,13 +4722,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_GetOwnUser(ctx, field)
+				res = ec._Query_getOwnUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "GetUser":
+		case "getUser":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -4736,13 +4736,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_GetUser(ctx, field)
+				res = ec._Query_getUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "ListUsersByRole":
+		case "listUsersByRole":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -4750,13 +4750,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_ListUsersByRole(ctx, field)
+				res = ec._Query_listUsersByRole(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "GetOwnPsychologistProfile":
+		case "getOwnPsychologistProfile":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -4764,13 +4764,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_GetOwnPsychologistProfile(ctx, field)
+				res = ec._Query_getOwnPsychologistProfile(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "GetPsyCharacteristics":
+		case "getPsyCharacteristics":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -4778,7 +4778,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_GetPsyCharacteristics(ctx, field)
+				res = ec._Query_getPsyCharacteristics(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
