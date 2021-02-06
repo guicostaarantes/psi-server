@@ -5,13 +5,11 @@ import (
 
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
-	"github.com/guicostaarantes/psi-server/utils/merge"
 )
 
 // UpdatePsychologistService is a service that edits a psychologist profile
 type UpdatePsychologistService struct {
 	DatabaseUtil database.IDatabaseUtil
-	MergeUtil    merge.IMergeUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -28,10 +26,8 @@ func (s UpdatePsychologistService) Execute(id string, psyInput *models.UpdatePsy
 		return errors.New("resource not found")
 	}
 
-	mergeErr := s.MergeUtil.Merge(&psy, psyInput)
-	if mergeErr != nil {
-		return mergeErr
-	}
+	psy.BirthDate = psyInput.BirthDate
+	psy.City = psyInput.City
 
 	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologists", map[string]interface{}{"id": id}, psy)
 	if writeErr != nil {

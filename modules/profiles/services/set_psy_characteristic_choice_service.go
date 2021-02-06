@@ -7,13 +7,11 @@ import (
 
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
-	"github.com/guicostaarantes/psi-server/utils/merge"
 )
 
 // SetPsyCharacteristicChoiceService is a service that assigns a characteristic to a psychologist profile
 type SetPsyCharacteristicChoiceService struct {
 	DatabaseUtil database.IDatabaseUtil
-	MergeUtil    merge.IMergeUtil
 }
 
 // Execute is the method that runs the business logic of the service

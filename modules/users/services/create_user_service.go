@@ -12,7 +12,6 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
-	"github.com/guicostaarantes/psi-server/utils/merge"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -22,7 +21,6 @@ type CreateUserService struct {
 	DatabaseUtil    database.IDatabaseUtil
 	IdentifierUtil  identifier.IIdentifierUtil
 	MatchUtil       match.IMatchUtil
-	MergeUtil       merge.IMergeUtil
 	SerializingUtil serializing.ISerializingUtil
 	TokenUtil       token.ITokenUtil
 	SecondsToExpire int64
@@ -53,13 +51,12 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 	}
 
 	user := &models.User{
-		ID:     userID,
-		Active: true,
-	}
-
-	mergeErr := s.MergeUtil.Merge(&user, userInput)
-	if mergeErr != nil {
-		return mergeErr
+		ID:        userID,
+		Active:    true,
+		Email:     userInput.Email,
+		FirstName: userInput.FirstName,
+		LastName:  userInput.LastName,
+		Role:      userInput.Role,
 	}
 
 	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToExpire)

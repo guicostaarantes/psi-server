@@ -21,7 +21,6 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
-	"github.com/guicostaarantes/psi-server/utils/merge"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -40,7 +39,6 @@ func main() {
 		IdentifierUtil:         identifier.UUIDIdentifierUtil,
 		MailUtil:               mail.SMTPMailUtil,
 		MatchUtil:              match.RegexpMatchUtil,
-		MergeUtil:              merge.CopierMergeUtil,
 		SerializingUtil:        serializing.JSONSerializingUtil,
 		TokenUtil:              token.RngTokenUtil,
 		SecondsToCooldownReset: int64(86400),

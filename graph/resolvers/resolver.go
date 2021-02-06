@@ -9,7 +9,6 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
-	"github.com/guicostaarantes/psi-server/utils/merge"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -25,7 +24,6 @@ type Resolver struct {
 	IdentifierUtil                      identifier.IIdentifierUtil
 	MailUtil                            mail.IMailUtil
 	MatchUtil                           match.IMatchUtil
-	MergeUtil                           merge.IMergeUtil
 	SerializingUtil                     serializing.ISerializingUtil
 	TokenUtil                           token.ITokenUtil
 	SecondsToCooldownReset              int64
@@ -96,7 +94,6 @@ func (r *Resolver) CreatePsyCharacteristicService() *profiles_services.CreatePsy
 		r.createPsyCharacteristicService = &profiles_services.CreatePsyCharacteristicService{
 			DatabaseUtil:   r.DatabaseUtil,
 			IdentifierUtil: r.IdentifierUtil,
-			MergeUtil:      r.MergeUtil,
 		}
 	}
 	return r.createPsyCharacteristicService
@@ -108,7 +105,6 @@ func (r *Resolver) CreatePsychologistService() *profiles_services.CreatePsycholo
 		r.createPsychologistService = &profiles_services.CreatePsychologistService{
 			DatabaseUtil:   r.DatabaseUtil,
 			IdentifierUtil: r.IdentifierUtil,
-			MergeUtil:      r.MergeUtil,
 		}
 	}
 	return r.createPsychologistService
@@ -121,7 +117,6 @@ func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 			DatabaseUtil:    r.DatabaseUtil,
 			IdentifierUtil:  r.IdentifierUtil,
 			MatchUtil:       r.MatchUtil,
-			MergeUtil:       r.MergeUtil,
 			SerializingUtil: r.SerializingUtil,
 			TokenUtil:       r.TokenUtil,
 			SecondsToExpire: r.SecondsToExpireReset,
@@ -138,7 +133,6 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 			HashUtil:        r.HashUtil,
 			IdentifierUtil:  r.IdentifierUtil,
 			MatchUtil:       r.MatchUtil,
-			MergeUtil:       r.MergeUtil,
 			SerializingUtil: r.SerializingUtil,
 		}
 	}
@@ -200,7 +194,6 @@ func (r *Resolver) SetPsyCharacteristicChoiceService() *profiles_services.SetPsy
 	if r.setPsyCharacteristicChoiceService == nil {
 		r.setPsyCharacteristicChoiceService = &profiles_services.SetPsyCharacteristicChoiceService{
 			DatabaseUtil: r.DatabaseUtil,
-			MergeUtil:    r.MergeUtil,
 		}
 	}
 	return r.setPsyCharacteristicChoiceService
@@ -235,7 +228,6 @@ func (r *Resolver) UpdatePsyCharacteristicService() *profiles_services.UpdatePsy
 		r.updatePsyCharacteristicService = &profiles_services.UpdatePsyCharacteristicService{
 			DatabaseUtil:   r.DatabaseUtil,
 			IdentifierUtil: r.IdentifierUtil,
-			MergeUtil:      r.MergeUtil,
 		}
 	}
 	return r.updatePsyCharacteristicService
@@ -246,7 +238,6 @@ func (r *Resolver) UpdatePsychologistService() *profiles_services.UpdatePsycholo
 	if r.updatePsychologistService == nil {
 		r.updatePsychologistService = &profiles_services.UpdatePsychologistService{
 			DatabaseUtil: r.DatabaseUtil,
-			MergeUtil:    r.MergeUtil,
 		}
 	}
 	return r.updatePsychologistService
@@ -257,7 +248,6 @@ func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
 	if r.updateUserService == nil {
 		r.updateUserService = &users_services.UpdateUserService{
 			DatabaseUtil: r.DatabaseUtil,
-			MergeUtil:    r.MergeUtil,
 		}
 	}
 	return r.updateUserService

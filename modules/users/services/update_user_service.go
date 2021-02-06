@@ -5,13 +5,11 @@ import (
 
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
-	"github.com/guicostaarantes/psi-server/utils/merge"
 )
 
 // UpdateUserService is a service that can change data from a user
 type UpdateUserService struct {
 	DatabaseUtil database.IDatabaseUtil
-	MergeUtil    merge.IMergeUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -28,10 +26,9 @@ func (s UpdateUserService) Execute(userID string, userInput *models.UpdateUserIn
 		return errors.New("resource not found")
 	}
 
-	mergeErr := s.MergeUtil.Merge(&user, userInput)
-	if mergeErr != nil {
-		return mergeErr
-	}
+	user.FirstName = userInput.FirstName
+	user.LastName = userInput.LastName
+	user.Role = userInput.Role
 
 	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "users", map[string]interface{}{"id": userID}, user)
 	if updateErr != nil {
