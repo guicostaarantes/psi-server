@@ -9,16 +9,16 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// UpdatePsyCharacteristicService is a service that edits a psychologist profile
-type UpdatePsyCharacteristicService struct {
+// UpdatePsychologistCharacteristicService is a service that edits a psychologist profile
+type UpdatePsychologistCharacteristicService struct {
 	DatabaseUtil   database.IDatabaseUtil
 	IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpdatePsyCharacteristicService) Execute(id string, psyCharInput *models.UpdatePsyCharacteristicInput) error {
+func (s UpdatePsychologistCharacteristicService) Execute(id string, psyCharInput *models.UpdatePsychologistCharacteristicInput) error {
 
-	psyChar := models.PsyCharacteristic{}
+	psyChar := models.PsychologistCharacteristic{}
 
 	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", map[string]interface{}{"id": id}, &psyChar)
 	if findErr != nil {

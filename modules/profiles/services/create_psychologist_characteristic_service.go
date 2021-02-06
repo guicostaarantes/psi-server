@@ -9,16 +9,16 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// CreatePsyCharacteristicService is a service that creates a psychologist profile
-type CreatePsyCharacteristicService struct {
+// CreatePsychologistCharacteristicService is a service that creates a psychologist profile
+type CreatePsychologistCharacteristicService struct {
 	DatabaseUtil   database.IDatabaseUtil
 	IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreatePsyCharacteristicService) Execute(psyCharInput *models.CreatePsyCharacteristicInput) error {
+func (s CreatePsychologistCharacteristicService) Execute(psyCharInput *models.CreatePsychologistCharacteristicInput) error {
 
-	psyCharWithSameName := models.PsyCharacteristic{}
+	psyCharWithSameName := models.PsychologistCharacteristic{}
 
 	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", map[string]interface{}{"name": psyCharInput.Name}, &psyCharWithSameName)
 	if findErr != nil {
@@ -34,7 +34,7 @@ func (s CreatePsyCharacteristicService) Execute(psyCharInput *models.CreatePsyCh
 		return psyIDErr
 	}
 
-	psyChar := &models.PsyCharacteristic{
+	psyChar := &models.PsychologistCharacteristic{
 		ID:             psyID,
 		Name:           psyCharInput.Name,
 		Many:           psyCharInput.Many,

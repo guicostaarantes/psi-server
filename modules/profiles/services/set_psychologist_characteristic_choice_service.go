@@ -9,15 +9,15 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// SetPsyCharacteristicChoiceService is a service that assigns a characteristic to a psychologist profile
-type SetPsyCharacteristicChoiceService struct {
+// SetPsychologistCharacteristicChoiceService is a service that assigns a characteristic to a psychologist profile
+type SetPsychologistCharacteristicChoiceService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s SetPsyCharacteristicChoiceService) Execute(psyChoiceInput *models.SetPsyCharacteristicChoiceInput) error {
+func (s SetPsychologistCharacteristicChoiceService) Execute(psyChoiceInput *models.SetPsychologistCharacteristicChoiceInput) error {
 
-	characteristic := models.PsyCharacteristic{}
+	characteristic := models.PsychologistCharacteristic{}
 
 	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", map[string]interface{}{"name": psyChoiceInput.CharacteristicName}, &characteristic)
 	if findErr != nil {
@@ -53,7 +53,7 @@ func (s SetPsyCharacteristicChoiceService) Execute(psyChoiceInput *models.SetPsy
 	defer otherChoicesCursor.Close(context.Background())
 
 	for otherChoicesCursor.Next(context.Background()) {
-		choice := models.PsyCharacteristicChoice{}
+		choice := models.PsychologistCharacteristicChoice{}
 
 		decodeErr := otherChoicesCursor.Decode(&choice)
 		if decodeErr != nil {
@@ -70,7 +70,7 @@ func (s SetPsyCharacteristicChoiceService) Execute(psyChoiceInput *models.SetPsy
 	}
 
 	for _, value := range psyChoiceInput.Values {
-		choice := models.PsyCharacteristicChoice{
+		choice := models.PsychologistCharacteristicChoice{
 			PsychologistID:     psyChoiceInput.PsychologistID,
 			CharacteristicName: psyChoiceInput.CharacteristicName,
 			Value:              value,

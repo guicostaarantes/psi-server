@@ -8,15 +8,15 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// GetPsyCharacteristicsByPsyIDService is a service that gets the user by userId
-type GetPsyCharacteristicsByPsyIDService struct {
+// GetPsychologistCharacteristicsByPsyIDService is a service that gets the user by userId
+type GetPsychologistCharacteristicsByPsyIDService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPsyCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsyCharacteristicChoiceResponse, error) {
+func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsychologistCharacteristicChoiceResponse, error) {
 
-	charMap := map[string]*models.PsyCharacteristicChoiceResponse{}
+	charMap := map[string]*models.PsychologistCharacteristicChoiceResponse{}
 
 	charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
 	if findErr != nil {
@@ -26,14 +26,14 @@ func (s GetPsyCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsyCh
 	defer charCursor.Close(context.Background())
 
 	for charCursor.Next(context.Background()) {
-		characteristic := models.PsyCharacteristic{}
+		characteristic := models.PsychologistCharacteristic{}
 
 		decodeErr := charCursor.Decode(&characteristic)
 		if decodeErr != nil {
 			return nil, decodeErr
 		}
 
-		characteristicResponse := models.PsyCharacteristicChoiceResponse{
+		characteristicResponse := models.PsychologistCharacteristicChoiceResponse{
 			ID:             characteristic.ID,
 			Name:           characteristic.Name,
 			Many:           characteristic.Many,
@@ -52,7 +52,7 @@ func (s GetPsyCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsyCh
 	defer choiceCursor.Close(context.Background())
 
 	for choiceCursor.Next(context.Background()) {
-		characteristic := models.PsyCharacteristicChoice{}
+		characteristic := models.PsychologistCharacteristicChoice{}
 
 		decodeErr := choiceCursor.Decode(&characteristic)
 		if decodeErr != nil {
@@ -64,7 +64,7 @@ func (s GetPsyCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsyCh
 		char.Values = append(char.Values, characteristic.Value)
 	}
 
-	characteristics := []*models.PsyCharacteristicChoiceResponse{}
+	characteristics := []*models.PsychologistCharacteristicChoiceResponse{}
 
 	for _, char := range charMap {
 		characteristics = append(characteristics, char)

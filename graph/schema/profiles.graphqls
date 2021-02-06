@@ -9,7 +9,7 @@ input CreatePsychologistInput @goModel(model: "github.com/guicostaarantes/psi-se
     city: String!
 }
 
-input SetOwnPsyCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPsyCharacteristicChoiceInput") {
+input SetOwnPsychologistCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPsychologistCharacteristicChoiceInput") {
     characteristicName: String!
     values: [String!]!
 }
@@ -19,13 +19,13 @@ input UpdateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaaran
     city: String!
 }
 
-input CreatePsyCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsyCharacteristicInput") {
+input CreatePsychologistCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistCharacteristicInput") {
     name: String!
     many: Boolean!
     possibleValues: [String!]!
 }
 
-input UpdatePsyCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsyCharacteristicInput") {
+input UpdatePsychologistCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistCharacteristicInput") {
     name: String!
     many: Boolean!
     possibleValues: [String!]!
@@ -35,17 +35,17 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     id: ID!
     birthDate: Int!
     city: String!
-    characteristics: [PsyCharacteristicChoice!]!
+    characteristics: [PsychologistCharacteristicChoice!]!
 }
 
-type PsyCharacteristicChoice @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsyCharacteristicChoiceResponse") {
+type PsychologistCharacteristicChoice @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsychologistCharacteristicChoiceResponse") {
     name: String!
     many: Boolean!
     values: [String!]!
     possibleValues: [String!]!
 }
 
-type PsyCharacteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsyCharacteristicResponse") {
+type PsychologistCharacteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsychologistCharacteristicResponse") {
     id: ID!
     name: String!
     many: Boolean!
@@ -54,13 +54,13 @@ type PsyCharacteristic @goModel(model: "github.com/guicostaarantes/psi-server/mo
 
 extend type Query {
     getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    getPsyCharacteristics: [PsyCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    getPsychologistCharacteristics: [PsychologistCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 extend type Mutation {
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    createPsyCharacteristic(input: CreatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
-    setOwnPsyCharacteristicChoice(input: SetOwnPsyCharacteristicChoiceInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    createPsychologistCharacteristic(input: CreatePsychologistCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+    setOwnPsychologistCharacteristicChoice(input: SetOwnPsychologistCharacteristicChoiceInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    updatePsyCharacteristic(id: ID!, input: UpdatePsyCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
+    updatePsychologistCharacteristic(id: ID!, input: UpdatePsychologistCharacteristicInput!): Boolean @hasRole(role: [COORDINATOR])
 }
