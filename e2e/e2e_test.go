@@ -25,13 +25,13 @@ import (
 	"github.com/valyala/fastjson"
 )
 
-func gql(router *chi.Mux, query string, headers map[string][]string) *httptest.ResponseRecorder {
+func gql(router *chi.Mux, query string, token string) *httptest.ResponseRecorder {
 
 	body := fmt.Sprintf(`{"query": %q}`, query)
 
 	request := httptest.NewRequest(http.MethodPost, "/gql", strings.NewReader(body))
 
-	request.Header = headers
+	request.Header["Authorization"] = []string{token}
 	request.Header["Content-Type"] = []string{"application/json"}
 
 	response := httptest.NewRecorder()
@@ -76,7 +76,7 @@ func TestEnd2End(t *testing.T) {
 			} 
 		}`
 
-		response := gql(router, query, map[string][]string{})
+		response := gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"incorrect credentials\",\"path\":[\"authenticateUser\"]}],\"data\":null}", response.Body.String())
 
@@ -95,7 +95,7 @@ func TestEnd2End(t *testing.T) {
 			} 
 		}`
 
-		response := gql(router, query, map[string][]string{})
+		response := gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"incorrect credentials\",\"path\":[\"authenticateUser\"]}],\"data\":null}", response.Body.String())
 
@@ -114,7 +114,7 @@ func TestEnd2End(t *testing.T) {
 			} 
 		}`
 
-		response := gql(router, query, map[string][]string{})
+		response := gql(router, query, "")
 
 		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
@@ -136,9 +136,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response := gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 	})
@@ -153,9 +151,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response := gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"user with same email already exists\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 	})
@@ -166,9 +162,7 @@ func TestEnd2End(t *testing.T) {
 			processPendingMail
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response := gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
@@ -192,7 +186,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`, match[1])
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"data\":{\"resetPassword\":null}}", response.Body.String())
 
@@ -211,7 +205,7 @@ func TestEnd2End(t *testing.T) {
 			} 
 		}`
 
-		response := gql(router, query, map[string][]string{})
+		response := gql(router, query, "")
 
 		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
@@ -233,7 +227,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{})
+		response := gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"user with same email already exists\",\"path\":[\"createPatientUser\"]}],\"data\":{\"createPatientUser\":null}}", response.Body.String())
 	})
@@ -248,7 +242,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{})
+		response := gql(router, query, "")
 
 		assert.Equal(t, "{\"data\":{\"createPatientUser\":null}}", response.Body.String())
 	})
@@ -259,9 +253,7 @@ func TestEnd2End(t *testing.T) {
 			processPendingMail
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response := gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
@@ -285,7 +277,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`, match[1])
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"data\":{\"resetPassword\":null}}", response.Body.String())
 
@@ -304,7 +296,7 @@ func TestEnd2End(t *testing.T) {
 			} 
 		}`
 
-		response := gql(router, query, map[string][]string{})
+		response := gql(router, query, "")
 
 		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
@@ -325,27 +317,21 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response := gql(router, query, storedVariables["coordinator_token"])
 
 		email := fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "email")
 		assert.Equal(t, "coordinator@psi.com.br", email)
 		id := fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "id")
 		storedVariables["coordinator_id"] = id
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response = gql(router, query, storedVariables["psychologist_token"])
 
 		email = fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "email")
 		assert.Equal(t, "tom.brady@psi.com.br", email)
 		id = fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "id")
 		storedVariables["psychologist_id"] = id
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response = gql(router, query, storedVariables["patient_token"])
 
 		email = fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "email")
 		assert.Equal(t, "patrick.mahomes@psi.com.br", email)
@@ -363,25 +349,19 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response := gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response = gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"user with same email already exists\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
@@ -401,25 +381,19 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response := gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistCharacteristic\"]}],\"data\":{\"createPsychologistCharacteristic\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response = gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistCharacteristic\"]}],\"data\":{\"createPsychologistCharacteristic\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistCharacteristic\"]}],\"data\":{\"createPsychologistCharacteristic\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createPsychologistCharacteristic\":null}}", response.Body.String())
 
@@ -435,9 +409,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createPsychologistCharacteristic\":null}}", response.Body.String())
 
@@ -457,9 +429,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response := gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"cannot create two psychologist characteristics with the same name\",\"path\":[\"createPsychologistCharacteristic\"]}],\"data\":{\"createPsychologistCharacteristic\":null}}", response.Body.String())
 
@@ -476,26 +446,20 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response := gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"getPsychologistCharacteristics\"]}],\"data\":null}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"getPsychologistCharacteristics\"]}],\"data\":null}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response = gql(router, query, storedVariables["psychologist_token"])
 
 		charName0 := fastjson.GetString(response.Body.Bytes(), "data", "getPsychologistCharacteristics", "0", "name")
 		assert.Equal(t, "skin-color", charName0)
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		charName1 := fastjson.GetString(response.Body.Bytes(), "data", "getPsychologistCharacteristics", "1", "name")
 		assert.Equal(t, "techniques", charName1)
@@ -521,25 +485,19 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`, storedVariables["psychologist_characteristic_0_id"])
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response := gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updatePsychologistCharacteristic\"]}],\"data\":{\"updatePsychologistCharacteristic\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updatePsychologistCharacteristic\"]}],\"data\":{\"updatePsychologistCharacteristic\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response = gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updatePsychologistCharacteristic\"]}],\"data\":{\"updatePsychologistCharacteristic\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"updatePsychologistCharacteristic\":null}}", response.Body.String())
 
@@ -554,25 +512,19 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response := gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createOwnPsychologistProfile\"]}],\"data\":{\"createOwnPsychologistProfile\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createOwnPsychologistProfile\"]}],\"data\":{\"createOwnPsychologistProfile\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response = gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createOwnPsychologistProfile\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createOwnPsychologistProfile\":null}}", response.Body.String())
 
@@ -587,19 +539,15 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response := gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updateOwnPsychologistProfile\"]}],\"data\":{\"updateOwnPsychologistProfile\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updateOwnPsychologistProfile\"]}],\"data\":{\"updateOwnPsychologistProfile\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response = gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"updateOwnPsychologistProfile\":null}}", response.Body.String())
 
@@ -610,9 +558,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"updateOwnPsychologistProfile\":null}}", response.Body.String())
 
@@ -629,25 +575,19 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["patient_token"]},
-		})
+		response := gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{})
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response = gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
@@ -665,15 +605,11 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response := gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'skin-color' needs exactly one value\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'skin-color' needs exactly one value\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
@@ -690,9 +626,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response := gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
@@ -706,9 +640,7 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
 
@@ -728,15 +660,11 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response := gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["coordinator_token"]},
-		})
+		response := gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"black\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-2\",\"technique-3\"]}]}}}", response.Body.String())
 
-		response = gql(router, query, map[string][]string{
-			"Authorization": {storedVariables["psychologist_token"]},
-		})
+		response = gql(router, query, storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"black\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-1\"]}]}}}", response.Body.String())
 
