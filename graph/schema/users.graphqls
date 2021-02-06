@@ -41,6 +41,7 @@ input UpdateUserInput @goModel(model: "github.com/guicostaarantes/psi-server/mod
 }
 
 type User @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.User") {
+    id: ID!
     email: String!
     firstName: String!
     lastName: String!
