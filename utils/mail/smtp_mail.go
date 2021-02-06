@@ -13,6 +13,10 @@ type smtpMailer struct {
 	loggingUtil logging.ILoggingUtil
 }
 
+func (s smtpMailer) GetMockedMessages() *[]map[string]interface{} {
+	return nil
+}
+
 func (s smtpMailer) Send(msg Message) error {
 	envSMTPPort, _ := strconv.Atoi(os.Getenv("PSI_SMTP_PORT"))
 

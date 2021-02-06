@@ -2,6 +2,7 @@ package mail
 
 // IMailUtil is an abstraction for a email sender
 type IMailUtil interface {
+	GetMockedMessages() *[]map[string]interface{}
 	Send(msg Message) error
 }
 

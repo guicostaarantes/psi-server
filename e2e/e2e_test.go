@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -48,7 +50,7 @@ func TestEnd2End(t *testing.T) {
 		DatabaseUtil:           database.MockDatabaseUtil,
 		HashUtil:               hash.BcryptHashUtil,
 		IdentifierUtil:         identifier.UUIDIdentifierUtil,
-		MailUtil:               mail.SMTPMailUtil,
+		MailUtil:               mail.MockMailUtil,
 		MatchUtil:              match.RegexpMatchUtil,
 		SerializingUtil:        serializing.JSONSerializingUtil,
 		TokenUtil:              token.RngTokenUtil,
@@ -140,4 +142,105 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"getOwnUser\":{\"email\":\"coordinator@psi.com.br\",\"firstName\":\"Bootstrap\",\"lastName\":\"User\"}}}", response.Body.String())
 	})
+
+	t.Run("should create psychologist user", func(t *testing.T) {
+
+		query := `mutation {
+			createPsychologistUser(input: {
+				email: "alice.johnson@psi.com.br",
+				firstName: "Alice",
+				lastName: "Johnson"
+			})
+		}`
+
+		response := gql(router, query, map[string][]string{
+			"Authorization": {storedVariables["coordinator_token"]},
+		})
+
+		assert.Equal(t, "{\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
+	})
+
+	t.Run("should not create psychologist user with same email", func(t *testing.T) {
+
+		query := `mutation {
+			createPsychologistUser(input: {
+				email: "alice.johnson@psi.com.br",
+				firstName: "Alice",
+				lastName: "Johnson"
+			})
+		}`
+
+		response := gql(router, query, map[string][]string{
+			"Authorization": {storedVariables["coordinator_token"]},
+		})
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"user with same email already exists\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
+	})
+
+	t.Run("should reset password with token sent via email", func(t *testing.T) {
+
+		query := `mutation {
+			processPendingMail
+		}`
+
+		response := gql(router, query, map[string][]string{
+			"Authorization": {storedVariables["coordinator_token"]},
+		})
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailbox := res.MailUtil.GetMockedMessages()
+		var mailBody string
+
+		for _, mail := range *mailbox {
+			fmt.Printf("%v\n", mail)
+			if reflect.DeepEqual(mail["to"], []string{"alice.johnson@psi.com.br"}) && mail["subject"] == "Bem-vindo ao PSI" {
+				mailBody = mail["body"].(string)
+				break
+			}
+		}
+
+		regex := regexp.MustCompile("token=(?P<token>[A-Za-z0-9]{64})")
+		match := regex.FindStringSubmatch(mailBody)
+
+		query = fmt.Sprintf(`mutation {
+			resetPassword(input: {
+				token: %q,
+				password: "Def456$%%^"
+			})
+		}`, match[1])
+
+		fmt.Println(query)
+
+		response = gql(router, query, map[string][]string{})
+
+		assert.Equal(t, "{\"data\":{\"resetPassword\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should log in as psychologist user", func(t *testing.T) {
+
+		query := `{
+			authenticateUser(input: { 
+				email: "alice.johnson@psi.com.br", 
+				password: "Def456$%^", 
+				ipAddress: "100.100.100.100" 
+			}) { 
+				token 
+				expiresAt 
+			} 
+		}`
+
+		response := gql(router, query, map[string][]string{})
+
+		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		assert.NotEqual(t, "", token)
+
+		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
+		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+
+		storedVariables["psychologist_token"] = token
+
+	})
+
 }
