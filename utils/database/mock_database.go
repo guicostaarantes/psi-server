@@ -101,6 +101,29 @@ func (m mockDBClient) InsertOne(database string, table string, provider interfac
 	return nil
 }
 
+func (m mockDBClient) InsertMany(database string, table string, provider []interface{}) error {
+	if m.client[database] == nil {
+		m.client[database] = make(map[string][][]byte)
+	}
+
+	if m.client[database][table] == nil {
+		m.client[database][table] = [][]byte{}
+	}
+
+	for _, prov := range provider {
+		value, marshalErr := json.Marshal(prov)
+		if marshalErr != nil {
+			return marshalErr
+		}
+
+		newTable := append(m.client[database][table], value)
+
+		m.client[database][table] = newTable
+	}
+
+	return nil
+}
+
 func (m mockDBClient) UpdateOne(database string, table string, matches map[string]interface{}, provider interface{}) error {
 	value := map[string]interface{}{}
 	for k, v := range m.client[database][table] {
@@ -138,6 +161,25 @@ func (m mockDBClient) DeleteOne(database string, table string, matches map[strin
 			newTable := append(m.client[database][table][:k], m.client[database][table][k+1:]...)
 			m.client[database][table] = newTable
 			return nil
+		}
+	}
+
+	return nil
+}
+
+func (m mockDBClient) DeleteMany(database string, table string, matches map[string]interface{}) error {
+	value := map[string]interface{}{}
+	for k, v := range m.client[database][table] {
+		json.Unmarshal(v, &value)
+		matching := true
+		for matchKey, matchValue := range matches {
+			if value[matchKey] != matchValue {
+				matching = false
+			}
+		}
+		if matching {
+			newTable := append(m.client[database][table][:k], m.client[database][table][k+1:]...)
+			m.client[database][table] = newTable
 		}
 	}
 

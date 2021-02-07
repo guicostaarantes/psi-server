@@ -95,6 +95,19 @@ func (m mongoClient) InsertOne(database string, table string, provider interface
 	return nil
 }
 
+func (m mongoClient) InsertMany(database string, table string, provider []interface{}) error {
+	collection := m.client.Database(database).Collection(table)
+
+	_, insertErr := collection.InsertMany(m.context, provider)
+
+	if insertErr != nil {
+		m.loggingUtil.Error("3789b465", insertErr)
+		return errors.New("internal server error")
+	}
+
+	return nil
+}
+
 func (m mongoClient) UpdateOne(database string, table string, matches map[string]interface{}, provider interface{}) error {
 	collection := m.client.Database(database).Collection(table)
 
@@ -129,6 +142,24 @@ func (m mongoClient) DeleteOne(database string, table string, matches map[string
 
 	if deleteErr != nil {
 		m.loggingUtil.Error("c6280e5a", deleteErr)
+		return errors.New("internal server error")
+	}
+
+	return nil
+}
+
+func (m mongoClient) DeleteMany(database string, table string, matches map[string]interface{}) error {
+	collection := m.client.Database(database).Collection(table)
+
+	filter := bson.D{}
+	for k, v := range matches {
+		filter = append(filter, primitive.E{Key: k, Value: v})
+	}
+
+	_, deleteErr := collection.DeleteMany(m.context, filter)
+
+	if deleteErr != nil {
+		m.loggingUtil.Error("d802d913", deleteErr)
 		return errors.New("internal server error")
 	}
 
