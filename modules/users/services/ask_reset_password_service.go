@@ -8,6 +8,7 @@ import (
 
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	"github.com/guicostaarantes/psi-server/modules/users/templates"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/token"
@@ -65,7 +66,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 		return mailIDErr
 	}
 
-	templ, templErr := template.ParseFiles("templates/reset_password_email.html")
+	templ, templErr := template.New("ResetPasswordEmail").Parse(templates.ResetPasswordEmailTemplate)
 	if templErr != nil {
 		return templErr
 	}

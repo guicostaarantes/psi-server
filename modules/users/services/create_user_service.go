@@ -9,6 +9,7 @@ import (
 
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	"github.com/guicostaarantes/psi-server/modules/users/templates"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
@@ -77,7 +78,7 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		return mailIDErr
 	}
 
-	templ, templErr := template.ParseFiles("templates/create_user_email.html")
+	templ, templErr := template.New("CreateUserEmail").Parse(templates.CreateUserEmailTemplate)
 	if templErr != nil {
 		return templErr
 	}
