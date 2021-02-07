@@ -34,7 +34,6 @@ func (s GetPsychologistCharacteristicsService) Execute() ([]*models.Psychologist
 		}
 
 		characteristicResponse := models.PsychologistCharacteristicResponse{
-			ID:             characteristic.ID,
 			Name:           characteristic.Name,
 			Many:           characteristic.Many,
 			PossibleValues: strings.Split(characteristic.PossibleValues, ","),

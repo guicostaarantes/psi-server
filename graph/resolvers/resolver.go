@@ -32,7 +32,6 @@ type Resolver struct {
 	activateUserService                          *users_services.ActivateUserService
 	askResetPasswordService                      *users_services.AskResetPasswordService
 	authenticateUserService                      *users_services.AuthenticateUserService
-	createPsychologistCharacteristicService      *profiles_services.CreatePsychologistCharacteristicService
 	createPsychologistService                    *profiles_services.CreatePsychologistService
 	createUserService                            *users_services.CreateUserService
 	createUserWithPasswordService                *users_services.CreateUserWithPasswordService
@@ -44,7 +43,7 @@ type Resolver struct {
 	processPendingMailsService                   *mails_services.ProcessPendingMailsService
 	resetPasswordService                         *users_services.ResetPasswordService
 	setPsychologistCharacteristicChoiceService   *profiles_services.SetPsychologistCharacteristicChoiceService
-	updatePsychologistCharacteristicService      *profiles_services.UpdatePsychologistCharacteristicService
+	setPsychologistCharacteristicsService        *profiles_services.SetPsychologistCharacteristicsService
 	updatePsychologistService                    *profiles_services.UpdatePsychologistService
 	updateUserService                            *users_services.UpdateUserService
 	validateUserTokenService                     *users_services.ValidateUserTokenService
@@ -88,15 +87,15 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 	return r.authenticateUserService
 }
 
-// CreatePsychologistCharacteristicService gets or sets the service with same name
-func (r *Resolver) CreatePsychologistCharacteristicService() *profiles_services.CreatePsychologistCharacteristicService {
-	if r.createPsychologistCharacteristicService == nil {
-		r.createPsychologistCharacteristicService = &profiles_services.CreatePsychologistCharacteristicService{
+// SetPsychologistCharacteristicsService gets or sets the service with same name
+func (r *Resolver) SetPsychologistCharacteristicsService() *profiles_services.SetPsychologistCharacteristicsService {
+	if r.setPsychologistCharacteristicsService == nil {
+		r.setPsychologistCharacteristicsService = &profiles_services.SetPsychologistCharacteristicsService{
 			DatabaseUtil:   r.DatabaseUtil,
 			IdentifierUtil: r.IdentifierUtil,
 		}
 	}
-	return r.createPsychologistCharacteristicService
+	return r.setPsychologistCharacteristicsService
 }
 
 // CreatePsychologistService gets or sets the service with same name
@@ -220,17 +219,6 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 		}
 	}
 	return r.resetPasswordService
-}
-
-// UpdatePsychologistCharacteristicService gets or sets the service with same name
-func (r *Resolver) UpdatePsychologistCharacteristicService() *profiles_services.UpdatePsychologistCharacteristicService {
-	if r.updatePsychologistCharacteristicService == nil {
-		r.updatePsychologistCharacteristicService = &profiles_services.UpdatePsychologistCharacteristicService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
-		}
-	}
-	return r.updatePsychologistCharacteristicService
 }
 
 // UpdatePsychologistService gets or sets the service with same name

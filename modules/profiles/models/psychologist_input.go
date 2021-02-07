@@ -13,15 +13,8 @@ type UpdatePsychologistInput struct {
 	City      string `json:"city" bson:"city"`
 }
 
-// CreatePsychologistCharacteristicInput is the schema for information needed to create a characteristic of a psychologist and its possible values
-type CreatePsychologistCharacteristicInput struct {
-	Name           string   `json:"name" bson:"name"`
-	Many           bool     `json:"many" bson:"many"`
-	PossibleValues []string `json:"possibleValues" bson:"possibleValues"`
-}
-
-// UpdatePsychologistCharacteristicInput is the schema for information needed to create a characteristic of a psychologist and its possible values
-type UpdatePsychologistCharacteristicInput struct {
+// SetPsychologistCharacteristicInput is the schema for information needed to create a characteristic of a psychologist and its possible values
+type SetPsychologistCharacteristicInput struct {
 	Name           string   `json:"name" bson:"name"`
 	Many           bool     `json:"many" bson:"many"`
 	PossibleValues []string `json:"possibleValues" bson:"possibleValues"`

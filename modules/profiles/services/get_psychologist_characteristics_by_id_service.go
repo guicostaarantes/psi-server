@@ -35,7 +35,6 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
 		}
 
 		characteristicResponse := models.PsychologistCharacteristicChoiceResponse{
-			ID:             characteristic.ID,
 			Name:           characteristic.Name,
 			Many:           characteristic.Many,
 			Values:         []string{},

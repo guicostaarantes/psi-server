@@ -10,7 +10,6 @@ type Psychologist struct {
 
 // PsychologistCharacteristic is the schema for a characteristic of a psychologist and its possible values
 type PsychologistCharacteristic struct {
-	ID             string `json:"id" bson:"id"`
 	Name           string `json:"name" bson:"name"`
 	Many           bool   `json:"many" bson:"many"`
 	PossibleValues string `json:"possibleValues" bson:"possibleValues"`
