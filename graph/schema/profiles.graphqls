@@ -52,7 +52,7 @@ extend type Query {
 
 extend type Mutation {
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPsychologistCharacteristicChoice(input: SetOwnPsychologistCharacteristicChoiceInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    setOwnPsychologistCharacteristicChoices(input: [SetOwnPsychologistCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setPsychologistCharacteristics(input: [SetPsychologistCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
     updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }

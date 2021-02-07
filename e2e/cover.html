@@ -55,11 +55,11 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/guicostaarantes/psi-server/graph/generated/generated.go (29.0%)</option>
+				<option value="file0">github.com/guicostaarantes/psi-server/graph/generated/generated.go (29.2%)</option>
 				
 				<option value="file1">github.com/guicostaarantes/psi-server/graph/resolvers/mail.resolvers.go (75.0%)</option>
 				
-				<option value="file2">github.com/guicostaarantes/psi-server/graph/resolvers/profiles.resolvers.go (84.4%)</option>
+				<option value="file2">github.com/guicostaarantes/psi-server/graph/resolvers/profiles.resolvers.go (83.9%)</option>
 				
 				<option value="file3">github.com/guicostaarantes/psi-server/graph/resolvers/resolver.go (77.8%)</option>
 				
@@ -73,13 +73,13 @@
 				
 				<option value="file8">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_by_user_id_service.go (71.4%)</option>
 				
-				<option value="file9">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_characteristics_by_id_service.go (84.6%)</option>
+				<option value="file9">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_characteristic_choices_by_id_service.go (84.0%)</option>
 				
 				<option value="file10">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_characteristics_service.go (84.6%)</option>
 				
-				<option value="file11">github.com/guicostaarantes/psi-server/modules/profiles/services/set_psychologist_characteristic_choice_service.go (65.6%)</option>
+				<option value="file11">github.com/guicostaarantes/psi-server/modules/profiles/services/set_psychologist_characteristic_choices_service.go (74.3%)</option>
 				
-				<option value="file12">github.com/guicostaarantes/psi-server/modules/profiles/services/set_psychologist_characteristics_service.go (88.9%)</option>
+				<option value="file12">github.com/guicostaarantes/psi-server/modules/profiles/services/set_psychologist_characteristics_service.go (81.8%)</option>
 				
 				<option value="file13">github.com/guicostaarantes/psi-server/modules/profiles/services/update_psychologist_service.go (75.0%)</option>
 				
@@ -103,7 +103,7 @@
 				
 				<option value="file23">github.com/guicostaarantes/psi-server/modules/users/services/validate_user_token_service.go (72.7%)</option>
 				
-				<option value="file24">github.com/guicostaarantes/psi-server/utils/database/mock_database.go (82.2%)</option>
+				<option value="file24">github.com/guicostaarantes/psi-server/utils/database/mock_database.go (92.4%)</option>
 				
 				<option value="file25">github.com/guicostaarantes/psi-server/utils/database/mongo_database.go (9.1%)</option>
 				
@@ -185,20 +185,20 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
         Mutation struct {
-                ActivateUser                           func(childComplexity int, id string) int
-                AskResetPassword                       func(childComplexity int, email string) int
-                CreateOwnPsychologistProfile           func(childComplexity int, input models1.CreatePsychologistInput) int
-                CreatePatientUser                      func(childComplexity int, input models.CreateUserInput) int
-                CreatePsychologistUser                 func(childComplexity int, input models.CreateUserInput) int
-                CreateUserWithPassword                 func(childComplexity int, input models.CreateUserWithPasswordInput) int
-                DeactivateUser                         func(childComplexity int, id string) int
-                ProcessPendingMail                     func(childComplexity int) int
-                ResetPassword                          func(childComplexity int, input models.ResetPasswordInput) int
-                SetOwnPsychologistCharacteristicChoice func(childComplexity int, input models1.SetPsychologistCharacteristicChoiceInput) int
-                SetPsychologistCharacteristics         func(childComplexity int, input []*models1.SetPsychologistCharacteristicInput) int
-                UpdateOwnPsychologistProfile           func(childComplexity int, input models1.UpdatePsychologistInput) int
-                UpdateOwnUser                          func(childComplexity int, input models.UpdateUserInput) int
-                UpdateUser                             func(childComplexity int, id string, input models.UpdateUserInput) int
+                ActivateUser                            func(childComplexity int, id string) int
+                AskResetPassword                        func(childComplexity int, email string) int
+                CreateOwnPsychologistProfile            func(childComplexity int, input models1.CreatePsychologistInput) int
+                CreatePatientUser                       func(childComplexity int, input models.CreateUserInput) int
+                CreatePsychologistUser                  func(childComplexity int, input models.CreateUserInput) int
+                CreateUserWithPassword                  func(childComplexity int, input models.CreateUserWithPasswordInput) int
+                DeactivateUser                          func(childComplexity int, id string) int
+                ProcessPendingMail                      func(childComplexity int) int
+                ResetPassword                           func(childComplexity int, input models.ResetPasswordInput) int
+                SetOwnPsychologistCharacteristicChoices func(childComplexity int, input []*models1.SetPsychologistCharacteristicChoiceInput) int
+                SetPsychologistCharacteristics          func(childComplexity int, input []*models1.SetPsychologistCharacteristicInput) int
+                UpdateOwnPsychologistProfile            func(childComplexity int, input models1.UpdatePsychologistInput) int
+                UpdateOwnUser                           func(childComplexity int, input models.UpdateUserInput) int
+                UpdateUser                              func(childComplexity int, id string, input models.UpdateUserInput) int
         }
 
         PsychologistCharacteristic struct {
@@ -256,7 +256,7 @@ type MutationResolver interface {
         UpdateUser(ctx context.Context, id string, input models.UpdateUserInput) (*bool, error)
         ProcessPendingMail(ctx context.Context) (*bool, error)
         CreateOwnPsychologistProfile(ctx context.Context, input models1.CreatePsychologistInput) (*bool, error)
-        SetOwnPsychologistCharacteristicChoice(ctx context.Context, input models1.SetPsychologistCharacteristicChoiceInput) (*bool, error)
+        SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*models1.SetPsychologistCharacteristicChoiceInput) (*bool, error)
         SetPsychologistCharacteristics(ctx context.Context, input []*models1.SetPsychologistCharacteristicInput) (*bool, error)
         UpdateOwnPsychologistProfile(ctx context.Context, input models1.UpdatePsychologistInput) (*bool, error)
 }
@@ -390,17 +390,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.ResetPassword(childComplexity, args["input"].(models.ResetPasswordInput)), true</span>
 
-        case "Mutation.setOwnPsychologistCharacteristicChoice":<span class="cov0" title="0">
-                if e.complexity.Mutation.SetOwnPsychologistCharacteristicChoice == nil </span><span class="cov0" title="0">{
+        case "Mutation.setOwnPsychologistCharacteristicChoices":<span class="cov0" title="0">
+                if e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_setOwnPsychologistCharacteristicChoice_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_setOwnPsychologistCharacteristicChoices_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.SetOwnPsychologistCharacteristicChoice(childComplexity, args["input"].(models1.SetPsychologistCharacteristicChoiceInput)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices(childComplexity, args["input"].([]*models1.SetPsychologistCharacteristicChoiceInput)), true</span>
 
         case "Mutation.setPsychologistCharacteristics":<span class="cov0" title="0">
                 if e.complexity.Mutation.SetPsychologistCharacteristics == nil </span><span class="cov0" title="0">{
@@ -754,7 +754,7 @@ extend type Query {
 
 extend type Mutation {
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPsychologistCharacteristicChoice(input: SetOwnPsychologistCharacteristicChoiceInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    setOwnPsychologistCharacteristicChoices(input: [SetOwnPsychologistCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setPsychologistCharacteristics(input: [SetPsychologistCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
     updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
@@ -983,13 +983,13 @@ func (ec *executionContext) field_Mutation_resetPassword_args(ctx context.Contex
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_setOwnPsychologistCharacteristicChoice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
+func (ec *executionContext) field_Mutation_setOwnPsychologistCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
-        var arg0 models1.SetPsychologistCharacteristicChoiceInput
+        var arg0 []*models1.SetPsychologistCharacteristicChoiceInput
         if tmp, ok := rawArgs["input"]; ok </span><span class="cov8" title="1">{
                 ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-                arg0, err = ec.unmarshalNSetOwnPsychologistCharacteristicChoiceInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐSetPsychologistCharacteristicChoiceInput(ctx, tmp)
+                arg0, err = ec.unmarshalNSetOwnPsychologistCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐSetPsychologistCharacteristicChoiceInputᚄ(ctx, tmp)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
@@ -1779,7 +1779,7 @@ func (ec *executionContext) _Mutation_createOwnPsychologistProfile(ctx context.C
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoice(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoices(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -1796,7 +1796,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoice(ctx
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_setOwnPsychologistCharacteristicChoice_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_setOwnPsychologistCharacteristicChoices_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -1805,7 +1805,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoice(ctx
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().SetOwnPsychologistCharacteristicChoice(rctx, args["input"].(models1.SetPsychologistCharacteristicChoiceInput))
+                        return ec.resolvers.Mutation().SetOwnPsychologistCharacteristicChoices(rctx, args["input"].([]*models1.SetPsychologistCharacteristicChoiceInput))
                 }</span>
                 <span class="cov8" title="1">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4524,8 +4524,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
                         out.Values[i] = ec._Mutation_processPendingMail(ctx, field)</span>
                 case "createOwnPsychologistProfile":<span class="cov8" title="1">
                         out.Values[i] = ec._Mutation_createOwnPsychologistProfile(ctx, field)</span>
-                case "setOwnPsychologistCharacteristicChoice":<span class="cov8" title="1">
-                        out.Values[i] = ec._Mutation_setOwnPsychologistCharacteristicChoice(ctx, field)</span>
+                case "setOwnPsychologistCharacteristicChoices":<span class="cov8" title="1">
+                        out.Values[i] = ec._Mutation_setOwnPsychologistCharacteristicChoices(ctx, field)</span>
                 case "setPsychologistCharacteristics":<span class="cov8" title="1">
                         out.Values[i] = ec._Mutation_setPsychologistCharacteristics(ctx, field)</span>
                 case "updateOwnPsychologistProfile":<span class="cov8" title="1">
@@ -5361,9 +5361,30 @@ func (ec *executionContext) marshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsi
         return ret</span>
 }
 
-func (ec *executionContext) unmarshalNSetOwnPsychologistCharacteristicChoiceInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐSetPsychologistCharacteristicChoiceInput(ctx context.Context, v interface{}) (models1.SetPsychologistCharacteristicChoiceInput, error) <span class="cov8" title="1">{
+func (ec *executionContext) unmarshalNSetOwnPsychologistCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐSetPsychologistCharacteristicChoiceInputᚄ(ctx context.Context, v interface{}) ([]*models1.SetPsychologistCharacteristicChoiceInput, error) <span class="cov8" title="1">{
+        var vSlice []interface{}
+        if v != nil </span><span class="cov8" title="1">{
+                if tmp1, ok := v.([]interface{}); ok </span><span class="cov8" title="1">{
+                        vSlice = tmp1
+                }</span> else<span class="cov0" title="0"> {
+                        vSlice = []interface{}{v}
+                }</span>
+        }
+        <span class="cov8" title="1">var err error
+        res := make([]*models1.SetPsychologistCharacteristicChoiceInput, len(vSlice))
+        for i := range vSlice </span><span class="cov8" title="1">{
+                ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+                res[i], err = ec.unmarshalNSetOwnPsychologistCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐSetPsychologistCharacteristicChoiceInput(ctx, vSlice[i])
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+        }
+        <span class="cov8" title="1">return res, nil</span>
+}
+
+func (ec *executionContext) unmarshalNSetOwnPsychologistCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐSetPsychologistCharacteristicChoiceInput(ctx context.Context, v interface{}) (*models1.SetPsychologistCharacteristicChoiceInput, error) <span class="cov8" title="1">{
         res, err := ec.unmarshalInputSetOwnPsychologistCharacteristicChoiceInput(ctx, v)
-        return res, graphql.ErrorOnPath(ctx, err)
+        return &amp;res, graphql.ErrorOnPath(ctx, err)
 }</span>
 
 func (ec *executionContext) unmarshalNSetPsychologistCharacteristicInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐSetPsychologistCharacteristicInputᚄ(ctx context.Context, v interface{}) ([]*models1.SetPsychologistCharacteristicInput, error) <span class="cov8" title="1">{
@@ -6056,7 +6077,7 @@ func (r *mutationResolver) CreateOwnPsychologistProfile(ctx context.Context, inp
         <span class="cov8" title="1">return nil, nil</span>
 }
 
-func (r *mutationResolver) SetOwnPsychologistCharacteristicChoice(ctx context.Context, input profiles_models.SetPsychologistCharacteristicChoiceInput) (*bool, error) <span class="cov8" title="1">{
+func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*profiles_models.SetPsychologistCharacteristicChoiceInput) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
 
         servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -6064,13 +6085,7 @@ func (r *mutationResolver) SetOwnPsychologistCharacteristicChoice(ctx context.Co
                 return nil, servicePsyErr
         }</span>
 
-        <span class="cov8" title="1">serviceInput := &amp;profiles_models.SetPsychologistCharacteristicChoiceInput{
-                PsychologistID:     servicePsy.ID,
-                CharacteristicName: input.CharacteristicName,
-                Values:             input.Values,
-        }
-
-        serviceErr := r.SetPsychologistCharacteristicChoiceService().Execute(serviceInput)
+        <span class="cov8" title="1">serviceErr := r.SetPsychologistCharacteristicChoicesService().Execute(servicePsy.ID, input)
         if serviceErr != nil </span><span class="cov8" title="1">{
                 return nil, serviceErr
         }</span>
@@ -6168,7 +6183,7 @@ type Resolver struct {
         getUserByIDService                           *users_services.GetUserByIDService
         processPendingMailsService                   *mails_services.ProcessPendingMailsService
         resetPasswordService                         *users_services.ResetPasswordService
-        setPsychologistCharacteristicChoiceService   *profiles_services.SetPsychologistCharacteristicChoiceService
+        setPsychologistCharacteristicChoicesService  *profiles_services.SetPsychologistCharacteristicChoicesService
         setPsychologistCharacteristicsService        *profiles_services.SetPsychologistCharacteristicsService
         updatePsychologistService                    *profiles_services.UpdatePsychologistService
         updateUserService                            *users_services.UpdateUserService
@@ -6314,14 +6329,14 @@ func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService <span
         <span class="cov8" title="1">return r.getUserByIDService</span>
 }
 
-// SetPsychologistCharacteristicChoiceService gets or sets the service with same name
-func (r *Resolver) SetPsychologistCharacteristicChoiceService() *profiles_services.SetPsychologistCharacteristicChoiceService <span class="cov8" title="1">{
-        if r.setPsychologistCharacteristicChoiceService == nil </span><span class="cov8" title="1">{
-                r.setPsychologistCharacteristicChoiceService = &amp;profiles_services.SetPsychologistCharacteristicChoiceService{
+// SetPsychologistCharacteristicChoicesService gets or sets the service with same name
+func (r *Resolver) SetPsychologistCharacteristicChoicesService() *profiles_services.SetPsychologistCharacteristicChoicesService <span class="cov8" title="1">{
+        if r.setPsychologistCharacteristicChoicesService == nil </span><span class="cov8" title="1">{
+                r.setPsychologistCharacteristicChoicesService = &amp;profiles_services.SetPsychologistCharacteristicChoicesService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.setPsychologistCharacteristicChoiceService</span>
+        <span class="cov8" title="1">return r.setPsychologistCharacteristicChoicesService</span>
 }
 
 // ProcessPendingMailsService gets or sets the service with same name
@@ -6785,7 +6800,6 @@ func (s GetPsychologistByUserIDService) Execute(id string) (*models.Psychologist
 
 import (
         "context"
-        "fmt"
         "strings"
 
         models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -6827,9 +6841,7 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
                 characteristics = append(characteristics, &amp;characteristicResponse)</span>
         }
 
-        <span class="cov8" title="1">fmt.Printf("%v\n", characteristics)
-
-        choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
+        <span class="cov8" title="1">choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
         if findErr != nil </span><span class="cov0" title="0">{
                 return nil, findErr
         }</span>
@@ -6916,78 +6928,90 @@ import (
         "github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// SetPsychologistCharacteristicChoiceService is a service that assigns a characteristic to a psychologist profile
-type SetPsychologistCharacteristicChoiceService struct {
+// SetPsychologistCharacteristicChoicesService is a service that assigns a characteristic to a psychologist profile
+type SetPsychologistCharacteristicChoicesService struct {
         DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s SetPsychologistCharacteristicChoiceService) Execute(psyChoiceInput *models.SetPsychologistCharacteristicChoiceInput) error <span class="cov8" title="1">{
+func (s SetPsychologistCharacteristicChoicesService) Execute(id string, input []*models.SetPsychologistCharacteristicChoiceInput) error <span class="cov8" title="1">{
 
-        characteristic := models.PsychologistCharacteristic{}
+        choices := []interface{}{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "psychologist_characteristics", map[string]interface{}{"name": psyChoiceInput.CharacteristicName}, &amp;characteristic)
+        cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov8" title="1">if !characteristic.Many &amp;&amp; len(psyChoiceInput.Values) != 1 </span><span class="cov8" title="1">{
-                return errors.New("characteristic '" + characteristic.Name + "' needs exactly one value")
-        }</span>
+        <span class="cov8" title="1">defer cursor.Close(context.Background())
 
-        <span class="cov8" title="1">possibleValues := strings.Split(characteristic.PossibleValues, ",")
+        for cursor.Next(context.Background()) </span><span class="cov8" title="1">{
+                characteristic := models.PsychologistCharacteristic{}
 
-        for _, value := range psyChoiceInput.Values </span><span class="cov8" title="1">{
-                var valueExists = false
-                for _, posValue := range possibleValues </span><span class="cov8" title="1">{
-                        if posValue == value </span><span class="cov8" title="1">{
-                                valueExists = true
-                        }</span>
-                }
-                <span class="cov8" title="1">if !valueExists </span><span class="cov0" title="0">{
-                        return errors.New("option '" + value + "' is not possible")
-                }</span>
-        }
-
-        <span class="cov8" title="1">otherChoicesCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{
-                "psychologistId":     psyChoiceInput.PsychologistID,
-                "characteristicName": psyChoiceInput.CharacteristicName,
-        })
-        if findErr != nil </span><span class="cov0" title="0">{
-                return findErr
-        }</span>
-
-        <span class="cov8" title="1">defer otherChoicesCursor.Close(context.Background())
-
-        for otherChoicesCursor.Next(context.Background()) </span><span class="cov0" title="0">{
-                choice := models.PsychologistCharacteristicChoice{}
-
-                decodeErr := otherChoicesCursor.Decode(&amp;choice)
+                decodeErr := cursor.Decode(&amp;characteristic)
                 if decodeErr != nil </span><span class="cov0" title="0">{
                         return decodeErr
                 }</span>
 
-                <span class="cov0" title="0">deleteErr := s.DatabaseUtil.DeleteOne("psi_db", "psychologist_characteristic_choices", map[string]interface{}{
-                        "psychologistId":     choice.PsychologistID,
-                        "characteristicName": choice.CharacteristicName,
-                })
-                if deleteErr != nil </span><span class="cov0" title="0">{
-                        return deleteErr
-                }</span>
-        }
+                <span class="cov8" title="1">for _, i := range input </span><span class="cov8" title="1">{
 
-        <span class="cov8" title="1">for _, value := range psyChoiceInput.Values </span><span class="cov8" title="1">{
-                choice := models.PsychologistCharacteristicChoice{
-                        PsychologistID:     psyChoiceInput.PsychologistID,
-                        CharacteristicName: psyChoiceInput.CharacteristicName,
-                        Value:              value,
+                        if characteristic.Name == i.CharacteristicName </span><span class="cov8" title="1">{
+
+                                if !characteristic.Many &amp;&amp; characteristic.PossibleValues == "true,false" </span><span class="cov0" title="0">{
+
+                                        if len(i.Values) != 1 || (i.Values[0] != "true" &amp;&amp; i.Values[0] != "false") </span><span class="cov0" title="0">{
+                                                return errors.New("characteristic '" + characteristic.Name + "' is either true or false")
+                                        }</span>
+
+                                        <span class="cov0" title="0">if i.Values[0] == "true" </span><span class="cov0" title="0">{
+                                                choices = append(choices, models.PsychologistCharacteristicChoice{
+                                                        PsychologistID:     id,
+                                                        CharacteristicName: i.CharacteristicName,
+                                                        Value:              "true",
+                                                })
+                                        }</span>
+
+                                }
+
+                                <span class="cov8" title="1">if !characteristic.Many &amp;&amp; len(i.Values) != 1 </span><span class="cov8" title="1">{
+                                        return errors.New("characteristic '" + characteristic.Name + "' needs exactly one value")
+                                }</span>
+
+                                <span class="cov8" title="1">possibleValues := strings.Split(characteristic.PossibleValues, ",")
+
+                                for _, value := range i.Values </span><span class="cov8" title="1">{
+                                        var valueExists = false
+                                        for _, posValue := range possibleValues </span><span class="cov8" title="1">{
+                                                if posValue == value </span><span class="cov8" title="1">{
+                                                        valueExists = true
+                                                }</span>
+                                        }
+                                        <span class="cov8" title="1">if !valueExists </span><span class="cov0" title="0">{
+                                                return errors.New("option '" + value + "' is not possible in characteristic " + i.CharacteristicName)
+                                        }</span>
+
+                                        <span class="cov8" title="1">choices = append(choices, models.PsychologistCharacteristicChoice{
+                                                PsychologistID:     id,
+                                                CharacteristicName: i.CharacteristicName,
+                                                Value:              value,
+                                        })</span>
+                                }
+
+                        }
+
                 }
 
-                insertErr := s.DatabaseUtil.InsertOne("psi_db", "psychologist_characteristic_choices", choice)
-                if insertErr != nil </span><span class="cov0" title="0">{
-                        return insertErr
-                }</span>
         }
+
+        <span class="cov8" title="1">deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
+        if deleteErr != nil </span><span class="cov0" title="0">{
+                return deleteErr
+        }</span>
+
+        <span class="cov8" title="1">writeErr := s.DatabaseUtil.InsertMany("psi_db", "psychologist_characteristic_choices", choices)
+        if writeErr != nil </span><span class="cov0" title="0">{
+                return writeErr
+        }</span>
 
         <span class="cov8" title="1">return nil</span>
 
@@ -7013,8 +7037,6 @@ type SetPsychologistCharacteristicsService struct {
 // Execute is the method that runs the business logic of the service
 func (s SetPsychologistCharacteristicsService) Execute(input []*models.SetPsychologistCharacteristicInput) error <span class="cov8" title="1">{
 
-        s.DatabaseUtil.DeleteMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
-
         newCharacteristics := []interface{}{}
 
         for _, char := range input </span><span class="cov8" title="1">{
@@ -7025,6 +7047,11 @@ func (s SetPsychologistCharacteristicsService) Execute(input []*models.SetPsycho
                 }
 
                 newCharacteristics = append(newCharacteristics, characteristic)
+        }</span>
+
+        <span class="cov8" title="1">deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
+        if deleteErr != nil </span><span class="cov0" title="0">{
+                return deleteErr
         }</span>
 
         <span class="cov8" title="1">writeErr := s.DatabaseUtil.InsertMany("psi_db", "psychologist_characteristics", newCharacteristics)
@@ -7895,8 +7922,7 @@ func (m mockDBClient) DeleteOne(database string, table string, matches map[strin
                         }</span>
                 }
                 <span class="cov8" title="1">if matching </span><span class="cov0" title="0">{
-                        newTable := append(m.client[database][table][:k], m.client[database][table][k+1:]...)
-                        m.client[database][table] = newTable
+                        m.client[database][table] = append(m.client[database][table][:k], m.client[database][table][k+1:]...)
                         return nil
                 }</span>
         }
@@ -7906,19 +7932,26 @@ func (m mockDBClient) DeleteOne(database string, table string, matches map[strin
 
 func (m mockDBClient) DeleteMany(database string, table string, matches map[string]interface{}) error <span class="cov8" title="1">{
         value := map[string]interface{}{}
-        for k, v := range m.client[database][table] </span><span class="cov0" title="0">{
+
+        toDelete := []int{}
+
+        for k, v := range m.client[database][table] </span><span class="cov8" title="1">{
                 json.Unmarshal(v, &amp;value)
                 matching := true
-                for matchKey, matchValue := range matches </span><span class="cov0" title="0">{
-                        if value[matchKey] != matchValue </span><span class="cov0" title="0">{
+                for matchKey, matchValue := range matches </span><span class="cov8" title="1">{
+                        if value[matchKey] != matchValue </span><span class="cov8" title="1">{
                                 matching = false
                         }</span>
                 }
-                <span class="cov0" title="0">if matching </span><span class="cov0" title="0">{
-                        newTable := append(m.client[database][table][:k], m.client[database][table][k+1:]...)
-                        m.client[database][table] = newTable
+                <span class="cov8" title="1">if matching </span><span class="cov8" title="1">{
+                        toDelete = append(toDelete, k)
                 }</span>
         }
+
+        <span class="cov8" title="1">for index, key := range toDelete </span><span class="cov8" title="1">{
+                i := key - index
+                m.client[database][table] = append(m.client[database][table][:i], m.client[database][table][i+1:]...)
+        }</span>
 
         <span class="cov8" title="1">return nil</span>
 }

@@ -27,7 +27,7 @@ func (r *mutationResolver) CreateOwnPsychologistProfile(ctx context.Context, inp
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPsychologistCharacteristicChoice(ctx context.Context, input profiles_models.SetPsychologistCharacteristicChoiceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*profiles_models.SetPsychologistCharacteristicChoiceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -35,13 +35,7 @@ func (r *mutationResolver) SetOwnPsychologistCharacteristicChoice(ctx context.Co
 		return nil, servicePsyErr
 	}
 
-	serviceInput := &profiles_models.SetPsychologistCharacteristicChoiceInput{
-		PsychologistID:     servicePsy.ID,
-		CharacteristicName: input.CharacteristicName,
-		Values:             input.Values,
-	}
-
-	serviceErr := r.SetPsychologistCharacteristicChoiceService().Execute(serviceInput)
+	serviceErr := r.SetPsychologistCharacteristicChoicesService().Execute(servicePsy.ID, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}

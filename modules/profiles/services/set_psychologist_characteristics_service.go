@@ -17,8 +17,6 @@ type SetPsychologistCharacteristicsService struct {
 // Execute is the method that runs the business logic of the service
 func (s SetPsychologistCharacteristicsService) Execute(input []*models.SetPsychologistCharacteristicInput) error {
 
-	s.DatabaseUtil.DeleteMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
-
 	newCharacteristics := []interface{}{}
 
 	for _, char := range input {
@@ -29,6 +27,11 @@ func (s SetPsychologistCharacteristicsService) Execute(input []*models.SetPsycho
 		}
 
 		newCharacteristics = append(newCharacteristics, characteristic)
+	}
+
+	deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
+	if deleteErr != nil {
+		return deleteErr
 	}
 
 	writeErr := s.DatabaseUtil.InsertMany("psi_db", "psychologist_characteristics", newCharacteristics)

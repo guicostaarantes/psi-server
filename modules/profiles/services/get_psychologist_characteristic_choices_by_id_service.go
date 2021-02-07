@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -43,8 +42,6 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
 
 		characteristics = append(characteristics, &characteristicResponse)
 	}
-
-	fmt.Printf("%v\n", characteristics)
 
 	choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
 	if findErr != nil {

@@ -509,82 +509,112 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should choose own psychologist characteristic only if user is coordinator or psychologist", func(t *testing.T) {
 
 		query := `mutation {
-			setOwnPsychologistCharacteristicChoice(input: {
-				characteristicName: "skin-color",
-				values: [
-					"black"
-				]
-			})
+			setOwnPsychologistCharacteristicChoices(input: [
+				{
+					characteristicName: "skin-color",
+					values: [
+						"black"
+					]
+				},
+				{
+					characteristicName: "techniques",
+					values: [
+						"technique-1",
+						"technique-3"
+					]
+				},
+			])
 		}`
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistCharacteristicChoices\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistCharacteristicChoices\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 	})
 
 	t.Run("should not select multiple psychologist characteristics if many option is false", func(t *testing.T) {
 
 		query := `mutation {
-			setOwnPsychologistCharacteristicChoice(input: {
-				characteristicName: "skin-color",
-				values: [
-					"white",
-					"black"
-				]
-			})
+			setOwnPsychologistCharacteristicChoices(input: [
+				{
+					characteristicName: "skin-color",
+					values: [
+						"white",
+						"black"
+					]
+				},
+				{
+					characteristicName: "techniques",
+					values: [
+						"technique-1",
+						"technique-3"
+					]
+				},
+			])
 		}`
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'skin-color' needs exactly one value\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
-
-		response = gql(router, query, storedVariables["coordinator_token"])
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'skin-color' needs exactly one value\",\"path\":[\"setOwnPsychologistCharacteristicChoice\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'skin-color' needs exactly one value\",\"path\":[\"setOwnPsychologistCharacteristicChoices\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 	})
 
 	t.Run("should select one or more psychologist characteristics if many option is true", func(t *testing.T) {
 
 		query := `mutation {
-			setOwnPsychologistCharacteristicChoice(input: {
-				characteristicName: "techniques",
-				values: [
-					"technique-1"
-				]
-			})
+			setOwnPsychologistCharacteristicChoices(input: [
+				{
+					characteristicName: "skin-color",
+					values: [
+						"white"
+					]
+				},
+				{
+					characteristicName: "techniques",
+					values: [
+						"technique-1",
+						"technique-3"
+					]
+				},
+			])
 		}`
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 		query = `mutation {
-			setOwnPsychologistCharacteristicChoice(input: {
-				characteristicName: "techniques",
-				values: [
-					"technique-2",
-					"technique-3"
-				]
-			})
+			setOwnPsychologistCharacteristicChoices(input: [
+				{
+					characteristicName: "skin-color",
+					values: [
+						"black"
+					]
+				},
+				{
+					characteristicName: "techniques",
+					values: [
+						"technique-2"
+					]
+				},
+			])
 		}`
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoice\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 	})
 
@@ -604,11 +634,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"black\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-2\",\"technique-3\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"black\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-2\"]}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"black\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-1\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"white\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-1\",\"technique-3\"]}]}}}", response.Body.String())
 
 	})
 
