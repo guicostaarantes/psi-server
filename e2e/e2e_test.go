@@ -374,12 +374,20 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			setPsychologistCharacteristics(input: [
 				{
-					name: "skin-color",
+					name: "black",
 					many: false,
 					possibleValues: [
-						"black",
-						"white",
-						"not-informed"
+						"true",
+						"false"
+					]
+				},
+				{
+					name: "gender",
+					many: false,
+					possibleValues: [
+						"male",
+						"female",
+						"non-binary"
 					]
 				},
 				{
@@ -433,12 +441,12 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["psychologist_token"])
 
 		charName0 := fastjson.GetString(response.Body.Bytes(), "data", "getPsychologistCharacteristics", "0", "name")
-		assert.Equal(t, "skin-color", charName0)
+		assert.Equal(t, "black", charName0)
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		charName1 := fastjson.GetString(response.Body.Bytes(), "data", "getPsychologistCharacteristics", "1", "name")
-		assert.Equal(t, "techniques", charName1)
+		assert.Equal(t, "gender", charName1)
 
 		charID := fastjson.GetString(response.Body.Bytes(), "data", "getPsychologistCharacteristics", "0", "id")
 		storedVariables["psychologist_characteristic_0_id"] = charID
@@ -511,9 +519,15 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			setOwnPsychologistCharacteristicChoices(input: [
 				{
-					characteristicName: "skin-color",
+					characteristicName: "black",
 					values: [
-						"black"
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"male"
 					]
 				},
 				{
@@ -544,15 +558,22 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
-	t.Run("should not select multiple psychologist characteristics if many option is false", func(t *testing.T) {
+	t.Run("should not select multiple psychologist characteristics if characteristic options are true or false", func(t *testing.T) {
 
 		query := `mutation {
 			setOwnPsychologistCharacteristicChoices(input: [
 				{
-					characteristicName: "skin-color",
+					characteristicName: "black",
 					values: [
-						"white",
-						"black"
+						"true",
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"male",
+						"female"
 					]
 				},
 				{
@@ -567,7 +588,40 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'skin-color' needs exactly one value\",\"path\":[\"setOwnPsychologistCharacteristicChoices\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'black' must be either true or false\",\"path\":[\"setOwnPsychologistCharacteristicChoices\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should not select multiple psychologist characteristics if many option is false", func(t *testing.T) {
+
+		query := `mutation {
+			setOwnPsychologistCharacteristicChoices(input: [
+				{
+					characteristicName: "black",
+					values: [
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"male",
+						"female"
+					]
+				},
+				{
+					characteristicName: "techniques",
+					values: [
+						"technique-1",
+						"technique-3"
+					]
+				},
+			])
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'gender' needs exactly one value\",\"path\":[\"setOwnPsychologistCharacteristicChoices\"]}],\"data\":{\"setOwnPsychologistCharacteristicChoices\":null}}", response.Body.String())
 
 	})
 
@@ -576,9 +630,15 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			setOwnPsychologistCharacteristicChoices(input: [
 				{
-					characteristicName: "skin-color",
+					characteristicName: "black",
 					values: [
-						"white"
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"non-binary"
 					]
 				},
 				{
@@ -598,9 +658,15 @@ func TestEnd2End(t *testing.T) {
 		query = `mutation {
 			setOwnPsychologistCharacteristicChoices(input: [
 				{
-					characteristicName: "skin-color",
+					characteristicName: "black",
 					values: [
-						"black"
+						"true"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"female"
 					]
 				},
 				{
@@ -634,11 +700,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"black\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-2\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"characteristics\":[{\"name\":\"black\",\"many\":false,\"values\":[\"true\"]},{\"name\":\"gender\",\"many\":false,\"values\":[\"female\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-2\"]}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"skin-color\",\"many\":false,\"values\":[\"white\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-1\",\"technique-3\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"black\",\"many\":false,\"values\":[]},{\"name\":\"gender\",\"many\":false,\"values\":[\"non-binary\"]},{\"name\":\"techniques\",\"many\":true,\"values\":[\"technique-1\",\"technique-3\"]}]}}}", response.Body.String())
 
 	})
 

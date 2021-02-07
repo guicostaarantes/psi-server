@@ -41,7 +41,7 @@ func (s SetPsychologistCharacteristicChoicesService) Execute(id string, input []
 				if !characteristic.Many && characteristic.PossibleValues == "true,false" {
 
 					if len(i.Values) != 1 || (i.Values[0] != "true" && i.Values[0] != "false") {
-						return errors.New("characteristic '" + characteristic.Name + "' is either true or false")
+						return errors.New("characteristic '" + characteristic.Name + "' must be either true or false")
 					}
 
 					if i.Values[0] == "true" {
@@ -51,6 +51,8 @@ func (s SetPsychologistCharacteristicChoicesService) Execute(id string, input []
 							Value:              "true",
 						})
 					}
+
+					continue
 
 				}
 
