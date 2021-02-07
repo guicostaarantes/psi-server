@@ -4,8 +4,8 @@ type mockMailer struct {
 	mockedMessages *[]map[string]interface{}
 }
 
-func (s mockMailer) GetMockedMessages() *[]map[string]interface{} {
-	return s.mockedMessages
+func (s mockMailer) GetMockedMessages() (*[]map[string]interface{}, error) {
+	return s.mockedMessages, nil
 }
 
 func (s mockMailer) Send(msg Message) error {

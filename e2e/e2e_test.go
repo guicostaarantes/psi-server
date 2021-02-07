@@ -166,8 +166,9 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
-		mailbox := res.MailUtil.GetMockedMessages()
 		var mailBody string
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
 
 		for _, mail := range *mailbox {
 			if reflect.DeepEqual(mail["to"], []string{"tom.brady@psi.com.br"}) && mail["subject"] == "Bem-vindo ao PSI" {
@@ -257,8 +258,9 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
-		mailbox := res.MailUtil.GetMockedMessages()
 		var mailBody string
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
 
 		for _, mail := range *mailbox {
 			if reflect.DeepEqual(mail["to"], []string{"patrick.mahomes@psi.com.br"}) && mail["subject"] == "Bem-vindo ao PSI" {

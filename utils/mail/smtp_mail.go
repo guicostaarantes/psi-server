@@ -13,8 +13,8 @@ type smtpMailer struct {
 	loggingUtil logging.ILoggingUtil
 }
 
-func (s smtpMailer) GetMockedMessages() *[]map[string]interface{} {
-	return nil
+func (s smtpMailer) GetMockedMessages() (*[]map[string]interface{}, error) {
+	return nil, errors.New("this is not a mock implementation")
 }
 
 func (s smtpMailer) Send(msg Message) error {
