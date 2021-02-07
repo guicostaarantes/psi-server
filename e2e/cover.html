@@ -75,7 +75,7 @@
 				
 				<option value="file9">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_by_user_id_service.go (71.4%)</option>
 				
-				<option value="file10">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_characteristics_by_id_service.go (85.2%)</option>
+				<option value="file10">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_characteristics_by_id_service.go (84.6%)</option>
 				
 				<option value="file11">github.com/guicostaarantes/psi-server/modules/profiles/services/get_psychologist_characteristics_service.go (84.6%)</option>
 				
@@ -7040,6 +7040,7 @@ func (s GetPsychologistByUserIDService) Execute(id string) (*models.Psychologist
 
 import (
         "context"
+        "fmt"
         "strings"
 
         models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -7054,7 +7055,7 @@ type GetPsychologistCharacteristicsByPsyIDService struct {
 // Execute is the method that runs the business logic of the service
 func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsychologistCharacteristicChoiceResponse, error) <span class="cov8" title="1">{
 
-        charMap := map[string]*models.PsychologistCharacteristicChoiceResponse{}
+        allCharacteristics := []*models.PsychologistCharacteristicChoiceResponse{}
 
         charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
         if findErr != nil </span><span class="cov0" title="0">{
@@ -7079,10 +7080,12 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
                         PossibleValues: strings.Split(characteristic.PossibleValues, ","),
                 }
 
-                charMap[characteristic.Name] = &amp;characteristicResponse</span>
+                allCharacteristics = append(allCharacteristics, &amp;characteristicResponse)</span>
         }
 
-        <span class="cov8" title="1">choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
+        <span class="cov8" title="1">fmt.Printf("%v\n", allCharacteristics)
+
+        choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
         if findErr != nil </span><span class="cov0" title="0">{
                 return nil, findErr
         }</span>
@@ -7090,25 +7093,21 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
         <span class="cov8" title="1">defer choiceCursor.Close(context.Background())
 
         for choiceCursor.Next(context.Background()) </span><span class="cov8" title="1">{
-                characteristic := models.PsychologistCharacteristicChoice{}
+                choice := models.PsychologistCharacteristicChoice{}
 
-                decodeErr := choiceCursor.Decode(&amp;characteristic)
+                decodeErr := choiceCursor.Decode(&amp;choice)
                 if decodeErr != nil </span><span class="cov0" title="0">{
                         return nil, decodeErr
                 }</span>
 
-                <span class="cov8" title="1">char := charMap[characteristic.CharacteristicName]
-
-                char.Values = append(char.Values, characteristic.Value)</span>
+                <span class="cov8" title="1">for _, char := range allCharacteristics </span><span class="cov8" title="1">{
+                        if char.Name == choice.CharacteristicName </span><span class="cov8" title="1">{
+                                char.Values = append(char.Values, choice.Value)
+                        }</span>
+                }
         }
 
-        <span class="cov8" title="1">characteristics := []*models.PsychologistCharacteristicChoiceResponse{}
-
-        for _, char := range charMap </span><span class="cov8" title="1">{
-                characteristics = append(characteristics, char)
-        }</span>
-
-        <span class="cov8" title="1">return characteristics, nil</span>
+        <span class="cov8" title="1">return allCharacteristics, nil</span>
 
 }
 </pre>

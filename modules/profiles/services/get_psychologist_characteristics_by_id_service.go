@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -16,7 +17,7 @@ type GetPsychologistCharacteristicsByPsyIDService struct {
 // Execute is the method that runs the business logic of the service
 func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsychologistCharacteristicChoiceResponse, error) {
 
-	charMap := map[string]*models.PsychologistCharacteristicChoiceResponse{}
+	characteristics := []*models.PsychologistCharacteristicChoiceResponse{}
 
 	charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
 	if findErr != nil {
@@ -41,8 +42,10 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
 			PossibleValues: strings.Split(characteristic.PossibleValues, ","),
 		}
 
-		charMap[characteristic.Name] = &characteristicResponse
+		characteristics = append(characteristics, &characteristicResponse)
 	}
+
+	fmt.Printf("%v\n", characteristics)
 
 	choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
 	if findErr != nil {
@@ -52,22 +55,18 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
 	defer choiceCursor.Close(context.Background())
 
 	for choiceCursor.Next(context.Background()) {
-		characteristic := models.PsychologistCharacteristicChoice{}
+		choice := models.PsychologistCharacteristicChoice{}
 
-		decodeErr := choiceCursor.Decode(&characteristic)
+		decodeErr := choiceCursor.Decode(&choice)
 		if decodeErr != nil {
 			return nil, decodeErr
 		}
 
-		char := charMap[characteristic.CharacteristicName]
-
-		char.Values = append(char.Values, characteristic.Value)
-	}
-
-	characteristics := []*models.PsychologistCharacteristicChoiceResponse{}
-
-	for _, char := range charMap {
-		characteristics = append(characteristics, char)
+		for _, char := range characteristics {
+			if char.Name == choice.CharacteristicName {
+				char.Values = append(char.Values, choice.Value)
+			}
+		}
 	}
 
 	return characteristics, nil
