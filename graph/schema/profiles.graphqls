@@ -1,3 +1,8 @@
+input CreateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
+    birthDate: Int!
+    city: String!
+}
+
 input CreateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
     birthDate: Int!
     city: String!
@@ -14,12 +19,37 @@ input SetOwnPsychologistCharacteristicChoiceInput @goModel(model: "github.com/gu
     values: [String!]!
 }
 
+input UpdateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
+    birthDate: Int!
+    city: String!
+}
+
 input UpdateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
     birthDate: Int!
     city: String!
 }
 
 input SetPsychologistCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPsychologistCharacteristicInput") {
+    name: String!
+    many: Boolean!
+    possibleValues: [String!]!
+}
+
+type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
+    id: ID!
+    birthDate: Int!
+    city: String!
+    characteristics: [PatientCharacteristicChoice!]!
+}
+
+type PatientCharacteristicChoice @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PatientCharacteristicChoiceResponse") {
+    name: String!
+    many: Boolean!
+    values: [String!]!
+    possibleValues: [String!]!
+}
+
+type PatientCharacteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PatientCharacteristicResponse") {
     name: String!
     many: Boolean!
     possibleValues: [String!]!
@@ -46,13 +76,16 @@ type PsychologistCharacteristic @goModel(model: "github.com/guicostaarantes/psi-
 }
 
 extend type Query {
+    getOwnPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     getPsychologistCharacteristics: [PsychologistCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 extend type Mutation {
+    createOwnPatientProfile(input: CreateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setOwnPsychologistCharacteristicChoices(input: [SetOwnPsychologistCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setPsychologistCharacteristics(input: [SetPsychologistCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
+    updateOwnPatientProfile(input: UpdateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
