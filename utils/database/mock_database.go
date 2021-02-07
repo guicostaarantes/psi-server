@@ -158,8 +158,7 @@ func (m mockDBClient) DeleteOne(database string, table string, matches map[strin
 			}
 		}
 		if matching {
-			newTable := append(m.client[database][table][:k], m.client[database][table][k+1:]...)
-			m.client[database][table] = newTable
+			m.client[database][table] = append(m.client[database][table][:k], m.client[database][table][k+1:]...)
 			return nil
 		}
 	}
@@ -169,6 +168,9 @@ func (m mockDBClient) DeleteOne(database string, table string, matches map[strin
 
 func (m mockDBClient) DeleteMany(database string, table string, matches map[string]interface{}) error {
 	value := map[string]interface{}{}
+
+	toDelete := []int{}
+
 	for k, v := range m.client[database][table] {
 		json.Unmarshal(v, &value)
 		matching := true
@@ -178,9 +180,13 @@ func (m mockDBClient) DeleteMany(database string, table string, matches map[stri
 			}
 		}
 		if matching {
-			newTable := append(m.client[database][table][:k], m.client[database][table][k+1:]...)
-			m.client[database][table] = newTable
+			toDelete = append(toDelete, k)
 		}
+	}
+
+	for index, key := range toDelete {
+		i := key - index
+		m.client[database][table] = append(m.client[database][table][:i], m.client[database][table][i+1:]...)
 	}
 
 	return nil
