@@ -29,6 +29,12 @@ input UpdateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaaran
     city: String!
 }
 
+input SetPatientCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPatientCharacteristicInput") {
+    name: String!
+    many: Boolean!
+    possibleValues: [String!]!
+}
+
 input SetPsychologistCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPsychologistCharacteristicInput") {
     name: String!
     many: Boolean!
@@ -78,6 +84,7 @@ type PsychologistCharacteristic @goModel(model: "github.com/guicostaarantes/psi-
 extend type Query {
     getOwnPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    getPatientCharacteristics: [PatientCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     getPsychologistCharacteristics: [PsychologistCharacteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
@@ -85,6 +92,7 @@ extend type Mutation {
     createOwnPatientProfile(input: CreateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setOwnPsychologistCharacteristicChoices(input: [SetOwnPsychologistCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    setPatientCharacteristics(input: [SetPatientCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
     setPsychologistCharacteristics(input: [SetPsychologistCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
     updateOwnPatientProfile(input: UpdateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])

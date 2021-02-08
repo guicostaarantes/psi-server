@@ -448,9 +448,6 @@ func TestEnd2End(t *testing.T) {
 		charName1 := fastjson.GetString(response.Body.Bytes(), "data", "getPsychologistCharacteristics", "1", "name")
 		assert.Equal(t, "gender", charName1)
 
-		charID := fastjson.GetString(response.Body.Bytes(), "data", "getPsychologistCharacteristics", "0", "id")
-		storedVariables["psychologist_characteristic_0_id"] = charID
-
 	})
 
 	t.Run("should create own psychologist profile only if user is coordinator or psychologist", func(t *testing.T) {
@@ -886,6 +883,87 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\"}}}", response.Body.String())
+
+	})
+
+	t.Run("should set patient characteristics only if user is coordinator", func(t *testing.T) {
+
+		query := `mutation {
+			setPatientCharacteristics(input: [
+				{
+					name: "has-consulted-before",
+					many: false,
+					possibleValues: [
+						"true",
+						"false"
+					]
+				},
+				{
+					name: "gender",
+					many: false,
+					possibleValues: [
+						"male",
+						"female",
+						"non-binary"
+					]
+				},
+				{
+					name: "disabilities",
+					many: true,
+					possibleValues: [
+						"vision",
+						"hearing",
+						"locomotion",
+					]
+				}
+			])
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setPatientCharacteristics\"]}],\"data\":{\"setPatientCharacteristics\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setPatientCharacteristics\"]}],\"data\":{\"setPatientCharacteristics\":null}}", response.Body.String())
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setPatientCharacteristics\"]}],\"data\":{\"setPatientCharacteristics\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"setPatientCharacteristics\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should get all patient available characteristics if user is logged in", func(t *testing.T) {
+
+		query := `{
+			getPatientCharacteristics {
+				name
+				many
+				possibleValues
+			}
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"getPatientCharacteristics\"]}],\"data\":null}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"getPatientCharacteristics\":[{\"name\":\"has-consulted-before\",\"many\":false,\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"many\":false,\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"disabilities\",\"many\":true,\"possibleValues\":[\"vision\",\"hearing\",\"locomotion\"]}]}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		charName0 := fastjson.GetString(response.Body.Bytes(), "data", "getPatientCharacteristics", "0", "name")
+		assert.Equal(t, "has-consulted-before", charName0)
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		charName1 := fastjson.GetString(response.Body.Bytes(), "data", "getPatientCharacteristics", "1", "name")
+		assert.Equal(t, "gender", charName1)
 
 	})
 

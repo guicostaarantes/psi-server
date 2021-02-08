@@ -61,6 +61,15 @@ func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.C
 	return nil, nil
 }
 
+func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input []*profiles_models.SetPatientCharacteristicInput) (*bool, error) {
+	serviceErr := r.SetPatientCharacteristicsService().Execute(input)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
 func (r *mutationResolver) SetPsychologistCharacteristics(ctx context.Context, input []*profiles_models.SetPsychologistCharacteristicInput) (*bool, error) {
 	serviceErr := r.SetPsychologistCharacteristicsService().Execute(input)
 	if serviceErr != nil {
@@ -118,6 +127,10 @@ func (r *queryResolver) GetOwnPatientProfile(ctx context.Context) (*profiles_mod
 func (r *queryResolver) GetOwnPsychologistProfile(ctx context.Context) (*profiles_models.Psychologist, error) {
 	userID := ctx.Value("userID").(string)
 	return r.GetPsychologistByUserIDService().Execute(userID)
+}
+
+func (r *queryResolver) GetPatientCharacteristics(ctx context.Context) ([]*profiles_models.PatientCharacteristicResponse, error) {
+	return r.GetPatientCharacteristicsService().Execute()
 }
 
 func (r *queryResolver) GetPsychologistCharacteristics(ctx context.Context) ([]*profiles_models.PsychologistCharacteristicResponse, error) {
