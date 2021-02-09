@@ -1156,4 +1156,78 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should set own psychologist preferences if coordinator or psychologist", func(t *testing.T) {
+
+		query := `mutation {
+			setOwnPsychologistPreferences(input: [
+				{
+					characteristicName: "disabilities",
+					value: "locomotion",
+					weight: 5
+				},
+				{
+					characteristicName: "gender",
+					value: "female",
+					weight: 4
+				}
+			])
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistPreferences\"]}],\"data\":{\"setOwnPsychologistPreferences\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPsychologistPreferences\"]}],\"data\":{\"setOwnPsychologistPreferences\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPsychologistPreferences\":null}}", response.Body.String())
+
+		query = `mutation {
+			setOwnPsychologistPreferences(input: [
+				{
+					characteristicName: "disabilities",
+					value: "vision",
+					weight: 5
+				},
+				{
+					characteristicName: "gender",
+					value: "male",
+					weight: -3
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPsychologistPreferences\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should get own psychologist preferences if psychologist or coordinator", func(t *testing.T) {
+
+		query := `{
+			getOwnPsychologistProfile {
+				birthDate
+				city
+				preferences {
+					characteristicName
+					value
+					weight
+				}
+			}
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"value\":\"female\",\"weight\":4},{\"characteristicName\":\"disabilities\",\"value\":\"locomotion\",\"weight\":5}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"preferences\":[{\"characteristicName\":\"gender\",\"value\":\"male\",\"weight\":-3},{\"characteristicName\":\"disabilities\",\"value\":\"vision\",\"weight\":5}]}}}", response.Body.String())
+
+	})
+
 }

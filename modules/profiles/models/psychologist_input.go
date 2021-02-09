@@ -25,3 +25,10 @@ type SetPsychologistCharacteristicChoiceInput struct {
 	CharacteristicName string   `json:"characteristicName" bson:"characteristicName"`
 	Values             []string `json:"values" bson:"values"`
 }
+
+// SetPsychologistPreferenceInput is the schema for information needed to set the preferences of a psychologist
+type SetPsychologistPreferenceInput struct {
+	CharacteristicName string `json:"characteristicName" bson:"characteristicName"`
+	Value              string `json:"value" bson:"value"`
+	Weight             int64  `json:"weight" bson:"weight"`
+}

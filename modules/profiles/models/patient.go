@@ -21,3 +21,11 @@ type PatientCharacteristicChoice struct {
 	CharacteristicName string `json:"characteristicName" bson:"characteristicName"`
 	Value              string `json:"value" bson:"value"`
 }
+
+// PatientPreference is the schema for the fact that a patient prefers working with a certain kind of psychologist
+type PatientPreference struct {
+	PatientID          string `json:"patientId" bson:"patientId"`
+	CharacteristicName string `json:"characteristicName" bson:"characteristicName"`
+	Value              string `json:"value" bson:"value"`
+	Weight             int64  `json:"weight" bson:"weight"`
+}

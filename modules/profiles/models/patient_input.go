@@ -25,3 +25,10 @@ type SetPatientCharacteristicChoiceInput struct {
 	CharacteristicName string   `json:"characteristicName" bson:"characteristicName"`
 	Values             []string `json:"values" bson:"values"`
 }
+
+// SetPatientPreferenceInput is the schema for information needed to set the preferences of a patient
+type SetPatientPreferenceInput struct {
+	CharacteristicName string `json:"characteristicName" bson:"characteristicName"`
+	Value              string `json:"value" bson:"value"`
+	Weight             int64  `json:"weight" bson:"weight"`
+}

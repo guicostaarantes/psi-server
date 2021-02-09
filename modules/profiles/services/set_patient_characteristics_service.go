@@ -5,13 +5,11 @@ import (
 
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
-	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
 // SetPatientCharacteristicsService is a service that sets all possible patient characteristics
 type SetPatientCharacteristicsService struct {
-	DatabaseUtil   database.IDatabaseUtil
-	IdentifierUtil identifier.IIdentifierUtil
+	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service

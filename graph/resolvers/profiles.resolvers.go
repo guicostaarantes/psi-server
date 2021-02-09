@@ -5,6 +5,7 @@ package resolvers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -60,6 +61,10 @@ func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Contex
 	return nil, nil
 }
 
+func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input []*profiles_models.SetPatientPreferenceInput) (*bool, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*profiles_models.SetPsychologistCharacteristicChoiceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
@@ -69,6 +74,22 @@ func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.C
 	}
 
 	serviceErr := r.SetPsychologistCharacteristicChoicesService().Execute(servicePsy.ID, input)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
+func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, input []*profiles_models.SetPsychologistPreferenceInput) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
+	if servicePsyErr != nil {
+		return nil, servicePsyErr
+	}
+
+	serviceErr := r.SetPsychologistPreferencesService().Execute(servicePsy.ID, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -130,8 +151,16 @@ func (r *patientProfileResolver) Characteristics(ctx context.Context, obj *profi
 	return r.GetPatientCharacteristicsByPatientIDService().Execute(obj.ID)
 }
 
+func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.PatientPreference, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.PsychologistCharacteristicChoiceResponse, error) {
 	return r.GetPsychologistCharacteristicsByPsyIDService().Execute(obj.ID)
+}
+
+func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.PsychologistPreference, error) {
+	return r.GetPsychologistPreferencesByPsyIDService().Execute(obj.ID)
 }
 
 func (r *queryResolver) GetOwnPatientProfile(ctx context.Context) (*profiles_models.Patient, error) {

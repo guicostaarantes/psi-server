@@ -41,6 +41,7 @@ type Resolver struct {
 	getPatientCharacteristicsService             *profiles_services.GetPatientCharacteristicsService
 	getPsychologistByUserIDService               *profiles_services.GetPsychologistByUserIDService
 	getPsychologistCharacteristicsByPsyIDService *profiles_services.GetPsychologistCharacteristicsByPsyIDService
+	getPsychologistPreferencesByPsyIDService     *profiles_services.GetPsychologistPreferencesByPsyIDService
 	getPsychologistCharacteristicsService        *profiles_services.GetPsychologistCharacteristicsService
 	getUsersByRoleService                        *users_services.GetUsersByRoleService
 	getUserByIDService                           *users_services.GetUserByIDService
@@ -50,6 +51,7 @@ type Resolver struct {
 	setPatientCharacteristicsService             *profiles_services.SetPatientCharacteristicsService
 	setPsychologistCharacteristicChoicesService  *profiles_services.SetPsychologistCharacteristicChoicesService
 	setPsychologistCharacteristicsService        *profiles_services.SetPsychologistCharacteristicsService
+	setPsychologistPreferencesService            *profiles_services.SetPsychologistPreferencesService
 	updatePatientService                         *profiles_services.UpdatePatientService
 	updatePsychologistService                    *profiles_services.UpdatePsychologistService
 	updateUserService                            *users_services.UpdateUserService
@@ -185,6 +187,16 @@ func (r *Resolver) GetPsychologistCharacteristicsByPsyIDService() *profiles_serv
 	return r.getPsychologistCharacteristicsByPsyIDService
 }
 
+// GetPsychologistPreferencesByPsyIDService gets or sets the service with same name
+func (r *Resolver) GetPsychologistPreferencesByPsyIDService() *profiles_services.GetPsychologistPreferencesByPsyIDService {
+	if r.getPsychologistPreferencesByPsyIDService == nil {
+		r.getPsychologistPreferencesByPsyIDService = &profiles_services.GetPsychologistPreferencesByPsyIDService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsychologistPreferencesByPsyIDService
+}
+
 // GetPsychologistCharacteristicsService gets or sets the service with same name
 func (r *Resolver) GetPsychologistCharacteristicsService() *profiles_services.GetPsychologistCharacteristicsService {
 	if r.getPsychologistCharacteristicsService == nil {
@@ -250,8 +262,7 @@ func (r *Resolver) SetPatientCharacteristicChoicesService() *profiles_services.S
 func (r *Resolver) SetPatientCharacteristicsService() *profiles_services.SetPatientCharacteristicsService {
 	if r.setPatientCharacteristicsService == nil {
 		r.setPatientCharacteristicsService = &profiles_services.SetPatientCharacteristicsService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
+			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
 	return r.setPatientCharacteristicsService
@@ -271,11 +282,20 @@ func (r *Resolver) SetPsychologistCharacteristicChoicesService() *profiles_servi
 func (r *Resolver) SetPsychologistCharacteristicsService() *profiles_services.SetPsychologistCharacteristicsService {
 	if r.setPsychologistCharacteristicsService == nil {
 		r.setPsychologistCharacteristicsService = &profiles_services.SetPsychologistCharacteristicsService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
+			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
 	return r.setPsychologistCharacteristicsService
+}
+
+// SetPsychologistPreferencesService gets or sets the service with same name
+func (r *Resolver) SetPsychologistPreferencesService() *profiles_services.SetPsychologistPreferencesService {
+	if r.setPsychologistPreferencesService == nil {
+		r.setPsychologistPreferencesService = &profiles_services.SetPsychologistPreferencesService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.setPsychologistPreferencesService
 }
 
 // ResetPasswordService gets or sets the service with same name

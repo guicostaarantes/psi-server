@@ -24,6 +24,18 @@ input SetOwnPsychologistCharacteristicChoiceInput @goModel(model: "github.com/gu
     values: [String!]!
 }
 
+input SetOwnPatientPreferenceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPatientPreferenceInput") {
+    characteristicName: String!
+    value: String!
+    weight: Int!
+}
+
+input SetOwnPsychologistPreferenceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.SetPsychologistPreferenceInput") {
+    characteristicName: String!
+    value: String!
+    weight: Int!
+}
+
 input UpdateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
     birthDate: Int!
     city: String!
@@ -50,7 +62,8 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     id: ID!
     birthDate: Int!
     city: String!
-    characteristics: [PatientCharacteristicChoice!]!
+    characteristics: [PatientCharacteristicChoice!]! @goField(forceResolver: true)
+    preferences: [PatientPreference!]! @goField(forceResolver: true)
 }
 
 type PatientCharacteristicChoice @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PatientCharacteristicChoiceResponse") {
@@ -66,11 +79,18 @@ type PatientCharacteristic @goModel(model: "github.com/guicostaarantes/psi-serve
     possibleValues: [String!]!
 }
 
+type PatientPreference @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PatientPreference") {
+    characteristicName: String!
+    value: String!
+    weight: Int!
+}
+
 type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
     id: ID!
     birthDate: Int!
     city: String!
-    characteristics: [PsychologistCharacteristicChoice!]!
+    characteristics: [PsychologistCharacteristicChoice!]! @goField(forceResolver: true)
+    preferences: [PsychologistPreference!]! @goField(forceResolver: true)
 }
 
 type PsychologistCharacteristicChoice @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsychologistCharacteristicChoiceResponse") {
@@ -86,6 +106,12 @@ type PsychologistCharacteristic @goModel(model: "github.com/guicostaarantes/psi-
     possibleValues: [String!]!
 }
 
+type PsychologistPreference @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.PsychologistPreference") {
+    characteristicName: String!
+    value: String!
+    weight: Int!
+}
+
 extend type Query {
     getOwnPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
@@ -97,7 +123,9 @@ extend type Mutation {
     createOwnPatientProfile(input: CreateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setOwnPatientCharacteristicChoices(input: [SetOwnPatientCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    setOwnPatientPreferences(input: [SetOwnPatientPreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     setOwnPsychologistCharacteristicChoices(input: [SetOwnPsychologistCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    setOwnPsychologistPreferences(input: [SetOwnPsychologistPreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setPatientCharacteristics(input: [SetPatientCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
     setPsychologistCharacteristics(input: [SetPsychologistCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
     updateOwnPatientProfile(input: UpdateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])

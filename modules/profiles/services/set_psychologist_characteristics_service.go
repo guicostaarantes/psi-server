@@ -5,13 +5,11 @@ import (
 
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
-	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
 // SetPsychologistCharacteristicsService is a service that sets all possible psychologist characteristics
 type SetPsychologistCharacteristicsService struct {
-	DatabaseUtil   database.IDatabaseUtil
-	IdentifierUtil identifier.IIdentifierUtil
+	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
