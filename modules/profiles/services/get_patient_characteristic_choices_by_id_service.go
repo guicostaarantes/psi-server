@@ -8,17 +8,17 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// GetPsychologistCharacteristicsByPsyIDService is a service that gets the characteristics of a psychologist by psychologistId
-type GetPsychologistCharacteristicsByPsyIDService struct {
+// GetPatientCharacteristicsByPatientIDService is a service that gets the characteristics of a patient by patientId
+type GetPatientCharacteristicsByPatientIDService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*models.PsychologistCharacteristicChoiceResponse, error) {
+func (s GetPatientCharacteristicsByPatientIDService) Execute(id string) ([]*models.PatientCharacteristicChoiceResponse, error) {
 
-	characteristics := []*models.PsychologistCharacteristicChoiceResponse{}
+	characteristics := []*models.PatientCharacteristicChoiceResponse{}
 
-	charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
+	charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "patient_characteristics", map[string]interface{}{})
 	if findErr != nil {
 		return nil, findErr
 	}
@@ -26,14 +26,14 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
 	defer charCursor.Close(context.Background())
 
 	for charCursor.Next(context.Background()) {
-		characteristic := models.PsychologistCharacteristic{}
+		characteristic := models.PatientCharacteristic{}
 
 		decodeErr := charCursor.Decode(&characteristic)
 		if decodeErr != nil {
 			return nil, decodeErr
 		}
 
-		characteristicResponse := models.PsychologistCharacteristicChoiceResponse{
+		characteristicResponse := models.PatientCharacteristicChoiceResponse{
 			Name:           characteristic.Name,
 			Many:           characteristic.Many,
 			Values:         []string{},
@@ -43,7 +43,7 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
 		characteristics = append(characteristics, &characteristicResponse)
 	}
 
-	choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristic_choices", map[string]interface{}{"psychologistId": id})
+	choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "patient_characteristic_choices", map[string]interface{}{"patientId": id})
 	if findErr != nil {
 		return nil, findErr
 	}
@@ -51,7 +51,7 @@ func (s GetPsychologistCharacteristicsByPsyIDService) Execute(id string) ([]*mod
 	defer choiceCursor.Close(context.Background())
 
 	for choiceCursor.Next(context.Background()) {
-		choice := models.PsychologistCharacteristicChoice{}
+		choice := models.PatientCharacteristicChoice{}
 
 		decodeErr := choiceCursor.Decode(&choice)
 		if decodeErr != nil {

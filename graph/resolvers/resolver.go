@@ -37,14 +37,16 @@ type Resolver struct {
 	createUserService                            *users_services.CreateUserService
 	createUserWithPasswordService                *users_services.CreateUserWithPasswordService
 	getPatientByUserIDService                    *profiles_services.GetPatientByUserIDService
+	getPatientCharacteristicsByPatientIDService  *profiles_services.GetPatientCharacteristicsByPatientIDService
 	getPatientCharacteristicsService             *profiles_services.GetPatientCharacteristicsService
+	getPsychologistByUserIDService               *profiles_services.GetPsychologistByUserIDService
 	getPsychologistCharacteristicsByPsyIDService *profiles_services.GetPsychologistCharacteristicsByPsyIDService
 	getPsychologistCharacteristicsService        *profiles_services.GetPsychologistCharacteristicsService
-	getPsychologistByUserIDService               *profiles_services.GetPsychologistByUserIDService
 	getUsersByRoleService                        *users_services.GetUsersByRoleService
 	getUserByIDService                           *users_services.GetUserByIDService
 	processPendingMailsService                   *mails_services.ProcessPendingMailsService
 	resetPasswordService                         *users_services.ResetPasswordService
+	setPatientCharacteristicChoicesService       *profiles_services.SetPatientCharacteristicChoicesService
 	setPatientCharacteristicsService             *profiles_services.SetPatientCharacteristicsService
 	setPsychologistCharacteristicChoicesService  *profiles_services.SetPsychologistCharacteristicChoicesService
 	setPsychologistCharacteristicsService        *profiles_services.SetPsychologistCharacteristicsService
@@ -153,6 +155,16 @@ func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUs
 	return r.getPatientByUserIDService
 }
 
+// GetPatientCharacteristicsByPatientIDService gets or sets the service with same name
+func (r *Resolver) GetPatientCharacteristicsByPatientIDService() *profiles_services.GetPatientCharacteristicsByPatientIDService {
+	if r.getPatientCharacteristicsByPatientIDService == nil {
+		r.getPatientCharacteristicsByPatientIDService = &profiles_services.GetPatientCharacteristicsByPatientIDService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPatientCharacteristicsByPatientIDService
+}
+
 // GetPatientCharacteristicsService gets or sets the service with same name
 func (r *Resolver) GetPatientCharacteristicsService() *profiles_services.GetPatientCharacteristicsService {
 	if r.getPatientCharacteristicsService == nil {
@@ -222,6 +234,16 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 		}
 	}
 	return r.processPendingMailsService
+}
+
+// SetPatientCharacteristicChoicesService gets or sets the service with same name
+func (r *Resolver) SetPatientCharacteristicChoicesService() *profiles_services.SetPatientCharacteristicChoicesService {
+	if r.setPatientCharacteristicChoicesService == nil {
+		r.setPatientCharacteristicChoicesService = &profiles_services.SetPatientCharacteristicChoicesService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.setPatientCharacteristicChoicesService
 }
 
 // SetPatientCharacteristicsService gets or sets the service with same name

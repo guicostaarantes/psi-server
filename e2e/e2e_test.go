@@ -967,4 +967,193 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should choose own patient characteristic only if user is coordinator or patient", func(t *testing.T) {
+
+		query := `mutation {
+			setOwnPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					values: [
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"male"
+					]
+				},
+				{
+					characteristicName: "disabilities",
+					values: [
+						"locomotion"
+					]
+				},
+			])
+		}`
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPatientCharacteristicChoices\"]}],\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPatientCharacteristicChoices\"]}],\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should not select multiple patient characteristics if characteristic options are true or false", func(t *testing.T) {
+
+		query := `mutation {
+			setOwnPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					values: [
+						"true",
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"male",
+						"female"
+					]
+				},
+				{
+					characteristicName: "disabilities",
+					values: [
+						"vision"
+					]
+				},
+			])
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'has-consulted-before' must be either true or false\",\"path\":[\"setOwnPatientCharacteristicChoices\"]}],\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should not select multiple patient characteristics if many option is false", func(t *testing.T) {
+
+		query := `mutation {
+			setOwnPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					values: [
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"male",
+						"female"
+					]
+				},
+				{
+					characteristicName: "disabilities",
+					values: [
+						"vision"
+					]
+				},
+			])
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"characteristic 'gender' needs exactly one value\",\"path\":[\"setOwnPatientCharacteristicChoices\"]}],\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should select one or more patient characteristics if many option is true", func(t *testing.T) {
+
+		query := `mutation {
+			setOwnPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					values: [
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"non-binary"
+					]
+				},
+				{
+					characteristicName: "disabilities",
+					values: []
+				},
+			])
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+		query = `mutation {
+			setOwnPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					values: [
+						"true"
+					]
+				},
+				{
+					characteristicName: "gender",
+					values: [
+						"female"
+					]
+				},
+				{
+					characteristicName: "disabilities",
+					values: [
+						"hearing",
+						"vision"
+					]
+				},
+			])
+		}`
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should get own patient profile", func(t *testing.T) {
+
+		query := `{
+			getOwnPatientProfile {
+				birthDate
+				city
+				characteristics {
+					name
+					many
+					values
+				}
+			}
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"has-consulted-before\",\"many\":false,\"values\":[]},{\"name\":\"gender\",\"many\":false,\"values\":[\"non-binary\"]},{\"name\":\"disabilities\",\"many\":true,\"values\":[]}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"characteristics\":[{\"name\":\"has-consulted-before\",\"many\":false,\"values\":[\"true\"]},{\"name\":\"gender\",\"many\":false,\"values\":[\"female\"]},{\"name\":\"disabilities\",\"many\":true,\"values\":[\"hearing\",\"vision\"]}]}}}", response.Body.String())
+
+	})
+
 }

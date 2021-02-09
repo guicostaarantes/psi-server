@@ -5,7 +5,6 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -38,6 +37,22 @@ func (r *mutationResolver) CreateOwnPsychologistProfile(ctx context.Context, inp
 	}
 
 	serviceErr := r.CreatePsychologistService().Execute(serviceInput)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
+func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Context, input []*profiles_models.SetPatientCharacteristicChoiceInput) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePsy, servicePsyErr := r.GetPatientByUserIDService().Execute(userID)
+	if servicePsyErr != nil {
+		return nil, servicePsyErr
+	}
+
+	serviceErr := r.SetPatientCharacteristicChoicesService().Execute(servicePsy.ID, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -112,7 +127,7 @@ func (r *mutationResolver) UpdateOwnPsychologistProfile(ctx context.Context, inp
 }
 
 func (r *patientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.PatientCharacteristicChoiceResponse, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.GetPatientCharacteristicsByPatientIDService().Execute(obj.ID)
 }
 
 func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.PsychologistCharacteristicChoiceResponse, error) {
