@@ -1195,7 +1195,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "gender",
 					value: "male",
-					weight: -3
+					weight: 2
 				}
 			])
 		}`
@@ -1226,7 +1226,89 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"preferences\":[{\"characteristicName\":\"gender\",\"value\":\"male\",\"weight\":-3},{\"characteristicName\":\"disabilities\",\"value\":\"vision\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"preferences\":[{\"characteristicName\":\"gender\",\"value\":\"male\",\"weight\":2},{\"characteristicName\":\"disabilities\",\"value\":\"vision\",\"weight\":5}]}}}", response.Body.String())
+
+	})
+
+	t.Run("should set own patient preferences if logged in", func(t *testing.T) {
+
+		query := `mutation {
+			setOwnPatientPreferences(input: [
+				{
+					characteristicName: "black",
+					value: "true",
+					weight: 5
+				},
+				{
+					characteristicName: "gender",
+					value: "female",
+					weight: 5
+				}
+			])
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPatientPreferences\"]}],\"data\":{\"setOwnPatientPreferences\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPatientPreferences\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPatientPreferences\":null}}", response.Body.String())
+
+		query = `mutation {
+			setOwnPatientPreferences(input: [
+				{
+					characteristicName: "black",
+					value: "true",
+					weight: 5
+				},
+				{
+					characteristicName: "gender",
+					value: "female",
+					weight: 3
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"setOwnPatientPreferences\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should get own psychologist preferences if logged in", func(t *testing.T) {
+
+		query := `{
+			getOwnPatientProfile {
+				birthDate
+				city
+				preferences {
+					characteristicName
+					value
+					weight
+				}
+			}
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"getOwnPatientProfile\"]}],\"data\":null}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"birthDate\":811296000,\"city\":\"Kansas City - MI\",\"preferences\":[{\"characteristicName\":\"black\",\"value\":\"true\",\"weight\":5},{\"characteristicName\":\"gender\",\"value\":\"female\",\"weight\":5}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"black\",\"value\":\"true\",\"weight\":5},{\"characteristicName\":\"gender\",\"value\":\"female\",\"weight\":5}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"birthDate\":772502400,\"city\":\"Belo Horizonte - MG\",\"preferences\":[{\"characteristicName\":\"black\",\"value\":\"true\",\"weight\":5},{\"characteristicName\":\"gender\",\"value\":\"female\",\"weight\":3}]}}}", response.Body.String())
 
 	})
 
