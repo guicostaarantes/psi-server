@@ -38,7 +38,7 @@ func (s SetPsychologistPreferencesService) Execute(id string, input []*models.Se
 			if characteristic.Name == i.CharacteristicName {
 				possibleValues := strings.Split(characteristic.PossibleValues, ",")
 				for _, p := range possibleValues {
-					if i.Value == p {
+					if i.Value == p && i.Weight != 0 {
 						preferences = append(preferences, models.PsychologistPreference{
 							PsychologistID:     id,
 							CharacteristicName: i.CharacteristicName,
