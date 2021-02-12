@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/guicostaarantes/psi-server/graph/generated/generated.go (39.9%)</option>
+				<option value="file0">github.com/guicostaarantes/psi-server/graph/generated/generated.go (42.3%)</option>
 				
 				<option value="file1">github.com/guicostaarantes/psi-server/graph/resolvers/mail.resolvers.go (75.0%)</option>
 				
@@ -65,7 +65,7 @@
 				
 				<option value="file4">github.com/guicostaarantes/psi-server/graph/resolvers/users.resolvers.go (36.4%)</option>
 				
-				<option value="file5">github.com/guicostaarantes/psi-server/graph/server.go (87.2%)</option>
+				<option value="file5">github.com/guicostaarantes/psi-server/graph/server.go (87.5%)</option>
 				
 				<option value="file6">github.com/guicostaarantes/psi-server/modules/mails/services/process_pending_mails_service.go (78.9%)</option>
 				
@@ -360,7 +360,7 @@ func (e *executableSchema) Schema() *ast.Schema <span class="cov8" title="1">{
         return parsedSchema
 }</span>
 
-func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]interface{}) (int, bool) <span class="cov0" title="0">{
+func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]interface{}) (int, bool) <span class="cov8" title="1">{
         ec := executionContext{nil, e}
         _ = ec
         switch typeName + "." + field </span>{
@@ -389,8 +389,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.AskResetPassword(childComplexity, args["email"].(string)), true</span>
 
-        case "Mutation.createOwnPatientProfile":<span class="cov0" title="0">
-                if e.complexity.Mutation.CreateOwnPatientProfile == nil </span><span class="cov0" title="0">{
+        case "Mutation.createOwnPatientProfile":<span class="cov8" title="1">
+                if e.complexity.Mutation.CreateOwnPatientProfile == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -401,8 +401,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.CreateOwnPatientProfile(childComplexity, args["input"].(models1.CreatePatientInput)), true</span>
 
-        case "Mutation.createOwnPsychologistProfile":<span class="cov0" title="0">
-                if e.complexity.Mutation.CreateOwnPsychologistProfile == nil </span><span class="cov0" title="0">{
+        case "Mutation.createOwnPsychologistProfile":<span class="cov8" title="1">
+                if e.complexity.Mutation.CreateOwnPsychologistProfile == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -413,8 +413,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.CreateOwnPsychologistProfile(childComplexity, args["input"].(models1.CreatePsychologistInput)), true</span>
 
-        case "Mutation.createPatientUser":<span class="cov0" title="0">
-                if e.complexity.Mutation.CreatePatientUser == nil </span><span class="cov0" title="0">{
+        case "Mutation.createPatientUser":<span class="cov8" title="1">
+                if e.complexity.Mutation.CreatePatientUser == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -425,8 +425,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.CreatePatientUser(childComplexity, args["input"].(models.CreateUserInput)), true</span>
 
-        case "Mutation.createPsychologistUser":<span class="cov0" title="0">
-                if e.complexity.Mutation.CreatePsychologistUser == nil </span><span class="cov0" title="0">{
+        case "Mutation.createPsychologistUser":<span class="cov8" title="1">
+                if e.complexity.Mutation.CreatePsychologistUser == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -461,15 +461,15 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.DeactivateUser(childComplexity, args["id"].(string)), true</span>
 
-        case "Mutation.processPendingMail":<span class="cov0" title="0">
-                if e.complexity.Mutation.ProcessPendingMail == nil </span><span class="cov0" title="0">{
+        case "Mutation.processPendingMail":<span class="cov8" title="1">
+                if e.complexity.Mutation.ProcessPendingMail == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.Mutation.ProcessPendingMail(childComplexity), true</span>
 
-        case "Mutation.resetPassword":<span class="cov0" title="0">
-                if e.complexity.Mutation.ResetPassword == nil </span><span class="cov0" title="0">{
+        case "Mutation.resetPassword":<span class="cov8" title="1">
+                if e.complexity.Mutation.ResetPassword == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -480,8 +480,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.ResetPassword(childComplexity, args["input"].(models.ResetPasswordInput)), true</span>
 
-        case "Mutation.setOwnPatientCharacteristicChoices":<span class="cov0" title="0">
-                if e.complexity.Mutation.SetOwnPatientCharacteristicChoices == nil </span><span class="cov0" title="0">{
+        case "Mutation.setOwnPatientCharacteristicChoices":<span class="cov8" title="1">
+                if e.complexity.Mutation.SetOwnPatientCharacteristicChoices == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -492,8 +492,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.SetOwnPatientCharacteristicChoices(childComplexity, args["input"].([]*models1.SetPatientCharacteristicChoiceInput)), true</span>
 
-        case "Mutation.setOwnPatientPreferences":<span class="cov0" title="0">
-                if e.complexity.Mutation.SetOwnPatientPreferences == nil </span><span class="cov0" title="0">{
+        case "Mutation.setOwnPatientPreferences":<span class="cov8" title="1">
+                if e.complexity.Mutation.SetOwnPatientPreferences == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -504,8 +504,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.SetOwnPatientPreferences(childComplexity, args["input"].([]*models1.SetPatientPreferenceInput)), true</span>
 
-        case "Mutation.setOwnPsychologistCharacteristicChoices":<span class="cov0" title="0">
-                if e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices == nil </span><span class="cov0" title="0">{
+        case "Mutation.setOwnPsychologistCharacteristicChoices":<span class="cov8" title="1">
+                if e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -516,8 +516,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices(childComplexity, args["input"].([]*models1.SetPsychologistCharacteristicChoiceInput)), true</span>
 
-        case "Mutation.setOwnPsychologistPreferences":<span class="cov0" title="0">
-                if e.complexity.Mutation.SetOwnPsychologistPreferences == nil </span><span class="cov0" title="0">{
+        case "Mutation.setOwnPsychologistPreferences":<span class="cov8" title="1">
+                if e.complexity.Mutation.SetOwnPsychologistPreferences == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -528,8 +528,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.SetOwnPsychologistPreferences(childComplexity, args["input"].([]*models1.SetPsychologistPreferenceInput)), true</span>
 
-        case "Mutation.setPatientCharacteristics":<span class="cov0" title="0">
-                if e.complexity.Mutation.SetPatientCharacteristics == nil </span><span class="cov0" title="0">{
+        case "Mutation.setPatientCharacteristics":<span class="cov8" title="1">
+                if e.complexity.Mutation.SetPatientCharacteristics == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -540,8 +540,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.SetPatientCharacteristics(childComplexity, args["input"].([]*models1.SetPatientCharacteristicInput)), true</span>
 
-        case "Mutation.setPsychologistCharacteristics":<span class="cov0" title="0">
-                if e.complexity.Mutation.SetPsychologistCharacteristics == nil </span><span class="cov0" title="0">{
+        case "Mutation.setPsychologistCharacteristics":<span class="cov8" title="1">
+                if e.complexity.Mutation.SetPsychologistCharacteristics == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -552,8 +552,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.SetPsychologistCharacteristics(childComplexity, args["input"].([]*models1.SetPsychologistCharacteristicInput)), true</span>
 
-        case "Mutation.updateOwnPatientProfile":<span class="cov0" title="0">
-                if e.complexity.Mutation.UpdateOwnPatientProfile == nil </span><span class="cov0" title="0">{
+        case "Mutation.updateOwnPatientProfile":<span class="cov8" title="1">
+                if e.complexity.Mutation.UpdateOwnPatientProfile == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -564,8 +564,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.UpdateOwnPatientProfile(childComplexity, args["input"].(models1.UpdatePatientInput)), true</span>
 
-        case "Mutation.updateOwnPsychologistProfile":<span class="cov0" title="0">
-                if e.complexity.Mutation.UpdateOwnPsychologistProfile == nil </span><span class="cov0" title="0">{
+        case "Mutation.updateOwnPsychologistProfile":<span class="cov8" title="1">
+                if e.complexity.Mutation.UpdateOwnPsychologistProfile == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -600,36 +600,36 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(string), args["input"].(models.UpdateUserInput)), true</span>
 
-        case "PatientCharacteristic.many":<span class="cov0" title="0">
-                if e.complexity.PatientCharacteristic.Many == nil </span><span class="cov0" title="0">{
+        case "PatientCharacteristic.many":<span class="cov8" title="1">
+                if e.complexity.PatientCharacteristic.Many == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientCharacteristic.Many(childComplexity), true</span>
 
-        case "PatientCharacteristic.name":<span class="cov0" title="0">
-                if e.complexity.PatientCharacteristic.Name == nil </span><span class="cov0" title="0">{
+        case "PatientCharacteristic.name":<span class="cov8" title="1">
+                if e.complexity.PatientCharacteristic.Name == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientCharacteristic.Name(childComplexity), true</span>
 
-        case "PatientCharacteristic.possibleValues":<span class="cov0" title="0">
-                if e.complexity.PatientCharacteristic.PossibleValues == nil </span><span class="cov0" title="0">{
+        case "PatientCharacteristic.possibleValues":<span class="cov8" title="1">
+                if e.complexity.PatientCharacteristic.PossibleValues == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientCharacteristic.PossibleValues(childComplexity), true</span>
 
-        case "PatientCharacteristicChoice.many":<span class="cov0" title="0">
-                if e.complexity.PatientCharacteristicChoice.Many == nil </span><span class="cov0" title="0">{
+        case "PatientCharacteristicChoice.many":<span class="cov8" title="1">
+                if e.complexity.PatientCharacteristicChoice.Many == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientCharacteristicChoice.Many(childComplexity), true</span>
 
-        case "PatientCharacteristicChoice.name":<span class="cov0" title="0">
-                if e.complexity.PatientCharacteristicChoice.Name == nil </span><span class="cov0" title="0">{
+        case "PatientCharacteristicChoice.name":<span class="cov8" title="1">
+                if e.complexity.PatientCharacteristicChoice.Name == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -642,50 +642,50 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.PatientCharacteristicChoice.PossibleValues(childComplexity), true</span>
 
-        case "PatientCharacteristicChoice.values":<span class="cov0" title="0">
-                if e.complexity.PatientCharacteristicChoice.Values == nil </span><span class="cov0" title="0">{
+        case "PatientCharacteristicChoice.values":<span class="cov8" title="1">
+                if e.complexity.PatientCharacteristicChoice.Values == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientCharacteristicChoice.Values(childComplexity), true</span>
 
-        case "PatientPreference.characteristicName":<span class="cov0" title="0">
-                if e.complexity.PatientPreference.CharacteristicName == nil </span><span class="cov0" title="0">{
+        case "PatientPreference.characteristicName":<span class="cov8" title="1">
+                if e.complexity.PatientPreference.CharacteristicName == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientPreference.CharacteristicName(childComplexity), true</span>
 
-        case "PatientPreference.value":<span class="cov0" title="0">
-                if e.complexity.PatientPreference.Value == nil </span><span class="cov0" title="0">{
+        case "PatientPreference.value":<span class="cov8" title="1">
+                if e.complexity.PatientPreference.Value == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientPreference.Value(childComplexity), true</span>
 
-        case "PatientPreference.weight":<span class="cov0" title="0">
-                if e.complexity.PatientPreference.Weight == nil </span><span class="cov0" title="0">{
+        case "PatientPreference.weight":<span class="cov8" title="1">
+                if e.complexity.PatientPreference.Weight == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientPreference.Weight(childComplexity), true</span>
 
-        case "PatientProfile.birthDate":<span class="cov0" title="0">
-                if e.complexity.PatientProfile.BirthDate == nil </span><span class="cov0" title="0">{
+        case "PatientProfile.birthDate":<span class="cov8" title="1">
+                if e.complexity.PatientProfile.BirthDate == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientProfile.BirthDate(childComplexity), true</span>
 
-        case "PatientProfile.characteristics":<span class="cov0" title="0">
-                if e.complexity.PatientProfile.Characteristics == nil </span><span class="cov0" title="0">{
+        case "PatientProfile.characteristics":<span class="cov8" title="1">
+                if e.complexity.PatientProfile.Characteristics == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientProfile.Characteristics(childComplexity), true</span>
 
-        case "PatientProfile.city":<span class="cov0" title="0">
-                if e.complexity.PatientProfile.City == nil </span><span class="cov0" title="0">{
+        case "PatientProfile.city":<span class="cov8" title="1">
+                if e.complexity.PatientProfile.City == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -698,43 +698,43 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.PatientProfile.ID(childComplexity), true</span>
 
-        case "PatientProfile.preferences":<span class="cov0" title="0">
-                if e.complexity.PatientProfile.Preferences == nil </span><span class="cov0" title="0">{
+        case "PatientProfile.preferences":<span class="cov8" title="1">
+                if e.complexity.PatientProfile.Preferences == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PatientProfile.Preferences(childComplexity), true</span>
 
-        case "PsychologistCharacteristic.many":<span class="cov0" title="0">
-                if e.complexity.PsychologistCharacteristic.Many == nil </span><span class="cov0" title="0">{
+        case "PsychologistCharacteristic.many":<span class="cov8" title="1">
+                if e.complexity.PsychologistCharacteristic.Many == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistCharacteristic.Many(childComplexity), true</span>
 
-        case "PsychologistCharacteristic.name":<span class="cov0" title="0">
-                if e.complexity.PsychologistCharacteristic.Name == nil </span><span class="cov0" title="0">{
+        case "PsychologistCharacteristic.name":<span class="cov8" title="1">
+                if e.complexity.PsychologistCharacteristic.Name == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistCharacteristic.Name(childComplexity), true</span>
 
-        case "PsychologistCharacteristic.possibleValues":<span class="cov0" title="0">
-                if e.complexity.PsychologistCharacteristic.PossibleValues == nil </span><span class="cov0" title="0">{
+        case "PsychologistCharacteristic.possibleValues":<span class="cov8" title="1">
+                if e.complexity.PsychologistCharacteristic.PossibleValues == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistCharacteristic.PossibleValues(childComplexity), true</span>
 
-        case "PsychologistCharacteristicChoice.many":<span class="cov0" title="0">
-                if e.complexity.PsychologistCharacteristicChoice.Many == nil </span><span class="cov0" title="0">{
+        case "PsychologistCharacteristicChoice.many":<span class="cov8" title="1">
+                if e.complexity.PsychologistCharacteristicChoice.Many == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistCharacteristicChoice.Many(childComplexity), true</span>
 
-        case "PsychologistCharacteristicChoice.name":<span class="cov0" title="0">
-                if e.complexity.PsychologistCharacteristicChoice.Name == nil </span><span class="cov0" title="0">{
+        case "PsychologistCharacteristicChoice.name":<span class="cov8" title="1">
+                if e.complexity.PsychologistCharacteristicChoice.Name == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -747,50 +747,50 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.PsychologistCharacteristicChoice.PossibleValues(childComplexity), true</span>
 
-        case "PsychologistCharacteristicChoice.values":<span class="cov0" title="0">
-                if e.complexity.PsychologistCharacteristicChoice.Values == nil </span><span class="cov0" title="0">{
+        case "PsychologistCharacteristicChoice.values":<span class="cov8" title="1">
+                if e.complexity.PsychologistCharacteristicChoice.Values == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistCharacteristicChoice.Values(childComplexity), true</span>
 
-        case "PsychologistPreference.characteristicName":<span class="cov0" title="0">
-                if e.complexity.PsychologistPreference.CharacteristicName == nil </span><span class="cov0" title="0">{
+        case "PsychologistPreference.characteristicName":<span class="cov8" title="1">
+                if e.complexity.PsychologistPreference.CharacteristicName == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistPreference.CharacteristicName(childComplexity), true</span>
 
-        case "PsychologistPreference.value":<span class="cov0" title="0">
-                if e.complexity.PsychologistPreference.Value == nil </span><span class="cov0" title="0">{
+        case "PsychologistPreference.value":<span class="cov8" title="1">
+                if e.complexity.PsychologistPreference.Value == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistPreference.Value(childComplexity), true</span>
 
-        case "PsychologistPreference.weight":<span class="cov0" title="0">
-                if e.complexity.PsychologistPreference.Weight == nil </span><span class="cov0" title="0">{
+        case "PsychologistPreference.weight":<span class="cov8" title="1">
+                if e.complexity.PsychologistPreference.Weight == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistPreference.Weight(childComplexity), true</span>
 
-        case "PsychologistProfile.birthDate":<span class="cov0" title="0">
-                if e.complexity.PsychologistProfile.BirthDate == nil </span><span class="cov0" title="0">{
+        case "PsychologistProfile.birthDate":<span class="cov8" title="1">
+                if e.complexity.PsychologistProfile.BirthDate == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistProfile.BirthDate(childComplexity), true</span>
 
-        case "PsychologistProfile.characteristics":<span class="cov0" title="0">
-                if e.complexity.PsychologistProfile.Characteristics == nil </span><span class="cov0" title="0">{
+        case "PsychologistProfile.characteristics":<span class="cov8" title="1">
+                if e.complexity.PsychologistProfile.Characteristics == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistProfile.Characteristics(childComplexity), true</span>
 
-        case "PsychologistProfile.city":<span class="cov0" title="0">
-                if e.complexity.PsychologistProfile.City == nil </span><span class="cov0" title="0">{
+        case "PsychologistProfile.city":<span class="cov8" title="1">
+                if e.complexity.PsychologistProfile.City == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -803,15 +803,15 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.PsychologistProfile.ID(childComplexity), true</span>
 
-        case "PsychologistProfile.preferences":<span class="cov0" title="0">
-                if e.complexity.PsychologistProfile.Preferences == nil </span><span class="cov0" title="0">{
+        case "PsychologistProfile.preferences":<span class="cov8" title="1">
+                if e.complexity.PsychologistProfile.Preferences == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.PsychologistProfile.Preferences(childComplexity), true</span>
 
-        case "Query.authenticateUser":<span class="cov0" title="0">
-                if e.complexity.Query.AuthenticateUser == nil </span><span class="cov0" title="0">{
+        case "Query.authenticateUser":<span class="cov8" title="1">
+                if e.complexity.Query.AuthenticateUser == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -822,36 +822,36 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Query.AuthenticateUser(childComplexity, args["input"].(models.AuthenticateUserInput)), true</span>
 
-        case "Query.getOwnPatientProfile":<span class="cov0" title="0">
-                if e.complexity.Query.GetOwnPatientProfile == nil </span><span class="cov0" title="0">{
+        case "Query.getOwnPatientProfile":<span class="cov8" title="1">
+                if e.complexity.Query.GetOwnPatientProfile == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.Query.GetOwnPatientProfile(childComplexity), true</span>
 
-        case "Query.getOwnPsychologistProfile":<span class="cov0" title="0">
-                if e.complexity.Query.GetOwnPsychologistProfile == nil </span><span class="cov0" title="0">{
+        case "Query.getOwnPsychologistProfile":<span class="cov8" title="1">
+                if e.complexity.Query.GetOwnPsychologistProfile == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.Query.GetOwnPsychologistProfile(childComplexity), true</span>
 
-        case "Query.getOwnUser":<span class="cov0" title="0">
-                if e.complexity.Query.GetOwnUser == nil </span><span class="cov0" title="0">{
+        case "Query.getOwnUser":<span class="cov8" title="1">
+                if e.complexity.Query.GetOwnUser == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.Query.GetOwnUser(childComplexity), true</span>
 
-        case "Query.getPatientCharacteristics":<span class="cov0" title="0">
-                if e.complexity.Query.GetPatientCharacteristics == nil </span><span class="cov0" title="0">{
+        case "Query.getPatientCharacteristics":<span class="cov8" title="1">
+                if e.complexity.Query.GetPatientCharacteristics == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.Query.GetPatientCharacteristics(childComplexity), true</span>
 
-        case "Query.getPsychologistCharacteristics":<span class="cov0" title="0">
-                if e.complexity.Query.GetPsychologistCharacteristics == nil </span><span class="cov0" title="0">{
+        case "Query.getPsychologistCharacteristics":<span class="cov8" title="1">
+                if e.complexity.Query.GetPsychologistCharacteristics == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -881,22 +881,22 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Query.ListUsersByRole(childComplexity, args["role"].(models.Role)), true</span>
 
-        case "Token.expiresAt":<span class="cov0" title="0">
-                if e.complexity.Token.ExpiresAt == nil </span><span class="cov0" title="0">{
+        case "Token.expiresAt":<span class="cov8" title="1">
+                if e.complexity.Token.ExpiresAt == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.Token.ExpiresAt(childComplexity), true</span>
 
-        case "Token.token":<span class="cov0" title="0">
-                if e.complexity.Token.Token == nil </span><span class="cov0" title="0">{
+        case "Token.token":<span class="cov8" title="1">
+                if e.complexity.Token.Token == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 <span class="cov0" title="0">return e.complexity.Token.Token(childComplexity), true</span>
 
-        case "User.email":<span class="cov0" title="0">
-                if e.complexity.User.Email == nil </span><span class="cov0" title="0">{
+        case "User.email":<span class="cov8" title="1">
+                if e.complexity.User.Email == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -909,8 +909,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.User.FirstName(childComplexity), true</span>
 
-        case "User.id":<span class="cov0" title="0">
-                if e.complexity.User.ID == nil </span><span class="cov0" title="0">{
+        case "User.id":<span class="cov8" title="1">
+                if e.complexity.User.ID == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -931,7 +931,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
                 <span class="cov0" title="0">return e.complexity.User.Role(childComplexity), true</span>
 
         }
-        <span class="cov0" title="0">return 0, false</span>
+        <span class="cov8" title="1">return 0, false</span>
 }
 
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler <span class="cov8" title="1">{
@@ -9201,6 +9201,7 @@ import (
 
         "github.com/99designs/gqlgen/graphql"
         "github.com/99designs/gqlgen/graphql/handler"
+        "github.com/99designs/gqlgen/graphql/handler/extension"
         "github.com/99designs/gqlgen/graphql/playground"
         "github.com/go-chi/chi"
         "github.com/guicostaarantes/psi-server/graph/generated"
@@ -9276,6 +9277,7 @@ func CreateServer(res *resolvers.Resolver) *chi.Mux <span class="cov8" title="1"
         })
 
         <span class="cov8" title="1">srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
+        srv.Use(extension.FixedComplexityLimit(10))
 
         router.Handle("/", playground.Handler("GraphQL playground", "/gql"))
         router.Handle("/gql", srv)

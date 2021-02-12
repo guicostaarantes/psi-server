@@ -10,6 +10,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/guicostaarantes/psi-server/graph/generated"
@@ -85,6 +86,7 @@ func CreateServer(res *resolvers.Resolver) *chi.Mux {
 	})
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
+	srv.Use(extension.FixedComplexityLimit(10))
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/gql"))
 	router.Handle("/gql", srv)
