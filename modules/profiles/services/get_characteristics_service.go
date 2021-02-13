@@ -8,17 +8,17 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// GetPsychologistCharacteristicsService is a service that gets the user by userId
-type GetPsychologistCharacteristicsService struct {
+// GetCharacteristicsService is a service that gets all possible characteristic based on the target
+type GetCharacteristicsService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPsychologistCharacteristicsService) Execute() ([]*models.PsychologistCharacteristicResponse, error) {
+func (s GetCharacteristicsService) Execute(target models.CharacteristicTarget) ([]*models.CharacteristicResponse, error) {
 
-	characteristics := []*models.PsychologistCharacteristicResponse{}
+	characteristics := []*models.CharacteristicResponse{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "psychologist_characteristics", map[string]interface{}{})
+	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
 	if findErr != nil {
 		return nil, findErr
 	}
@@ -26,16 +26,16 @@ func (s GetPsychologistCharacteristicsService) Execute() ([]*models.Psychologist
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
-		characteristic := models.PsychologistCharacteristic{}
+		characteristic := models.Characteristic{}
 
 		decodeErr := cursor.Decode(&characteristic)
 		if decodeErr != nil {
 			return nil, decodeErr
 		}
 
-		characteristicResponse := models.PsychologistCharacteristicResponse{
+		characteristicResponse := models.CharacteristicResponse{
 			Name:           characteristic.Name,
-			Many:           characteristic.Many,
+			Type:           characteristic.Type,
 			PossibleValues: strings.Split(characteristic.PossibleValues, ","),
 		}
 

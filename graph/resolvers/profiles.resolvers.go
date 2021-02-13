@@ -44,7 +44,7 @@ func (r *mutationResolver) CreateOwnPsychologistProfile(ctx context.Context, inp
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Context, input []*profiles_models.SetPatientCharacteristicChoiceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Context, input []*profiles_models.SetCharacteristicChoiceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -52,7 +52,7 @@ func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Contex
 		return nil, servicePatientErr
 	}
 
-	serviceErr := r.SetPatientCharacteristicChoicesService().Execute(servicePatient.ID, input)
+	serviceErr := r.SetCharacteristicChoicesService().Execute(servicePatient.ID, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -60,7 +60,7 @@ func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Contex
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input []*profiles_models.SetPatientPreferenceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input []*profiles_models.SetPreferenceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -68,7 +68,7 @@ func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input [
 		return nil, servicePatientErr
 	}
 
-	serviceErr := r.SetPatientPreferencesService().Execute(servicePatient.ID, input)
+	serviceErr := r.SetPreferencesService().Execute(servicePatient.ID, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -76,7 +76,7 @@ func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input [
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*profiles_models.SetPsychologistCharacteristicChoiceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*profiles_models.SetCharacteristicChoiceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -84,7 +84,7 @@ func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.C
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.SetPsychologistCharacteristicChoicesService().Execute(servicePsy.ID, input)
+	serviceErr := r.SetCharacteristicChoicesService().Execute(servicePsy.ID, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -92,7 +92,7 @@ func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.C
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, input []*profiles_models.SetPsychologistPreferenceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, input []*profiles_models.SetPreferenceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -100,7 +100,7 @@ func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, in
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.SetPsychologistPreferencesService().Execute(servicePsy.ID, input)
+	serviceErr := r.SetPreferencesService().Execute(servicePsy.ID, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -108,8 +108,8 @@ func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, in
 	return nil, nil
 }
 
-func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input []*profiles_models.SetPatientCharacteristicInput) (*bool, error) {
-	serviceErr := r.SetPatientCharacteristicsService().Execute(input)
+func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input []*profiles_models.SetCharacteristicInput) (*bool, error) {
+	serviceErr := r.SetCharacteristicsService().Execute(profiles_models.PatientTarget, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -117,8 +117,8 @@ func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input 
 	return nil, nil
 }
 
-func (r *mutationResolver) SetPsychologistCharacteristics(ctx context.Context, input []*profiles_models.SetPsychologistCharacteristicInput) (*bool, error) {
-	serviceErr := r.SetPsychologistCharacteristicsService().Execute(input)
+func (r *mutationResolver) SetPsychologistCharacteristics(ctx context.Context, input []*profiles_models.SetCharacteristicInput) (*bool, error) {
+	serviceErr := r.SetCharacteristicsService().Execute(profiles_models.PsychologistTarget, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -158,20 +158,20 @@ func (r *mutationResolver) UpdateOwnPsychologistProfile(ctx context.Context, inp
 	return nil, nil
 }
 
-func (r *patientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.PatientCharacteristicChoiceResponse, error) {
-	return r.GetPatientCharacteristicsByPatientIDService().Execute(obj.ID)
+func (r *patientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.CharacteristicChoiceResponse, error) {
+	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
 
-func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.PatientPreference, error) {
-	return r.GetPatientPreferencesByPatientIDService().Execute(obj.ID)
+func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.Preference, error) {
+	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.PsychologistCharacteristicChoiceResponse, error) {
-	return r.GetPsychologistCharacteristicsByPsyIDService().Execute(obj.ID)
+func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.CharacteristicChoiceResponse, error) {
+	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.PsychologistPreference, error) {
-	return r.GetPsychologistPreferencesByPsyIDService().Execute(obj.ID)
+func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.Preference, error) {
+	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
 func (r *queryResolver) GetOwnPatientProfile(ctx context.Context) (*profiles_models.Patient, error) {
@@ -184,12 +184,12 @@ func (r *queryResolver) GetOwnPsychologistProfile(ctx context.Context) (*profile
 	return r.GetPsychologistByUserIDService().Execute(userID)
 }
 
-func (r *queryResolver) GetPatientCharacteristics(ctx context.Context) ([]*profiles_models.PatientCharacteristicResponse, error) {
-	return r.GetPatientCharacteristicsService().Execute()
+func (r *queryResolver) GetPatientCharacteristics(ctx context.Context) ([]*profiles_models.CharacteristicResponse, error) {
+	return r.GetCharacteristicsService().Execute(profiles_models.PatientTarget)
 }
 
-func (r *queryResolver) GetPsychologistCharacteristics(ctx context.Context) ([]*profiles_models.PsychologistCharacteristicResponse, error) {
-	return r.GetPsychologistCharacteristicsService().Execute()
+func (r *queryResolver) GetPsychologistCharacteristics(ctx context.Context) ([]*profiles_models.CharacteristicResponse, error) {
+	return r.GetCharacteristicsService().Execute(profiles_models.PsychologistTarget)
 }
 
 // PatientProfile returns generated.PatientProfileResolver implementation.

@@ -7,32 +7,33 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// SetPatientCharacteristicsService is a service that sets all possible patient characteristics
-type SetPatientCharacteristicsService struct {
+// SetCharacteristicsService is a service that sets all possible patient characteristics
+type SetCharacteristicsService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s SetPatientCharacteristicsService) Execute(input []*models.SetPatientCharacteristicInput) error {
+func (s SetCharacteristicsService) Execute(target models.CharacteristicTarget, input []*models.SetCharacteristicInput) error {
 
 	newCharacteristics := []interface{}{}
 
 	for _, char := range input {
-		characteristic := models.PatientCharacteristic{
+		characteristic := models.Characteristic{
 			Name:           char.Name,
-			Many:           char.Many,
+			Type:           char.Type,
+			Target:         target,
 			PossibleValues: strings.Join(char.PossibleValues, ","),
 		}
 
 		newCharacteristics = append(newCharacteristics, characteristic)
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "patient_characteristics", map[string]interface{}{})
+	deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
 	if deleteErr != nil {
 		return deleteErr
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("psi_db", "patient_characteristics", newCharacteristics)
+	writeErr := s.DatabaseUtil.InsertMany("psi_db", "characteristics", newCharacteristics)
 	if writeErr != nil {
 		return writeErr
 	}

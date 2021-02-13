@@ -39,6 +39,26 @@ func (c *cursorStruct) Close(ctx context.Context) error {
 	return nil
 }
 
+func (m mockDBClient) GetMockedDatabases() ([]byte, error) {
+	result := map[string]map[string][]string{}
+
+	for dbName, db := range m.client {
+		if result[dbName] == nil {
+			result[dbName] = map[string][]string{}
+		}
+		for tblName, tbl := range db {
+			if result[dbName][tblName] == nil {
+				result[dbName][tblName] = []string{}
+			}
+			for _, fld := range tbl {
+				result[dbName][tblName] = append(result[dbName][tblName], string(fld))
+			}
+		}
+	}
+
+	return json.Marshal(result)
+}
+
 func (m mockDBClient) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
 	value := map[string]interface{}{}
 	for _, v := range m.client[database][table] {
