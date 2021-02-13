@@ -1,6 +1,7 @@
 package resolvers
 
 import (
+	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
 	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
 	users_services "github.com/guicostaarantes/psi-server/modules/users/services"
@@ -37,17 +38,17 @@ type Resolver struct {
 	createUserService               *users_services.CreateUserService
 	createUserWithPasswordService   *users_services.CreateUserWithPasswordService
 	getPatientByUserIDService       *profiles_services.GetPatientByUserIDService
-	getCharacteristicsByIDService   *profiles_services.GetCharacteristicsByIDService
-	getCharacteristicsService       *profiles_services.GetCharacteristicsService
-	getPreferencesByIDService       *profiles_services.GetPreferencesByIDService
+	getCharacteristicsByIDService   *characteristics_services.GetCharacteristicsByIDService
+	getCharacteristicsService       *characteristics_services.GetCharacteristicsService
+	getPreferencesByIDService       *characteristics_services.GetPreferencesByIDService
 	getPsychologistByUserIDService  *profiles_services.GetPsychologistByUserIDService
 	getUsersByRoleService           *users_services.GetUsersByRoleService
 	getUserByIDService              *users_services.GetUserByIDService
 	processPendingMailsService      *mails_services.ProcessPendingMailsService
 	resetPasswordService            *users_services.ResetPasswordService
-	setCharacteristicChoicesService *profiles_services.SetCharacteristicChoicesService
-	setCharacteristicsService       *profiles_services.SetCharacteristicsService
-	setPreferencesService           *profiles_services.SetPreferencesService
+	setCharacteristicChoicesService *characteristics_services.SetCharacteristicChoicesService
+	setCharacteristicsService       *characteristics_services.SetCharacteristicsService
+	setPreferencesService           *characteristics_services.SetPreferencesService
 	updatePatientService            *profiles_services.UpdatePatientService
 	updatePsychologistService       *profiles_services.UpdatePsychologistService
 	updateUserService               *users_services.UpdateUserService
@@ -154,9 +155,9 @@ func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUs
 }
 
 // GetCharacteristicsByIDService gets or sets the service with same name
-func (r *Resolver) GetCharacteristicsByIDService() *profiles_services.GetCharacteristicsByIDService {
+func (r *Resolver) GetCharacteristicsByIDService() *characteristics_services.GetCharacteristicsByIDService {
 	if r.getCharacteristicsByIDService == nil {
-		r.getCharacteristicsByIDService = &profiles_services.GetCharacteristicsByIDService{
+		r.getCharacteristicsByIDService = &characteristics_services.GetCharacteristicsByIDService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
@@ -164,9 +165,9 @@ func (r *Resolver) GetCharacteristicsByIDService() *profiles_services.GetCharact
 }
 
 // GetCharacteristicsService gets or sets the service with same name
-func (r *Resolver) GetCharacteristicsService() *profiles_services.GetCharacteristicsService {
+func (r *Resolver) GetCharacteristicsService() *characteristics_services.GetCharacteristicsService {
 	if r.getCharacteristicsService == nil {
-		r.getCharacteristicsService = &profiles_services.GetCharacteristicsService{
+		r.getCharacteristicsService = &characteristics_services.GetCharacteristicsService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
@@ -174,9 +175,9 @@ func (r *Resolver) GetCharacteristicsService() *profiles_services.GetCharacteris
 }
 
 // GetPreferencesByIDService gets or sets the service with same name
-func (r *Resolver) GetPreferencesByIDService() *profiles_services.GetPreferencesByIDService {
+func (r *Resolver) GetPreferencesByIDService() *characteristics_services.GetPreferencesByIDService {
 	if r.getPreferencesByIDService == nil {
-		r.getPreferencesByIDService = &profiles_services.GetPreferencesByIDService{
+		r.getPreferencesByIDService = &characteristics_services.GetPreferencesByIDService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
@@ -225,9 +226,9 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 }
 
 // SetCharacteristicChoicesService gets or sets the service with same name
-func (r *Resolver) SetCharacteristicChoicesService() *profiles_services.SetCharacteristicChoicesService {
+func (r *Resolver) SetCharacteristicChoicesService() *characteristics_services.SetCharacteristicChoicesService {
 	if r.setCharacteristicChoicesService == nil {
-		r.setCharacteristicChoicesService = &profiles_services.SetCharacteristicChoicesService{
+		r.setCharacteristicChoicesService = &characteristics_services.SetCharacteristicChoicesService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
@@ -235,9 +236,9 @@ func (r *Resolver) SetCharacteristicChoicesService() *profiles_services.SetChara
 }
 
 // SetCharacteristicsService gets or sets the service with same name
-func (r *Resolver) SetCharacteristicsService() *profiles_services.SetCharacteristicsService {
+func (r *Resolver) SetCharacteristicsService() *characteristics_services.SetCharacteristicsService {
 	if r.setCharacteristicsService == nil {
-		r.setCharacteristicsService = &profiles_services.SetCharacteristicsService{
+		r.setCharacteristicsService = &characteristics_services.SetCharacteristicsService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
@@ -245,9 +246,9 @@ func (r *Resolver) SetCharacteristicsService() *profiles_services.SetCharacteris
 }
 
 // SetPreferencesService gets or sets the service with same name
-func (r *Resolver) SetPreferencesService() *profiles_services.SetPreferencesService {
+func (r *Resolver) SetPreferencesService() *characteristics_services.SetPreferencesService {
 	if r.setPreferencesService == nil {
-		r.setPreferencesService = &profiles_services.SetPreferencesService{
+		r.setPreferencesService = &characteristics_services.SetPreferencesService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}

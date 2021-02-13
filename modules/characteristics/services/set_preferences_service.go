@@ -5,7 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/guicostaarantes/psi-server/modules/profiles/models"
+	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
@@ -19,8 +20,8 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 
 	var target models.CharacteristicTarget
 
-	psy := models.Psychologist{}
-	pat := models.Patient{}
+	psy := profiles_models.Psychologist{}
+	pat := profiles_models.Patient{}
 	s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"id": id}, &pat)
 	if pat.ID != "" {
 		target = models.PsychologistTarget

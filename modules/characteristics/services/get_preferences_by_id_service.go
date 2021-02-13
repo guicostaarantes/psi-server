@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/guicostaarantes/psi-server/modules/profiles/models"
+	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
@@ -13,9 +13,9 @@ type GetPreferencesByIDService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPreferencesByIDService) Execute(id string) ([]*models.Preference, error) {
+func (s GetPreferencesByIDService) Execute(id string) ([]*models.PreferenceResponse, error) {
 
-	preferences := []*models.Preference{}
+	preferences := []*models.PreferenceResponse{}
 
 	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "preferences", map[string]interface{}{"profileId": id})
 	if findErr != nil {
@@ -25,7 +25,7 @@ func (s GetPreferencesByIDService) Execute(id string) ([]*models.Preference, err
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
-		preference := models.Preference{}
+		preference := models.PreferenceResponse{}
 
 		decodeErr := cursor.Decode(&preference)
 		if decodeErr != nil {

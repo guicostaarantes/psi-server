@@ -1,0 +1,41 @@
+enum CharacteristicType @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicType") {
+    BOOLEAN
+    SINGLE
+    MULTIPLE
+}
+
+input SetOwnProfileCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetCharacteristicChoiceInput") {
+    characteristicName: String!
+    selectedValues: [String!]!
+}
+
+input SetOwnProfilePreferenceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetPreferenceInput") {
+    characteristicName: String!
+    selectedValue: String!
+    weight: Int!
+}
+
+input SetProfileCharacteristicInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetCharacteristicInput") {
+    name: String!
+    type: CharacteristicType!
+    possibleValues: [String!]!
+}
+
+type Characteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicResponse") {
+    name: String!
+    type: CharacteristicType!
+    possibleValues: [String!]!
+}
+
+type CharacteristicChoice @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicChoiceResponse") {
+    name: String!
+    type: CharacteristicType!
+    selectedValues: [String!]!
+    possibleValues: [String!]!
+}
+
+type Preference @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.PreferenceResponse") {
+    characteristicName: String!
+    selectedValue: String!
+    weight: Int!
+}

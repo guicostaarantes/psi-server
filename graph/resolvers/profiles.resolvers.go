@@ -5,8 +5,10 @@ package resolvers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
+	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 )
 
@@ -44,7 +46,7 @@ func (r *mutationResolver) CreateOwnPsychologistProfile(ctx context.Context, inp
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Context, input []*profiles_models.SetCharacteristicChoiceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Context, input []*characteristics_models.SetCharacteristicChoiceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -60,7 +62,7 @@ func (r *mutationResolver) SetOwnPatientCharacteristicChoices(ctx context.Contex
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input []*profiles_models.SetPreferenceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input []*characteristics_models.SetPreferenceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -76,7 +78,7 @@ func (r *mutationResolver) SetOwnPatientPreferences(ctx context.Context, input [
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*profiles_models.SetCharacteristicChoiceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*characteristics_models.SetCharacteristicChoiceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -92,7 +94,7 @@ func (r *mutationResolver) SetOwnPsychologistCharacteristicChoices(ctx context.C
 	return nil, nil
 }
 
-func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, input []*profiles_models.SetPreferenceInput) (*bool, error) {
+func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, input []*characteristics_models.SetPreferenceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -108,8 +110,8 @@ func (r *mutationResolver) SetOwnPsychologistPreferences(ctx context.Context, in
 	return nil, nil
 }
 
-func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input []*profiles_models.SetCharacteristicInput) (*bool, error) {
-	serviceErr := r.SetCharacteristicsService().Execute(profiles_models.PatientTarget, input)
+func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input []*characteristics_models.SetCharacteristicInput) (*bool, error) {
+	serviceErr := r.SetCharacteristicsService().Execute(characteristics_models.PatientTarget, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -117,8 +119,8 @@ func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input 
 	return nil, nil
 }
 
-func (r *mutationResolver) SetPsychologistCharacteristics(ctx context.Context, input []*profiles_models.SetCharacteristicInput) (*bool, error) {
-	serviceErr := r.SetCharacteristicsService().Execute(profiles_models.PsychologistTarget, input)
+func (r *mutationResolver) SetPsychologistCharacteristics(ctx context.Context, input []*characteristics_models.SetCharacteristicInput) (*bool, error) {
+	serviceErr := r.SetCharacteristicsService().Execute(characteristics_models.PsychologistTarget, input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -158,19 +160,19 @@ func (r *mutationResolver) UpdateOwnPsychologistProfile(ctx context.Context, inp
 	return nil, nil
 }
 
-func (r *patientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.CharacteristicChoiceResponse, error) {
+func (r *patientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
 	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
 
-func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Patient) ([]*profiles_models.Preference, error) {
+func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Patient) ([]*characteristics_models.PreferenceResponse, error) {
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.CharacteristicChoiceResponse, error) {
+func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
 	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Psychologist) ([]*profiles_models.Preference, error) {
+func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Psychologist) ([]*characteristics_models.PreferenceResponse, error) {
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
@@ -184,12 +186,12 @@ func (r *queryResolver) GetOwnPsychologistProfile(ctx context.Context) (*profile
 	return r.GetPsychologistByUserIDService().Execute(userID)
 }
 
-func (r *queryResolver) GetPatientCharacteristics(ctx context.Context) ([]*profiles_models.CharacteristicResponse, error) {
-	return r.GetCharacteristicsService().Execute(profiles_models.PatientTarget)
+func (r *queryResolver) GetPatientCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
+	return r.GetCharacteristicsService().Execute(characteristics_models.PatientTarget)
 }
 
-func (r *queryResolver) GetPsychologistCharacteristics(ctx context.Context) ([]*profiles_models.CharacteristicResponse, error) {
-	return r.GetCharacteristicsService().Execute(profiles_models.PsychologistTarget)
+func (r *queryResolver) GetPsychologistCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
+	return r.GetCharacteristicsService().Execute(characteristics_models.PsychologistTarget)
 }
 
 // PatientProfile returns generated.PatientProfileResolver implementation.
@@ -204,3 +206,13 @@ func (r *Resolver) PsychologistProfile() generated.PsychologistProfileResolver {
 
 type patientProfileResolver struct{ *Resolver }
 type psychologistProfileResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) SetOwnCharacteristicChoices(ctx context.Context, input []*characteristics_models.SetCharacteristicChoiceInput) (*bool, error) {
+	panic(fmt.Errorf("not implemented"))
+}

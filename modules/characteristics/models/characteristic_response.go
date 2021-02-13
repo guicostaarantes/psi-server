@@ -14,3 +14,10 @@ type CharacteristicChoiceResponse struct {
 	SelectedValues []string           `json:"selectedValues" bson:"selectedValues"`
 	PossibleValues []string           `json:"possibleValues" bson:"possibleValues"`
 }
+
+// PreferenceResponse is the schema for the preferences to be returned to the user
+type PreferenceResponse struct {
+	CharacteristicName string `json:"characteristicName" bson:"characteristicName"`
+	SelectedValue      string `json:"selectedValue" bson:"selectedValue"`
+	Weight             int64  `json:"weight" bson:"weight"`
+}

@@ -3,7 +3,7 @@ package services
 import (
 	"strings"
 
-	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
