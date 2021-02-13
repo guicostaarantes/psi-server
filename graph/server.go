@@ -86,7 +86,14 @@ func CreateServer(res *resolvers.Resolver) *chi.Mux {
 	})
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
-	srv.Use(extension.FixedComplexityLimit(10))
+	srv.Use(&extension.ComplexityLimit{
+		Func: func(ctx context.Context, rc *graphql.OperationContext) int {
+			if rc != nil && rc.OperationName == "IntrospectionQuery" {
+				return 200
+			}
+			return 100
+		},
+	})
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/gql"))
 	router.Handle("/gql", srv)
