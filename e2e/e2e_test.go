@@ -316,6 +316,81 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should create user and not assign profiles to them", func(t *testing.T) {
+
+		query := `mutation {
+			createPatientUser(input: {
+				email: "aaron.rodgers@psi.com.br"
+			})
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"data\":{\"createPatientUser\":null}}", response.Body.String())
+	})
+
+	t.Run("should reset password with token sent via email", func(t *testing.T) {
+
+		query := `mutation {
+			processPendingMail
+		}`
+
+		response := gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		var mailBody string
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"aaron.rodgers@psi.com.br"}) && mail["subject"] == "Bem-vindo ao PSI" {
+				mailBody = mail["body"].(string)
+				break
+			}
+		}
+
+		regex := regexp.MustCompile("token=(?P<token>[A-Za-z0-9]{64})")
+		match := regex.FindStringSubmatch(mailBody)
+
+		query = fmt.Sprintf(`mutation {
+			resetPassword(input: {
+				token: %q,
+				password: "Jkl012)!@"
+			})
+		}`, match[1])
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"data\":{\"resetPassword\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should log in as no-profile user", func(t *testing.T) {
+
+		query := `{
+			authenticateUser(input: { 
+				email: "aaron.rodgers@psi.com.br", 
+				password: "Jkl012)!@", 
+				ipAddress: "100.100.100.100" 
+			}) { 
+				token 
+				expiresAt 
+			} 
+		}`
+
+		response := gql(router, query, "")
+
+		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		assert.NotEqual(t, "", token)
+
+		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
+		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+
+		storedVariables["no_profile_user_token"] = token
+
+	})
+
 	t.Run("should get own user information", func(t *testing.T) {
 
 		query := `{
@@ -345,6 +420,13 @@ func TestEnd2End(t *testing.T) {
 		assert.Equal(t, "patrick.mahomes@psi.com.br", email)
 		id = fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "id")
 		storedVariables["patient_id"] = id
+
+		response = gql(router, query, storedVariables["no_profile_user_token"])
+
+		email = fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "email")
+		assert.Equal(t, "aaron.rodgers@psi.com.br", email)
+		id = fastjson.GetString(response.Body.Bytes(), "data", "getOwnUser", "id")
+		storedVariables["no_profile_user_id"] = id
 	})
 
 	t.Run("should set psychologist characteristics only if user is coordinator", func(t *testing.T) {
@@ -1551,6 +1633,278 @@ func TestEnd2End(t *testing.T) {
 			tomorrow+104*3600,
 			tomorrow+112*3600,
 		), response.Body.String())
+
+	})
+
+	t.Run("should create slot only if coordinator or psychologist", func(t *testing.T) {
+
+		query := `mutation {
+			createOwnSlot(input: {
+				duration: 60,
+				price: 30,
+				interval: 604800
+			})
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createOwnSlot\"]}],\"data\":{\"createOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createOwnSlot\"]}],\"data\":{\"createOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"createOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"createOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"createOwnSlot\":null}}", response.Body.String())
+	})
+
+	t.Run("should get created slots", func(t *testing.T) {
+
+		query := `{
+			getOwnPsychologistProfile {
+				slots {
+					id
+					duration
+				}
+			}
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, 60, fastjson.GetInt(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "slots", "0", "duration"))
+
+		slotID := fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "slots", "0", "id")
+		storedVariables["psychologist_slot_id"] = slotID
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, 60, fastjson.GetInt(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "slots", "0", "duration"))
+
+		slotID = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "slots", "0", "id")
+		storedVariables["coordinator_slot_id"] = slotID
+
+		slotID = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "slots", "1", "id")
+		storedVariables["coordinator_slot_2_id"] = slotID
+	})
+
+	t.Run("should update slot only if coordinator or psychologist and also owner", func(t *testing.T) {
+
+		query := `mutation {
+			updateOwnSlot(
+				id: %q,
+				input: {
+					duration: %d,
+					price: 30,
+					interval: 604800
+				}
+			)
+		}`
+
+		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_slot_id"], 45), "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updateOwnSlot\"]}],\"data\":{\"updateOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_slot_id"], 45), storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updateOwnSlot\"]}],\"data\":{\"updateOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_slot_id"], 45), storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"updateOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, storedVariables["coordinator_slot_id"], 45), storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"updateOwnSlot\"]}],\"data\":{\"updateOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, storedVariables["coordinator_slot_id"], 50), storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"updateOwnSlot\":null}}", response.Body.String())
+	})
+
+	t.Run("should get updated slots", func(t *testing.T) {
+
+		query := `{
+			getOwnPsychologistProfile {
+				slots {
+					duration
+					price
+					interval
+				}
+			}
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"slots\":[{\"duration\":45,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"slots\":[{\"duration\":50,\"price\":30,\"interval\":604800},{\"duration\":60,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
+
+	})
+
+	t.Run("should assign a slot to a patient profile", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			assignSlot(id: %q)
+		}`, storedVariables["psychologist_slot_id"])
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"assignSlot\"]}],\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"slots can only be assigned if their current status is PENDING. current status is ACTIVE\",\"path\":[\"assignSlot\"]}],\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"slots can only be assigned if their current status is PENDING. current status is ACTIVE\",\"path\":[\"assignSlot\"]}],\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["no_profile_user_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"assignSlot\"]}],\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should not assign a slot to a patient profile if they already have an active slot taken", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			assignSlot(id: %q)
+		}`, storedVariables["coordinator_slot_id"])
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"patient is already in an active slot\",\"path\":[\"assignSlot\"]}],\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should finalize a slot if coordinator or psychologist", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			finalizeOwnSlot(id: %q)
+		}`, storedVariables["psychologist_slot_id"])
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"finalizeOwnSlot\"]}],\"data\":{\"finalizeOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"finalizeOwnSlot\"]}],\"data\":{\"finalizeOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"finalizeOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"finalizeOwnSlot\"]}],\"data\":{\"finalizeOwnSlot\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["no_profile_user_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"finalizeOwnSlot\"]}],\"data\":{\"finalizeOwnSlot\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should not assign a slot that was finalized", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			assignSlot(id: %q)
+		}`, storedVariables["psychologist_slot_id"])
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"slots can only be assigned if their current status is PENDING. current status is FINALIZED\",\"path\":[\"assignSlot\"]}],\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should assign a slot to the same patient profile now that the other was finalized", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			assignSlot(id: %q)
+		}`, storedVariables["coordinator_slot_id"])
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should interrupt by patient if user owns the patient profile of the slot", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			interruptSlotByPatient(id: %q, reason: "synergy with psychologist was not good")
+		}`, storedVariables["coordinator_slot_id"])
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"interruptSlotByPatient\"]}],\"data\":{\"interruptSlotByPatient\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"interruptSlotByPatient\"]}],\"data\":{\"interruptSlotByPatient\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"interruptSlotByPatient\"]}],\"data\":{\"interruptSlotByPatient\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["no_profile_user_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"interruptSlotByPatient\"]}],\"data\":{\"interruptSlotByPatient\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"interruptSlotByPatient\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should interrupt by psychologist if user owns the psychologist profile of the slot", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			assignSlot(id: %q)
+		}`, storedVariables["coordinator_slot_2_id"])
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"assignSlot\":null}}", response.Body.String())
+
+		query = fmt.Sprintf(`mutation {
+			interruptSlotByPsychologist(id: %q, reason: "patient is not responding")
+		}`, storedVariables["coordinator_slot_2_id"])
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"interruptSlotByPsychologist\"]}],\"data\":{\"interruptSlotByPsychologist\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"interruptSlotByPsychologist\"]}],\"data\":{\"interruptSlotByPsychologist\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"interruptSlotByPsychologist\"]}],\"data\":{\"interruptSlotByPsychologist\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["no_profile_user_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"interruptSlotByPsychologist\"]}],\"data\":{\"interruptSlotByPsychologist\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"interruptSlotByPsychologist\":null}}", response.Body.String())
 
 	})
 
