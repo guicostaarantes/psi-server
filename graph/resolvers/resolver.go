@@ -4,6 +4,7 @@ import (
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
 	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
+	schedule_services "github.com/guicostaarantes/psi-server/modules/schedule/services"
 	users_services "github.com/guicostaarantes/psi-server/modules/users/services"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
@@ -27,6 +28,8 @@ type Resolver struct {
 	MatchUtil                       match.IMatchUtil
 	SerializingUtil                 serializing.ISerializingUtil
 	TokenUtil                       token.ITokenUtil
+	SecondsLimitAvailability        int64
+	SecondsMinimumAvailability      int64
 	SecondsToCooldownReset          int64
 	SecondsToExpire                 int64
 	SecondsToExpireReset            int64
@@ -37,6 +40,7 @@ type Resolver struct {
 	createPsychologistService       *profiles_services.CreatePsychologistService
 	createUserService               *users_services.CreateUserService
 	createUserWithPasswordService   *users_services.CreateUserWithPasswordService
+	getAvailabilityService          *schedule_services.GetAvailabilityService
 	getPatientByUserIDService       *profiles_services.GetPatientByUserIDService
 	getCharacteristicsByIDService   *characteristics_services.GetCharacteristicsByIDService
 	getCharacteristicsService       *characteristics_services.GetCharacteristicsService
@@ -46,6 +50,7 @@ type Resolver struct {
 	getUserByIDService              *users_services.GetUserByIDService
 	processPendingMailsService      *mails_services.ProcessPendingMailsService
 	resetPasswordService            *users_services.ResetPasswordService
+	setAvailabilityService          *schedule_services.SetAvailabilityService
 	setCharacteristicChoicesService *characteristics_services.SetCharacteristicChoicesService
 	setCharacteristicsService       *characteristics_services.SetCharacteristicsService
 	setPreferencesService           *characteristics_services.SetPreferencesService
@@ -144,6 +149,16 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 	return r.createUserWithPasswordService
 }
 
+// GetAvailabilityService gets or sets the service with same name
+func (r *Resolver) GetAvailabilityService() *schedule_services.GetAvailabilityService {
+	if r.getAvailabilityService == nil {
+		r.getAvailabilityService = &schedule_services.GetAvailabilityService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getAvailabilityService
+}
+
 // GetPatientByUserIDService gets or sets the service with same name
 func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUserIDService {
 	if r.getPatientByUserIDService == nil {
@@ -223,6 +238,18 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 		}
 	}
 	return r.processPendingMailsService
+}
+
+// SetAvailabilityService gets or sets the service with same name
+func (r *Resolver) SetAvailabilityService() *schedule_services.SetAvailabilityService {
+	if r.setAvailabilityService == nil {
+		r.setAvailabilityService = &schedule_services.SetAvailabilityService{
+			DatabaseUtil:               r.DatabaseUtil,
+			SecondsLimitAvailability:   r.SecondsLimitAvailability,
+			SecondsMinimumAvailability: r.SecondsMinimumAvailability,
+		}
+	}
+	return r.setAvailabilityService
 }
 
 // SetCharacteristicChoicesService gets or sets the service with same name
