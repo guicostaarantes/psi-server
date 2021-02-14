@@ -55,12 +55,10 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 	}
 
 	user := &models.User{
-		ID:        id,
-		Active:    true,
-		Email:     userInput.Email,
-		FirstName: userInput.FirstName,
-		LastName:  userInput.LastName,
-		Role:      userInput.Role,
+		ID:     id,
+		Active: true,
+		Email:  userInput.Email,
+		Role:   userInput.Role,
 	}
 
 	user.Password = hashedPwd

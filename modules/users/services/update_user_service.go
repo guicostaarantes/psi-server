@@ -13,7 +13,7 @@ type UpdateUserService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpdateUserService) Execute(userID string, userInput *models.UpdateUserInput) error {
+func (s UpdateUserService) Execute(userID string, input *models.UpdateUserInput) error {
 
 	user := models.User{}
 
@@ -26,9 +26,8 @@ func (s UpdateUserService) Execute(userID string, userInput *models.UpdateUserIn
 		return errors.New("resource not found")
 	}
 
-	user.FirstName = userInput.FirstName
-	user.LastName = userInput.LastName
-	user.Role = userInput.Role
+	user.Active = input.Active
+	user.Role = input.Role
 
 	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "users", map[string]interface{}{"id": userID}, user)
 	if updateErr != nil {

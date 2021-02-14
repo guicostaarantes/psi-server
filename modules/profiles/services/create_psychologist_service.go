@@ -15,11 +15,11 @@ type CreatePsychologistService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreatePsychologistService) Execute(psyInput *models.CreatePsychologistInput) error {
+func (s CreatePsychologistService) Execute(input *models.CreatePsychologistInput) error {
 
 	psyWithSameUserID := models.Psychologist{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"userId": psyInput.UserID}, &psyWithSameUserID)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"userId": input.UserID}, &psyWithSameUserID)
 	if findErr != nil {
 		return findErr
 	}
@@ -35,9 +35,11 @@ func (s CreatePsychologistService) Execute(psyInput *models.CreatePsychologistIn
 
 	psy := &models.Psychologist{
 		ID:        psyID,
-		UserID:    psyInput.UserID,
-		BirthDate: psyInput.BirthDate,
-		City:      psyInput.City,
+		UserID:    input.UserID,
+		FullName:  input.FullName,
+		LikeName:  input.LikeName,
+		BirthDate: input.BirthDate,
+		City:      input.City,
 	}
 
 	writeErr := s.DatabaseUtil.InsertOne("psi_db", "psychologists", psy)

@@ -33,7 +33,6 @@ type Resolver struct {
 	SecondsToCooldownReset          int64
 	SecondsToExpire                 int64
 	SecondsToExpireReset            int64
-	activateUserService             *users_services.ActivateUserService
 	askResetPasswordService         *users_services.AskResetPasswordService
 	authenticateUserService         *users_services.AuthenticateUserService
 	createPatientService            *profiles_services.CreatePatientService
@@ -58,16 +57,6 @@ type Resolver struct {
 	updatePsychologistService       *profiles_services.UpdatePsychologistService
 	updateUserService               *users_services.UpdateUserService
 	validateUserTokenService        *users_services.ValidateUserTokenService
-}
-
-// ActivateUserService gets or sets the service with same name
-func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
-	if r.activateUserService == nil {
-		r.activateUserService = &users_services.ActivateUserService{
-			DatabaseUtil: r.DatabaseUtil,
-		}
-	}
-	return r.activateUserService
 }
 
 // AskResetPasswordService gets or sets the service with same name

@@ -1,31 +1,43 @@
 input CreateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
+    fullName: String!
+    likeName: String!
     birthDate: Int!
     city: String!
 }
 
 input CreateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
+    fullName: String!
+    likeName: String!
     birthDate: Int!
     city: String!
 }
 
 input CreatePsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
     userId: String!
+    fullName: String!
+    likeName: String!
     birthDate: Int!
     city: String!
 }
 
 input UpdateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
+    fullName: String!
+    likeName: String!
     birthDate: Int!
     city: String!
 }
 
 input UpdateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
+    fullName: String!
+    likeName: String!
     birthDate: Int!
     city: String!
 }
 
 type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
     id: ID!
+    fullName: String!
+    likeName: String!
     birthDate: Int!
     city: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
@@ -34,17 +46,40 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
 
 type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
     id: ID!
+    fullName: String!
+    likeName: String!
     birthDate: Int!
     city: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
 }
 
+type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
+    id: ID!
+    fullName: String!
+    likeName: String!
+    birthDate: Int!
+    city: String!
+    characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
+}
+
+
+type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
+    id: ID!
+    fullName: String!
+    likeName: String!
+    birthDate: Int!
+    city: String!
+    characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
+}
+
 extend type Query {
     getOwnPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     getPatientCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    getPatientProfile(id: ID!): PublicPatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     getPsychologistCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    getPsychologistProfile(id: ID!): PublicPsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {

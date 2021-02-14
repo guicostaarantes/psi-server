@@ -13,7 +13,7 @@ type UpdatePatientService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpdatePatientService) Execute(id string, psyInput *models.UpdatePatientInput) error {
+func (s UpdatePatientService) Execute(id string, input *models.UpdatePatientInput) error {
 
 	patient := models.Patient{}
 
@@ -26,8 +26,10 @@ func (s UpdatePatientService) Execute(id string, psyInput *models.UpdatePatientI
 		return errors.New("resource not found")
 	}
 
-	patient.BirthDate = psyInput.BirthDate
-	patient.City = psyInput.City
+	patient.FullName = input.FullName
+	patient.LikeName = input.LikeName
+	patient.BirthDate = input.BirthDate
+	patient.City = input.City
 
 	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "patients", map[string]interface{}{"id": id}, patient)
 	if writeErr != nil {

@@ -74,9 +74,8 @@ func (s AskResetPasswordService) Execute(email string) error {
 	buff := new(bytes.Buffer)
 
 	templ.Execute(buff, map[string]string{
-		"FirstName": user.FirstName,
-		"SiteURL":   os.Getenv("PSI_SITE_URL"),
-		"Token":     token,
+		"SiteURL": os.Getenv("PSI_SITE_URL"),
+		"Token":   token,
 	})
 
 	mail := &mails_models.TransientMailMessage{

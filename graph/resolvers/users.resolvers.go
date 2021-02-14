@@ -10,16 +10,6 @@ import (
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 )
 
-func (r *mutationResolver) ActivateUser(ctx context.Context, id string) (*bool, error) {
-	serviceErr := r.ActivateUserService().Execute(id, true)
-
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
-
-	return nil, nil
-}
-
 func (r *mutationResolver) AskResetPassword(ctx context.Context, email string) (*bool, error) {
 	serviceErr := r.AskResetPasswordService().Execute(email)
 
@@ -32,10 +22,8 @@ func (r *mutationResolver) AskResetPassword(ctx context.Context, email string) (
 
 func (r *mutationResolver) CreatePatientUser(ctx context.Context, input users_models.CreateUserInput) (*bool, error) {
 	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
-		Email:     input.Email,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Role:      "PATIENT",
+		Email: input.Email,
+		Role:  "PATIENT",
 	})
 
 	if serviceErr != nil {
@@ -47,10 +35,8 @@ func (r *mutationResolver) CreatePatientUser(ctx context.Context, input users_mo
 
 func (r *mutationResolver) CreatePsychologistUser(ctx context.Context, input users_models.CreateUserInput) (*bool, error) {
 	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
-		Email:     input.Email,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Role:      "PSYCHOLOGIST",
+		Email: input.Email,
+		Role:  "PSYCHOLOGIST",
 	})
 
 	if serviceErr != nil {
@@ -62,22 +48,10 @@ func (r *mutationResolver) CreatePsychologistUser(ctx context.Context, input use
 
 func (r *mutationResolver) CreateUserWithPassword(ctx context.Context, input users_models.CreateUserWithPasswordInput) (*bool, error) {
 	serviceErr := r.CreateUserWithPasswordService().Execute(&users_models.CreateUserWithPasswordInput{
-		Email:     input.Email,
-		Password:  input.Password,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Role:      input.Role,
+		Email:    input.Email,
+		Password: input.Password,
+		Role:     input.Role,
 	})
-
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
-
-	return nil, nil
-}
-
-func (r *mutationResolver) DeactivateUser(ctx context.Context, id string) (*bool, error) {
-	serviceErr := r.ActivateUserService().Execute(id, false)
 
 	if serviceErr != nil {
 		return nil, serviceErr
@@ -92,17 +66,6 @@ func (r *mutationResolver) ResetPassword(ctx context.Context, input users_models
 		Password: input.Password,
 	})
 
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
-
-	return nil, nil
-}
-
-func (r *mutationResolver) UpdateOwnUser(ctx context.Context, input users_models.UpdateUserInput) (*bool, error) {
-	userID := ctx.Value("userID").(string)
-
-	serviceErr := r.UpdateUserService().Execute(userID, &input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
