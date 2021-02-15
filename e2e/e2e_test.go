@@ -2055,4 +2055,71 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should deny appointment", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			denyAppointment(id: %q)
+		}`, storedVariables["appointment_id"])
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"denyAppointment\"]}],\"data\":{\"denyAppointment\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"denyAppointment\"]}],\"data\":{\"denyAppointment\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"denyAppointment\"]}],\"data\":{\"denyAppointment\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"denyAppointment\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"appointments can only be denied if their current status is PROPOSED. current status is DENIED\",\"path\":[\"denyAppointment\"]}],\"data\":{\"denyAppointment\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should propose new appointment and confirm", func(t *testing.T) {
+
+		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
+
+		query := `mutation {
+			proposeAppointment(input: {
+				treatmentId: %q,
+				start: %d
+			})
+		}`
+
+		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+15*3600), storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"proposeAppointment\":null}}", response.Body.String())
+
+		query = `{
+			getOwnPsychologistProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		appointmentID := fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "appointments", "1", "id")
+		assert.NotEqual(t, "", appointmentID)
+		storedVariables["appointment_2_id"] = appointmentID
+
+		query = fmt.Sprintf(`mutation {
+			confirmAppointment(id: %q)
+		}`, storedVariables["appointment_2_id"])
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"confirmAppointment\":null}}", response.Body.String())
+	})
+
 }

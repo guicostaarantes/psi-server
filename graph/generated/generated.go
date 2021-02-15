@@ -84,6 +84,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		AskResetPassword                        func(childComplexity int, email string) int
 		AssignTreatment                         func(childComplexity int, id string) int
+		ConfirmAppointment                      func(childComplexity int, id string) int
 		CreateOwnPatientProfile                 func(childComplexity int, input models1.CreatePatientInput) int
 		CreateOwnPsychologistProfile            func(childComplexity int, input models1.CreatePsychologistInput) int
 		CreateOwnTreatment                      func(childComplexity int, input models2.CreateTreatmentInput) int
@@ -91,6 +92,7 @@ type ComplexityRoot struct {
 		CreatePsychologistUser                  func(childComplexity int, input models.CreateUserInput) int
 		CreateUserWithPassword                  func(childComplexity int, input models.CreateUserWithPasswordInput) int
 		DeleteOwnTreatment                      func(childComplexity int, id string) int
+		DenyAppointment                         func(childComplexity int, id string) int
 		FinalizeOwnTreatment                    func(childComplexity int, id string) int
 		InterruptTreatmentByPatient             func(childComplexity int, id string, reason string) int
 		InterruptTreatmentByPsychologist        func(childComplexity int, id string, reason string) int
@@ -219,6 +221,8 @@ type MutationResolver interface {
 	SetPsychologistCharacteristics(ctx context.Context, input []*models4.SetCharacteristicInput) (*bool, error)
 	UpdateOwnPatientProfile(ctx context.Context, input models1.UpdatePatientInput) (*bool, error)
 	UpdateOwnPsychologistProfile(ctx context.Context, input models1.UpdatePsychologistInput) (*bool, error)
+	ConfirmAppointment(ctx context.Context, id string) (*bool, error)
+	DenyAppointment(ctx context.Context, id string) (*bool, error)
 	ProposeAppointment(ctx context.Context, input models3.ProposeAppointmentInput) (*bool, error)
 	SetOwnAvailability(ctx context.Context, input []*models3.SetAvailabilityInput) (*bool, error)
 	AssignTreatment(ctx context.Context, id string) (*bool, error)
@@ -413,6 +417,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AssignTreatment(childComplexity, args["id"].(string)), true
 
+	case "Mutation.confirmAppointment":
+		if e.complexity.Mutation.ConfirmAppointment == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_confirmAppointment_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ConfirmAppointment(childComplexity, args["id"].(string)), true
+
 	case "Mutation.createOwnPatientProfile":
 		if e.complexity.Mutation.CreateOwnPatientProfile == nil {
 			break
@@ -496,6 +512,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteOwnTreatment(childComplexity, args["id"].(string)), true
+
+	case "Mutation.denyAppointment":
+		if e.complexity.Mutation.DenyAppointment == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_denyAppointment_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DenyAppointment(childComplexity, args["id"].(string)), true
 
 	case "Mutation.finalizeOwnTreatment":
 		if e.complexity.Mutation.FinalizeOwnTreatment == nil {
@@ -1396,6 +1424,12 @@ extend type Query {
 }
 
 extend type Mutation {
+    """The confirmAppointment mutation allows a user with a psychologist profile to confirm the proposal of an appointment."""
+    confirmAppointment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The denyAppointment mutation allows a user with a psychologist profile to deny the proposal of an appointment."""
+    denyAppointment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
     """The proposeAppointment mutation allows a user with a patient profile in treatment to propose a time for a next meeting."""
     proposeAppointment(input: ProposeAppointmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
@@ -1580,6 +1614,21 @@ func (ec *executionContext) field_Mutation_assignTreatment_args(ctx context.Cont
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_confirmAppointment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createOwnPatientProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1671,6 +1720,21 @@ func (ec *executionContext) field_Mutation_createUserWithPassword_args(ctx conte
 }
 
 func (ec *executionContext) field_Mutation_deleteOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_denyAppointment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -3620,6 +3684,132 @@ func (ec *executionContext) _Mutation_updateOwnPsychologistProfile(ctx context.C
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateOwnPsychologistProfile(rctx, args["input"].(models1.UpdatePsychologistInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_confirmAppointment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_confirmAppointment_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().ConfirmAppointment(rctx, args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_denyAppointment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_denyAppointment_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DenyAppointment(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -8616,6 +8806,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_updateOwnPatientProfile(ctx, field)
 		case "updateOwnPsychologistProfile":
 			out.Values[i] = ec._Mutation_updateOwnPsychologistProfile(ctx, field)
+		case "confirmAppointment":
+			out.Values[i] = ec._Mutation_confirmAppointment(ctx, field)
+		case "denyAppointment":
+			out.Values[i] = ec._Mutation_denyAppointment(ctx, field)
 		case "proposeAppointment":
 			out.Values[i] = ec._Mutation_proposeAppointment(ctx, field)
 		case "setOwnAvailability":

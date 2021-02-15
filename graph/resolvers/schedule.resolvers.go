@@ -9,6 +9,32 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/schedule/models"
 )
 
+func (r *mutationResolver) ConfirmAppointment(ctx context.Context, id string) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
+	if servicePsyErr != nil {
+		return nil, servicePsyErr
+	}
+
+	serviceErr := r.ConfirmAppointmentService().Execute(id, servicePsy.ID)
+
+	return nil, serviceErr
+}
+
+func (r *mutationResolver) DenyAppointment(ctx context.Context, id string) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
+	if servicePsyErr != nil {
+		return nil, servicePsyErr
+	}
+
+	serviceErr := r.DenyAppointmentService().Execute(id, servicePsy.ID)
+
+	return nil, serviceErr
+}
+
 func (r *mutationResolver) ProposeAppointment(ctx context.Context, input models.ProposeAppointmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 

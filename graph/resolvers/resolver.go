@@ -37,12 +37,14 @@ type Resolver struct {
 	askResetPasswordService                 *users_services.AskResetPasswordService
 	assignTreatmentService                  *treatments_services.AssignTreatmentService
 	authenticateUserService                 *users_services.AuthenticateUserService
+	confirmAppointmentService               *schedule_services.ConfirmAppointmentService
 	createPatientService                    *profiles_services.CreatePatientService
 	createPsychologistService               *profiles_services.CreatePsychologistService
 	createTreatmentService                  *treatments_services.CreateTreatmentService
 	createUserService                       *users_services.CreateUserService
 	createUserWithPasswordService           *users_services.CreateUserWithPasswordService
 	deleteTreatmentService                  *treatments_services.DeleteTreatmentService
+	denyAppointmentService                  *schedule_services.DenyAppointmentService
 	finalizeTreatmentService                *treatments_services.FinalizeTreatmentService
 	getAppointmentsOfPatientService         *schedule_services.GetAppointmentsOfPatientService
 	getAppointmentsOfPsychologistService    *schedule_services.GetAppointmentsOfPsychologistService
@@ -107,6 +109,16 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 		}
 	}
 	return r.authenticateUserService
+}
+
+// ConfirmAppointmentService gets or sets the service with same name
+func (r *Resolver) ConfirmAppointmentService() *schedule_services.ConfirmAppointmentService {
+	if r.confirmAppointmentService == nil {
+		r.confirmAppointmentService = &schedule_services.ConfirmAppointmentService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.confirmAppointmentService
 }
 
 // CreatePatientService gets or sets the service with same name
@@ -179,6 +191,16 @@ func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatment
 		}
 	}
 	return r.deleteTreatmentService
+}
+
+// DenyAppointmentService gets or sets the service with same name
+func (r *Resolver) DenyAppointmentService() *schedule_services.DenyAppointmentService {
+	if r.denyAppointmentService == nil {
+		r.denyAppointmentService = &schedule_services.DenyAppointmentService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.denyAppointmentService
 }
 
 // FinalizeTreatmentService gets or sets the service with same name
