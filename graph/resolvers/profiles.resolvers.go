@@ -9,7 +9,7 @@ import (
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	schedule_models "github.com/guicostaarantes/psi-server/modules/schedule/models"
+	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
 func (r *mutationResolver) CreateOwnPatientProfile(ctx context.Context, input profiles_models.CreatePatientInput) (*bool, error) {
@@ -172,7 +172,7 @@ func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *patientProfileResolver) Slots(ctx context.Context, obj *profiles_models.Patient) ([]*schedule_models.GetPatientSlotsResponse, error) {
+func (r *patientProfileResolver) Slots(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientSlotsResponse, error) {
 	return r.GetPatientSlotsService().Execute(obj.ID)
 }
 
@@ -184,7 +184,7 @@ func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *prof
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) Slots(ctx context.Context, obj *profiles_models.Psychologist) ([]*schedule_models.GetPsychologistSlotsResponse, error) {
+func (r *psychologistProfileResolver) Slots(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistSlotsResponse, error) {
 	return r.GetPsychologistSlotsService().Execute(obj.ID)
 }
 

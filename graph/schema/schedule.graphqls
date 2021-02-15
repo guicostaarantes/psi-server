@@ -1,47 +1,11 @@
-enum SlotStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SlotStatus") {
-    PENDING
-    ACTIVE
-    FINALIZED
-    INTERRUPTED_BY_PSYCHOLOGIST
-    INTERRUPTED_BY_PATIENT
-}
-
-input CreateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.CreateSlotInput") {
-    duration: Int!
-    price: Int!
-    interval: Int!
-}
-
 input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SetAvailabilityInput") {
     start: Int!
     end: Int!
 }
 
-input UpdateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.UpdateSlotInput") {
-    duration: Int!
-    price: Int!
-    interval: Int!
-}
-
 type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {
     start: Int!
     end: Int!
-}
-
-type PatientSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.GetPatientSlotsResponse") {
-    id: ID!
-    duration: Int!
-    price: Int!
-    interval: Int!
-    status: SlotStatus!
-}
-
-type PsychologistSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.GetPsychologistSlotsResponse") {
-    id: ID!
-    duration: Int!
-    price: Int!
-    interval: Int!
-    status: SlotStatus!
 }
 
 extend type Query {
@@ -53,27 +17,6 @@ extend type Query {
 }
 
 extend type Mutation {
-    """The assignSlot mutation allows a user to choose a slot and assign it to their patient profile."""
-    assignSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The createOwnSlot mutation allows a user to create a pending slot and assign it to their psychologist profile."""
-    createOwnSlot(input: CreateSlotInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The deleteOwnSlot mutation allows a user to delete a pending slot if it is owned by their psychologist profile."""
-    deleteOwnSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The interruptSlotByPatient mutation allows a user to choose a slot under their patient profile and interrupt it."""
-    interruptSlotByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The interruptSlotByPsychologist mutation allows a user to choose a slot under their psychologist profile and interrupt it."""
-    interruptSlotByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The finalizeOwnSlot mutation allows a user to choose a slot under their psychologist profile and finalize it."""
-    finalizeOwnSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
     """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
     setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The deleteOwnSlot mutation allows a user to update a slot if it is owned by their psychologist profile."""
-    updateOwnSlot(id: ID!, input: UpdateSlotInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }

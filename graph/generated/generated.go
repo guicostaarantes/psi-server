@@ -13,9 +13,10 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	models3 "github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	models4 "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	models1 "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	models2 "github.com/guicostaarantes/psi-server/modules/schedule/models"
+	models3 "github.com/guicostaarantes/psi-server/modules/schedule/models"
+	models2 "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/modules/users/models"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -85,13 +86,13 @@ type ComplexityRoot struct {
 		InterruptSlotByPsychologist             func(childComplexity int, id string, reason string) int
 		ProcessPendingMail                      func(childComplexity int) int
 		ResetPassword                           func(childComplexity int, input models.ResetPasswordInput) int
-		SetOwnAvailability                      func(childComplexity int, input []*models2.SetAvailabilityInput) int
-		SetOwnPatientCharacteristicChoices      func(childComplexity int, input []*models3.SetCharacteristicChoiceInput) int
-		SetOwnPatientPreferences                func(childComplexity int, input []*models3.SetPreferenceInput) int
-		SetOwnPsychologistCharacteristicChoices func(childComplexity int, input []*models3.SetCharacteristicChoiceInput) int
-		SetOwnPsychologistPreferences           func(childComplexity int, input []*models3.SetPreferenceInput) int
-		SetPatientCharacteristics               func(childComplexity int, input []*models3.SetCharacteristicInput) int
-		SetPsychologistCharacteristics          func(childComplexity int, input []*models3.SetCharacteristicInput) int
+		SetOwnAvailability                      func(childComplexity int, input []*models3.SetAvailabilityInput) int
+		SetOwnPatientCharacteristicChoices      func(childComplexity int, input []*models4.SetCharacteristicChoiceInput) int
+		SetOwnPatientPreferences                func(childComplexity int, input []*models4.SetPreferenceInput) int
+		SetOwnPsychologistCharacteristicChoices func(childComplexity int, input []*models4.SetCharacteristicChoiceInput) int
+		SetOwnPsychologistPreferences           func(childComplexity int, input []*models4.SetPreferenceInput) int
+		SetPatientCharacteristics               func(childComplexity int, input []*models4.SetCharacteristicInput) int
+		SetPsychologistCharacteristics          func(childComplexity int, input []*models4.SetCharacteristicInput) int
 		UpdateOwnPatientProfile                 func(childComplexity int, input models1.UpdatePatientInput) int
 		UpdateOwnPsychologistProfile            func(childComplexity int, input models1.UpdatePsychologistInput) int
 		UpdateOwnSlot                           func(childComplexity int, id string, input models2.UpdateSlotInput) int
@@ -197,38 +198,38 @@ type MutationResolver interface {
 	ProcessPendingMail(ctx context.Context) (*bool, error)
 	CreateOwnPatientProfile(ctx context.Context, input models1.CreatePatientInput) (*bool, error)
 	CreateOwnPsychologistProfile(ctx context.Context, input models1.CreatePsychologistInput) (*bool, error)
-	SetOwnPatientCharacteristicChoices(ctx context.Context, input []*models3.SetCharacteristicChoiceInput) (*bool, error)
-	SetOwnPatientPreferences(ctx context.Context, input []*models3.SetPreferenceInput) (*bool, error)
-	SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*models3.SetCharacteristicChoiceInput) (*bool, error)
-	SetOwnPsychologistPreferences(ctx context.Context, input []*models3.SetPreferenceInput) (*bool, error)
-	SetPatientCharacteristics(ctx context.Context, input []*models3.SetCharacteristicInput) (*bool, error)
-	SetPsychologistCharacteristics(ctx context.Context, input []*models3.SetCharacteristicInput) (*bool, error)
+	SetOwnPatientCharacteristicChoices(ctx context.Context, input []*models4.SetCharacteristicChoiceInput) (*bool, error)
+	SetOwnPatientPreferences(ctx context.Context, input []*models4.SetPreferenceInput) (*bool, error)
+	SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*models4.SetCharacteristicChoiceInput) (*bool, error)
+	SetOwnPsychologistPreferences(ctx context.Context, input []*models4.SetPreferenceInput) (*bool, error)
+	SetPatientCharacteristics(ctx context.Context, input []*models4.SetCharacteristicInput) (*bool, error)
+	SetPsychologistCharacteristics(ctx context.Context, input []*models4.SetCharacteristicInput) (*bool, error)
 	UpdateOwnPatientProfile(ctx context.Context, input models1.UpdatePatientInput) (*bool, error)
 	UpdateOwnPsychologistProfile(ctx context.Context, input models1.UpdatePsychologistInput) (*bool, error)
+	SetOwnAvailability(ctx context.Context, input []*models3.SetAvailabilityInput) (*bool, error)
 	AssignSlot(ctx context.Context, id string) (*bool, error)
 	CreateOwnSlot(ctx context.Context, input models2.CreateSlotInput) (*bool, error)
 	DeleteOwnSlot(ctx context.Context, id string) (*bool, error)
 	InterruptSlotByPatient(ctx context.Context, id string, reason string) (*bool, error)
 	InterruptSlotByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
 	FinalizeOwnSlot(ctx context.Context, id string) (*bool, error)
-	SetOwnAvailability(ctx context.Context, input []*models2.SetAvailabilityInput) (*bool, error)
 	UpdateOwnSlot(ctx context.Context, id string, input models2.UpdateSlotInput) (*bool, error)
 }
 type PatientProfileResolver interface {
-	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models3.CharacteristicChoiceResponse, error)
-	Preferences(ctx context.Context, obj *models1.Patient) ([]*models3.PreferenceResponse, error)
+	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models4.CharacteristicChoiceResponse, error)
+	Preferences(ctx context.Context, obj *models1.Patient) ([]*models4.PreferenceResponse, error)
 	Slots(ctx context.Context, obj *models1.Patient) ([]*models2.GetPatientSlotsResponse, error)
 }
 type PsychologistProfileResolver interface {
-	Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models3.CharacteristicChoiceResponse, error)
-	Preferences(ctx context.Context, obj *models1.Psychologist) ([]*models3.PreferenceResponse, error)
+	Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models4.CharacteristicChoiceResponse, error)
+	Preferences(ctx context.Context, obj *models1.Psychologist) ([]*models4.PreferenceResponse, error)
 	Slots(ctx context.Context, obj *models1.Psychologist) ([]*models2.GetPsychologistSlotsResponse, error)
 }
 type PublicPatientProfileResolver interface {
-	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models3.CharacteristicChoiceResponse, error)
+	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models4.CharacteristicChoiceResponse, error)
 }
 type PublicPsychologistProfileResolver interface {
-	Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models3.CharacteristicChoiceResponse, error)
+	Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models4.CharacteristicChoiceResponse, error)
 }
 type QueryResolver interface {
 	AuthenticateUser(ctx context.Context, input models.AuthenticateUserInput) (*models.Authentication, error)
@@ -237,12 +238,12 @@ type QueryResolver interface {
 	ListUsersByRole(ctx context.Context, role models.Role) ([]*models.User, error)
 	GetOwnPatientProfile(ctx context.Context) (*models1.Patient, error)
 	GetOwnPsychologistProfile(ctx context.Context) (*models1.Psychologist, error)
-	GetPatientCharacteristics(ctx context.Context) ([]*models3.CharacteristicResponse, error)
+	GetPatientCharacteristics(ctx context.Context) ([]*models4.CharacteristicResponse, error)
 	GetPatientProfile(ctx context.Context, id string) (*models1.Patient, error)
-	GetPsychologistCharacteristics(ctx context.Context) ([]*models3.CharacteristicResponse, error)
+	GetPsychologistCharacteristics(ctx context.Context) ([]*models4.CharacteristicResponse, error)
 	GetPsychologistProfile(ctx context.Context, id string) (*models1.Psychologist, error)
-	GetOwnAvailability(ctx context.Context) ([]*models2.AvailabilityResponse, error)
-	GetPsychologistAvailability(ctx context.Context, id string) ([]*models2.AvailabilityResponse, error)
+	GetOwnAvailability(ctx context.Context) ([]*models3.AvailabilityResponse, error)
+	GetPsychologistAvailability(ctx context.Context, id string) ([]*models3.AvailabilityResponse, error)
 }
 
 type executableSchema struct {
@@ -496,7 +497,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnAvailability(childComplexity, args["input"].([]*models2.SetAvailabilityInput)), true
+		return e.complexity.Mutation.SetOwnAvailability(childComplexity, args["input"].([]*models3.SetAvailabilityInput)), true
 
 	case "Mutation.setOwnPatientCharacteristicChoices":
 		if e.complexity.Mutation.SetOwnPatientCharacteristicChoices == nil {
@@ -508,7 +509,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPatientCharacteristicChoices(childComplexity, args["input"].([]*models3.SetCharacteristicChoiceInput)), true
+		return e.complexity.Mutation.SetOwnPatientCharacteristicChoices(childComplexity, args["input"].([]*models4.SetCharacteristicChoiceInput)), true
 
 	case "Mutation.setOwnPatientPreferences":
 		if e.complexity.Mutation.SetOwnPatientPreferences == nil {
@@ -520,7 +521,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPatientPreferences(childComplexity, args["input"].([]*models3.SetPreferenceInput)), true
+		return e.complexity.Mutation.SetOwnPatientPreferences(childComplexity, args["input"].([]*models4.SetPreferenceInput)), true
 
 	case "Mutation.setOwnPsychologistCharacteristicChoices":
 		if e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices == nil {
@@ -532,7 +533,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices(childComplexity, args["input"].([]*models3.SetCharacteristicChoiceInput)), true
+		return e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices(childComplexity, args["input"].([]*models4.SetCharacteristicChoiceInput)), true
 
 	case "Mutation.setOwnPsychologistPreferences":
 		if e.complexity.Mutation.SetOwnPsychologistPreferences == nil {
@@ -544,7 +545,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPsychologistPreferences(childComplexity, args["input"].([]*models3.SetPreferenceInput)), true
+		return e.complexity.Mutation.SetOwnPsychologistPreferences(childComplexity, args["input"].([]*models4.SetPreferenceInput)), true
 
 	case "Mutation.setPatientCharacteristics":
 		if e.complexity.Mutation.SetPatientCharacteristics == nil {
@@ -556,7 +557,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetPatientCharacteristics(childComplexity, args["input"].([]*models3.SetCharacteristicInput)), true
+		return e.complexity.Mutation.SetPatientCharacteristics(childComplexity, args["input"].([]*models4.SetCharacteristicInput)), true
 
 	case "Mutation.setPsychologistCharacteristics":
 		if e.complexity.Mutation.SetPsychologistCharacteristics == nil {
@@ -568,7 +569,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetPsychologistCharacteristics(childComplexity, args["input"].([]*models3.SetCharacteristicInput)), true
+		return e.complexity.Mutation.SetPsychologistCharacteristics(childComplexity, args["input"].([]*models4.SetCharacteristicInput)), true
 
 	case "Mutation.updateOwnPatientProfile":
 		if e.complexity.Mutation.UpdateOwnPatientProfile == nil {
@@ -1260,50 +1261,14 @@ extend type Mutation {
     updateOwnPatientProfile(input: UpdateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
-	{Name: "graph/schema/schedule.graphqls", Input: `enum SlotStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SlotStatus") {
-    PENDING
-    ACTIVE
-    FINALIZED
-    INTERRUPTED_BY_PSYCHOLOGIST
-    INTERRUPTED_BY_PATIENT
-}
-
-input CreateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.CreateSlotInput") {
-    duration: Int!
-    price: Int!
-    interval: Int!
-}
-
-input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SetAvailabilityInput") {
+	{Name: "graph/schema/schedule.graphqls", Input: `input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SetAvailabilityInput") {
     start: Int!
     end: Int!
-}
-
-input UpdateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.UpdateSlotInput") {
-    duration: Int!
-    price: Int!
-    interval: Int!
 }
 
 type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {
     start: Int!
     end: Int!
-}
-
-type PatientSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.GetPatientSlotsResponse") {
-    id: ID!
-    duration: Int!
-    price: Int!
-    interval: Int!
-    status: SlotStatus!
-}
-
-type PsychologistSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.GetPsychologistSlotsResponse") {
-    id: ID!
-    duration: Int!
-    price: Int!
-    interval: Int!
-    status: SlotStatus!
 }
 
 extend type Query {
@@ -1312,6 +1277,46 @@ extend type Query {
 
     """The getPsychologistAvailability query allows a user to get the availability of a psychologist profile."""
     getPsychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+}
+
+extend type Mutation {
+    """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
+    setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+}`, BuiltIn: false},
+	{Name: "graph/schema/treatments.graphqls", Input: `enum SlotStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.SlotStatus") {
+    PENDING
+    ACTIVE
+    FINALIZED
+    INTERRUPTED_BY_PSYCHOLOGIST
+    INTERRUPTED_BY_PATIENT
+}
+
+input CreateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateSlotInput") {
+    duration: Int!
+    price: Int!
+    interval: Int!
+}
+
+input UpdateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateSlotInput") {
+    duration: Int!
+    price: Int!
+    interval: Int!
+}
+
+type PatientSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientSlotsResponse") {
+    id: ID!
+    duration: Int!
+    price: Int!
+    interval: Int!
+    status: SlotStatus!
+}
+
+type PsychologistSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistSlotsResponse") {
+    id: ID!
+    duration: Int!
+    price: Int!
+    interval: Int!
+    status: SlotStatus!
 }
 
 extend type Mutation {
@@ -1332,9 +1337,6 @@ extend type Mutation {
 
     """The finalizeOwnSlot mutation allows a user to choose a slot under their psychologist profile and finalize it."""
     finalizeOwnSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
-    setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The deleteOwnSlot mutation allows a user to update a slot if it is owned by their psychologist profile."""
     updateOwnSlot(id: ID!, input: UpdateSlotInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
@@ -1495,7 +1497,7 @@ func (ec *executionContext) field_Mutation_createOwnSlot_args(ctx context.Contex
 	var arg0 models2.CreateSlotInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐCreateSlotInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateSlotInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1645,7 +1647,7 @@ func (ec *executionContext) field_Mutation_resetPassword_args(ctx context.Contex
 func (ec *executionContext) field_Mutation_setOwnAvailability_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*models2.SetAvailabilityInput
+	var arg0 []*models3.SetAvailabilityInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetAvailabilityInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInputᚄ(ctx, tmp)
@@ -1660,7 +1662,7 @@ func (ec *executionContext) field_Mutation_setOwnAvailability_args(ctx context.C
 func (ec *executionContext) field_Mutation_setOwnPatientCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*models3.SetCharacteristicChoiceInput
+	var arg0 []*models4.SetCharacteristicChoiceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx, tmp)
@@ -1675,7 +1677,7 @@ func (ec *executionContext) field_Mutation_setOwnPatientCharacteristicChoices_ar
 func (ec *executionContext) field_Mutation_setOwnPatientPreferences_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*models3.SetPreferenceInput
+	var arg0 []*models4.SetPreferenceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx, tmp)
@@ -1690,7 +1692,7 @@ func (ec *executionContext) field_Mutation_setOwnPatientPreferences_args(ctx con
 func (ec *executionContext) field_Mutation_setOwnPsychologistCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*models3.SetCharacteristicChoiceInput
+	var arg0 []*models4.SetCharacteristicChoiceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx, tmp)
@@ -1705,7 +1707,7 @@ func (ec *executionContext) field_Mutation_setOwnPsychologistCharacteristicChoic
 func (ec *executionContext) field_Mutation_setOwnPsychologistPreferences_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*models3.SetPreferenceInput
+	var arg0 []*models4.SetPreferenceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx, tmp)
@@ -1720,7 +1722,7 @@ func (ec *executionContext) field_Mutation_setOwnPsychologistPreferences_args(ct
 func (ec *executionContext) field_Mutation_setPatientCharacteristics_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*models3.SetCharacteristicInput
+	var arg0 []*models4.SetCharacteristicInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetProfileCharacteristicInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicInputᚄ(ctx, tmp)
@@ -1735,7 +1737,7 @@ func (ec *executionContext) field_Mutation_setPatientCharacteristics_args(ctx co
 func (ec *executionContext) field_Mutation_setPsychologistCharacteristics_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*models3.SetCharacteristicInput
+	var arg0 []*models4.SetCharacteristicInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetProfileCharacteristicInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicInputᚄ(ctx, tmp)
@@ -1792,7 +1794,7 @@ func (ec *executionContext) field_Mutation_updateOwnSlot_args(ctx context.Contex
 	var arg1 models2.UpdateSlotInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐUpdateSlotInput(ctx, tmp)
+		arg1, err = ec.unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateSlotInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1968,7 +1970,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _AvailabilityResponse_start(ctx context.Context, field graphql.CollectedField, obj *models2.AvailabilityResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _AvailabilityResponse_start(ctx context.Context, field graphql.CollectedField, obj *models3.AvailabilityResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2003,7 +2005,7 @@ func (ec *executionContext) _AvailabilityResponse_start(ctx context.Context, fie
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AvailabilityResponse_end(ctx context.Context, field graphql.CollectedField, obj *models2.AvailabilityResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _AvailabilityResponse_end(ctx context.Context, field graphql.CollectedField, obj *models3.AvailabilityResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2038,7 +2040,7 @@ func (ec *executionContext) _AvailabilityResponse_end(ctx context.Context, field
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Characteristic_name(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Characteristic_name(ctx context.Context, field graphql.CollectedField, obj *models4.CharacteristicResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2073,7 +2075,7 @@ func (ec *executionContext) _Characteristic_name(ctx context.Context, field grap
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Characteristic_type(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Characteristic_type(ctx context.Context, field graphql.CollectedField, obj *models4.CharacteristicResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2103,12 +2105,12 @@ func (ec *executionContext) _Characteristic_type(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models3.CharacteristicType)
+	res := resTmp.(models4.CharacteristicType)
 	fc.Result = res
 	return ec.marshalNCharacteristicType2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Characteristic_possibleValues(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Characteristic_possibleValues(ctx context.Context, field graphql.CollectedField, obj *models4.CharacteristicResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2143,7 +2145,7 @@ func (ec *executionContext) _Characteristic_possibleValues(ctx context.Context, 
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _CharacteristicChoice_name(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CharacteristicChoice_name(ctx context.Context, field graphql.CollectedField, obj *models4.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2178,7 +2180,7 @@ func (ec *executionContext) _CharacteristicChoice_name(ctx context.Context, fiel
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _CharacteristicChoice_type(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CharacteristicChoice_type(ctx context.Context, field graphql.CollectedField, obj *models4.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2208,12 +2210,12 @@ func (ec *executionContext) _CharacteristicChoice_type(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models3.CharacteristicType)
+	res := resTmp.(models4.CharacteristicType)
 	fc.Result = res
 	return ec.marshalNCharacteristicType2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _CharacteristicChoice_selectedValues(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CharacteristicChoice_selectedValues(ctx context.Context, field graphql.CollectedField, obj *models4.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2248,7 +2250,7 @@ func (ec *executionContext) _CharacteristicChoice_selectedValues(ctx context.Con
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _CharacteristicChoice_possibleValues(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CharacteristicChoice_possibleValues(ctx context.Context, field graphql.CollectedField, obj *models4.CharacteristicChoiceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2797,7 +2799,7 @@ func (ec *executionContext) _Mutation_setOwnPatientCharacteristicChoices(ctx con
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPatientCharacteristicChoices(rctx, args["input"].([]*models3.SetCharacteristicChoiceInput))
+			return ec.resolvers.Mutation().SetOwnPatientCharacteristicChoices(rctx, args["input"].([]*models4.SetCharacteristicChoiceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -2860,7 +2862,7 @@ func (ec *executionContext) _Mutation_setOwnPatientPreferences(ctx context.Conte
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPatientPreferences(rctx, args["input"].([]*models3.SetPreferenceInput))
+			return ec.resolvers.Mutation().SetOwnPatientPreferences(rctx, args["input"].([]*models4.SetPreferenceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -2923,7 +2925,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoices(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPsychologistCharacteristicChoices(rctx, args["input"].([]*models3.SetCharacteristicChoiceInput))
+			return ec.resolvers.Mutation().SetOwnPsychologistCharacteristicChoices(rctx, args["input"].([]*models4.SetCharacteristicChoiceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -2986,7 +2988,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistPreferences(ctx context.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPsychologistPreferences(rctx, args["input"].([]*models3.SetPreferenceInput))
+			return ec.resolvers.Mutation().SetOwnPsychologistPreferences(rctx, args["input"].([]*models4.SetPreferenceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3049,7 +3051,7 @@ func (ec *executionContext) _Mutation_setPatientCharacteristics(ctx context.Cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetPatientCharacteristics(rctx, args["input"].([]*models3.SetCharacteristicInput))
+			return ec.resolvers.Mutation().SetPatientCharacteristics(rctx, args["input"].([]*models4.SetCharacteristicInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
@@ -3112,7 +3114,7 @@ func (ec *executionContext) _Mutation_setPsychologistCharacteristics(ctx context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetPsychologistCharacteristics(rctx, args["input"].([]*models3.SetCharacteristicInput))
+			return ec.resolvers.Mutation().SetPsychologistCharacteristics(rctx, args["input"].([]*models4.SetCharacteristicInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
@@ -3239,6 +3241,69 @@ func (ec *executionContext) _Mutation_updateOwnPsychologistProfile(ctx context.C
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateOwnPsychologistProfile(rctx, args["input"].(models1.UpdatePsychologistInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_setOwnAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setOwnAvailability_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().SetOwnAvailability(rctx, args["input"].([]*models3.SetAvailabilityInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3653,69 +3718,6 @@ func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setOwnAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setOwnAvailability_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnAvailability(rctx, args["input"].([]*models2.SetAvailabilityInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Mutation_updateOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3984,7 +3986,7 @@ func (ec *executionContext) _PatientProfile_characteristics(ctx context.Context,
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.CharacteristicChoiceResponse)
+	res := resTmp.([]*models4.CharacteristicChoiceResponse)
 	fc.Result = res
 	return ec.marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponseᚄ(ctx, field.Selections, res)
 }
@@ -4019,7 +4021,7 @@ func (ec *executionContext) _PatientProfile_preferences(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.PreferenceResponse)
+	res := resTmp.([]*models4.PreferenceResponse)
 	fc.Result = res
 	return ec.marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx, field.Selections, res)
 }
@@ -4056,7 +4058,7 @@ func (ec *executionContext) _PatientProfile_slots(ctx context.Context, field gra
 	}
 	res := resTmp.([]*models2.GetPatientSlotsResponse)
 	fc.Result = res
-	return ec.marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx, field.Selections, res)
+	return ec.marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientSlot_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) {
@@ -4231,10 +4233,10 @@ func (ec *executionContext) _PatientSlot_status(ctx context.Context, field graph
 	}
 	res := resTmp.(models2.SlotStatus)
 	fc.Result = res
-	return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSlotStatus(ctx, field.Selections, res)
+	return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Preference_characteristicName(ctx context.Context, field graphql.CollectedField, obj *models3.PreferenceResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Preference_characteristicName(ctx context.Context, field graphql.CollectedField, obj *models4.PreferenceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4269,7 +4271,7 @@ func (ec *executionContext) _Preference_characteristicName(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Preference_selectedValue(ctx context.Context, field graphql.CollectedField, obj *models3.PreferenceResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Preference_selectedValue(ctx context.Context, field graphql.CollectedField, obj *models4.PreferenceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4304,7 +4306,7 @@ func (ec *executionContext) _Preference_selectedValue(ctx context.Context, field
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Preference_weight(ctx context.Context, field graphql.CollectedField, obj *models3.PreferenceResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Preference_weight(ctx context.Context, field graphql.CollectedField, obj *models4.PreferenceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4544,7 +4546,7 @@ func (ec *executionContext) _PsychologistProfile_characteristics(ctx context.Con
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.CharacteristicChoiceResponse)
+	res := resTmp.([]*models4.CharacteristicChoiceResponse)
 	fc.Result = res
 	return ec.marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponseᚄ(ctx, field.Selections, res)
 }
@@ -4579,7 +4581,7 @@ func (ec *executionContext) _PsychologistProfile_preferences(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.PreferenceResponse)
+	res := resTmp.([]*models4.PreferenceResponse)
 	fc.Result = res
 	return ec.marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx, field.Selections, res)
 }
@@ -4616,7 +4618,7 @@ func (ec *executionContext) _PsychologistProfile_slots(ctx context.Context, fiel
 	}
 	res := resTmp.([]*models2.GetPsychologistSlotsResponse)
 	fc.Result = res
-	return ec.marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx, field.Selections, res)
+	return ec.marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistSlot_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) {
@@ -4791,7 +4793,7 @@ func (ec *executionContext) _PsychologistSlot_status(ctx context.Context, field 
 	}
 	res := resTmp.(models2.SlotStatus)
 	fc.Result = res
-	return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSlotStatus(ctx, field.Selections, res)
+	return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PublicPatientProfile_id(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) {
@@ -4999,7 +5001,7 @@ func (ec *executionContext) _PublicPatientProfile_characteristics(ctx context.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.CharacteristicChoiceResponse)
+	res := resTmp.([]*models4.CharacteristicChoiceResponse)
 	fc.Result = res
 	return ec.marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponseᚄ(ctx, field.Selections, res)
 }
@@ -5209,7 +5211,7 @@ func (ec *executionContext) _PublicPsychologistProfile_characteristics(ctx conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.CharacteristicChoiceResponse)
+	res := resTmp.([]*models4.CharacteristicChoiceResponse)
 	fc.Result = res
 	return ec.marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponseᚄ(ctx, field.Selections, res)
 }
@@ -5604,7 +5606,7 @@ func (ec *executionContext) _Query_getPatientCharacteristics(ctx context.Context
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*models3.CharacteristicResponse); ok {
+		if data, ok := tmp.([]*models4.CharacteristicResponse); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicResponse`, tmp)
@@ -5619,7 +5621,7 @@ func (ec *executionContext) _Query_getPatientCharacteristics(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.CharacteristicResponse)
+	res := resTmp.([]*models4.CharacteristicResponse)
 	fc.Result = res
 	return ec.marshalNCharacteristic2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponseᚄ(ctx, field.Selections, res)
 }
@@ -5729,7 +5731,7 @@ func (ec *executionContext) _Query_getPsychologistCharacteristics(ctx context.Co
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*models3.CharacteristicResponse); ok {
+		if data, ok := tmp.([]*models4.CharacteristicResponse); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicResponse`, tmp)
@@ -5744,7 +5746,7 @@ func (ec *executionContext) _Query_getPsychologistCharacteristics(ctx context.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models3.CharacteristicResponse)
+	res := resTmp.([]*models4.CharacteristicResponse)
 	fc.Result = res
 	return ec.marshalNCharacteristic2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponseᚄ(ctx, field.Selections, res)
 }
@@ -5854,7 +5856,7 @@ func (ec *executionContext) _Query_getOwnAvailability(ctx context.Context, field
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*models2.AvailabilityResponse); ok {
+		if data, ok := tmp.([]*models3.AvailabilityResponse); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse`, tmp)
@@ -5869,7 +5871,7 @@ func (ec *executionContext) _Query_getOwnAvailability(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models2.AvailabilityResponse)
+	res := resTmp.([]*models3.AvailabilityResponse)
 	fc.Result = res
 	return ec.marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx, field.Selections, res)
 }
@@ -5920,7 +5922,7 @@ func (ec *executionContext) _Query_getPsychologistAvailability(ctx context.Conte
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*models2.AvailabilityResponse); ok {
+		if data, ok := tmp.([]*models3.AvailabilityResponse); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse`, tmp)
@@ -5935,7 +5937,7 @@ func (ec *executionContext) _Query_getPsychologistAvailability(ctx context.Conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models2.AvailabilityResponse)
+	res := resTmp.([]*models3.AvailabilityResponse)
 	fc.Result = res
 	return ec.marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx, field.Selections, res)
 }
@@ -7569,8 +7571,8 @@ func (ec *executionContext) unmarshalInputResetPasswordInput(ctx context.Context
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSetAvailabilityInput(ctx context.Context, obj interface{}) (models2.SetAvailabilityInput, error) {
-	var it models2.SetAvailabilityInput
+func (ec *executionContext) unmarshalInputSetAvailabilityInput(ctx context.Context, obj interface{}) (models3.SetAvailabilityInput, error) {
+	var it models3.SetAvailabilityInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7597,8 +7599,8 @@ func (ec *executionContext) unmarshalInputSetAvailabilityInput(ctx context.Conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSetOwnProfileCharacteristicChoiceInput(ctx context.Context, obj interface{}) (models3.SetCharacteristicChoiceInput, error) {
-	var it models3.SetCharacteristicChoiceInput
+func (ec *executionContext) unmarshalInputSetOwnProfileCharacteristicChoiceInput(ctx context.Context, obj interface{}) (models4.SetCharacteristicChoiceInput, error) {
+	var it models4.SetCharacteristicChoiceInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7625,8 +7627,8 @@ func (ec *executionContext) unmarshalInputSetOwnProfileCharacteristicChoiceInput
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSetOwnProfilePreferenceInput(ctx context.Context, obj interface{}) (models3.SetPreferenceInput, error) {
-	var it models3.SetPreferenceInput
+func (ec *executionContext) unmarshalInputSetOwnProfilePreferenceInput(ctx context.Context, obj interface{}) (models4.SetPreferenceInput, error) {
+	var it models4.SetPreferenceInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7661,8 +7663,8 @@ func (ec *executionContext) unmarshalInputSetOwnProfilePreferenceInput(ctx conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSetProfileCharacteristicInput(ctx context.Context, obj interface{}) (models3.SetCharacteristicInput, error) {
-	var it models3.SetCharacteristicInput
+func (ec *executionContext) unmarshalInputSetProfileCharacteristicInput(ctx context.Context, obj interface{}) (models4.SetCharacteristicInput, error) {
+	var it models4.SetCharacteristicInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7859,7 +7861,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 
 var availabilityResponseImplementors = []string{"AvailabilityResponse"}
 
-func (ec *executionContext) _AvailabilityResponse(ctx context.Context, sel ast.SelectionSet, obj *models2.AvailabilityResponse) graphql.Marshaler {
+func (ec *executionContext) _AvailabilityResponse(ctx context.Context, sel ast.SelectionSet, obj *models3.AvailabilityResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, availabilityResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -7891,7 +7893,7 @@ func (ec *executionContext) _AvailabilityResponse(ctx context.Context, sel ast.S
 
 var characteristicImplementors = []string{"Characteristic"}
 
-func (ec *executionContext) _Characteristic(ctx context.Context, sel ast.SelectionSet, obj *models3.CharacteristicResponse) graphql.Marshaler {
+func (ec *executionContext) _Characteristic(ctx context.Context, sel ast.SelectionSet, obj *models4.CharacteristicResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, characteristicImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -7928,7 +7930,7 @@ func (ec *executionContext) _Characteristic(ctx context.Context, sel ast.Selecti
 
 var characteristicChoiceImplementors = []string{"CharacteristicChoice"}
 
-func (ec *executionContext) _CharacteristicChoice(ctx context.Context, sel ast.SelectionSet, obj *models3.CharacteristicChoiceResponse) graphql.Marshaler {
+func (ec *executionContext) _CharacteristicChoice(ctx context.Context, sel ast.SelectionSet, obj *models4.CharacteristicChoiceResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, characteristicChoiceImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -8017,6 +8019,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_updateOwnPatientProfile(ctx, field)
 		case "updateOwnPsychologistProfile":
 			out.Values[i] = ec._Mutation_updateOwnPsychologistProfile(ctx, field)
+		case "setOwnAvailability":
+			out.Values[i] = ec._Mutation_setOwnAvailability(ctx, field)
 		case "assignSlot":
 			out.Values[i] = ec._Mutation_assignSlot(ctx, field)
 		case "createOwnSlot":
@@ -8029,8 +8033,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_interruptSlotByPsychologist(ctx, field)
 		case "finalizeOwnSlot":
 			out.Values[i] = ec._Mutation_finalizeOwnSlot(ctx, field)
-		case "setOwnAvailability":
-			out.Values[i] = ec._Mutation_setOwnAvailability(ctx, field)
 		case "updateOwnSlot":
 			out.Values[i] = ec._Mutation_updateOwnSlot(ctx, field)
 		default:
@@ -8182,7 +8184,7 @@ func (ec *executionContext) _PatientSlot(ctx context.Context, sel ast.SelectionS
 
 var preferenceImplementors = []string{"Preference"}
 
-func (ec *executionContext) _Preference(ctx context.Context, sel ast.SelectionSet, obj *models3.PreferenceResponse) graphql.Marshaler {
+func (ec *executionContext) _Preference(ctx context.Context, sel ast.SelectionSet, obj *models4.PreferenceResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, preferenceImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -8992,7 +8994,7 @@ func (ec *executionContext) unmarshalNAuthenticateUserInput2githubᚗcomᚋguico
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.AvailabilityResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models3.AvailabilityResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9029,7 +9031,7 @@ func (ec *executionContext) marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋgu
 	return ret
 }
 
-func (ec *executionContext) marshalNAvailabilityResponse2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponse(ctx context.Context, sel ast.SelectionSet, v *models2.AvailabilityResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNAvailabilityResponse2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponse(ctx context.Context, sel ast.SelectionSet, v *models3.AvailabilityResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -9054,7 +9056,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCharacteristic2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models3.CharacteristicResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCharacteristic2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models4.CharacteristicResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9091,7 +9093,7 @@ func (ec *executionContext) marshalNCharacteristic2ᚕᚖgithubᚗcomᚋguicosta
 	return ret
 }
 
-func (ec *executionContext) marshalNCharacteristic2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponse(ctx context.Context, sel ast.SelectionSet, v *models3.CharacteristicResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCharacteristic2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponse(ctx context.Context, sel ast.SelectionSet, v *models4.CharacteristicResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -9101,7 +9103,7 @@ func (ec *executionContext) marshalNCharacteristic2ᚖgithubᚗcomᚋguicostaara
 	return ec._Characteristic(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models3.CharacteristicChoiceResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models4.CharacteristicChoiceResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9138,7 +9140,7 @@ func (ec *executionContext) marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋgu
 	return ret
 }
 
-func (ec *executionContext) marshalNCharacteristicChoice2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponse(ctx context.Context, sel ast.SelectionSet, v *models3.CharacteristicChoiceResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCharacteristicChoice2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponse(ctx context.Context, sel ast.SelectionSet, v *models4.CharacteristicChoiceResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -9148,13 +9150,13 @@ func (ec *executionContext) marshalNCharacteristicChoice2ᚖgithubᚗcomᚋguico
 	return ec._CharacteristicChoice(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCharacteristicType2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicType(ctx context.Context, v interface{}) (models3.CharacteristicType, error) {
+func (ec *executionContext) unmarshalNCharacteristicType2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicType(ctx context.Context, v interface{}) (models4.CharacteristicType, error) {
 	tmp, err := graphql.UnmarshalString(v)
-	res := models3.CharacteristicType(tmp)
+	res := models4.CharacteristicType(tmp)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCharacteristicType2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicType(ctx context.Context, sel ast.SelectionSet, v models3.CharacteristicType) graphql.Marshaler {
+func (ec *executionContext) marshalNCharacteristicType2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicType(ctx context.Context, sel ast.SelectionSet, v models4.CharacteristicType) graphql.Marshaler {
 	res := graphql.MarshalString(string(v))
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -9174,7 +9176,7 @@ func (ec *executionContext) unmarshalNCreateOwnPsychologistProfileInput2github�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐCreateSlotInput(ctx context.Context, v interface{}) (models2.CreateSlotInput, error) {
+func (ec *executionContext) unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateSlotInput(ctx context.Context, v interface{}) (models2.CreateSlotInput, error) {
 	res, err := ec.unmarshalInputCreateSlotInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -9233,7 +9235,7 @@ func (ec *executionContext) marshalNPatientProfile2ᚖgithubᚗcomᚋguicostaara
 	return ec._PatientProfile(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPatientSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPatientSlotsResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9257,7 +9259,7 @@ func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaara
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPatientSlotsResponse(ctx, sel, v[i])
+			ret[i] = ec.marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9270,7 +9272,7 @@ func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaara
 	return ret
 }
 
-func (ec *executionContext) marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPatientSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPatientSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPatientSlotsResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -9280,7 +9282,7 @@ func (ec *executionContext) marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarante
 	return ec._PatientSlot(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models3.PreferenceResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models4.PreferenceResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9317,7 +9319,7 @@ func (ec *executionContext) marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaaran
 	return ret
 }
 
-func (ec *executionContext) marshalNPreference2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponse(ctx context.Context, sel ast.SelectionSet, v *models3.PreferenceResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPreference2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponse(ctx context.Context, sel ast.SelectionSet, v *models4.PreferenceResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -9341,7 +9343,7 @@ func (ec *executionContext) marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicos
 	return ec._PsychologistProfile(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPsychologistSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPsychologistSlotsResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9365,7 +9367,7 @@ func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicos
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPsychologistSlotsResponse(ctx, sel, v[i])
+			ret[i] = ec.marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9378,7 +9380,7 @@ func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicos
 	return ret
 }
 
-func (ec *executionContext) marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐGetPsychologistSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPsychologistSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPsychologistSlotsResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -9495,7 +9497,7 @@ func (ec *executionContext) marshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsi
 	return ret
 }
 
-func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInputᚄ(ctx context.Context, v interface{}) ([]*models2.SetAvailabilityInput, error) {
+func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInputᚄ(ctx context.Context, v interface{}) ([]*models3.SetAvailabilityInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -9505,7 +9507,7 @@ func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚕᚖgithubᚗcomᚋ
 		}
 	}
 	var err error
-	res := make([]*models2.SetAvailabilityInput, len(vSlice))
+	res := make([]*models3.SetAvailabilityInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNSetAvailabilityInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInput(ctx, vSlice[i])
@@ -9516,12 +9518,12 @@ func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚕᚖgithubᚗcomᚋ
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInput(ctx context.Context, v interface{}) (*models2.SetAvailabilityInput, error) {
+func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInput(ctx context.Context, v interface{}) (*models3.SetAvailabilityInput, error) {
 	res, err := ec.unmarshalInputSetAvailabilityInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx context.Context, v interface{}) ([]*models3.SetCharacteristicChoiceInput, error) {
+func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx context.Context, v interface{}) ([]*models4.SetCharacteristicChoiceInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -9531,7 +9533,7 @@ func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕ
 		}
 	}
 	var err error
-	res := make([]*models3.SetCharacteristicChoiceInput, len(vSlice))
+	res := make([]*models4.SetCharacteristicChoiceInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInput(ctx, vSlice[i])
@@ -9542,12 +9544,12 @@ func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕ
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInput(ctx context.Context, v interface{}) (*models3.SetCharacteristicChoiceInput, error) {
+func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInput(ctx context.Context, v interface{}) (*models4.SetCharacteristicChoiceInput, error) {
 	res, err := ec.unmarshalInputSetOwnProfileCharacteristicChoiceInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx context.Context, v interface{}) ([]*models3.SetPreferenceInput, error) {
+func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx context.Context, v interface{}) ([]*models4.SetPreferenceInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -9557,7 +9559,7 @@ func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithub�
 		}
 	}
 	var err error
-	res := make([]*models3.SetPreferenceInput, len(vSlice))
+	res := make([]*models4.SetPreferenceInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNSetOwnProfilePreferenceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInput(ctx, vSlice[i])
@@ -9568,12 +9570,12 @@ func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithub�
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInput(ctx context.Context, v interface{}) (*models3.SetPreferenceInput, error) {
+func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInput(ctx context.Context, v interface{}) (*models4.SetPreferenceInput, error) {
 	res, err := ec.unmarshalInputSetOwnProfilePreferenceInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicInputᚄ(ctx context.Context, v interface{}) ([]*models3.SetCharacteristicInput, error) {
+func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicInputᚄ(ctx context.Context, v interface{}) ([]*models4.SetCharacteristicInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -9583,7 +9585,7 @@ func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚕᚖgithub
 		}
 	}
 	var err error
-	res := make([]*models3.SetCharacteristicInput, len(vSlice))
+	res := make([]*models4.SetCharacteristicInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNSetProfileCharacteristicInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicInput(ctx, vSlice[i])
@@ -9594,18 +9596,18 @@ func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚕᚖgithub
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicInput(ctx context.Context, v interface{}) (*models3.SetCharacteristicInput, error) {
+func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicInput(ctx context.Context, v interface{}) (*models4.SetCharacteristicInput, error) {
 	res, err := ec.unmarshalInputSetProfileCharacteristicInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSlotStatus(ctx context.Context, v interface{}) (models2.SlotStatus, error) {
+func (ec *executionContext) unmarshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx context.Context, v interface{}) (models2.SlotStatus, error) {
 	tmp, err := graphql.UnmarshalString(v)
 	res := models2.SlotStatus(tmp)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSlotStatus(ctx context.Context, sel ast.SelectionSet, v models2.SlotStatus) graphql.Marshaler {
+func (ec *executionContext) marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx context.Context, sel ast.SelectionSet, v models2.SlotStatus) graphql.Marshaler {
 	res := graphql.MarshalString(string(v))
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -9684,7 +9686,7 @@ func (ec *executionContext) unmarshalNUpdateOwnPsychologistProfileInput2github�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐUpdateSlotInput(ctx context.Context, v interface{}) (models2.UpdateSlotInput, error) {
+func (ec *executionContext) unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateSlotInput(ctx context.Context, v interface{}) (models2.UpdateSlotInput, error) {
 	res, err := ec.unmarshalInputUpdateSlotInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

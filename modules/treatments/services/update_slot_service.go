@@ -3,17 +3,17 @@ package services
 import (
 	"errors"
 
-	"github.com/guicostaarantes/psi-server/modules/schedule/models"
+	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// DeleteSlotService is a service that changes data from a slot
-type DeleteSlotService struct {
+// UpdateSlotService is a service that changes data from a slot
+type UpdateSlotService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s DeleteSlotService) Execute(id string, psychologistID string) error {
+func (s UpdateSlotService) Execute(id string, psychologistID string, input models.UpdateSlotInput) error {
 
 	slot := models.Slot{}
 
@@ -26,11 +26,11 @@ func (s DeleteSlotService) Execute(id string, psychologistID string) error {
 		return errors.New("resource not found")
 	}
 
-	if slot.Status != models.Pending {
-		return errors.New("slots can only be deleted if they their status is pending")
-	}
+	slot.Duration = input.Duration
+	slot.Price = input.Price
+	slot.Interval = input.Interval
 
-	writeErr := s.DatabaseUtil.DeleteOne("psi_db", "slots", map[string]interface{}{"id": id})
+	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
 	if writeErr != nil {
 		return writeErr
 	}

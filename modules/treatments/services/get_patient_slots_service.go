@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/guicostaarantes/psi-server/modules/schedule/models"
+	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
