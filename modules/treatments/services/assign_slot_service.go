@@ -9,45 +9,45 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// AssignSlotService is a service that assigns a patient to a slot and changes its status to active
-type AssignSlotService struct {
+// AssignTreatmentService is a service that assigns a patient to a treatment and changes its status to active
+type AssignTreatmentService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s AssignSlotService) Execute(id string, patientID string) error {
+func (s AssignTreatmentService) Execute(id string, patientID string) error {
 
-	slot := models.Slot{}
+	treatment := models.Treatment{}
 
-	patientInOtherSlot := models.Slot{}
+	patientInOtherTreatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"patientId": patientID, "status": string(models.Active)}, &patientInOtherSlot)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"patientId": patientID, "status": string(models.Active)}, &patientInOtherTreatment)
 	if findErr != nil {
 		return findErr
 	}
 
-	if patientInOtherSlot.ID != "" {
-		return errors.New("patient is already in an active slot")
+	if patientInOtherTreatment.ID != "" {
+		return errors.New("patient is already in an active treatment")
 	}
 
-	findErr = s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id}, &slot)
+	findErr = s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
 
-	if slot.ID == "" {
+	if treatment.ID == "" {
 		return errors.New("resource not found")
 	}
 
-	if slot.Status != models.Pending {
-		return fmt.Errorf("slots can only be assigned if their current status is PENDING. current status is %s", string(slot.Status))
+	if treatment.Status != models.Pending {
+		return fmt.Errorf("treatments can only be assigned if their current status is PENDING. current status is %s", string(treatment.Status))
 	}
 
-	slot.PatientID = patientID
-	slot.StartDate = time.Now().Unix()
-	slot.Status = models.Active
+	treatment.PatientID = patientID
+	treatment.StartDate = time.Now().Unix()
+	treatment.Status = models.Active
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {
 		return writeErr
 	}

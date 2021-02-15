@@ -7,30 +7,30 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// UpdateSlotService is a service that changes data from a slot
-type UpdateSlotService struct {
+// UpdateTreatmentService is a service that changes data from a treatment
+type UpdateTreatmentService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpdateSlotService) Execute(id string, psychologistID string, input models.UpdateSlotInput) error {
+func (s UpdateTreatmentService) Execute(id string, psychologistID string, input models.UpdateTreatmentInput) error {
 
-	slot := models.Slot{}
+	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &slot)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
 
-	if slot.ID == "" {
+	if treatment.ID == "" {
 		return errors.New("resource not found")
 	}
 
-	slot.Duration = input.Duration
-	slot.Price = input.Price
-	slot.Interval = input.Interval
+	treatment.Duration = input.Duration
+	treatment.Price = input.Price
+	treatment.Interval = input.Interval
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {
 		return writeErr
 	}

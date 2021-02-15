@@ -7,30 +7,30 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// DeleteSlotService is a service that changes data from a slot
-type DeleteSlotService struct {
+// DeleteTreatmentService is a service that changes data from a treatment
+type DeleteTreatmentService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s DeleteSlotService) Execute(id string, psychologistID string) error {
+func (s DeleteTreatmentService) Execute(id string, psychologistID string) error {
 
-	slot := models.Slot{}
+	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &slot)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
 
-	if slot.ID == "" {
+	if treatment.ID == "" {
 		return errors.New("resource not found")
 	}
 
-	if slot.Status != models.Pending {
-		return errors.New("slots can only be deleted if they their status is pending")
+	if treatment.Status != models.Pending {
+		return errors.New("treatments can only be deleted if they their status is pending")
 	}
 
-	writeErr := s.DatabaseUtil.DeleteOne("psi_db", "slots", map[string]interface{}{"id": id})
+	writeErr := s.DatabaseUtil.DeleteOne("psi_db", "treatments", map[string]interface{}{"id": id})
 	if writeErr != nil {
 		return writeErr
 	}

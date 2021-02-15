@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/guicostaarantes/psi-server/graph/resolvers/mail.resolvers.go (75.0%)</option>
 				
-				<option value="file2">github.com/guicostaarantes/psi-server/graph/resolvers/profiles.resolvers.go (76.1%)</option>
+				<option value="file2">github.com/guicostaarantes/psi-server/graph/resolvers/profiles.resolvers.go (74.4%)</option>
 				
 				<option value="file3">github.com/guicostaarantes/psi-server/graph/resolvers/resolver.go (87.9%)</option>
 				
@@ -244,17 +244,17 @@ type ComplexityRoot struct {
 
         Mutation struct {
                 AskResetPassword                        func(childComplexity int, email string) int
-                AssignSlot                              func(childComplexity int, id string) int
+                AssignTreatment                         func(childComplexity int, id string) int
                 CreateOwnPatientProfile                 func(childComplexity int, input models1.CreatePatientInput) int
                 CreateOwnPsychologistProfile            func(childComplexity int, input models1.CreatePsychologistInput) int
-                CreateOwnSlot                           func(childComplexity int, input models2.CreateSlotInput) int
+                CreateOwnTreatment                      func(childComplexity int, input models2.CreateTreatmentInput) int
                 CreatePatientUser                       func(childComplexity int, input models.CreateUserInput) int
                 CreatePsychologistUser                  func(childComplexity int, input models.CreateUserInput) int
                 CreateUserWithPassword                  func(childComplexity int, input models.CreateUserWithPasswordInput) int
-                DeleteOwnSlot                           func(childComplexity int, id string) int
-                FinalizeOwnSlot                         func(childComplexity int, id string) int
-                InterruptSlotByPatient                  func(childComplexity int, id string, reason string) int
-                InterruptSlotByPsychologist             func(childComplexity int, id string, reason string) int
+                DeleteOwnTreatment                      func(childComplexity int, id string) int
+                FinalizeOwnTreatment                    func(childComplexity int, id string) int
+                InterruptTreatmentByPatient             func(childComplexity int, id string, reason string) int
+                InterruptTreatmentByPsychologist        func(childComplexity int, id string, reason string) int
                 ProcessPendingMail                      func(childComplexity int) int
                 ResetPassword                           func(childComplexity int, input models.ResetPasswordInput) int
                 SetOwnAvailability                      func(childComplexity int, input []*models3.SetAvailabilityInput) int
@@ -266,7 +266,7 @@ type ComplexityRoot struct {
                 SetPsychologistCharacteristics          func(childComplexity int, input []*models4.SetCharacteristicInput) int
                 UpdateOwnPatientProfile                 func(childComplexity int, input models1.UpdatePatientInput) int
                 UpdateOwnPsychologistProfile            func(childComplexity int, input models1.UpdatePsychologistInput) int
-                UpdateOwnSlot                           func(childComplexity int, id string, input models2.UpdateSlotInput) int
+                UpdateOwnTreatment                      func(childComplexity int, id string, input models2.UpdateTreatmentInput) int
                 UpdateUser                              func(childComplexity int, id string, input models.UpdateUserInput) int
         }
 
@@ -278,10 +278,10 @@ type ComplexityRoot struct {
                 ID              func(childComplexity int) int
                 LikeName        func(childComplexity int) int
                 Preferences     func(childComplexity int) int
-                Slots           func(childComplexity int) int
+                Treatments      func(childComplexity int) int
         }
 
-        PatientSlot struct {
+        PatientTreatment struct {
                 Duration func(childComplexity int) int
                 ID       func(childComplexity int) int
                 Interval func(childComplexity int) int
@@ -303,10 +303,10 @@ type ComplexityRoot struct {
                 ID              func(childComplexity int) int
                 LikeName        func(childComplexity int) int
                 Preferences     func(childComplexity int) int
-                Slots           func(childComplexity int) int
+                Treatments      func(childComplexity int) int
         }
 
-        PsychologistSlot struct {
+        PsychologistTreatment struct {
                 Duration func(childComplexity int) int
                 ID       func(childComplexity int) int
                 Interval func(childComplexity int) int
@@ -378,23 +378,23 @@ type MutationResolver interface {
         UpdateOwnPatientProfile(ctx context.Context, input models1.UpdatePatientInput) (*bool, error)
         UpdateOwnPsychologistProfile(ctx context.Context, input models1.UpdatePsychologistInput) (*bool, error)
         SetOwnAvailability(ctx context.Context, input []*models3.SetAvailabilityInput) (*bool, error)
-        AssignSlot(ctx context.Context, id string) (*bool, error)
-        CreateOwnSlot(ctx context.Context, input models2.CreateSlotInput) (*bool, error)
-        DeleteOwnSlot(ctx context.Context, id string) (*bool, error)
-        InterruptSlotByPatient(ctx context.Context, id string, reason string) (*bool, error)
-        InterruptSlotByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
-        FinalizeOwnSlot(ctx context.Context, id string) (*bool, error)
-        UpdateOwnSlot(ctx context.Context, id string, input models2.UpdateSlotInput) (*bool, error)
+        AssignTreatment(ctx context.Context, id string) (*bool, error)
+        CreateOwnTreatment(ctx context.Context, input models2.CreateTreatmentInput) (*bool, error)
+        DeleteOwnTreatment(ctx context.Context, id string) (*bool, error)
+        InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
+        InterruptTreatmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
+        FinalizeOwnTreatment(ctx context.Context, id string) (*bool, error)
+        UpdateOwnTreatment(ctx context.Context, id string, input models2.UpdateTreatmentInput) (*bool, error)
 }
 type PatientProfileResolver interface {
         Characteristics(ctx context.Context, obj *models1.Patient) ([]*models4.CharacteristicChoiceResponse, error)
         Preferences(ctx context.Context, obj *models1.Patient) ([]*models4.PreferenceResponse, error)
-        Slots(ctx context.Context, obj *models1.Patient) ([]*models2.GetPatientSlotsResponse, error)
+        Treatments(ctx context.Context, obj *models1.Patient) ([]*models2.GetPatientTreatmentsResponse, error)
 }
 type PsychologistProfileResolver interface {
         Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models4.CharacteristicChoiceResponse, error)
         Preferences(ctx context.Context, obj *models1.Psychologist) ([]*models4.PreferenceResponse, error)
-        Slots(ctx context.Context, obj *models1.Psychologist) ([]*models2.GetPsychologistSlotsResponse, error)
+        Treatments(ctx context.Context, obj *models1.Psychologist) ([]*models2.GetPsychologistTreatmentsResponse, error)
 }
 type PublicPatientProfileResolver interface {
         Characteristics(ctx context.Context, obj *models1.Patient) ([]*models4.CharacteristicChoiceResponse, error)
@@ -507,17 +507,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.AskResetPassword(childComplexity, args["email"].(string)), true</span>
 
-        case "Mutation.assignSlot":<span class="cov8" title="1">
-                if e.complexity.Mutation.AssignSlot == nil </span><span class="cov8" title="1">{
+        case "Mutation.assignTreatment":<span class="cov8" title="1">
+                if e.complexity.Mutation.AssignTreatment == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_assignSlot_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_assignTreatment_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.AssignSlot(childComplexity, args["id"].(string)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.AssignTreatment(childComplexity, args["id"].(string)), true</span>
 
         case "Mutation.createOwnPatientProfile":<span class="cov8" title="1">
                 if e.complexity.Mutation.CreateOwnPatientProfile == nil </span><span class="cov8" title="1">{
@@ -543,17 +543,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.CreateOwnPsychologistProfile(childComplexity, args["input"].(models1.CreatePsychologistInput)), true</span>
 
-        case "Mutation.createOwnSlot":<span class="cov8" title="1">
-                if e.complexity.Mutation.CreateOwnSlot == nil </span><span class="cov8" title="1">{
+        case "Mutation.createOwnTreatment":<span class="cov8" title="1">
+                if e.complexity.Mutation.CreateOwnTreatment == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_createOwnSlot_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_createOwnTreatment_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.CreateOwnSlot(childComplexity, args["input"].(models2.CreateSlotInput)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.CreateOwnTreatment(childComplexity, args["input"].(models2.CreateTreatmentInput)), true</span>
 
         case "Mutation.createPatientUser":<span class="cov8" title="1">
                 if e.complexity.Mutation.CreatePatientUser == nil </span><span class="cov8" title="1">{
@@ -591,53 +591,53 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.CreateUserWithPassword(childComplexity, args["input"].(models.CreateUserWithPasswordInput)), true</span>
 
-        case "Mutation.deleteOwnSlot":<span class="cov0" title="0">
-                if e.complexity.Mutation.DeleteOwnSlot == nil </span><span class="cov0" title="0">{
+        case "Mutation.deleteOwnTreatment":<span class="cov0" title="0">
+                if e.complexity.Mutation.DeleteOwnTreatment == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_deleteOwnSlot_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_deleteOwnTreatment_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.DeleteOwnSlot(childComplexity, args["id"].(string)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.DeleteOwnTreatment(childComplexity, args["id"].(string)), true</span>
 
-        case "Mutation.finalizeOwnSlot":<span class="cov8" title="1">
-                if e.complexity.Mutation.FinalizeOwnSlot == nil </span><span class="cov8" title="1">{
+        case "Mutation.finalizeOwnTreatment":<span class="cov8" title="1">
+                if e.complexity.Mutation.FinalizeOwnTreatment == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_finalizeOwnSlot_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_finalizeOwnTreatment_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.FinalizeOwnSlot(childComplexity, args["id"].(string)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.FinalizeOwnTreatment(childComplexity, args["id"].(string)), true</span>
 
-        case "Mutation.interruptSlotByPatient":<span class="cov8" title="1">
-                if e.complexity.Mutation.InterruptSlotByPatient == nil </span><span class="cov8" title="1">{
+        case "Mutation.interruptTreatmentByPatient":<span class="cov8" title="1">
+                if e.complexity.Mutation.InterruptTreatmentByPatient == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_interruptSlotByPatient_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_interruptTreatmentByPatient_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.InterruptSlotByPatient(childComplexity, args["id"].(string), args["reason"].(string)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.InterruptTreatmentByPatient(childComplexity, args["id"].(string), args["reason"].(string)), true</span>
 
-        case "Mutation.interruptSlotByPsychologist":<span class="cov8" title="1">
-                if e.complexity.Mutation.InterruptSlotByPsychologist == nil </span><span class="cov8" title="1">{
+        case "Mutation.interruptTreatmentByPsychologist":<span class="cov8" title="1">
+                if e.complexity.Mutation.InterruptTreatmentByPsychologist == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_interruptSlotByPsychologist_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_interruptTreatmentByPsychologist_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.InterruptSlotByPsychologist(childComplexity, args["id"].(string), args["reason"].(string)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.InterruptTreatmentByPsychologist(childComplexity, args["id"].(string), args["reason"].(string)), true</span>
 
         case "Mutation.processPendingMail":<span class="cov8" title="1">
                 if e.complexity.Mutation.ProcessPendingMail == nil </span><span class="cov8" title="1">{
@@ -766,17 +766,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.Mutation.UpdateOwnPsychologistProfile(childComplexity, args["input"].(models1.UpdatePsychologistInput)), true</span>
 
-        case "Mutation.updateOwnSlot":<span class="cov8" title="1">
-                if e.complexity.Mutation.UpdateOwnSlot == nil </span><span class="cov8" title="1">{
+        case "Mutation.updateOwnTreatment":<span class="cov8" title="1">
+                if e.complexity.Mutation.UpdateOwnTreatment == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">args, err := ec.field_Mutation_updateOwnSlot_args(context.TODO(), rawArgs)
+                <span class="cov0" title="0">args, err := ec.field_Mutation_updateOwnTreatment_args(context.TODO(), rawArgs)
                 if err != nil </span><span class="cov0" title="0">{
                         return 0, false
                 }</span>
 
-                <span class="cov0" title="0">return e.complexity.Mutation.UpdateOwnSlot(childComplexity, args["id"].(string), args["input"].(models2.UpdateSlotInput)), true</span>
+                <span class="cov0" title="0">return e.complexity.Mutation.UpdateOwnTreatment(childComplexity, args["id"].(string), args["input"].(models2.UpdateTreatmentInput)), true</span>
 
         case "Mutation.updateUser":<span class="cov0" title="0">
                 if e.complexity.Mutation.UpdateUser == nil </span><span class="cov0" title="0">{
@@ -839,47 +839,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.PatientProfile.Preferences(childComplexity), true</span>
 
-        case "PatientProfile.slots":<span class="cov0" title="0">
-                if e.complexity.PatientProfile.Slots == nil </span><span class="cov0" title="0">{
+        case "PatientProfile.treatments":<span class="cov0" title="0">
+                if e.complexity.PatientProfile.Treatments == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PatientProfile.Slots(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PatientProfile.Treatments(childComplexity), true</span>
 
-        case "PatientSlot.duration":<span class="cov0" title="0">
-                if e.complexity.PatientSlot.Duration == nil </span><span class="cov0" title="0">{
+        case "PatientTreatment.duration":<span class="cov0" title="0">
+                if e.complexity.PatientTreatment.Duration == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PatientSlot.Duration(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PatientTreatment.Duration(childComplexity), true</span>
 
-        case "PatientSlot.id":<span class="cov0" title="0">
-                if e.complexity.PatientSlot.ID == nil </span><span class="cov0" title="0">{
+        case "PatientTreatment.id":<span class="cov0" title="0">
+                if e.complexity.PatientTreatment.ID == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PatientSlot.ID(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PatientTreatment.ID(childComplexity), true</span>
 
-        case "PatientSlot.interval":<span class="cov0" title="0">
-                if e.complexity.PatientSlot.Interval == nil </span><span class="cov0" title="0">{
+        case "PatientTreatment.interval":<span class="cov0" title="0">
+                if e.complexity.PatientTreatment.Interval == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PatientSlot.Interval(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PatientTreatment.Interval(childComplexity), true</span>
 
-        case "PatientSlot.price":<span class="cov0" title="0">
-                if e.complexity.PatientSlot.Price == nil </span><span class="cov0" title="0">{
+        case "PatientTreatment.price":<span class="cov0" title="0">
+                if e.complexity.PatientTreatment.Price == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PatientSlot.Price(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PatientTreatment.Price(childComplexity), true</span>
 
-        case "PatientSlot.status":<span class="cov0" title="0">
-                if e.complexity.PatientSlot.Status == nil </span><span class="cov0" title="0">{
+        case "PatientTreatment.status":<span class="cov0" title="0">
+                if e.complexity.PatientTreatment.Status == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PatientSlot.Status(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PatientTreatment.Status(childComplexity), true</span>
 
         case "Preference.characteristicName":<span class="cov8" title="1">
                 if e.complexity.Preference.CharacteristicName == nil </span><span class="cov8" title="1">{
@@ -951,47 +951,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.PsychologistProfile.Preferences(childComplexity), true</span>
 
-        case "PsychologistProfile.slots":<span class="cov8" title="1">
-                if e.complexity.PsychologistProfile.Slots == nil </span><span class="cov8" title="1">{
+        case "PsychologistProfile.treatments":<span class="cov8" title="1">
+                if e.complexity.PsychologistProfile.Treatments == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PsychologistProfile.Slots(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PsychologistProfile.Treatments(childComplexity), true</span>
 
-        case "PsychologistSlot.duration":<span class="cov8" title="1">
-                if e.complexity.PsychologistSlot.Duration == nil </span><span class="cov8" title="1">{
+        case "PsychologistTreatment.duration":<span class="cov8" title="1">
+                if e.complexity.PsychologistTreatment.Duration == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PsychologistSlot.Duration(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PsychologistTreatment.Duration(childComplexity), true</span>
 
-        case "PsychologistSlot.id":<span class="cov8" title="1">
-                if e.complexity.PsychologistSlot.ID == nil </span><span class="cov8" title="1">{
+        case "PsychologistTreatment.id":<span class="cov8" title="1">
+                if e.complexity.PsychologistTreatment.ID == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PsychologistSlot.ID(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PsychologistTreatment.ID(childComplexity), true</span>
 
-        case "PsychologistSlot.interval":<span class="cov8" title="1">
-                if e.complexity.PsychologistSlot.Interval == nil </span><span class="cov8" title="1">{
+        case "PsychologistTreatment.interval":<span class="cov8" title="1">
+                if e.complexity.PsychologistTreatment.Interval == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PsychologistSlot.Interval(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PsychologistTreatment.Interval(childComplexity), true</span>
 
-        case "PsychologistSlot.price":<span class="cov8" title="1">
-                if e.complexity.PsychologistSlot.Price == nil </span><span class="cov8" title="1">{
+        case "PsychologistTreatment.price":<span class="cov8" title="1">
+                if e.complexity.PsychologistTreatment.Price == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PsychologistSlot.Price(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PsychologistTreatment.Price(childComplexity), true</span>
 
-        case "PsychologistSlot.status":<span class="cov0" title="0">
-                if e.complexity.PsychologistSlot.Status == nil </span><span class="cov0" title="0">{
+        case "PsychologistTreatment.status":<span class="cov0" title="0">
+                if e.complexity.PsychologistTreatment.Status == nil </span><span class="cov0" title="0">{
                         break</span>
                 }
 
-                <span class="cov0" title="0">return e.complexity.PsychologistSlot.Status(childComplexity), true</span>
+                <span class="cov0" title="0">return e.complexity.PsychologistTreatment.Status(childComplexity), true</span>
 
         case "PublicPatientProfile.birthDate":<span class="cov0" title="0">
                 if e.complexity.PublicPatientProfile.BirthDate == nil </span><span class="cov0" title="0">{
@@ -1378,7 +1378,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     city: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
-    slots: [PatientSlot!]! @goField(forceResolver: true)
+    treatments: [PatientTreatment!]! @goField(forceResolver: true)
 }
 
 type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
@@ -1389,7 +1389,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     city: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
-    slots: [PsychologistSlot!]! @goField(forceResolver: true)
+    treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
 }
 
 type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
@@ -1454,7 +1454,7 @@ extend type Mutation {
     """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
     setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
-        {Name: "graph/schema/treatments.graphqls", Input: `enum SlotStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.SlotStatus") {
+        {Name: "graph/schema/treatments.graphqls", Input: `enum TreatmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentStatus") {
     PENDING
     ACTIVE
     FINALIZED
@@ -1462,55 +1462,55 @@ extend type Mutation {
     INTERRUPTED_BY_PATIENT
 }
 
-input CreateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateSlotInput") {
+input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateTreatmentInput") {
     duration: Int!
     price: Int!
     interval: Int!
 }
 
-input UpdateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateSlotInput") {
+input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
     duration: Int!
     price: Int!
     interval: Int!
 }
 
-type PatientSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientSlotsResponse") {
+type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientTreatmentsResponse") {
     id: ID!
     duration: Int!
     price: Int!
     interval: Int!
-    status: SlotStatus!
+    status: TreatmentStatus!
 }
 
-type PsychologistSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistSlotsResponse") {
+type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistTreatmentsResponse") {
     id: ID!
     duration: Int!
     price: Int!
     interval: Int!
-    status: SlotStatus!
+    status: TreatmentStatus!
 }
 
 extend type Mutation {
-    """The assignSlot mutation allows a user to choose a slot and assign it to their patient profile."""
-    assignSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
+    assignTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The createOwnSlot mutation allows a user to create a pending slot and assign it to their psychologist profile."""
-    createOwnSlot(input: CreateSlotInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The createOwnTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
+    createOwnTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnSlot mutation allows a user to delete a pending slot if it is owned by their psychologist profile."""
-    deleteOwnSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The deleteOwnTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
+    deleteOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The interruptSlotByPatient mutation allows a user to choose a slot under their patient profile and interrupt it."""
-    interruptSlotByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The interruptTreatmentByPatient mutation allows a user to choose a treatment under their patient profile and interrupt it."""
+    interruptTreatmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The interruptSlotByPsychologist mutation allows a user to choose a slot under their psychologist profile and interrupt it."""
-    interruptSlotByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The interruptTreatmentByPsychologist mutation allows a user to choose a treatment under their psychologist profile and interrupt it."""
+    interruptTreatmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The finalizeOwnSlot mutation allows a user to choose a slot under their psychologist profile and finalize it."""
-    finalizeOwnSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The finalizeOwnTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
+    finalizeOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnSlot mutation allows a user to update a slot if it is owned by their psychologist profile."""
-    updateOwnSlot(id: ID!, input: UpdateSlotInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The deleteOwnTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
+    updateOwnTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
         {Name: "graph/schema/users.graphqls", Input: `enum Role @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.Role") {
     COORDINATOR
@@ -1617,7 +1617,7 @@ func (ec *executionContext) field_Mutation_askResetPassword_args(ctx context.Con
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_assignSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
+func (ec *executionContext) field_Mutation_assignTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
         var arg0 string
@@ -1662,13 +1662,13 @@ func (ec *executionContext) field_Mutation_createOwnPsychologistProfile_args(ctx
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_createOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
+func (ec *executionContext) field_Mutation_createOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
-        var arg0 models2.CreateSlotInput
+        var arg0 models2.CreateTreatmentInput
         if tmp, ok := rawArgs["input"]; ok </span><span class="cov8" title="1">{
                 ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-                arg0, err = ec.unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateSlotInput(ctx, tmp)
+                arg0, err = ec.unmarshalNCreateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateTreatmentInput(ctx, tmp)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
@@ -1722,7 +1722,7 @@ func (ec *executionContext) field_Mutation_createUserWithPassword_args(ctx conte
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_deleteOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov0" title="0">{
+func (ec *executionContext) field_Mutation_deleteOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov0" title="0">{
         var err error
         args := map[string]interface{}{}
         var arg0 string
@@ -1737,7 +1737,7 @@ func (ec *executionContext) field_Mutation_deleteOwnSlot_args(ctx context.Contex
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_finalizeOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
+func (ec *executionContext) field_Mutation_finalizeOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
         var arg0 string
@@ -1752,7 +1752,7 @@ func (ec *executionContext) field_Mutation_finalizeOwnSlot_args(ctx context.Cont
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_interruptSlotByPatient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
+func (ec *executionContext) field_Mutation_interruptTreatmentByPatient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
         var arg0 string
@@ -1776,7 +1776,7 @@ func (ec *executionContext) field_Mutation_interruptSlotByPatient_args(ctx conte
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_interruptSlotByPsychologist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
+func (ec *executionContext) field_Mutation_interruptTreatmentByPsychologist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
         var arg0 string
@@ -1950,7 +1950,7 @@ func (ec *executionContext) field_Mutation_updateOwnPsychologistProfile_args(ctx
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_updateOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
+func (ec *executionContext) field_Mutation_updateOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
         var arg0 string
@@ -1962,10 +1962,10 @@ func (ec *executionContext) field_Mutation_updateOwnSlot_args(ctx context.Contex
                 }</span>
         }
         <span class="cov8" title="1">args["id"] = arg0
-        var arg1 models2.UpdateSlotInput
+        var arg1 models2.UpdateTreatmentInput
         if tmp, ok := rawArgs["input"]; ok </span><span class="cov8" title="1">{
                 ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-                arg1, err = ec.unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateSlotInput(ctx, tmp)
+                arg1, err = ec.unmarshalNUpdateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateTreatmentInput(ctx, tmp)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
@@ -3511,7 +3511,7 @@ func (ec *executionContext) _Mutation_setOwnAvailability(ctx context.Context, fi
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _Mutation_assignTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -3528,7 +3528,7 @@ func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field grap
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_assignSlot_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_assignTreatment_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -3537,7 +3537,7 @@ func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field grap
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().AssignSlot(rctx, args["id"].(string))
+                        return ec.resolvers.Mutation().AssignTreatment(rctx, args["id"].(string))
                 }</span>
                 <span class="cov8" title="1">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3574,7 +3574,7 @@ func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field grap
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _Mutation_createOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -3591,7 +3591,7 @@ func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field g
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_createOwnSlot_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_createOwnTreatment_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -3600,7 +3600,7 @@ func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field g
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().CreateOwnSlot(rctx, args["input"].(models2.CreateSlotInput))
+                        return ec.resolvers.Mutation().CreateOwnTreatment(rctx, args["input"].(models2.CreateTreatmentInput))
                 }</span>
                 <span class="cov8" title="1">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3637,7 +3637,7 @@ func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field g
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _Mutation_deleteOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -3654,7 +3654,7 @@ func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field g
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_deleteOwnSlot_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_deleteOwnTreatment_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -3663,7 +3663,7 @@ func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field g
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov0" title="0">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov0" title="0">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().DeleteOwnSlot(rctx, args["id"].(string))
+                        return ec.resolvers.Mutation().DeleteOwnTreatment(rctx, args["id"].(string))
                 }</span>
                 <span class="cov0" title="0">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov0" title="0">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3700,7 +3700,7 @@ func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field g
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _Mutation_interruptTreatmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -3717,7 +3717,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_interruptSlotByPatient_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_interruptTreatmentByPatient_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -3726,7 +3726,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().InterruptSlotByPatient(rctx, args["id"].(string), args["reason"].(string))
+                        return ec.resolvers.Mutation().InterruptTreatmentByPatient(rctx, args["id"].(string), args["reason"].(string))
                 }</span>
                 <span class="cov8" title="1">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3763,7 +3763,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _Mutation_interruptTreatmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -3780,7 +3780,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Co
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_interruptSlotByPsychologist_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_interruptTreatmentByPsychologist_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -3789,7 +3789,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Co
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().InterruptSlotByPsychologist(rctx, args["id"].(string), args["reason"].(string))
+                        return ec.resolvers.Mutation().InterruptTreatmentByPsychologist(rctx, args["id"].(string), args["reason"].(string))
                 }</span>
                 <span class="cov8" title="1">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3826,7 +3826,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Co
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _Mutation_finalizeOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -3843,7 +3843,7 @@ func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_finalizeOwnSlot_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_finalizeOwnTreatment_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -3852,7 +3852,7 @@ func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().FinalizeOwnSlot(rctx, args["id"].(string))
+                        return ec.resolvers.Mutation().FinalizeOwnTreatment(rctx, args["id"].(string))
                 }</span>
                 <span class="cov8" title="1">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3889,7 +3889,7 @@ func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_updateOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _Mutation_updateOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -3906,7 +3906,7 @@ func (ec *executionContext) _Mutation_updateOwnSlot(ctx context.Context, field g
 
         ctx = graphql.WithFieldContext(ctx, fc)
         rawArgs := field.ArgumentMap(ec.Variables)
-        args, err := ec.field_Mutation_updateOwnSlot_args(ctx, rawArgs)
+        args, err := ec.field_Mutation_updateOwnTreatment_args(ctx, rawArgs)
         if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
@@ -3915,7 +3915,7 @@ func (ec *executionContext) _Mutation_updateOwnSlot(ctx context.Context, field g
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 directive0 := func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         ctx = rctx // use context from middleware stack in children
-                        return ec.resolvers.Mutation().UpdateOwnSlot(rctx, args["id"].(string), args["input"].(models2.UpdateSlotInput))
+                        return ec.resolvers.Mutation().UpdateOwnTreatment(rctx, args["id"].(string), args["input"].(models2.UpdateTreatmentInput))
                 }</span>
                 <span class="cov8" title="1">directive1 := func(ctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                         role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4197,7 +4197,7 @@ func (ec *executionContext) _PatientProfile_preferences(ctx context.Context, fie
         return ec.marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PatientProfile_slots(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _PatientProfile_treatments(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4215,7 +4215,7 @@ func (ec *executionContext) _PatientProfile_slots(ctx context.Context, field gra
         ctx = graphql.WithFieldContext(ctx, fc)
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov0" title="0">{
                 ctx = rctx // use context from middleware stack in children
-                return ec.resolvers.PatientProfile().Slots(rctx, obj)
+                return ec.resolvers.PatientProfile().Treatments(rctx, obj)
         }</span>)
         <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
@@ -4227,12 +4227,12 @@ func (ec *executionContext) _PatientProfile_slots(ctx context.Context, field gra
                 }</span>
                 <span class="cov0" title="0">return graphql.Null</span>
         }
-        <span class="cov0" title="0">res := resTmp.([]*models2.GetPatientSlotsResponse)
+        <span class="cov0" title="0">res := resTmp.([]*models2.GetPatientTreatmentsResponse)
         fc.Result = res
-        return ec.marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx, field.Selections, res)</span>
+        return ec.marshalNPatientTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponseᚄ(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PatientSlot_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _PatientTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4240,7 +4240,7 @@ func (ec *executionContext) _PatientSlot_id(ctx context.Context, field graphql.C
                 }</span>
         }()
         <span class="cov0" title="0">fc := &amp;graphql.FieldContext{
-                Object:     "PatientSlot",
+                Object:     "PatientTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4267,7 +4267,7 @@ func (ec *executionContext) _PatientSlot_id(ctx context.Context, field graphql.C
         return ec.marshalNID2string(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PatientSlot_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _PatientTreatment_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4275,7 +4275,7 @@ func (ec *executionContext) _PatientSlot_duration(ctx context.Context, field gra
                 }</span>
         }()
         <span class="cov0" title="0">fc := &amp;graphql.FieldContext{
-                Object:     "PatientSlot",
+                Object:     "PatientTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4302,7 +4302,7 @@ func (ec *executionContext) _PatientSlot_duration(ctx context.Context, field gra
         return ec.marshalNInt2int64(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PatientSlot_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _PatientTreatment_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4310,7 +4310,7 @@ func (ec *executionContext) _PatientSlot_price(ctx context.Context, field graphq
                 }</span>
         }()
         <span class="cov0" title="0">fc := &amp;graphql.FieldContext{
-                Object:     "PatientSlot",
+                Object:     "PatientTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4337,7 +4337,7 @@ func (ec *executionContext) _PatientSlot_price(ctx context.Context, field graphq
         return ec.marshalNInt2int64(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PatientSlot_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _PatientTreatment_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4345,7 +4345,7 @@ func (ec *executionContext) _PatientSlot_interval(ctx context.Context, field gra
                 }</span>
         }()
         <span class="cov0" title="0">fc := &amp;graphql.FieldContext{
-                Object:     "PatientSlot",
+                Object:     "PatientTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4372,7 +4372,7 @@ func (ec *executionContext) _PatientSlot_interval(ctx context.Context, field gra
         return ec.marshalNInt2int64(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PatientSlot_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _PatientTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4380,7 +4380,7 @@ func (ec *executionContext) _PatientSlot_status(ctx context.Context, field graph
                 }</span>
         }()
         <span class="cov0" title="0">fc := &amp;graphql.FieldContext{
-                Object:     "PatientSlot",
+                Object:     "PatientTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4402,9 +4402,9 @@ func (ec *executionContext) _PatientSlot_status(ctx context.Context, field graph
                 }</span>
                 <span class="cov0" title="0">return graphql.Null</span>
         }
-        <span class="cov0" title="0">res := resTmp.(models2.SlotStatus)
+        <span class="cov0" title="0">res := resTmp.(models2.TreatmentStatus)
         fc.Result = res
-        return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx, field.Selections, res)</span>
+        return ec.marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx, field.Selections, res)</span>
 }
 
 func (ec *executionContext) _Preference_characteristicName(ctx context.Context, field graphql.CollectedField, obj *models4.PreferenceResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
@@ -4757,7 +4757,7 @@ func (ec *executionContext) _PsychologistProfile_preferences(ctx context.Context
         return ec.marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PsychologistProfile_slots(ctx context.Context, field graphql.CollectedField, obj *models1.Psychologist) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _PsychologistProfile_treatments(ctx context.Context, field graphql.CollectedField, obj *models1.Psychologist) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4775,7 +4775,7 @@ func (ec *executionContext) _PsychologistProfile_slots(ctx context.Context, fiel
         ctx = graphql.WithFieldContext(ctx, fc)
         resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 ctx = rctx // use context from middleware stack in children
-                return ec.resolvers.PsychologistProfile().Slots(rctx, obj)
+                return ec.resolvers.PsychologistProfile().Treatments(rctx, obj)
         }</span>)
         <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
@@ -4787,12 +4787,12 @@ func (ec *executionContext) _PsychologistProfile_slots(ctx context.Context, fiel
                 }</span>
                 <span class="cov0" title="0">return graphql.Null</span>
         }
-        <span class="cov8" title="1">res := resTmp.([]*models2.GetPsychologistSlotsResponse)
+        <span class="cov8" title="1">res := resTmp.([]*models2.GetPsychologistTreatmentsResponse)
         fc.Result = res
-        return ec.marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx, field.Selections, res)</span>
+        return ec.marshalNPsychologistTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponseᚄ(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PsychologistSlot_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _PsychologistTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4800,7 +4800,7 @@ func (ec *executionContext) _PsychologistSlot_id(ctx context.Context, field grap
                 }</span>
         }()
         <span class="cov8" title="1">fc := &amp;graphql.FieldContext{
-                Object:     "PsychologistSlot",
+                Object:     "PsychologistTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4827,7 +4827,7 @@ func (ec *executionContext) _PsychologistSlot_id(ctx context.Context, field grap
         return ec.marshalNID2string(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PsychologistSlot_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _PsychologistTreatment_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4835,7 +4835,7 @@ func (ec *executionContext) _PsychologistSlot_duration(ctx context.Context, fiel
                 }</span>
         }()
         <span class="cov8" title="1">fc := &amp;graphql.FieldContext{
-                Object:     "PsychologistSlot",
+                Object:     "PsychologistTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4862,7 +4862,7 @@ func (ec *executionContext) _PsychologistSlot_duration(ctx context.Context, fiel
         return ec.marshalNInt2int64(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PsychologistSlot_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _PsychologistTreatment_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4870,7 +4870,7 @@ func (ec *executionContext) _PsychologistSlot_price(ctx context.Context, field g
                 }</span>
         }()
         <span class="cov8" title="1">fc := &amp;graphql.FieldContext{
-                Object:     "PsychologistSlot",
+                Object:     "PsychologistTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4897,7 +4897,7 @@ func (ec *executionContext) _PsychologistSlot_price(ctx context.Context, field g
         return ec.marshalNInt2int64(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PsychologistSlot_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
+func (ec *executionContext) _PsychologistTreatment_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) <span class="cov8" title="1">{
         defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4905,7 +4905,7 @@ func (ec *executionContext) _PsychologistSlot_interval(ctx context.Context, fiel
                 }</span>
         }()
         <span class="cov8" title="1">fc := &amp;graphql.FieldContext{
-                Object:     "PsychologistSlot",
+                Object:     "PsychologistTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4932,7 +4932,7 @@ func (ec *executionContext) _PsychologistSlot_interval(ctx context.Context, fiel
         return ec.marshalNInt2int64(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _PsychologistSlot_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
+func (ec *executionContext) _PsychologistTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) <span class="cov0" title="0">{
         defer func() </span><span class="cov0" title="0">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
@@ -4940,7 +4940,7 @@ func (ec *executionContext) _PsychologistSlot_status(ctx context.Context, field 
                 }</span>
         }()
         <span class="cov0" title="0">fc := &amp;graphql.FieldContext{
-                Object:     "PsychologistSlot",
+                Object:     "PsychologistTreatment",
                 Field:      field,
                 Args:       nil,
                 IsMethod:   false,
@@ -4962,9 +4962,9 @@ func (ec *executionContext) _PsychologistSlot_status(ctx context.Context, field 
                 }</span>
                 <span class="cov0" title="0">return graphql.Null</span>
         }
-        <span class="cov0" title="0">res := resTmp.(models2.SlotStatus)
+        <span class="cov0" title="0">res := resTmp.(models2.TreatmentStatus)
         fc.Result = res
-        return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx, field.Selections, res)</span>
+        return ec.marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx, field.Selections, res)</span>
 }
 
 func (ec *executionContext) _PublicPatientProfile_id(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) <span class="cov0" title="0">{
@@ -7622,8 +7622,8 @@ func (ec *executionContext) unmarshalInputCreatePsychologistInput(ctx context.Co
         <span class="cov0" title="0">return it, nil</span>
 }
 
-func (ec *executionContext) unmarshalInputCreateSlotInput(ctx context.Context, obj interface{}) (models2.CreateSlotInput, error) <span class="cov8" title="1">{
-        var it models2.CreateSlotInput
+func (ec *executionContext) unmarshalInputCreateTreatmentInput(ctx context.Context, obj interface{}) (models2.CreateTreatmentInput, error) <span class="cov8" title="1">{
+        var it models2.CreateTreatmentInput
         var asMap = obj.(map[string]interface{})
 
         for k, v := range asMap </span><span class="cov8" title="1">{
@@ -7958,8 +7958,8 @@ func (ec *executionContext) unmarshalInputUpdateOwnPsychologistProfileInput(ctx 
         <span class="cov8" title="1">return it, nil</span>
 }
 
-func (ec *executionContext) unmarshalInputUpdateSlotInput(ctx context.Context, obj interface{}) (models2.UpdateSlotInput, error) <span class="cov8" title="1">{
-        var it models2.UpdateSlotInput
+func (ec *executionContext) unmarshalInputUpdateTreatmentInput(ctx context.Context, obj interface{}) (models2.UpdateTreatmentInput, error) <span class="cov8" title="1">{
+        var it models2.UpdateTreatmentInput
         var asMap = obj.(map[string]interface{})
 
         for k, v := range asMap </span><span class="cov8" title="1">{
@@ -8192,20 +8192,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
                         out.Values[i] = ec._Mutation_updateOwnPsychologistProfile(ctx, field)</span>
                 case "setOwnAvailability":<span class="cov8" title="1">
                         out.Values[i] = ec._Mutation_setOwnAvailability(ctx, field)</span>
-                case "assignSlot":<span class="cov8" title="1">
-                        out.Values[i] = ec._Mutation_assignSlot(ctx, field)</span>
-                case "createOwnSlot":<span class="cov8" title="1">
-                        out.Values[i] = ec._Mutation_createOwnSlot(ctx, field)</span>
-                case "deleteOwnSlot":<span class="cov0" title="0">
-                        out.Values[i] = ec._Mutation_deleteOwnSlot(ctx, field)</span>
-                case "interruptSlotByPatient":<span class="cov8" title="1">
-                        out.Values[i] = ec._Mutation_interruptSlotByPatient(ctx, field)</span>
-                case "interruptSlotByPsychologist":<span class="cov8" title="1">
-                        out.Values[i] = ec._Mutation_interruptSlotByPsychologist(ctx, field)</span>
-                case "finalizeOwnSlot":<span class="cov8" title="1">
-                        out.Values[i] = ec._Mutation_finalizeOwnSlot(ctx, field)</span>
-                case "updateOwnSlot":<span class="cov8" title="1">
-                        out.Values[i] = ec._Mutation_updateOwnSlot(ctx, field)</span>
+                case "assignTreatment":<span class="cov8" title="1">
+                        out.Values[i] = ec._Mutation_assignTreatment(ctx, field)</span>
+                case "createOwnTreatment":<span class="cov8" title="1">
+                        out.Values[i] = ec._Mutation_createOwnTreatment(ctx, field)</span>
+                case "deleteOwnTreatment":<span class="cov0" title="0">
+                        out.Values[i] = ec._Mutation_deleteOwnTreatment(ctx, field)</span>
+                case "interruptTreatmentByPatient":<span class="cov8" title="1">
+                        out.Values[i] = ec._Mutation_interruptTreatmentByPatient(ctx, field)</span>
+                case "interruptTreatmentByPsychologist":<span class="cov8" title="1">
+                        out.Values[i] = ec._Mutation_interruptTreatmentByPsychologist(ctx, field)</span>
+                case "finalizeOwnTreatment":<span class="cov8" title="1">
+                        out.Values[i] = ec._Mutation_finalizeOwnTreatment(ctx, field)</span>
+                case "updateOwnTreatment":<span class="cov8" title="1">
+                        out.Values[i] = ec._Mutation_updateOwnTreatment(ctx, field)</span>
                 default:<span class="cov0" title="0">
                         panic("unknown field " + strconv.Quote(field.Name))</span>
                 }
@@ -8281,7 +8281,7 @@ func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.Selecti
                                 }</span>
                                 <span class="cov8" title="1">return res</span>
                         })
-                case "slots":<span class="cov0" title="0">
+                case "treatments":<span class="cov0" title="0">
                         field := field
                         out.Concurrently(i, func() (res graphql.Marshaler) </span><span class="cov0" title="0">{
                                 defer func() </span><span class="cov0" title="0">{
@@ -8289,7 +8289,7 @@ func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.Selecti
                                                 ec.Error(ctx, ec.Recover(ctx, r))
                                         }</span>
                                 }()
-                                <span class="cov0" title="0">res = ec._PatientProfile_slots(ctx, field, obj)
+                                <span class="cov0" title="0">res = ec._PatientProfile_treatments(ctx, field, obj)
                                 if res == graphql.Null </span><span class="cov0" title="0">{
                                         atomic.AddUint32(&amp;invalids, 1)
                                 }</span>
@@ -8306,39 +8306,39 @@ func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.Selecti
         <span class="cov8" title="1">return out</span>
 }
 
-var patientSlotImplementors = []string{"PatientSlot"}
+var patientTreatmentImplementors = []string{"PatientTreatment"}
 
-func (ec *executionContext) _PatientSlot(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPatientSlotsResponse) graphql.Marshaler <span class="cov0" title="0">{
-        fields := graphql.CollectFields(ec.OperationContext, sel, patientSlotImplementors)
+func (ec *executionContext) _PatientTreatment(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPatientTreatmentsResponse) graphql.Marshaler <span class="cov0" title="0">{
+        fields := graphql.CollectFields(ec.OperationContext, sel, patientTreatmentImplementors)
 
         out := graphql.NewFieldSet(fields)
         var invalids uint32
         for i, field := range fields </span><span class="cov0" title="0">{
                 switch field.Name </span>{
                 case "__typename":<span class="cov0" title="0">
-                        out.Values[i] = graphql.MarshalString("PatientSlot")</span>
+                        out.Values[i] = graphql.MarshalString("PatientTreatment")</span>
                 case "id":<span class="cov0" title="0">
-                        out.Values[i] = ec._PatientSlot_id(ctx, field, obj)
+                        out.Values[i] = ec._PatientTreatment_id(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "duration":<span class="cov0" title="0">
-                        out.Values[i] = ec._PatientSlot_duration(ctx, field, obj)
+                        out.Values[i] = ec._PatientTreatment_duration(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "price":<span class="cov0" title="0">
-                        out.Values[i] = ec._PatientSlot_price(ctx, field, obj)
+                        out.Values[i] = ec._PatientTreatment_price(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "interval":<span class="cov0" title="0">
-                        out.Values[i] = ec._PatientSlot_interval(ctx, field, obj)
+                        out.Values[i] = ec._PatientTreatment_interval(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "status":<span class="cov0" title="0">
-                        out.Values[i] = ec._PatientSlot_status(ctx, field, obj)
+                        out.Values[i] = ec._PatientTreatment_status(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
@@ -8454,7 +8454,7 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
                                 }</span>
                                 <span class="cov8" title="1">return res</span>
                         })
-                case "slots":<span class="cov8" title="1">
+                case "treatments":<span class="cov8" title="1">
                         field := field
                         out.Concurrently(i, func() (res graphql.Marshaler) </span><span class="cov8" title="1">{
                                 defer func() </span><span class="cov8" title="1">{
@@ -8462,7 +8462,7 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
                                                 ec.Error(ctx, ec.Recover(ctx, r))
                                         }</span>
                                 }()
-                                <span class="cov8" title="1">res = ec._PsychologistProfile_slots(ctx, field, obj)
+                                <span class="cov8" title="1">res = ec._PsychologistProfile_treatments(ctx, field, obj)
                                 if res == graphql.Null </span><span class="cov0" title="0">{
                                         atomic.AddUint32(&amp;invalids, 1)
                                 }</span>
@@ -8479,39 +8479,39 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
         <span class="cov8" title="1">return out</span>
 }
 
-var psychologistSlotImplementors = []string{"PsychologistSlot"}
+var psychologistTreatmentImplementors = []string{"PsychologistTreatment"}
 
-func (ec *executionContext) _PsychologistSlot(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPsychologistSlotsResponse) graphql.Marshaler <span class="cov8" title="1">{
-        fields := graphql.CollectFields(ec.OperationContext, sel, psychologistSlotImplementors)
+func (ec *executionContext) _PsychologistTreatment(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPsychologistTreatmentsResponse) graphql.Marshaler <span class="cov8" title="1">{
+        fields := graphql.CollectFields(ec.OperationContext, sel, psychologistTreatmentImplementors)
 
         out := graphql.NewFieldSet(fields)
         var invalids uint32
         for i, field := range fields </span><span class="cov8" title="1">{
                 switch field.Name </span>{
                 case "__typename":<span class="cov0" title="0">
-                        out.Values[i] = graphql.MarshalString("PsychologistSlot")</span>
+                        out.Values[i] = graphql.MarshalString("PsychologistTreatment")</span>
                 case "id":<span class="cov8" title="1">
-                        out.Values[i] = ec._PsychologistSlot_id(ctx, field, obj)
+                        out.Values[i] = ec._PsychologistTreatment_id(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "duration":<span class="cov8" title="1">
-                        out.Values[i] = ec._PsychologistSlot_duration(ctx, field, obj)
+                        out.Values[i] = ec._PsychologistTreatment_duration(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "price":<span class="cov8" title="1">
-                        out.Values[i] = ec._PsychologistSlot_price(ctx, field, obj)
+                        out.Values[i] = ec._PsychologistTreatment_price(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "interval":<span class="cov8" title="1">
-                        out.Values[i] = ec._PsychologistSlot_interval(ctx, field, obj)
+                        out.Values[i] = ec._PsychologistTreatment_interval(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
                 case "status":<span class="cov0" title="0">
-                        out.Values[i] = ec._PsychologistSlot_status(ctx, field, obj)
+                        out.Values[i] = ec._PsychologistTreatment_status(ctx, field, obj)
                         if out.Values[i] == graphql.Null </span><span class="cov0" title="0">{
                                 invalids++
                         }</span>
@@ -9347,8 +9347,8 @@ func (ec *executionContext) unmarshalNCreateOwnPsychologistProfileInput2github�
         return res, graphql.ErrorOnPath(ctx, err)
 }</span>
 
-func (ec *executionContext) unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateSlotInput(ctx context.Context, v interface{}) (models2.CreateSlotInput, error) <span class="cov8" title="1">{
-        res, err := ec.unmarshalInputCreateSlotInput(ctx, v)
+func (ec *executionContext) unmarshalNCreateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateTreatmentInput(ctx context.Context, v interface{}) (models2.CreateTreatmentInput, error) <span class="cov8" title="1">{
+        res, err := ec.unmarshalInputCreateTreatmentInput(ctx, v)
         return res, graphql.ErrorOnPath(ctx, err)
 }</span>
 
@@ -9406,7 +9406,7 @@ func (ec *executionContext) marshalNPatientProfile2ᚖgithubᚗcomᚋguicostaara
         <span class="cov8" title="1">return ec._PatientProfile(ctx, sel, v)</span>
 }
 
-func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPatientSlotsResponse) graphql.Marshaler <span class="cov0" title="0">{
+func (ec *executionContext) marshalNPatientTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPatientTreatmentsResponse) graphql.Marshaler <span class="cov0" title="0">{
         ret := make(graphql.Array, len(v))
         var wg sync.WaitGroup
         isLen1 := len(v) == 1
@@ -9430,7 +9430,7 @@ func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaara
                         <span class="cov0" title="0">if !isLen1 </span><span class="cov0" title="0">{
                                 defer wg.Done()
                         }</span>
-                        <span class="cov0" title="0">ret[i] = ec.marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponse(ctx, sel, v[i])</span>
+                        <span class="cov0" title="0">ret[i] = ec.marshalNPatientTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponse(ctx, sel, v[i])</span>
                 }
                 <span class="cov0" title="0">if isLen1 </span><span class="cov0" title="0">{
                         f(i)
@@ -9443,14 +9443,14 @@ func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaara
         return ret</span>
 }
 
-func (ec *executionContext) marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPatientSlotsResponse) graphql.Marshaler <span class="cov0" title="0">{
+func (ec *executionContext) marshalNPatientTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPatientTreatmentsResponse) graphql.Marshaler <span class="cov0" title="0">{
         if v == nil </span><span class="cov0" title="0">{
                 if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) </span><span class="cov0" title="0">{
                         ec.Errorf(ctx, "must not be null")
                 }</span>
                 <span class="cov0" title="0">return graphql.Null</span>
         }
-        <span class="cov0" title="0">return ec._PatientSlot(ctx, sel, v)</span>
+        <span class="cov0" title="0">return ec._PatientTreatment(ctx, sel, v)</span>
 }
 
 func (ec *executionContext) marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models4.PreferenceResponse) graphql.Marshaler <span class="cov8" title="1">{
@@ -9514,7 +9514,7 @@ func (ec *executionContext) marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicos
         <span class="cov8" title="1">return ec._PsychologistProfile(ctx, sel, v)</span>
 }
 
-func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPsychologistSlotsResponse) graphql.Marshaler <span class="cov8" title="1">{
+func (ec *executionContext) marshalNPsychologistTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPsychologistTreatmentsResponse) graphql.Marshaler <span class="cov8" title="1">{
         ret := make(graphql.Array, len(v))
         var wg sync.WaitGroup
         isLen1 := len(v) == 1
@@ -9538,7 +9538,7 @@ func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicos
                         <span class="cov8" title="1">if !isLen1 </span><span class="cov8" title="1">{
                                 defer wg.Done()
                         }</span>
-                        <span class="cov8" title="1">ret[i] = ec.marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponse(ctx, sel, v[i])</span>
+                        <span class="cov8" title="1">ret[i] = ec.marshalNPsychologistTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponse(ctx, sel, v[i])</span>
                 }
                 <span class="cov8" title="1">if isLen1 </span><span class="cov8" title="1">{
                         f(i)
@@ -9551,14 +9551,14 @@ func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicos
         return ret</span>
 }
 
-func (ec *executionContext) marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPsychologistSlotsResponse) graphql.Marshaler <span class="cov8" title="1">{
+func (ec *executionContext) marshalNPsychologistTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPsychologistTreatmentsResponse) graphql.Marshaler <span class="cov8" title="1">{
         if v == nil </span><span class="cov0" title="0">{
                 if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) </span><span class="cov0" title="0">{
                         ec.Errorf(ctx, "must not be null")
                 }</span>
                 <span class="cov0" title="0">return graphql.Null</span>
         }
-        <span class="cov8" title="1">return ec._PsychologistSlot(ctx, sel, v)</span>
+        <span class="cov8" title="1">return ec._PsychologistTreatment(ctx, sel, v)</span>
 }
 
 func (ec *executionContext) marshalNPublicPatientProfile2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v models1.Patient) graphql.Marshaler <span class="cov0" title="0">{
@@ -9772,22 +9772,6 @@ func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚖgithubᚗ
         return &amp;res, graphql.ErrorOnPath(ctx, err)
 }</span>
 
-func (ec *executionContext) unmarshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx context.Context, v interface{}) (models2.SlotStatus, error) <span class="cov0" title="0">{
-        tmp, err := graphql.UnmarshalString(v)
-        res := models2.SlotStatus(tmp)
-        return res, graphql.ErrorOnPath(ctx, err)
-}</span>
-
-func (ec *executionContext) marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx context.Context, sel ast.SelectionSet, v models2.SlotStatus) graphql.Marshaler <span class="cov0" title="0">{
-        res := graphql.MarshalString(string(v))
-        if res == graphql.Null </span><span class="cov0" title="0">{
-                if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) </span><span class="cov0" title="0">{
-                        ec.Errorf(ctx, "must not be null")
-                }</span>
-        }
-        <span class="cov0" title="0">return res</span>
-}
-
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) <span class="cov8" title="1">{
         res, err := graphql.UnmarshalString(v)
         return res, graphql.ErrorOnPath(ctx, err)
@@ -9847,6 +9831,22 @@ func (ec *executionContext) marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋps
         <span class="cov8" title="1">return ec._Token(ctx, sel, v)</span>
 }
 
+func (ec *executionContext) unmarshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx context.Context, v interface{}) (models2.TreatmentStatus, error) <span class="cov0" title="0">{
+        tmp, err := graphql.UnmarshalString(v)
+        res := models2.TreatmentStatus(tmp)
+        return res, graphql.ErrorOnPath(ctx, err)
+}</span>
+
+func (ec *executionContext) marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx context.Context, sel ast.SelectionSet, v models2.TreatmentStatus) graphql.Marshaler <span class="cov0" title="0">{
+        res := graphql.MarshalString(string(v))
+        if res == graphql.Null </span><span class="cov0" title="0">{
+                if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) </span><span class="cov0" title="0">{
+                        ec.Errorf(ctx, "must not be null")
+                }</span>
+        }
+        <span class="cov0" title="0">return res</span>
+}
+
 func (ec *executionContext) unmarshalNUpdateOwnPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePatientInput(ctx context.Context, v interface{}) (models1.UpdatePatientInput, error) <span class="cov8" title="1">{
         res, err := ec.unmarshalInputUpdateOwnPatientProfileInput(ctx, v)
         return res, graphql.ErrorOnPath(ctx, err)
@@ -9857,8 +9857,8 @@ func (ec *executionContext) unmarshalNUpdateOwnPsychologistProfileInput2github�
         return res, graphql.ErrorOnPath(ctx, err)
 }</span>
 
-func (ec *executionContext) unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateSlotInput(ctx context.Context, v interface{}) (models2.UpdateSlotInput, error) <span class="cov8" title="1">{
-        res, err := ec.unmarshalInputUpdateSlotInput(ctx, v)
+func (ec *executionContext) unmarshalNUpdateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateTreatmentInput(ctx context.Context, v interface{}) (models2.UpdateTreatmentInput, error) <span class="cov8" title="1">{
+        res, err := ec.unmarshalInputUpdateTreatmentInput(ctx, v)
         return res, graphql.ErrorOnPath(ctx, err)
 }</span>
 
@@ -10435,6 +10435,7 @@ func (r *mutationResolver) ProcessPendingMail(ctx context.Context) (*bool, error
 
 import (
         "context"
+        "fmt"
 
         "github.com/guicostaarantes/psi-server/graph/generated"
         characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
@@ -10602,8 +10603,8 @@ func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_
         return r.GetPreferencesByIDService().Execute(obj.ID)
 }</span>
 
-func (r *patientProfileResolver) Slots(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientSlotsResponse, error) <span class="cov0" title="0">{
-        return r.GetPatientSlotsService().Execute(obj.ID)
+func (r *patientProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientTreatmentsResponse, error) <span class="cov0" title="0">{
+        return r.GetPatientTreatmentsService().Execute(obj.ID)
 }</span>
 
 func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*characteristics_models.CharacteristicChoiceResponse, error) <span class="cov8" title="1">{
@@ -10614,8 +10615,8 @@ func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *prof
         return r.GetPreferencesByIDService().Execute(obj.ID)
 }</span>
 
-func (r *psychologistProfileResolver) Slots(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistSlotsResponse, error) <span class="cov8" title="1">{
-        return r.GetPsychologistSlotsService().Execute(obj.ID)
+func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) <span class="cov8" title="1">{
+        return r.GetPsychologistTreatmentsService().Execute(obj.ID)
 }</span>
 
 func (r *publicPatientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*characteristics_models.CharacteristicChoiceResponse, error) <span class="cov0" title="0">{
@@ -10676,6 +10677,19 @@ type patientProfileResolver struct{ *Resolver }
 type psychologistProfileResolver struct{ *Resolver }
 type publicPatientProfileResolver struct{ *Resolver }
 type publicPsychologistProfileResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *patientProfileResolver) Slots(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientTreatmentsResponse, error) <span class="cov0" title="0">{
+        panic(fmt.Errorf("not implemented"))</span>
+}
+func (r *psychologistProfileResolver) Slots(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) <span class="cov0" title="0">{
+        panic(fmt.Errorf("not implemented"))</span>
+}
 </pre>
 		
 		<pre class="file" id="file3" style="display: none">package resolvers
@@ -10702,51 +10716,51 @@ import (
 
 // Resolver receives all utils and registers all services within the application
 type Resolver struct {
-        DatabaseUtil                       database.IDatabaseUtil
-        HashUtil                           hash.IHashUtil
-        IdentifierUtil                     identifier.IIdentifierUtil
-        MailUtil                           mail.IMailUtil
-        MatchUtil                          match.IMatchUtil
-        SerializingUtil                    serializing.ISerializingUtil
-        TokenUtil                          token.ITokenUtil
-        SecondsLimitAvailability           int64
-        SecondsMinimumAvailability         int64
-        SecondsToCooldownReset             int64
-        SecondsToExpire                    int64
-        SecondsToExpireReset               int64
-        askResetPasswordService            *users_services.AskResetPasswordService
-        assignSlotService                  *treatments_services.AssignSlotService
-        authenticateUserService            *users_services.AuthenticateUserService
-        createPatientService               *profiles_services.CreatePatientService
-        createPsychologistService          *profiles_services.CreatePsychologistService
-        createSlotService                  *treatments_services.CreateSlotService
-        createUserService                  *users_services.CreateUserService
-        createUserWithPasswordService      *users_services.CreateUserWithPasswordService
-        deleteSlotService                  *treatments_services.DeleteSlotService
-        finalizeSlotService                *treatments_services.FinalizeSlotService
-        getAvailabilityService             *schedule_services.GetAvailabilityService
-        getCharacteristicsByIDService      *characteristics_services.GetCharacteristicsByIDService
-        getCharacteristicsService          *characteristics_services.GetCharacteristicsService
-        getPatientByUserIDService          *profiles_services.GetPatientByUserIDService
-        getPatientSlotsService             *treatments_services.GetPatientSlotsService
-        getPreferencesByIDService          *characteristics_services.GetPreferencesByIDService
-        getPsychologistByUserIDService     *profiles_services.GetPsychologistByUserIDService
-        getPsychologistSlotsService        *treatments_services.GetPsychologistSlotsService
-        getUserByIDService                 *users_services.GetUserByIDService
-        getUsersByRoleService              *users_services.GetUsersByRoleService
-        interruptSlotByPatientService      *treatments_services.InterruptSlotByPatientService
-        interruptSlotByPsychologistService *treatments_services.InterruptSlotByPsychologistService
-        processPendingMailsService         *mails_services.ProcessPendingMailsService
-        resetPasswordService               *users_services.ResetPasswordService
-        setAvailabilityService             *schedule_services.SetAvailabilityService
-        setCharacteristicChoicesService    *characteristics_services.SetCharacteristicChoicesService
-        setCharacteristicsService          *characteristics_services.SetCharacteristicsService
-        setPreferencesService              *characteristics_services.SetPreferencesService
-        updatePatientService               *profiles_services.UpdatePatientService
-        updatePsychologistService          *profiles_services.UpdatePsychologistService
-        updateSlotService                  *treatments_services.UpdateSlotService
-        updateUserService                  *users_services.UpdateUserService
-        validateUserTokenService           *users_services.ValidateUserTokenService
+        DatabaseUtil                            database.IDatabaseUtil
+        HashUtil                                hash.IHashUtil
+        IdentifierUtil                          identifier.IIdentifierUtil
+        MailUtil                                mail.IMailUtil
+        MatchUtil                               match.IMatchUtil
+        SerializingUtil                         serializing.ISerializingUtil
+        TokenUtil                               token.ITokenUtil
+        SecondsLimitAvailability                int64
+        SecondsMinimumAvailability              int64
+        SecondsToCooldownReset                  int64
+        SecondsToExpire                         int64
+        SecondsToExpireReset                    int64
+        askResetPasswordService                 *users_services.AskResetPasswordService
+        assignTreatmentService                  *treatments_services.AssignTreatmentService
+        authenticateUserService                 *users_services.AuthenticateUserService
+        createPatientService                    *profiles_services.CreatePatientService
+        createPsychologistService               *profiles_services.CreatePsychologistService
+        createTreatmentService                  *treatments_services.CreateTreatmentService
+        createUserService                       *users_services.CreateUserService
+        createUserWithPasswordService           *users_services.CreateUserWithPasswordService
+        deleteTreatmentService                  *treatments_services.DeleteTreatmentService
+        finalizeTreatmentService                *treatments_services.FinalizeTreatmentService
+        getAvailabilityService                  *schedule_services.GetAvailabilityService
+        getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
+        getCharacteristicsService               *characteristics_services.GetCharacteristicsService
+        getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
+        getPatientTreatmentsService             *treatments_services.GetPatientTreatmentsService
+        getPreferencesByIDService               *characteristics_services.GetPreferencesByIDService
+        getPsychologistByUserIDService          *profiles_services.GetPsychologistByUserIDService
+        getPsychologistTreatmentsService        *treatments_services.GetPsychologistTreatmentsService
+        getUserByIDService                      *users_services.GetUserByIDService
+        getUsersByRoleService                   *users_services.GetUsersByRoleService
+        interruptTreatmentByPatientService      *treatments_services.InterruptTreatmentByPatientService
+        interruptTreatmentByPsychologistService *treatments_services.InterruptTreatmentByPsychologistService
+        processPendingMailsService              *mails_services.ProcessPendingMailsService
+        resetPasswordService                    *users_services.ResetPasswordService
+        setAvailabilityService                  *schedule_services.SetAvailabilityService
+        setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
+        setCharacteristicsService               *characteristics_services.SetCharacteristicsService
+        setPreferencesService                   *characteristics_services.SetPreferencesService
+        updatePatientService                    *profiles_services.UpdatePatientService
+        updatePsychologistService               *profiles_services.UpdatePsychologistService
+        updateTreatmentService                  *treatments_services.UpdateTreatmentService
+        updateUserService                       *users_services.UpdateUserService
+        validateUserTokenService                *users_services.ValidateUserTokenService
 }
 
 // AskResetPasswordService gets or sets the service with same name
@@ -10762,14 +10776,14 @@ func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordSer
         <span class="cov8" title="1">return r.askResetPasswordService</span>
 }
 
-// AssignSlotService gets or sets the service with same name
-func (r *Resolver) AssignSlotService() *treatments_services.AssignSlotService <span class="cov8" title="1">{
-        if r.assignSlotService == nil </span><span class="cov8" title="1">{
-                r.assignSlotService = &amp;treatments_services.AssignSlotService{
+// AssignTreatmentService gets or sets the service with same name
+func (r *Resolver) AssignTreatmentService() *treatments_services.AssignTreatmentService <span class="cov8" title="1">{
+        if r.assignTreatmentService == nil </span><span class="cov8" title="1">{
+                r.assignTreatmentService = &amp;treatments_services.AssignTreatmentService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.assignSlotService</span>
+        <span class="cov8" title="1">return r.assignTreatmentService</span>
 }
 
 // AuthenticateUserService gets or sets the service with same name
@@ -10808,15 +10822,15 @@ func (r *Resolver) CreatePsychologistService() *profiles_services.CreatePsycholo
         <span class="cov8" title="1">return r.createPsychologistService</span>
 }
 
-// CreateSlotService gets or sets the service with same name
-func (r *Resolver) CreateSlotService() *treatments_services.CreateSlotService <span class="cov8" title="1">{
-        if r.createSlotService == nil </span><span class="cov8" title="1">{
-                r.createSlotService = &amp;treatments_services.CreateSlotService{
+// CreateTreatmentService gets or sets the service with same name
+func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatmentService <span class="cov8" title="1">{
+        if r.createTreatmentService == nil </span><span class="cov8" title="1">{
+                r.createTreatmentService = &amp;treatments_services.CreateTreatmentService{
                         DatabaseUtil:   r.DatabaseUtil,
                         IdentifierUtil: r.IdentifierUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.createSlotService</span>
+        <span class="cov8" title="1">return r.createTreatmentService</span>
 }
 
 // CreateUserService gets or sets the service with same name
@@ -10848,24 +10862,24 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
         <span class="cov8" title="1">return r.createUserWithPasswordService</span>
 }
 
-// DeleteSlotService gets or sets the service with same name
-func (r *Resolver) DeleteSlotService() *treatments_services.DeleteSlotService <span class="cov0" title="0">{
-        if r.deleteSlotService == nil </span><span class="cov0" title="0">{
-                r.deleteSlotService = &amp;treatments_services.DeleteSlotService{
+// DeleteTreatmentService gets or sets the service with same name
+func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatmentService <span class="cov0" title="0">{
+        if r.deleteTreatmentService == nil </span><span class="cov0" title="0">{
+                r.deleteTreatmentService = &amp;treatments_services.DeleteTreatmentService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov0" title="0">return r.deleteSlotService</span>
+        <span class="cov0" title="0">return r.deleteTreatmentService</span>
 }
 
-// FinalizeSlotService gets or sets the service with same name
-func (r *Resolver) FinalizeSlotService() *treatments_services.FinalizeSlotService <span class="cov8" title="1">{
-        if r.finalizeSlotService == nil </span><span class="cov8" title="1">{
-                r.finalizeSlotService = &amp;treatments_services.FinalizeSlotService{
+// FinalizeTreatmentService gets or sets the service with same name
+func (r *Resolver) FinalizeTreatmentService() *treatments_services.FinalizeTreatmentService <span class="cov8" title="1">{
+        if r.finalizeTreatmentService == nil </span><span class="cov8" title="1">{
+                r.finalizeTreatmentService = &amp;treatments_services.FinalizeTreatmentService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.finalizeSlotService</span>
+        <span class="cov8" title="1">return r.finalizeTreatmentService</span>
 }
 
 // GetAvailabilityService gets or sets the service with same name
@@ -10908,14 +10922,14 @@ func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUs
         <span class="cov8" title="1">return r.getPatientByUserIDService</span>
 }
 
-// GetPatientSlotsService gets or sets the service with same name
-func (r *Resolver) GetPatientSlotsService() *treatments_services.GetPatientSlotsService <span class="cov0" title="0">{
-        if r.getPatientSlotsService == nil </span><span class="cov0" title="0">{
-                r.getPatientSlotsService = &amp;treatments_services.GetPatientSlotsService{
+// GetPatientTreatmentsService gets or sets the service with same name
+func (r *Resolver) GetPatientTreatmentsService() *treatments_services.GetPatientTreatmentsService <span class="cov0" title="0">{
+        if r.getPatientTreatmentsService == nil </span><span class="cov0" title="0">{
+                r.getPatientTreatmentsService = &amp;treatments_services.GetPatientTreatmentsService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov0" title="0">return r.getPatientSlotsService</span>
+        <span class="cov0" title="0">return r.getPatientTreatmentsService</span>
 }
 
 // GetPreferencesByIDService gets or sets the service with same name
@@ -10938,14 +10952,14 @@ func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsycho
         <span class="cov8" title="1">return r.getPsychologistByUserIDService</span>
 }
 
-// GetPsychologistSlotsService gets or sets the service with same name
-func (r *Resolver) GetPsychologistSlotsService() *treatments_services.GetPsychologistSlotsService <span class="cov8" title="1">{
-        if r.getPsychologistSlotsService == nil </span><span class="cov8" title="1">{
-                r.getPsychologistSlotsService = &amp;treatments_services.GetPsychologistSlotsService{
+// GetPsychologistTreatmentsService gets or sets the service with same name
+func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPsychologistTreatmentsService <span class="cov8" title="1">{
+        if r.getPsychologistTreatmentsService == nil </span><span class="cov8" title="1">{
+                r.getPsychologistTreatmentsService = &amp;treatments_services.GetPsychologistTreatmentsService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.getPsychologistSlotsService</span>
+        <span class="cov8" title="1">return r.getPsychologistTreatmentsService</span>
 }
 
 // GetUsersByRoleService gets or sets the service with same name
@@ -10968,24 +10982,24 @@ func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService <span
         <span class="cov8" title="1">return r.getUserByIDService</span>
 }
 
-// InterruptSlotByPatientService gets or sets the service with same name
-func (r *Resolver) InterruptSlotByPatientService() *treatments_services.InterruptSlotByPatientService <span class="cov8" title="1">{
-        if r.interruptSlotByPatientService == nil </span><span class="cov8" title="1">{
-                r.interruptSlotByPatientService = &amp;treatments_services.InterruptSlotByPatientService{
+// InterruptTreatmentByPatientService gets or sets the service with same name
+func (r *Resolver) InterruptTreatmentByPatientService() *treatments_services.InterruptTreatmentByPatientService <span class="cov8" title="1">{
+        if r.interruptTreatmentByPatientService == nil </span><span class="cov8" title="1">{
+                r.interruptTreatmentByPatientService = &amp;treatments_services.InterruptTreatmentByPatientService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.interruptSlotByPatientService</span>
+        <span class="cov8" title="1">return r.interruptTreatmentByPatientService</span>
 }
 
-// InterruptSlotByPsychologistService gets or sets the service with same name
-func (r *Resolver) InterruptSlotByPsychologistService() *treatments_services.InterruptSlotByPsychologistService <span class="cov8" title="1">{
-        if r.interruptSlotByPsychologistService == nil </span><span class="cov8" title="1">{
-                r.interruptSlotByPsychologistService = &amp;treatments_services.InterruptSlotByPsychologistService{
+// InterruptTreatmentByPsychologistService gets or sets the service with same name
+func (r *Resolver) InterruptTreatmentByPsychologistService() *treatments_services.InterruptTreatmentByPsychologistService <span class="cov8" title="1">{
+        if r.interruptTreatmentByPsychologistService == nil </span><span class="cov8" title="1">{
+                r.interruptTreatmentByPsychologistService = &amp;treatments_services.InterruptTreatmentByPsychologistService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.interruptSlotByPsychologistService</span>
+        <span class="cov8" title="1">return r.interruptTreatmentByPsychologistService</span>
 }
 
 // ProcessPendingMailsService gets or sets the service with same name
@@ -11073,14 +11087,14 @@ func (r *Resolver) UpdatePsychologistService() *profiles_services.UpdatePsycholo
         <span class="cov8" title="1">return r.updatePsychologistService</span>
 }
 
-// UpdateSlotService gets or sets the service with same name
-func (r *Resolver) UpdateSlotService() *treatments_services.UpdateSlotService <span class="cov8" title="1">{
-        if r.updateSlotService == nil </span><span class="cov8" title="1">{
-                r.updateSlotService = &amp;treatments_services.UpdateSlotService{
+// UpdateTreatmentService gets or sets the service with same name
+func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService <span class="cov8" title="1">{
+        if r.updateTreatmentService == nil </span><span class="cov8" title="1">{
+                r.updateTreatmentService = &amp;treatments_services.UpdateTreatmentService{
                         DatabaseUtil: r.DatabaseUtil,
                 }
         }</span>
-        <span class="cov8" title="1">return r.updateSlotService</span>
+        <span class="cov8" title="1">return r.updateTreatmentService</span>
 }
 
 // UpdateUserService gets or sets the service with same name
@@ -11162,7 +11176,7 @@ import (
         "github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
-func (r *mutationResolver) AssignSlot(ctx context.Context, id string) (*bool, error) <span class="cov8" title="1">{
+func (r *mutationResolver) AssignTreatment(ctx context.Context, id string) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
 
         servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -11170,12 +11184,12 @@ func (r *mutationResolver) AssignSlot(ctx context.Context, id string) (*bool, er
                 return nil, servicePatientErr
         }</span>
 
-        <span class="cov8" title="1">serviceErr := r.AssignSlotService().Execute(id, servicePatient.ID)
+        <span class="cov8" title="1">serviceErr := r.AssignTreatmentService().Execute(id, servicePatient.ID)
 
         return nil, serviceErr</span>
 }
 
-func (r *mutationResolver) CreateOwnSlot(ctx context.Context, input models.CreateSlotInput) (*bool, error) <span class="cov8" title="1">{
+func (r *mutationResolver) CreateOwnTreatment(ctx context.Context, input models.CreateTreatmentInput) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
 
         servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -11183,12 +11197,12 @@ func (r *mutationResolver) CreateOwnSlot(ctx context.Context, input models.Creat
                 return nil, servicePsyErr
         }</span>
 
-        <span class="cov8" title="1">serviceErr := r.CreateSlotService().Execute(servicePsy.ID, input)
+        <span class="cov8" title="1">serviceErr := r.CreateTreatmentService().Execute(servicePsy.ID, input)
 
         return nil, serviceErr</span>
 }
 
-func (r *mutationResolver) DeleteOwnSlot(ctx context.Context, id string) (*bool, error) <span class="cov0" title="0">{
+func (r *mutationResolver) DeleteOwnTreatment(ctx context.Context, id string) (*bool, error) <span class="cov0" title="0">{
         userID := ctx.Value("userID").(string)
 
         servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -11196,12 +11210,12 @@ func (r *mutationResolver) DeleteOwnSlot(ctx context.Context, id string) (*bool,
                 return nil, servicePsyErr
         }</span>
 
-        <span class="cov0" title="0">serviceErr := r.DeleteSlotService().Execute(id, servicePsy.ID)
+        <span class="cov0" title="0">serviceErr := r.DeleteTreatmentService().Execute(id, servicePsy.ID)
 
         return nil, serviceErr</span>
 }
 
-func (r *mutationResolver) InterruptSlotByPatient(ctx context.Context, id string, reason string) (*bool, error) <span class="cov8" title="1">{
+func (r *mutationResolver) InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
 
         servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -11209,12 +11223,12 @@ func (r *mutationResolver) InterruptSlotByPatient(ctx context.Context, id string
                 return nil, servicePatientErr
         }</span>
 
-        <span class="cov8" title="1">serviceErr := r.InterruptSlotByPatientService().Execute(id, servicePatient.ID, reason)
+        <span class="cov8" title="1">serviceErr := r.InterruptTreatmentByPatientService().Execute(id, servicePatient.ID, reason)
 
         return nil, serviceErr</span>
 }
 
-func (r *mutationResolver) InterruptSlotByPsychologist(ctx context.Context, id string, reason string) (*bool, error) <span class="cov8" title="1">{
+func (r *mutationResolver) InterruptTreatmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
 
         servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -11222,12 +11236,12 @@ func (r *mutationResolver) InterruptSlotByPsychologist(ctx context.Context, id s
                 return nil, servicePsyErr
         }</span>
 
-        <span class="cov8" title="1">serviceErr := r.InterruptSlotByPsychologistService().Execute(id, servicePsy.ID, reason)
+        <span class="cov8" title="1">serviceErr := r.InterruptTreatmentByPsychologistService().Execute(id, servicePsy.ID, reason)
 
         return nil, serviceErr</span>
 }
 
-func (r *mutationResolver) FinalizeOwnSlot(ctx context.Context, id string) (*bool, error) <span class="cov8" title="1">{
+func (r *mutationResolver) FinalizeOwnTreatment(ctx context.Context, id string) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
 
         servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -11235,12 +11249,12 @@ func (r *mutationResolver) FinalizeOwnSlot(ctx context.Context, id string) (*boo
                 return nil, servicePsyErr
         }</span>
 
-        <span class="cov8" title="1">serviceErr := r.FinalizeSlotService().Execute(id, servicePsy.ID)
+        <span class="cov8" title="1">serviceErr := r.FinalizeTreatmentService().Execute(id, servicePsy.ID)
 
         return nil, serviceErr</span>
 }
 
-func (r *mutationResolver) UpdateOwnSlot(ctx context.Context, id string, input models.UpdateSlotInput) (*bool, error) <span class="cov8" title="1">{
+func (r *mutationResolver) UpdateOwnTreatment(ctx context.Context, id string, input models.UpdateTreatmentInput) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
 
         servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -11248,7 +11262,7 @@ func (r *mutationResolver) UpdateOwnSlot(ctx context.Context, id string, input m
                 return nil, servicePsyErr
         }</span>
 
-        <span class="cov8" title="1">serviceErr := r.UpdateSlotService().Execute(id, servicePsy.ID, input)
+        <span class="cov8" title="1">serviceErr := r.UpdateTreatmentService().Execute(id, servicePsy.ID, input)
 
         return nil, serviceErr</span>
 }
@@ -12382,45 +12396,45 @@ import (
         "github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// AssignSlotService is a service that assigns a patient to a slot and changes its status to active
-type AssignSlotService struct {
+// AssignTreatmentService is a service that assigns a patient to a treatment and changes its status to active
+type AssignTreatmentService struct {
         DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s AssignSlotService) Execute(id string, patientID string) error <span class="cov8" title="1">{
+func (s AssignTreatmentService) Execute(id string, patientID string) error <span class="cov8" title="1">{
 
-        slot := models.Slot{}
+        treatment := models.Treatment{}
 
-        patientInOtherSlot := models.Slot{}
+        patientInOtherTreatment := models.Treatment{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"patientId": patientID, "status": string(models.Active)}, &amp;patientInOtherSlot)
+        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"patientId": patientID, "status": string(models.Active)}, &amp;patientInOtherTreatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov8" title="1">if patientInOtherSlot.ID != "" </span><span class="cov8" title="1">{
-                return errors.New("patient is already in an active slot")
+        <span class="cov8" title="1">if patientInOtherTreatment.ID != "" </span><span class="cov8" title="1">{
+                return errors.New("patient is already in an active treatment")
         }</span>
 
-        <span class="cov8" title="1">findErr = s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id}, &amp;slot)
+        <span class="cov8" title="1">findErr = s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id}, &amp;treatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov8" title="1">if slot.ID == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if treatment.ID == "" </span><span class="cov0" title="0">{
                 return errors.New("resource not found")
         }</span>
 
-        <span class="cov8" title="1">if slot.Status != models.Pending </span><span class="cov8" title="1">{
-                return fmt.Errorf("slots can only be assigned if their current status is PENDING. current status is %s", string(slot.Status))
+        <span class="cov8" title="1">if treatment.Status != models.Pending </span><span class="cov8" title="1">{
+                return fmt.Errorf("treatments can only be assigned if their current status is PENDING. current status is %s", string(treatment.Status))
         }</span>
 
-        <span class="cov8" title="1">slot.PatientID = patientID
-        slot.StartDate = time.Now().Unix()
-        slot.Status = models.Active
+        <span class="cov8" title="1">treatment.PatientID = patientID
+        treatment.StartDate = time.Now().Unix()
+        treatment.Status = models.Active
 
-        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
         if writeErr != nil </span><span class="cov0" title="0">{
                 return writeErr
         }</span>
@@ -12438,22 +12452,22 @@ import (
         "github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// CreateSlotService is a service that creates a new slot for a psychologist
-type CreateSlotService struct {
+// CreateTreatmentService is a service that creates a new treatment for a psychologist
+type CreateTreatmentService struct {
         DatabaseUtil   database.IDatabaseUtil
         IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreateSlotService) Execute(psychologistID string, input models.CreateSlotInput) error <span class="cov8" title="1">{
+func (s CreateTreatmentService) Execute(psychologistID string, input models.CreateTreatmentInput) error <span class="cov8" title="1">{
 
-        _, slotID, slotIDErr := s.IdentifierUtil.GenerateIdentifier()
-        if slotIDErr != nil </span><span class="cov0" title="0">{
-                return slotIDErr
+        _, treatmentID, treatmentIDErr := s.IdentifierUtil.GenerateIdentifier()
+        if treatmentIDErr != nil </span><span class="cov0" title="0">{
+                return treatmentIDErr
         }</span>
 
-        <span class="cov8" title="1">slot := models.Slot{
-                ID:             slotID,
+        <span class="cov8" title="1">treatment := models.Treatment{
+                ID:             treatmentID,
                 PsychologistID: psychologistID,
                 Duration:       input.Duration,
                 Price:          input.Price,
@@ -12461,7 +12475,7 @@ func (s CreateSlotService) Execute(psychologistID string, input models.CreateSlo
                 Status:         models.Pending,
         }
 
-        writeErr := s.DatabaseUtil.InsertOne("psi_db", "slots", slot)
+        writeErr := s.DatabaseUtil.InsertOne("psi_db", "treatments", treatment)
         if writeErr != nil </span><span class="cov0" title="0">{
                 return writeErr
         }</span>
@@ -12480,30 +12494,30 @@ import (
         "github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// DeleteSlotService is a service that changes data from a slot
-type DeleteSlotService struct {
+// DeleteTreatmentService is a service that changes data from a treatment
+type DeleteTreatmentService struct {
         DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s DeleteSlotService) Execute(id string, psychologistID string) error <span class="cov0" title="0">{
+func (s DeleteTreatmentService) Execute(id string, psychologistID string) error <span class="cov0" title="0">{
 
-        slot := models.Slot{}
+        treatment := models.Treatment{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;slot)
+        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;treatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov0" title="0">if slot.ID == "" </span><span class="cov0" title="0">{
+        <span class="cov0" title="0">if treatment.ID == "" </span><span class="cov0" title="0">{
                 return errors.New("resource not found")
         }</span>
 
-        <span class="cov0" title="0">if slot.Status != models.Pending </span><span class="cov0" title="0">{
-                return errors.New("slots can only be deleted if they their status is pending")
+        <span class="cov0" title="0">if treatment.Status != models.Pending </span><span class="cov0" title="0">{
+                return errors.New("treatments can only be deleted if they their status is pending")
         }</span>
 
-        <span class="cov0" title="0">writeErr := s.DatabaseUtil.DeleteOne("psi_db", "slots", map[string]interface{}{"id": id})
+        <span class="cov0" title="0">writeErr := s.DatabaseUtil.DeleteOne("psi_db", "treatments", map[string]interface{}{"id": id})
         if writeErr != nil </span><span class="cov0" title="0">{
                 return writeErr
         }</span>
@@ -12524,33 +12538,33 @@ import (
         "github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// FinalizeSlotService is a service that changes the status of a slot to finalized
-type FinalizeSlotService struct {
+// FinalizeTreatmentService is a service that changes the status of a treatment to finalized
+type FinalizeTreatmentService struct {
         DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s FinalizeSlotService) Execute(id string, psychologistID string) error <span class="cov8" title="1">{
+func (s FinalizeTreatmentService) Execute(id string, psychologistID string) error <span class="cov8" title="1">{
 
-        slot := models.Slot{}
+        treatment := models.Treatment{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;slot)
+        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;treatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov8" title="1">if slot.ID == "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if treatment.ID == "" </span><span class="cov8" title="1">{
                 return errors.New("resource not found")
         }</span>
 
-        <span class="cov8" title="1">if slot.Status != models.Active </span><span class="cov0" title="0">{
-                return fmt.Errorf("slots can only be finalized if their current status is ACTIVE. current status is %s", string(slot.Status))
+        <span class="cov8" title="1">if treatment.Status != models.Active </span><span class="cov0" title="0">{
+                return fmt.Errorf("treatments can only be finalized if their current status is ACTIVE. current status is %s", string(treatment.Status))
         }</span>
 
-        <span class="cov8" title="1">slot.EndDate = time.Now().Unix()
-        slot.Status = models.Finalized
+        <span class="cov8" title="1">treatment.EndDate = time.Now().Unix()
+        treatment.Status = models.Finalized
 
-        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
         if writeErr != nil </span><span class="cov0" title="0">{
                 return writeErr
         }</span>
@@ -12570,40 +12584,40 @@ import (
         "github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// GetPatientSlotsService is a service that gets all the slots of a psychologist
-type GetPatientSlotsService struct {
+// GetPatientTreatmentsService is a service that gets all the treatments of a psychologist
+type GetPatientTreatmentsService struct {
         DatabaseUtil   database.IDatabaseUtil
         IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPatientSlotsService) Execute(patientID string) ([]*models.GetPatientSlotsResponse, error) <span class="cov0" title="0">{
+func (s GetPatientTreatmentsService) Execute(patientID string) ([]*models.GetPatientTreatmentsResponse, error) <span class="cov0" title="0">{
 
         filter := map[string]interface{}{"patientId": patientID}
 
-        cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "slots", filter)
+        cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", filter)
         if findErr != nil </span><span class="cov0" title="0">{
                 return nil, findErr
         }</span>
 
-        <span class="cov0" title="0">slots := []*models.GetPatientSlotsResponse{}
+        <span class="cov0" title="0">treatments := []*models.GetPatientTreatmentsResponse{}
 
         defer cursor.Close(context.Background())
 
         for cursor.Next(context.Background()) </span><span class="cov0" title="0">{
 
-                slot := models.GetPatientSlotsResponse{}
+                treatment := models.GetPatientTreatmentsResponse{}
 
-                decodeErr := cursor.Decode(&amp;slot)
+                decodeErr := cursor.Decode(&amp;treatment)
                 if decodeErr != nil </span><span class="cov0" title="0">{
                         return nil, decodeErr
                 }</span>
 
-                <span class="cov0" title="0">slots = append(slots, &amp;slot)</span>
+                <span class="cov0" title="0">treatments = append(treatments, &amp;treatment)</span>
 
         }
 
-        <span class="cov0" title="0">return slots, nil</span>
+        <span class="cov0" title="0">return treatments, nil</span>
 
 }
 </pre>
@@ -12618,40 +12632,40 @@ import (
         "github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// GetPsychologistSlotsService is a service that gets all the slots of a psychologist
-type GetPsychologistSlotsService struct {
+// GetPsychologistTreatmentsService is a service that gets all the treatments of a psychologist
+type GetPsychologistTreatmentsService struct {
         DatabaseUtil   database.IDatabaseUtil
         IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPsychologistSlotsService) Execute(psychologistID string) ([]*models.GetPsychologistSlotsResponse, error) <span class="cov8" title="1">{
+func (s GetPsychologistTreatmentsService) Execute(psychologistID string) ([]*models.GetPsychologistTreatmentsResponse, error) <span class="cov8" title="1">{
 
         filter := map[string]interface{}{"psychologistId": psychologistID}
 
-        cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "slots", filter)
+        cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", filter)
         if findErr != nil </span><span class="cov0" title="0">{
                 return nil, findErr
         }</span>
 
-        <span class="cov8" title="1">slots := []*models.GetPsychologistSlotsResponse{}
+        <span class="cov8" title="1">treatments := []*models.GetPsychologistTreatmentsResponse{}
 
         defer cursor.Close(context.Background())
 
         for cursor.Next(context.Background()) </span><span class="cov8" title="1">{
 
-                slot := models.GetPsychologistSlotsResponse{}
+                treatment := models.GetPsychologistTreatmentsResponse{}
 
-                decodeErr := cursor.Decode(&amp;slot)
+                decodeErr := cursor.Decode(&amp;treatment)
                 if decodeErr != nil </span><span class="cov0" title="0">{
                         return nil, decodeErr
                 }</span>
 
-                <span class="cov8" title="1">slots = append(slots, &amp;slot)</span>
+                <span class="cov8" title="1">treatments = append(treatments, &amp;treatment)</span>
 
         }
 
-        <span class="cov8" title="1">return slots, nil</span>
+        <span class="cov8" title="1">return treatments, nil</span>
 
 }
 </pre>
@@ -12667,34 +12681,34 @@ import (
         "github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// InterruptSlotByPatientService is a service that interrupts a slot, changing its status to interrupted by patient
-type InterruptSlotByPatientService struct {
+// InterruptTreatmentByPatientService is a service that interrupts a treatment, changing its status to interrupted by patient
+type InterruptTreatmentByPatientService struct {
         DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s InterruptSlotByPatientService) Execute(id string, patientID string, reason string) error <span class="cov8" title="1">{
+func (s InterruptTreatmentByPatientService) Execute(id string, patientID string, reason string) error <span class="cov8" title="1">{
 
-        slot := models.Slot{}
+        treatment := models.Treatment{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "patientId": patientID}, &amp;slot)
+        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "patientId": patientID}, &amp;treatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov8" title="1">if slot.ID == "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if treatment.ID == "" </span><span class="cov8" title="1">{
                 return errors.New("resource not found")
         }</span>
 
-        <span class="cov8" title="1">if slot.Status != models.Active </span><span class="cov0" title="0">{
-                return fmt.Errorf("slots can only be interrupted if their current status is ACTIVE. current status is %s", string(slot.Status))
+        <span class="cov8" title="1">if treatment.Status != models.Active </span><span class="cov0" title="0">{
+                return fmt.Errorf("treatments can only be interrupted if their current status is ACTIVE. current status is %s", string(treatment.Status))
         }</span>
 
-        <span class="cov8" title="1">slot.EndDate = time.Now().Unix()
-        slot.Status = models.InterruptedByPatient
-        slot.Reason = reason
+        <span class="cov8" title="1">treatment.EndDate = time.Now().Unix()
+        treatment.Status = models.InterruptedByPatient
+        treatment.Reason = reason
 
-        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
         if writeErr != nil </span><span class="cov0" title="0">{
                 return writeErr
         }</span>
@@ -12715,34 +12729,34 @@ import (
         "github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// InterruptSlotByPsychologistService is a service that interrupts a slot, changing its status to interrupted by psychologist
-type InterruptSlotByPsychologistService struct {
+// InterruptTreatmentByPsychologistService is a service that interrupts a treatment, changing its status to interrupted by psychologist
+type InterruptTreatmentByPsychologistService struct {
         DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s InterruptSlotByPsychologistService) Execute(id string, psychologistID string, reason string) error <span class="cov8" title="1">{
+func (s InterruptTreatmentByPsychologistService) Execute(id string, psychologistID string, reason string) error <span class="cov8" title="1">{
 
-        slot := models.Slot{}
+        treatment := models.Treatment{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;slot)
+        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;treatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov8" title="1">if slot.ID == "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if treatment.ID == "" </span><span class="cov8" title="1">{
                 return errors.New("resource not found")
         }</span>
 
-        <span class="cov8" title="1">if slot.Status != models.Active </span><span class="cov0" title="0">{
-                return fmt.Errorf("slots can only be interrupted if their current status is ACTIVE. current status is %s", string(slot.Status))
+        <span class="cov8" title="1">if treatment.Status != models.Active </span><span class="cov0" title="0">{
+                return fmt.Errorf("treatments can only be interrupted if their current status is ACTIVE. current status is %s", string(treatment.Status))
         }</span>
 
-        <span class="cov8" title="1">slot.EndDate = time.Now().Unix()
-        slot.Status = models.InterruptedByPsychologist
-        slot.Reason = reason
+        <span class="cov8" title="1">treatment.EndDate = time.Now().Unix()
+        treatment.Status = models.InterruptedByPsychologist
+        treatment.Reason = reason
 
-        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
         if writeErr != nil </span><span class="cov0" title="0">{
                 return writeErr
         }</span>
@@ -12761,30 +12775,30 @@ import (
         "github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// UpdateSlotService is a service that changes data from a slot
-type UpdateSlotService struct {
+// UpdateTreatmentService is a service that changes data from a treatment
+type UpdateTreatmentService struct {
         DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpdateSlotService) Execute(id string, psychologistID string, input models.UpdateSlotInput) error <span class="cov8" title="1">{
+func (s UpdateTreatmentService) Execute(id string, psychologistID string, input models.UpdateTreatmentInput) error <span class="cov8" title="1">{
 
-        slot := models.Slot{}
+        treatment := models.Treatment{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;slot)
+        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &amp;treatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov8" title="1">if slot.ID == "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if treatment.ID == "" </span><span class="cov8" title="1">{
                 return errors.New("resource not found")
         }</span>
 
-        <span class="cov8" title="1">slot.Duration = input.Duration
-        slot.Price = input.Price
-        slot.Interval = input.Interval
+        <span class="cov8" title="1">treatment.Duration = input.Duration
+        treatment.Price = input.Price
+        treatment.Interval = input.Interval
 
-        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+        writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
         if writeErr != nil </span><span class="cov0" title="0">{
                 return writeErr
         }</span>
@@ -13876,6 +13890,13 @@ func (h bcryptHasher) GetWrongPasswordError() string <span class="cov8" title="1
 // BcryptHashUtil is an implementation of IHashUtil that uses golang.org/x/crypto/bcrypt
 var BcryptHashUtil = bcryptHasher{
         cost:               8,
+        wrongPasswordError: "hashedPassword is not the hash of the given password",
+        loggingUtil:        logging.PrintLogUtil,
+}
+
+// WeakBcryptHashUtil is an implementation of IHashUtil that uses golang.org/x/crypto/bcrypt and minimum cost for testing
+var WeakBcryptHashUtil = bcryptHasher{
+        cost:               4,
         wrongPasswordError: "hashedPassword is not the hash of the given password",
         loggingUtil:        logging.PrintLogUtil,
 }

@@ -8,39 +8,39 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// GetPatientSlotsService is a service that gets all the slots of a psychologist
-type GetPatientSlotsService struct {
+// GetPatientTreatmentsService is a service that gets all the treatments of a psychologist
+type GetPatientTreatmentsService struct {
 	DatabaseUtil   database.IDatabaseUtil
 	IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPatientSlotsService) Execute(patientID string) ([]*models.GetPatientSlotsResponse, error) {
+func (s GetPatientTreatmentsService) Execute(patientID string) ([]*models.GetPatientTreatmentsResponse, error) {
 
 	filter := map[string]interface{}{"patientId": patientID}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "slots", filter)
+	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", filter)
 	if findErr != nil {
 		return nil, findErr
 	}
 
-	slots := []*models.GetPatientSlotsResponse{}
+	treatments := []*models.GetPatientTreatmentsResponse{}
 
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
 
-		slot := models.GetPatientSlotsResponse{}
+		treatment := models.GetPatientTreatmentsResponse{}
 
-		decodeErr := cursor.Decode(&slot)
+		decodeErr := cursor.Decode(&treatment)
 		if decodeErr != nil {
 			return nil, decodeErr
 		}
 
-		slots = append(slots, &slot)
+		treatments = append(treatments, &treatment)
 
 	}
 
-	return slots, nil
+	return treatments, nil
 
 }

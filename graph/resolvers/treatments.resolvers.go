@@ -9,7 +9,7 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
-func (r *mutationResolver) AssignSlot(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) AssignTreatment(ctx context.Context, id string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -17,12 +17,12 @@ func (r *mutationResolver) AssignSlot(ctx context.Context, id string) (*bool, er
 		return nil, servicePatientErr
 	}
 
-	serviceErr := r.AssignSlotService().Execute(id, servicePatient.ID)
+	serviceErr := r.AssignTreatmentService().Execute(id, servicePatient.ID)
 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) CreateOwnSlot(ctx context.Context, input models.CreateSlotInput) (*bool, error) {
+func (r *mutationResolver) CreateOwnTreatment(ctx context.Context, input models.CreateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -30,12 +30,12 @@ func (r *mutationResolver) CreateOwnSlot(ctx context.Context, input models.Creat
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.CreateSlotService().Execute(servicePsy.ID, input)
+	serviceErr := r.CreateTreatmentService().Execute(servicePsy.ID, input)
 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) DeleteOwnSlot(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) DeleteOwnTreatment(ctx context.Context, id string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -43,12 +43,12 @@ func (r *mutationResolver) DeleteOwnSlot(ctx context.Context, id string) (*bool,
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.DeleteSlotService().Execute(id, servicePsy.ID)
+	serviceErr := r.DeleteTreatmentService().Execute(id, servicePsy.ID)
 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) InterruptSlotByPatient(ctx context.Context, id string, reason string) (*bool, error) {
+func (r *mutationResolver) InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -56,12 +56,12 @@ func (r *mutationResolver) InterruptSlotByPatient(ctx context.Context, id string
 		return nil, servicePatientErr
 	}
 
-	serviceErr := r.InterruptSlotByPatientService().Execute(id, servicePatient.ID, reason)
+	serviceErr := r.InterruptTreatmentByPatientService().Execute(id, servicePatient.ID, reason)
 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) InterruptSlotByPsychologist(ctx context.Context, id string, reason string) (*bool, error) {
+func (r *mutationResolver) InterruptTreatmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -69,12 +69,12 @@ func (r *mutationResolver) InterruptSlotByPsychologist(ctx context.Context, id s
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.InterruptSlotByPsychologistService().Execute(id, servicePsy.ID, reason)
+	serviceErr := r.InterruptTreatmentByPsychologistService().Execute(id, servicePsy.ID, reason)
 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) FinalizeOwnSlot(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) FinalizeOwnTreatment(ctx context.Context, id string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -82,12 +82,12 @@ func (r *mutationResolver) FinalizeOwnSlot(ctx context.Context, id string) (*boo
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.FinalizeSlotService().Execute(id, servicePsy.ID)
+	serviceErr := r.FinalizeTreatmentService().Execute(id, servicePsy.ID)
 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) UpdateOwnSlot(ctx context.Context, id string, input models.UpdateSlotInput) (*bool, error) {
+func (r *mutationResolver) UpdateOwnTreatment(ctx context.Context, id string, input models.UpdateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -95,7 +95,7 @@ func (r *mutationResolver) UpdateOwnSlot(ctx context.Context, id string, input m
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.UpdateSlotService().Execute(id, servicePsy.ID, input)
+	serviceErr := r.UpdateTreatmentService().Execute(id, servicePsy.ID, input)
 
 	return nil, serviceErr
 }

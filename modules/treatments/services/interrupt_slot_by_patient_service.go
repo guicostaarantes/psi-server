@@ -9,34 +9,34 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// InterruptSlotByPatientService is a service that interrupts a slot, changing its status to interrupted by patient
-type InterruptSlotByPatientService struct {
+// InterruptTreatmentByPatientService is a service that interrupts a treatment, changing its status to interrupted by patient
+type InterruptTreatmentByPatientService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s InterruptSlotByPatientService) Execute(id string, patientID string, reason string) error {
+func (s InterruptTreatmentByPatientService) Execute(id string, patientID string, reason string) error {
 
-	slot := models.Slot{}
+	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "slots", map[string]interface{}{"id": id, "patientId": patientID}, &slot)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "patientId": patientID}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
 
-	if slot.ID == "" {
+	if treatment.ID == "" {
 		return errors.New("resource not found")
 	}
 
-	if slot.Status != models.Active {
-		return fmt.Errorf("slots can only be interrupted if their current status is ACTIVE. current status is %s", string(slot.Status))
+	if treatment.Status != models.Active {
+		return fmt.Errorf("treatments can only be interrupted if their current status is ACTIVE. current status is %s", string(treatment.Status))
 	}
 
-	slot.EndDate = time.Now().Unix()
-	slot.Status = models.InterruptedByPatient
-	slot.Reason = reason
+	treatment.EndDate = time.Now().Unix()
+	treatment.Status = models.InterruptedByPatient
+	treatment.Reason = reason
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "slots", map[string]interface{}{"id": id}, slot)
+	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {
 		return writeErr
 	}

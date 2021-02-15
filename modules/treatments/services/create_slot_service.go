@@ -6,22 +6,22 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// CreateSlotService is a service that creates a new slot for a psychologist
-type CreateSlotService struct {
+// CreateTreatmentService is a service that creates a new treatment for a psychologist
+type CreateTreatmentService struct {
 	DatabaseUtil   database.IDatabaseUtil
 	IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreateSlotService) Execute(psychologistID string, input models.CreateSlotInput) error {
+func (s CreateTreatmentService) Execute(psychologistID string, input models.CreateTreatmentInput) error {
 
-	_, slotID, slotIDErr := s.IdentifierUtil.GenerateIdentifier()
-	if slotIDErr != nil {
-		return slotIDErr
+	_, treatmentID, treatmentIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if treatmentIDErr != nil {
+		return treatmentIDErr
 	}
 
-	slot := models.Slot{
-		ID:             slotID,
+	treatment := models.Treatment{
+		ID:             treatmentID,
 		PsychologistID: psychologistID,
 		Duration:       input.Duration,
 		Price:          input.Price,
@@ -29,7 +29,7 @@ func (s CreateSlotService) Execute(psychologistID string, input models.CreateSlo
 		Status:         models.Pending,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("psi_db", "slots", slot)
+	writeErr := s.DatabaseUtil.InsertOne("psi_db", "treatments", treatment)
 	if writeErr != nil {
 		return writeErr
 	}

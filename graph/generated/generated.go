@@ -73,17 +73,17 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AskResetPassword                        func(childComplexity int, email string) int
-		AssignSlot                              func(childComplexity int, id string) int
+		AssignTreatment                         func(childComplexity int, id string) int
 		CreateOwnPatientProfile                 func(childComplexity int, input models1.CreatePatientInput) int
 		CreateOwnPsychologistProfile            func(childComplexity int, input models1.CreatePsychologistInput) int
-		CreateOwnSlot                           func(childComplexity int, input models2.CreateSlotInput) int
+		CreateOwnTreatment                      func(childComplexity int, input models2.CreateTreatmentInput) int
 		CreatePatientUser                       func(childComplexity int, input models.CreateUserInput) int
 		CreatePsychologistUser                  func(childComplexity int, input models.CreateUserInput) int
 		CreateUserWithPassword                  func(childComplexity int, input models.CreateUserWithPasswordInput) int
-		DeleteOwnSlot                           func(childComplexity int, id string) int
-		FinalizeOwnSlot                         func(childComplexity int, id string) int
-		InterruptSlotByPatient                  func(childComplexity int, id string, reason string) int
-		InterruptSlotByPsychologist             func(childComplexity int, id string, reason string) int
+		DeleteOwnTreatment                      func(childComplexity int, id string) int
+		FinalizeOwnTreatment                    func(childComplexity int, id string) int
+		InterruptTreatmentByPatient             func(childComplexity int, id string, reason string) int
+		InterruptTreatmentByPsychologist        func(childComplexity int, id string, reason string) int
 		ProcessPendingMail                      func(childComplexity int) int
 		ResetPassword                           func(childComplexity int, input models.ResetPasswordInput) int
 		SetOwnAvailability                      func(childComplexity int, input []*models3.SetAvailabilityInput) int
@@ -95,7 +95,7 @@ type ComplexityRoot struct {
 		SetPsychologistCharacteristics          func(childComplexity int, input []*models4.SetCharacteristicInput) int
 		UpdateOwnPatientProfile                 func(childComplexity int, input models1.UpdatePatientInput) int
 		UpdateOwnPsychologistProfile            func(childComplexity int, input models1.UpdatePsychologistInput) int
-		UpdateOwnSlot                           func(childComplexity int, id string, input models2.UpdateSlotInput) int
+		UpdateOwnTreatment                      func(childComplexity int, id string, input models2.UpdateTreatmentInput) int
 		UpdateUser                              func(childComplexity int, id string, input models.UpdateUserInput) int
 	}
 
@@ -107,10 +107,10 @@ type ComplexityRoot struct {
 		ID              func(childComplexity int) int
 		LikeName        func(childComplexity int) int
 		Preferences     func(childComplexity int) int
-		Slots           func(childComplexity int) int
+		Treatments      func(childComplexity int) int
 	}
 
-	PatientSlot struct {
+	PatientTreatment struct {
 		Duration func(childComplexity int) int
 		ID       func(childComplexity int) int
 		Interval func(childComplexity int) int
@@ -132,10 +132,10 @@ type ComplexityRoot struct {
 		ID              func(childComplexity int) int
 		LikeName        func(childComplexity int) int
 		Preferences     func(childComplexity int) int
-		Slots           func(childComplexity int) int
+		Treatments      func(childComplexity int) int
 	}
 
-	PsychologistSlot struct {
+	PsychologistTreatment struct {
 		Duration func(childComplexity int) int
 		ID       func(childComplexity int) int
 		Interval func(childComplexity int) int
@@ -207,23 +207,23 @@ type MutationResolver interface {
 	UpdateOwnPatientProfile(ctx context.Context, input models1.UpdatePatientInput) (*bool, error)
 	UpdateOwnPsychologistProfile(ctx context.Context, input models1.UpdatePsychologistInput) (*bool, error)
 	SetOwnAvailability(ctx context.Context, input []*models3.SetAvailabilityInput) (*bool, error)
-	AssignSlot(ctx context.Context, id string) (*bool, error)
-	CreateOwnSlot(ctx context.Context, input models2.CreateSlotInput) (*bool, error)
-	DeleteOwnSlot(ctx context.Context, id string) (*bool, error)
-	InterruptSlotByPatient(ctx context.Context, id string, reason string) (*bool, error)
-	InterruptSlotByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
-	FinalizeOwnSlot(ctx context.Context, id string) (*bool, error)
-	UpdateOwnSlot(ctx context.Context, id string, input models2.UpdateSlotInput) (*bool, error)
+	AssignTreatment(ctx context.Context, id string) (*bool, error)
+	CreateOwnTreatment(ctx context.Context, input models2.CreateTreatmentInput) (*bool, error)
+	DeleteOwnTreatment(ctx context.Context, id string) (*bool, error)
+	InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
+	InterruptTreatmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
+	FinalizeOwnTreatment(ctx context.Context, id string) (*bool, error)
+	UpdateOwnTreatment(ctx context.Context, id string, input models2.UpdateTreatmentInput) (*bool, error)
 }
 type PatientProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models4.CharacteristicChoiceResponse, error)
 	Preferences(ctx context.Context, obj *models1.Patient) ([]*models4.PreferenceResponse, error)
-	Slots(ctx context.Context, obj *models1.Patient) ([]*models2.GetPatientSlotsResponse, error)
+	Treatments(ctx context.Context, obj *models1.Patient) ([]*models2.GetPatientTreatmentsResponse, error)
 }
 type PsychologistProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models4.CharacteristicChoiceResponse, error)
 	Preferences(ctx context.Context, obj *models1.Psychologist) ([]*models4.PreferenceResponse, error)
-	Slots(ctx context.Context, obj *models1.Psychologist) ([]*models2.GetPsychologistSlotsResponse, error)
+	Treatments(ctx context.Context, obj *models1.Psychologist) ([]*models2.GetPsychologistTreatmentsResponse, error)
 }
 type PublicPatientProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models4.CharacteristicChoiceResponse, error)
@@ -336,17 +336,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AskResetPassword(childComplexity, args["email"].(string)), true
 
-	case "Mutation.assignSlot":
-		if e.complexity.Mutation.AssignSlot == nil {
+	case "Mutation.assignTreatment":
+		if e.complexity.Mutation.AssignTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_assignSlot_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_assignTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AssignSlot(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.AssignTreatment(childComplexity, args["id"].(string)), true
 
 	case "Mutation.createOwnPatientProfile":
 		if e.complexity.Mutation.CreateOwnPatientProfile == nil {
@@ -372,17 +372,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateOwnPsychologistProfile(childComplexity, args["input"].(models1.CreatePsychologistInput)), true
 
-	case "Mutation.createOwnSlot":
-		if e.complexity.Mutation.CreateOwnSlot == nil {
+	case "Mutation.createOwnTreatment":
+		if e.complexity.Mutation.CreateOwnTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createOwnSlot_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createOwnTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateOwnSlot(childComplexity, args["input"].(models2.CreateSlotInput)), true
+		return e.complexity.Mutation.CreateOwnTreatment(childComplexity, args["input"].(models2.CreateTreatmentInput)), true
 
 	case "Mutation.createPatientUser":
 		if e.complexity.Mutation.CreatePatientUser == nil {
@@ -420,53 +420,53 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateUserWithPassword(childComplexity, args["input"].(models.CreateUserWithPasswordInput)), true
 
-	case "Mutation.deleteOwnSlot":
-		if e.complexity.Mutation.DeleteOwnSlot == nil {
+	case "Mutation.deleteOwnTreatment":
+		if e.complexity.Mutation.DeleteOwnTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_deleteOwnSlot_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_deleteOwnTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteOwnSlot(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.DeleteOwnTreatment(childComplexity, args["id"].(string)), true
 
-	case "Mutation.finalizeOwnSlot":
-		if e.complexity.Mutation.FinalizeOwnSlot == nil {
+	case "Mutation.finalizeOwnTreatment":
+		if e.complexity.Mutation.FinalizeOwnTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_finalizeOwnSlot_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_finalizeOwnTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.FinalizeOwnSlot(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.FinalizeOwnTreatment(childComplexity, args["id"].(string)), true
 
-	case "Mutation.interruptSlotByPatient":
-		if e.complexity.Mutation.InterruptSlotByPatient == nil {
+	case "Mutation.interruptTreatmentByPatient":
+		if e.complexity.Mutation.InterruptTreatmentByPatient == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_interruptSlotByPatient_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_interruptTreatmentByPatient_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.InterruptSlotByPatient(childComplexity, args["id"].(string), args["reason"].(string)), true
+		return e.complexity.Mutation.InterruptTreatmentByPatient(childComplexity, args["id"].(string), args["reason"].(string)), true
 
-	case "Mutation.interruptSlotByPsychologist":
-		if e.complexity.Mutation.InterruptSlotByPsychologist == nil {
+	case "Mutation.interruptTreatmentByPsychologist":
+		if e.complexity.Mutation.InterruptTreatmentByPsychologist == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_interruptSlotByPsychologist_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_interruptTreatmentByPsychologist_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.InterruptSlotByPsychologist(childComplexity, args["id"].(string), args["reason"].(string)), true
+		return e.complexity.Mutation.InterruptTreatmentByPsychologist(childComplexity, args["id"].(string), args["reason"].(string)), true
 
 	case "Mutation.processPendingMail":
 		if e.complexity.Mutation.ProcessPendingMail == nil {
@@ -595,17 +595,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateOwnPsychologistProfile(childComplexity, args["input"].(models1.UpdatePsychologistInput)), true
 
-	case "Mutation.updateOwnSlot":
-		if e.complexity.Mutation.UpdateOwnSlot == nil {
+	case "Mutation.updateOwnTreatment":
+		if e.complexity.Mutation.UpdateOwnTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_updateOwnSlot_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateOwnTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateOwnSlot(childComplexity, args["id"].(string), args["input"].(models2.UpdateSlotInput)), true
+		return e.complexity.Mutation.UpdateOwnTreatment(childComplexity, args["id"].(string), args["input"].(models2.UpdateTreatmentInput)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -668,47 +668,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PatientProfile.Preferences(childComplexity), true
 
-	case "PatientProfile.slots":
-		if e.complexity.PatientProfile.Slots == nil {
+	case "PatientProfile.treatments":
+		if e.complexity.PatientProfile.Treatments == nil {
 			break
 		}
 
-		return e.complexity.PatientProfile.Slots(childComplexity), true
+		return e.complexity.PatientProfile.Treatments(childComplexity), true
 
-	case "PatientSlot.duration":
-		if e.complexity.PatientSlot.Duration == nil {
+	case "PatientTreatment.duration":
+		if e.complexity.PatientTreatment.Duration == nil {
 			break
 		}
 
-		return e.complexity.PatientSlot.Duration(childComplexity), true
+		return e.complexity.PatientTreatment.Duration(childComplexity), true
 
-	case "PatientSlot.id":
-		if e.complexity.PatientSlot.ID == nil {
+	case "PatientTreatment.id":
+		if e.complexity.PatientTreatment.ID == nil {
 			break
 		}
 
-		return e.complexity.PatientSlot.ID(childComplexity), true
+		return e.complexity.PatientTreatment.ID(childComplexity), true
 
-	case "PatientSlot.interval":
-		if e.complexity.PatientSlot.Interval == nil {
+	case "PatientTreatment.interval":
+		if e.complexity.PatientTreatment.Interval == nil {
 			break
 		}
 
-		return e.complexity.PatientSlot.Interval(childComplexity), true
+		return e.complexity.PatientTreatment.Interval(childComplexity), true
 
-	case "PatientSlot.price":
-		if e.complexity.PatientSlot.Price == nil {
+	case "PatientTreatment.price":
+		if e.complexity.PatientTreatment.Price == nil {
 			break
 		}
 
-		return e.complexity.PatientSlot.Price(childComplexity), true
+		return e.complexity.PatientTreatment.Price(childComplexity), true
 
-	case "PatientSlot.status":
-		if e.complexity.PatientSlot.Status == nil {
+	case "PatientTreatment.status":
+		if e.complexity.PatientTreatment.Status == nil {
 			break
 		}
 
-		return e.complexity.PatientSlot.Status(childComplexity), true
+		return e.complexity.PatientTreatment.Status(childComplexity), true
 
 	case "Preference.characteristicName":
 		if e.complexity.Preference.CharacteristicName == nil {
@@ -780,47 +780,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistProfile.Preferences(childComplexity), true
 
-	case "PsychologistProfile.slots":
-		if e.complexity.PsychologistProfile.Slots == nil {
+	case "PsychologistProfile.treatments":
+		if e.complexity.PsychologistProfile.Treatments == nil {
 			break
 		}
 
-		return e.complexity.PsychologistProfile.Slots(childComplexity), true
+		return e.complexity.PsychologistProfile.Treatments(childComplexity), true
 
-	case "PsychologistSlot.duration":
-		if e.complexity.PsychologistSlot.Duration == nil {
+	case "PsychologistTreatment.duration":
+		if e.complexity.PsychologistTreatment.Duration == nil {
 			break
 		}
 
-		return e.complexity.PsychologistSlot.Duration(childComplexity), true
+		return e.complexity.PsychologistTreatment.Duration(childComplexity), true
 
-	case "PsychologistSlot.id":
-		if e.complexity.PsychologistSlot.ID == nil {
+	case "PsychologistTreatment.id":
+		if e.complexity.PsychologistTreatment.ID == nil {
 			break
 		}
 
-		return e.complexity.PsychologistSlot.ID(childComplexity), true
+		return e.complexity.PsychologistTreatment.ID(childComplexity), true
 
-	case "PsychologistSlot.interval":
-		if e.complexity.PsychologistSlot.Interval == nil {
+	case "PsychologistTreatment.interval":
+		if e.complexity.PsychologistTreatment.Interval == nil {
 			break
 		}
 
-		return e.complexity.PsychologistSlot.Interval(childComplexity), true
+		return e.complexity.PsychologistTreatment.Interval(childComplexity), true
 
-	case "PsychologistSlot.price":
-		if e.complexity.PsychologistSlot.Price == nil {
+	case "PsychologistTreatment.price":
+		if e.complexity.PsychologistTreatment.Price == nil {
 			break
 		}
 
-		return e.complexity.PsychologistSlot.Price(childComplexity), true
+		return e.complexity.PsychologistTreatment.Price(childComplexity), true
 
-	case "PsychologistSlot.status":
-		if e.complexity.PsychologistSlot.Status == nil {
+	case "PsychologistTreatment.status":
+		if e.complexity.PsychologistTreatment.Status == nil {
 			break
 		}
 
-		return e.complexity.PsychologistSlot.Status(childComplexity), true
+		return e.complexity.PsychologistTreatment.Status(childComplexity), true
 
 	case "PublicPatientProfile.birthDate":
 		if e.complexity.PublicPatientProfile.BirthDate == nil {
@@ -1207,7 +1207,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     city: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
-    slots: [PatientSlot!]! @goField(forceResolver: true)
+    treatments: [PatientTreatment!]! @goField(forceResolver: true)
 }
 
 type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
@@ -1218,7 +1218,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     city: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
-    slots: [PsychologistSlot!]! @goField(forceResolver: true)
+    treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
 }
 
 type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
@@ -1283,7 +1283,7 @@ extend type Mutation {
     """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
     setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
-	{Name: "graph/schema/treatments.graphqls", Input: `enum SlotStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.SlotStatus") {
+	{Name: "graph/schema/treatments.graphqls", Input: `enum TreatmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentStatus") {
     PENDING
     ACTIVE
     FINALIZED
@@ -1291,55 +1291,55 @@ extend type Mutation {
     INTERRUPTED_BY_PATIENT
 }
 
-input CreateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateSlotInput") {
+input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateTreatmentInput") {
     duration: Int!
     price: Int!
     interval: Int!
 }
 
-input UpdateSlotInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateSlotInput") {
+input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
     duration: Int!
     price: Int!
     interval: Int!
 }
 
-type PatientSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientSlotsResponse") {
+type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientTreatmentsResponse") {
     id: ID!
     duration: Int!
     price: Int!
     interval: Int!
-    status: SlotStatus!
+    status: TreatmentStatus!
 }
 
-type PsychologistSlot @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistSlotsResponse") {
+type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistTreatmentsResponse") {
     id: ID!
     duration: Int!
     price: Int!
     interval: Int!
-    status: SlotStatus!
+    status: TreatmentStatus!
 }
 
 extend type Mutation {
-    """The assignSlot mutation allows a user to choose a slot and assign it to their patient profile."""
-    assignSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
+    assignTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The createOwnSlot mutation allows a user to create a pending slot and assign it to their psychologist profile."""
-    createOwnSlot(input: CreateSlotInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The createOwnTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
+    createOwnTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnSlot mutation allows a user to delete a pending slot if it is owned by their psychologist profile."""
-    deleteOwnSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The deleteOwnTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
+    deleteOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The interruptSlotByPatient mutation allows a user to choose a slot under their patient profile and interrupt it."""
-    interruptSlotByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The interruptTreatmentByPatient mutation allows a user to choose a treatment under their patient profile and interrupt it."""
+    interruptTreatmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The interruptSlotByPsychologist mutation allows a user to choose a slot under their psychologist profile and interrupt it."""
-    interruptSlotByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The interruptTreatmentByPsychologist mutation allows a user to choose a treatment under their psychologist profile and interrupt it."""
+    interruptTreatmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The finalizeOwnSlot mutation allows a user to choose a slot under their psychologist profile and finalize it."""
-    finalizeOwnSlot(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The finalizeOwnTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
+    finalizeOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnSlot mutation allows a user to update a slot if it is owned by their psychologist profile."""
-    updateOwnSlot(id: ID!, input: UpdateSlotInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The deleteOwnTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
+    updateOwnTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
 	{Name: "graph/schema/users.graphqls", Input: `enum Role @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.Role") {
     COORDINATOR
@@ -1446,7 +1446,7 @@ func (ec *executionContext) field_Mutation_askResetPassword_args(ctx context.Con
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_assignSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_assignTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1491,13 +1491,13 @@ func (ec *executionContext) field_Mutation_createOwnPsychologistProfile_args(ctx
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 models2.CreateSlotInput
+	var arg0 models2.CreateTreatmentInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateSlotInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateTreatmentInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1551,7 +1551,7 @@ func (ec *executionContext) field_Mutation_createUserWithPassword_args(ctx conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_deleteOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1566,7 +1566,7 @@ func (ec *executionContext) field_Mutation_deleteOwnSlot_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_finalizeOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_finalizeOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1581,7 +1581,7 @@ func (ec *executionContext) field_Mutation_finalizeOwnSlot_args(ctx context.Cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_interruptSlotByPatient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_interruptTreatmentByPatient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1605,7 +1605,7 @@ func (ec *executionContext) field_Mutation_interruptSlotByPatient_args(ctx conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_interruptSlotByPsychologist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_interruptTreatmentByPsychologist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1779,7 +1779,7 @@ func (ec *executionContext) field_Mutation_updateOwnPsychologistProfile_args(ctx
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_updateOwnSlot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1791,10 +1791,10 @@ func (ec *executionContext) field_Mutation_updateOwnSlot_args(ctx context.Contex
 		}
 	}
 	args["id"] = arg0
-	var arg1 models2.UpdateSlotInput
+	var arg1 models2.UpdateTreatmentInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateSlotInput(ctx, tmp)
+		arg1, err = ec.unmarshalNUpdateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateTreatmentInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3340,7 +3340,7 @@ func (ec *executionContext) _Mutation_setOwnAvailability(ctx context.Context, fi
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_assignTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3357,7 +3357,7 @@ func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_assignSlot_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_assignTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3366,7 +3366,7 @@ func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().AssignSlot(rctx, args["id"].(string))
+			return ec.resolvers.Mutation().AssignTreatment(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3403,7 +3403,7 @@ func (ec *executionContext) _Mutation_assignSlot(ctx context.Context, field grap
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3420,7 +3420,7 @@ func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createOwnSlot_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createOwnTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3429,7 +3429,7 @@ func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateOwnSlot(rctx, args["input"].(models2.CreateSlotInput))
+			return ec.resolvers.Mutation().CreateOwnTreatment(rctx, args["input"].(models2.CreateTreatmentInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3466,7 +3466,7 @@ func (ec *executionContext) _Mutation_createOwnSlot(ctx context.Context, field g
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_deleteOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3483,7 +3483,7 @@ func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_deleteOwnSlot_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_deleteOwnTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3492,7 +3492,7 @@ func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().DeleteOwnSlot(rctx, args["id"].(string))
+			return ec.resolvers.Mutation().DeleteOwnTreatment(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3529,7 +3529,7 @@ func (ec *executionContext) _Mutation_deleteOwnSlot(ctx context.Context, field g
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_interruptTreatmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3546,7 +3546,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_interruptSlotByPatient_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_interruptTreatmentByPatient_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3555,7 +3555,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().InterruptSlotByPatient(rctx, args["id"].(string), args["reason"].(string))
+			return ec.resolvers.Mutation().InterruptTreatmentByPatient(rctx, args["id"].(string), args["reason"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3592,7 +3592,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPatient(ctx context.Context
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_interruptTreatmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3609,7 +3609,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Co
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_interruptSlotByPsychologist_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_interruptTreatmentByPsychologist_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3618,7 +3618,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().InterruptSlotByPsychologist(rctx, args["id"].(string), args["reason"].(string))
+			return ec.resolvers.Mutation().InterruptTreatmentByPsychologist(rctx, args["id"].(string), args["reason"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3655,7 +3655,7 @@ func (ec *executionContext) _Mutation_interruptSlotByPsychologist(ctx context.Co
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_finalizeOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3672,7 +3672,7 @@ func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_finalizeOwnSlot_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_finalizeOwnTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3681,7 +3681,7 @@ func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().FinalizeOwnSlot(rctx, args["id"].(string))
+			return ec.resolvers.Mutation().FinalizeOwnTreatment(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3718,7 +3718,7 @@ func (ec *executionContext) _Mutation_finalizeOwnSlot(ctx context.Context, field
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_updateOwnSlot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updateOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3735,7 +3735,7 @@ func (ec *executionContext) _Mutation_updateOwnSlot(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updateOwnSlot_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updateOwnTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3744,7 +3744,7 @@ func (ec *executionContext) _Mutation_updateOwnSlot(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateOwnSlot(rctx, args["id"].(string), args["input"].(models2.UpdateSlotInput))
+			return ec.resolvers.Mutation().UpdateOwnTreatment(rctx, args["id"].(string), args["input"].(models2.UpdateTreatmentInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4026,7 +4026,7 @@ func (ec *executionContext) _PatientProfile_preferences(ctx context.Context, fie
 	return ec.marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientProfile_slots(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientProfile_treatments(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4044,7 +4044,7 @@ func (ec *executionContext) _PatientProfile_slots(ctx context.Context, field gra
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.PatientProfile().Slots(rctx, obj)
+		return ec.resolvers.PatientProfile().Treatments(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4056,12 +4056,12 @@ func (ec *executionContext) _PatientProfile_slots(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models2.GetPatientSlotsResponse)
+	res := resTmp.([]*models2.GetPatientTreatmentsResponse)
 	fc.Result = res
-	return ec.marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx, field.Selections, res)
+	return ec.marshalNPatientTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientSlot_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4069,7 +4069,7 @@ func (ec *executionContext) _PatientSlot_id(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PatientSlot",
+		Object:     "PatientTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4096,7 +4096,7 @@ func (ec *executionContext) _PatientSlot_id(ctx context.Context, field graphql.C
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientSlot_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientTreatment_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4104,7 +4104,7 @@ func (ec *executionContext) _PatientSlot_duration(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PatientSlot",
+		Object:     "PatientTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4131,7 +4131,7 @@ func (ec *executionContext) _PatientSlot_duration(ctx context.Context, field gra
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientSlot_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientTreatment_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4139,7 +4139,7 @@ func (ec *executionContext) _PatientSlot_price(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PatientSlot",
+		Object:     "PatientTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4166,7 +4166,7 @@ func (ec *executionContext) _PatientSlot_price(ctx context.Context, field graphq
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientSlot_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientTreatment_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4174,7 +4174,7 @@ func (ec *executionContext) _PatientSlot_interval(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PatientSlot",
+		Object:     "PatientTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4201,7 +4201,7 @@ func (ec *executionContext) _PatientSlot_interval(ctx context.Context, field gra
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientSlot_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4209,7 +4209,7 @@ func (ec *executionContext) _PatientSlot_status(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PatientSlot",
+		Object:     "PatientTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4231,9 +4231,9 @@ func (ec *executionContext) _PatientSlot_status(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models2.SlotStatus)
+	res := resTmp.(models2.TreatmentStatus)
 	fc.Result = res
-	return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx, field.Selections, res)
+	return ec.marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Preference_characteristicName(ctx context.Context, field graphql.CollectedField, obj *models4.PreferenceResponse) (ret graphql.Marshaler) {
@@ -4586,7 +4586,7 @@ func (ec *executionContext) _PsychologistProfile_preferences(ctx context.Context
 	return ec.marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistProfile_slots(ctx context.Context, field graphql.CollectedField, obj *models1.Psychologist) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistProfile_treatments(ctx context.Context, field graphql.CollectedField, obj *models1.Psychologist) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4604,7 +4604,7 @@ func (ec *executionContext) _PsychologistProfile_slots(ctx context.Context, fiel
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.PsychologistProfile().Slots(rctx, obj)
+		return ec.resolvers.PsychologistProfile().Treatments(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4616,12 +4616,12 @@ func (ec *executionContext) _PsychologistProfile_slots(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models2.GetPsychologistSlotsResponse)
+	res := resTmp.([]*models2.GetPsychologistTreatmentsResponse)
 	fc.Result = res
-	return ec.marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx, field.Selections, res)
+	return ec.marshalNPsychologistTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistSlot_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4629,7 +4629,7 @@ func (ec *executionContext) _PsychologistSlot_id(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PsychologistSlot",
+		Object:     "PsychologistTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4656,7 +4656,7 @@ func (ec *executionContext) _PsychologistSlot_id(ctx context.Context, field grap
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistSlot_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistTreatment_duration(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4664,7 +4664,7 @@ func (ec *executionContext) _PsychologistSlot_duration(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PsychologistSlot",
+		Object:     "PsychologistTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4691,7 +4691,7 @@ func (ec *executionContext) _PsychologistSlot_duration(ctx context.Context, fiel
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistSlot_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistTreatment_price(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4699,7 +4699,7 @@ func (ec *executionContext) _PsychologistSlot_price(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PsychologistSlot",
+		Object:     "PsychologistTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4726,7 +4726,7 @@ func (ec *executionContext) _PsychologistSlot_price(ctx context.Context, field g
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistSlot_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistTreatment_interval(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4734,7 +4734,7 @@ func (ec *executionContext) _PsychologistSlot_interval(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PsychologistSlot",
+		Object:     "PsychologistTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4761,7 +4761,7 @@ func (ec *executionContext) _PsychologistSlot_interval(ctx context.Context, fiel
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistSlot_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistSlotsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4769,7 +4769,7 @@ func (ec *executionContext) _PsychologistSlot_status(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "PsychologistSlot",
+		Object:     "PsychologistTreatment",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4791,9 +4791,9 @@ func (ec *executionContext) _PsychologistSlot_status(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models2.SlotStatus)
+	res := resTmp.(models2.TreatmentStatus)
 	fc.Result = res
-	return ec.marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx, field.Selections, res)
+	return ec.marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PublicPatientProfile_id(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) {
@@ -7451,8 +7451,8 @@ func (ec *executionContext) unmarshalInputCreatePsychologistInput(ctx context.Co
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreateSlotInput(ctx context.Context, obj interface{}) (models2.CreateSlotInput, error) {
-	var it models2.CreateSlotInput
+func (ec *executionContext) unmarshalInputCreateTreatmentInput(ctx context.Context, obj interface{}) (models2.CreateTreatmentInput, error) {
+	var it models2.CreateTreatmentInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7787,8 +7787,8 @@ func (ec *executionContext) unmarshalInputUpdateOwnPsychologistProfileInput(ctx 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateSlotInput(ctx context.Context, obj interface{}) (models2.UpdateSlotInput, error) {
-	var it models2.UpdateSlotInput
+func (ec *executionContext) unmarshalInputUpdateTreatmentInput(ctx context.Context, obj interface{}) (models2.UpdateTreatmentInput, error) {
+	var it models2.UpdateTreatmentInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -8021,20 +8021,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_updateOwnPsychologistProfile(ctx, field)
 		case "setOwnAvailability":
 			out.Values[i] = ec._Mutation_setOwnAvailability(ctx, field)
-		case "assignSlot":
-			out.Values[i] = ec._Mutation_assignSlot(ctx, field)
-		case "createOwnSlot":
-			out.Values[i] = ec._Mutation_createOwnSlot(ctx, field)
-		case "deleteOwnSlot":
-			out.Values[i] = ec._Mutation_deleteOwnSlot(ctx, field)
-		case "interruptSlotByPatient":
-			out.Values[i] = ec._Mutation_interruptSlotByPatient(ctx, field)
-		case "interruptSlotByPsychologist":
-			out.Values[i] = ec._Mutation_interruptSlotByPsychologist(ctx, field)
-		case "finalizeOwnSlot":
-			out.Values[i] = ec._Mutation_finalizeOwnSlot(ctx, field)
-		case "updateOwnSlot":
-			out.Values[i] = ec._Mutation_updateOwnSlot(ctx, field)
+		case "assignTreatment":
+			out.Values[i] = ec._Mutation_assignTreatment(ctx, field)
+		case "createOwnTreatment":
+			out.Values[i] = ec._Mutation_createOwnTreatment(ctx, field)
+		case "deleteOwnTreatment":
+			out.Values[i] = ec._Mutation_deleteOwnTreatment(ctx, field)
+		case "interruptTreatmentByPatient":
+			out.Values[i] = ec._Mutation_interruptTreatmentByPatient(ctx, field)
+		case "interruptTreatmentByPsychologist":
+			out.Values[i] = ec._Mutation_interruptTreatmentByPsychologist(ctx, field)
+		case "finalizeOwnTreatment":
+			out.Values[i] = ec._Mutation_finalizeOwnTreatment(ctx, field)
+		case "updateOwnTreatment":
+			out.Values[i] = ec._Mutation_updateOwnTreatment(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8110,7 +8110,7 @@ func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.Selecti
 				}
 				return res
 			})
-		case "slots":
+		case "treatments":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -8118,7 +8118,7 @@ func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.Selecti
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._PatientProfile_slots(ctx, field, obj)
+				res = ec._PatientProfile_treatments(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -8135,39 +8135,39 @@ func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.Selecti
 	return out
 }
 
-var patientSlotImplementors = []string{"PatientSlot"}
+var patientTreatmentImplementors = []string{"PatientTreatment"}
 
-func (ec *executionContext) _PatientSlot(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPatientSlotsResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, patientSlotImplementors)
+func (ec *executionContext) _PatientTreatment(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPatientTreatmentsResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, patientTreatmentImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("PatientSlot")
+			out.Values[i] = graphql.MarshalString("PatientTreatment")
 		case "id":
-			out.Values[i] = ec._PatientSlot_id(ctx, field, obj)
+			out.Values[i] = ec._PatientTreatment_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "duration":
-			out.Values[i] = ec._PatientSlot_duration(ctx, field, obj)
+			out.Values[i] = ec._PatientTreatment_duration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "price":
-			out.Values[i] = ec._PatientSlot_price(ctx, field, obj)
+			out.Values[i] = ec._PatientTreatment_price(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "interval":
-			out.Values[i] = ec._PatientSlot_interval(ctx, field, obj)
+			out.Values[i] = ec._PatientTreatment_interval(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "status":
-			out.Values[i] = ec._PatientSlot_status(ctx, field, obj)
+			out.Values[i] = ec._PatientTreatment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8283,7 +8283,7 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
 				}
 				return res
 			})
-		case "slots":
+		case "treatments":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -8291,7 +8291,7 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._PsychologistProfile_slots(ctx, field, obj)
+				res = ec._PsychologistProfile_treatments(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -8308,39 +8308,39 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
 	return out
 }
 
-var psychologistSlotImplementors = []string{"PsychologistSlot"}
+var psychologistTreatmentImplementors = []string{"PsychologistTreatment"}
 
-func (ec *executionContext) _PsychologistSlot(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPsychologistSlotsResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, psychologistSlotImplementors)
+func (ec *executionContext) _PsychologistTreatment(ctx context.Context, sel ast.SelectionSet, obj *models2.GetPsychologistTreatmentsResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, psychologistTreatmentImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("PsychologistSlot")
+			out.Values[i] = graphql.MarshalString("PsychologistTreatment")
 		case "id":
-			out.Values[i] = ec._PsychologistSlot_id(ctx, field, obj)
+			out.Values[i] = ec._PsychologistTreatment_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "duration":
-			out.Values[i] = ec._PsychologistSlot_duration(ctx, field, obj)
+			out.Values[i] = ec._PsychologistTreatment_duration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "price":
-			out.Values[i] = ec._PsychologistSlot_price(ctx, field, obj)
+			out.Values[i] = ec._PsychologistTreatment_price(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "interval":
-			out.Values[i] = ec._PsychologistSlot_interval(ctx, field, obj)
+			out.Values[i] = ec._PsychologistTreatment_interval(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "status":
-			out.Values[i] = ec._PsychologistSlot_status(ctx, field, obj)
+			out.Values[i] = ec._PsychologistTreatment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -9176,8 +9176,8 @@ func (ec *executionContext) unmarshalNCreateOwnPsychologistProfileInput2github�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCreateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateSlotInput(ctx context.Context, v interface{}) (models2.CreateSlotInput, error) {
-	res, err := ec.unmarshalInputCreateSlotInput(ctx, v)
+func (ec *executionContext) unmarshalNCreateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateTreatmentInput(ctx context.Context, v interface{}) (models2.CreateTreatmentInput, error) {
+	res, err := ec.unmarshalInputCreateTreatmentInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -9235,7 +9235,7 @@ func (ec *executionContext) marshalNPatientProfile2ᚖgithubᚗcomᚋguicostaara
 	return ec._PatientProfile(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPatientSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPatientTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPatientTreatmentsResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9259,7 +9259,7 @@ func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaara
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponse(ctx, sel, v[i])
+			ret[i] = ec.marshalNPatientTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9272,14 +9272,14 @@ func (ec *executionContext) marshalNPatientSlot2ᚕᚖgithubᚗcomᚋguicostaara
 	return ret
 }
 
-func (ec *executionContext) marshalNPatientSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPatientSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPatientTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPatientTreatmentsResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._PatientSlot(ctx, sel, v)
+	return ec._PatientTreatment(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPreference2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐPreferenceResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models4.PreferenceResponse) graphql.Marshaler {
@@ -9343,7 +9343,7 @@ func (ec *executionContext) marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicos
 	return ec._PsychologistProfile(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPsychologistSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPsychologistTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPsychologistTreatmentsResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9367,7 +9367,7 @@ func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicos
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponse(ctx, sel, v[i])
+			ret[i] = ec.marshalNPsychologistTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9380,14 +9380,14 @@ func (ec *executionContext) marshalNPsychologistSlot2ᚕᚖgithubᚗcomᚋguicos
 	return ret
 }
 
-func (ec *executionContext) marshalNPsychologistSlot2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistSlotsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPsychologistSlotsResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPsychologistTreatment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponse(ctx context.Context, sel ast.SelectionSet, v *models2.GetPsychologistTreatmentsResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._PsychologistSlot(ctx, sel, v)
+	return ec._PsychologistTreatment(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPublicPatientProfile2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v models1.Patient) graphql.Marshaler {
@@ -9601,22 +9601,6 @@ func (ec *executionContext) unmarshalNSetProfileCharacteristicInput2ᚖgithubᚗ
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx context.Context, v interface{}) (models2.SlotStatus, error) {
-	tmp, err := graphql.UnmarshalString(v)
-	res := models2.SlotStatus(tmp)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNSlotStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐSlotStatus(ctx context.Context, sel ast.SelectionSet, v models2.SlotStatus) graphql.Marshaler {
-	res := graphql.MarshalString(string(v))
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -9676,6 +9660,22 @@ func (ec *executionContext) marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋps
 	return ec._Token(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx context.Context, v interface{}) (models2.TreatmentStatus, error) {
+	tmp, err := graphql.UnmarshalString(v)
+	res := models2.TreatmentStatus(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx context.Context, sel ast.SelectionSet, v models2.TreatmentStatus) graphql.Marshaler {
+	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNUpdateOwnPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePatientInput(ctx context.Context, v interface{}) (models1.UpdatePatientInput, error) {
 	res, err := ec.unmarshalInputUpdateOwnPatientProfileInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -9686,8 +9686,8 @@ func (ec *executionContext) unmarshalNUpdateOwnPsychologistProfileInput2github�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateSlotInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateSlotInput(ctx context.Context, v interface{}) (models2.UpdateSlotInput, error) {
-	res, err := ec.unmarshalInputUpdateSlotInput(ctx, v)
+func (ec *executionContext) unmarshalNUpdateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐUpdateTreatmentInput(ctx context.Context, v interface{}) (models2.UpdateTreatmentInput, error) {
+	res, err := ec.unmarshalInputUpdateTreatmentInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

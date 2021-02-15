@@ -5,6 +5,7 @@ package resolvers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
@@ -172,8 +173,8 @@ func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *patientProfileResolver) Slots(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientSlotsResponse, error) {
-	return r.GetPatientSlotsService().Execute(obj.ID)
+func (r *patientProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientTreatmentsResponse, error) {
+	return r.GetPatientTreatmentsService().Execute(obj.ID)
 }
 
 func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
@@ -184,8 +185,8 @@ func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *prof
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) Slots(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistSlotsResponse, error) {
-	return r.GetPsychologistSlotsService().Execute(obj.ID)
+func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
+	return r.GetPsychologistTreatmentsService().Execute(obj.ID)
 }
 
 func (r *publicPatientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
@@ -246,3 +247,16 @@ type patientProfileResolver struct{ *Resolver }
 type psychologistProfileResolver struct{ *Resolver }
 type publicPatientProfileResolver struct{ *Resolver }
 type publicPsychologistProfileResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *patientProfileResolver) Slots(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientTreatmentsResponse, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+func (r *psychologistProfileResolver) Slots(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
+	panic(fmt.Errorf("not implemented"))
+}

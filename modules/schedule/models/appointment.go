@@ -1,6 +1,6 @@
 package models
 
-// AppointmentStatus represents the status of a slot
+// AppointmentStatus represents the status of an appointment
 type AppointmentStatus string
 
 const (
@@ -16,10 +16,10 @@ const (
 
 // Appointment represents the mutual promise of psychologist and patient to consult at a specific time
 type Appointment struct {
-	ID     string            `json:"id" bson:"id"`
-	SlotID string            `json:"slotId" bson:"slotId"`
-	Start  int64             `json:"start" bson:"start"`
-	End    int64             `json:"end" bson:"end"`
-	Price  int64             `json:"price" bson:"price"`
-	Status AppointmentStatus `json:"status" bson:"status"`
+	ID          string            `json:"id" bson:"id"`
+	TreatmentID string            `json:"treatmentId" bson:"treatmentId"`
+	Start       int64             `json:"start" bson:"start"`
+	End         int64             `json:"end" bson:"end"`
+	Price       int64             `json:"price" bson:"price"`
+	Status      AppointmentStatus `json:"status" bson:"status"`
 }
