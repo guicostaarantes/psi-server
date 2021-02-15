@@ -59,9 +59,9 @@
 				
 				<option value="file1">github.com/guicostaarantes/psi-server/graph/resolvers/profiles.resolvers.go (74.4%)</option>
 				
-				<option value="file2">github.com/guicostaarantes/psi-server/graph/resolvers/resolver.go (87.9%)</option>
+				<option value="file2">github.com/guicostaarantes/psi-server/graph/resolvers/resolver.go (88.2%)</option>
 				
-				<option value="file3">github.com/guicostaarantes/psi-server/graph/resolvers/schedule.resolvers.go (60.0%)</option>
+				<option value="file3">github.com/guicostaarantes/psi-server/graph/resolvers/schedule.resolvers.go (66.7%)</option>
 				
 				<option value="file4">github.com/guicostaarantes/psi-server/graph/resolvers/treatments.resolvers.go (76.2%)</option>
 				
@@ -95,7 +95,7 @@
 				
 				<option value="file19">github.com/guicostaarantes/psi-server/modules/schedule/services/get_availability_service.go (83.3%)</option>
 				
-				<option value="file20">github.com/guicostaarantes/psi-server/modules/schedule/services/propose_appointment_service.go (0.0%)</option>
+				<option value="file20">github.com/guicostaarantes/psi-server/modules/schedule/services/propose_appointment_service.go (70.6%)</option>
 				
 				<option value="file21">github.com/guicostaarantes/psi-server/modules/schedule/services/set_availability_service.go (86.4%)</option>
 				
@@ -490,6 +490,7 @@ type Resolver struct {
         interruptTreatmentByPatientService      *treatments_services.InterruptTreatmentByPatientService
         interruptTreatmentByPsychologistService *treatments_services.InterruptTreatmentByPsychologistService
         processPendingMailsService              *mails_services.ProcessPendingMailsService
+        proposeAppointmentService               *schedule_services.ProposeAppointmentService
         resetPasswordService                    *users_services.ResetPasswordService
         setAvailabilityService                  *schedule_services.SetAvailabilityService
         setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
@@ -741,6 +742,17 @@ func (r *Resolver) InterruptTreatmentByPsychologistService() *treatments_service
         <span class="cov8" title="1">return r.interruptTreatmentByPsychologistService</span>
 }
 
+// ProposeAppointmentService gets or sets the service with same name
+func (r *Resolver) ProposeAppointmentService() *schedule_services.ProposeAppointmentService <span class="cov8" title="1">{
+        if r.proposeAppointmentService == nil </span><span class="cov8" title="1">{
+                r.proposeAppointmentService = &amp;schedule_services.ProposeAppointmentService{
+                        DatabaseUtil:   r.DatabaseUtil,
+                        IdentifierUtil: r.IdentifierUtil,
+                }
+        }</span>
+        <span class="cov8" title="1">return r.proposeAppointmentService</span>
+}
+
 // ProcessPendingMailsService gets or sets the service with same name
 func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMailsService <span class="cov8" title="1">{
         if r.processPendingMailsService == nil </span><span class="cov8" title="1">{
@@ -869,6 +881,19 @@ import (
 
         "github.com/guicostaarantes/psi-server/modules/schedule/models"
 )
+
+func (r *mutationResolver) ProposeAppointment(ctx context.Context, input models.ProposeAppointmentInput) (*bool, error) <span class="cov8" title="1">{
+        userID := ctx.Value("userID").(string)
+
+        servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
+        if servicePatientErr != nil </span><span class="cov0" title="0">{
+                return nil, servicePatientErr
+        }</span>
+
+        <span class="cov8" title="1">serviceErr := r.ProposeAppointmentService().Execute(servicePatient.ID, input)
+
+        return nil, serviceErr</span>
+}
 
 func (r *mutationResolver) SetOwnAvailability(ctx context.Context, input []*models.SetAvailabilityInput) (*bool, error) <span class="cov8" title="1">{
         userID := ctx.Value("userID").(string)
@@ -1958,37 +1983,52 @@ import (
         "github.com/guicostaarantes/psi-server/modules/schedule/models"
         treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
         "github.com/guicostaarantes/psi-server/utils/database"
+        "github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
 // ProposeAppointmentService is a service that the patient will use to ask the psychologist for an appointment
 type ProposeAppointmentService struct {
-        DatabaseUtil database.IDatabaseUtil
+        DatabaseUtil   database.IDatabaseUtil
+        IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s ProposeAppointmentService) Execute(patientID string, input models.ProposeAppointmentInput) error <span class="cov0" title="0">{
+func (s ProposeAppointmentService) Execute(patientID string, input models.ProposeAppointmentInput) error <span class="cov8" title="1">{
 
         treatment := treatments_models.Treatment{}
 
-        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": input.TreatmentID, "patientId": patientID}, &amp;treatment)
+        findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": input.TreatmentID, "patientId": patientID, "status": string(treatments_models.Active)}, &amp;treatment)
         if findErr != nil </span><span class="cov0" title="0">{
                 return findErr
         }</span>
 
-        <span class="cov0" title="0">if treatment.ID == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if treatment.ID == "" </span><span class="cov8" title="1">{
                 return errors.New("resource not found")
         }</span>
 
-        <span class="cov0" title="0">isAvailable := false
+        <span class="cov8" title="1">otherAppointment := models.Appointment{}
+
+        findErr = s.DatabaseUtil.FindOne("psi_db", "appointments", map[string]interface{}{"patientId": patientID, "status": string(models.Proposed)}, &amp;otherAppointment)
+        if findErr != nil </span><span class="cov0" title="0">{
+                return findErr
+        }</span>
+
+        <span class="cov8" title="1">if otherAppointment.ID != "" </span><span class="cov8" title="1">{
+                return errors.New("patient already has an appointment with status PROPOSED")
+        }</span>
+
+        <span class="cov8" title="1">end := input.Start + treatment.Duration
+
+        isAvailable := false
 
         avalCursor, findAvalErr := s.DatabaseUtil.FindMany("psi_db", "availabilities", map[string]interface{}{"psychologistId": treatment.PsychologistID})
         if findAvalErr != nil </span><span class="cov0" title="0">{
                 return findAvalErr
         }</span>
 
-        <span class="cov0" title="0">defer avalCursor.Close(context.Background())
+        <span class="cov8" title="1">defer avalCursor.Close(context.Background())
 
-        for avalCursor.Next(context.Background()) </span><span class="cov0" title="0">{
+        for avalCursor.Next(context.Background()) </span><span class="cov8" title="1">{
 
                 aval := models.Availability{}
 
@@ -1997,47 +2037,68 @@ func (s ProposeAppointmentService) Execute(patientID string, input models.Propos
                         return decodeErr
                 }</span>
 
-                <span class="cov0" title="0">if aval.Start &lt;= input.Start &amp;&amp; aval.End &gt;= input.Start </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if aval.Start &lt;= input.Start &amp;&amp; aval.End &gt;= end </span><span class="cov8" title="1">{
                         isAvailable = true
                         break</span>
                 }
 
         }
 
-        <span class="cov0" title="0">if !isAvailable </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !isAvailable </span><span class="cov8" title="1">{
                 return errors.New("the psychologist is not available during the requested time slot")
         }</span>
 
-        <span class="cov0" title="0">isClash := false
+        <span class="cov8" title="1">isClash := false
 
         clashCursor, findClashErr := s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{"psychologistId": treatment.PsychologistID, "status": string(models.Confirmed)})
         if findClashErr != nil </span><span class="cov0" title="0">{
                 return findClashErr
         }</span>
 
-        <span class="cov0" title="0">defer clashCursor.Close(context.Background())
+        <span class="cov8" title="1">defer clashCursor.Close(context.Background())
 
         for clashCursor.Next(context.Background()) </span><span class="cov0" title="0">{
 
-                appo := models.Appointment{}
+                appointment := models.Appointment{}
 
-                decodeErr := clashCursor.Decode(&amp;appo)
+                decodeErr := clashCursor.Decode(&amp;appointment)
                 if decodeErr != nil </span><span class="cov0" title="0">{
                         return decodeErr
                 }</span>
 
-                <span class="cov0" title="0">if appo.End &gt; input.Start &amp;&amp; appo.Start &lt; input.End </span><span class="cov0" title="0">{
+                <span class="cov0" title="0">if appointment.End &gt; input.Start &amp;&amp; appointment.Start &lt; end </span><span class="cov0" title="0">{
                         isClash = true
                         break</span>
                 }
 
         }
 
-        <span class="cov0" title="0">if isClash </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if isClash </span><span class="cov0" title="0">{
                 return errors.New("the psychologist is not available during the requested time slot")
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">_, appoID, appoIDErr := s.IdentifierUtil.GenerateIdentifier()
+        if appoIDErr != nil </span><span class="cov0" title="0">{
+                return appoIDErr
+        }</span>
+
+        <span class="cov8" title="1">newAppointment := models.Appointment{
+                ID:             appoID,
+                TreatmentID:    input.TreatmentID,
+                PatientID:      treatment.PatientID,
+                PsychologistID: treatment.PsychologistID,
+                Start:          input.Start,
+                End:            end,
+                Price:          treatment.Price,
+                Status:         models.Proposed,
+        }
+
+        writeErr := s.DatabaseUtil.InsertOne("psi_db", "appointments", newAppointment)
+        if writeErr != nil </span><span class="cov0" title="0">{
+                return writeErr
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
 
 }
 </pre>

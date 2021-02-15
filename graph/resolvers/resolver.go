@@ -57,6 +57,7 @@ type Resolver struct {
 	interruptTreatmentByPatientService      *treatments_services.InterruptTreatmentByPatientService
 	interruptTreatmentByPsychologistService *treatments_services.InterruptTreatmentByPsychologistService
 	processPendingMailsService              *mails_services.ProcessPendingMailsService
+	proposeAppointmentService               *schedule_services.ProposeAppointmentService
 	resetPasswordService                    *users_services.ResetPasswordService
 	setAvailabilityService                  *schedule_services.SetAvailabilityService
 	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
@@ -306,6 +307,17 @@ func (r *Resolver) InterruptTreatmentByPsychologistService() *treatments_service
 		}
 	}
 	return r.interruptTreatmentByPsychologistService
+}
+
+// ProposeAppointmentService gets or sets the service with same name
+func (r *Resolver) ProposeAppointmentService() *schedule_services.ProposeAppointmentService {
+	if r.proposeAppointmentService == nil {
+		r.proposeAppointmentService = &schedule_services.ProposeAppointmentService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+		}
+	}
+	return r.proposeAppointmentService
 }
 
 // ProcessPendingMailsService gets or sets the service with same name

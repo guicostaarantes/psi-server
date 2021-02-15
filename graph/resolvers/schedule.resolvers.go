@@ -9,6 +9,19 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/schedule/models"
 )
 
+func (r *mutationResolver) ProposeAppointment(ctx context.Context, input models.ProposeAppointmentInput) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
+	if servicePatientErr != nil {
+		return nil, servicePatientErr
+	}
+
+	serviceErr := r.ProposeAppointmentService().Execute(servicePatient.ID, input)
+
+	return nil, serviceErr
+}
+
 func (r *mutationResolver) SetOwnAvailability(ctx context.Context, input []*models.SetAvailabilityInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
