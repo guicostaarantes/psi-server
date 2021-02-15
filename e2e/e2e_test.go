@@ -48,7 +48,7 @@ func TestEnd2End(t *testing.T) {
 
 	res := &resolvers.Resolver{
 		DatabaseUtil:               database.MockDatabaseUtil,
-		HashUtil:                   hash.BcryptHashUtil,
+		HashUtil:                   hash.WeakBcryptHashUtil,
 		IdentifierUtil:             identifier.UUIDIdentifierUtil,
 		MailUtil:                   mail.MockMailUtil,
 		MatchUtil:                  match.RegexpMatchUtil,

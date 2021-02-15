@@ -47,3 +47,10 @@ var BcryptHashUtil = bcryptHasher{
 	wrongPasswordError: "hashedPassword is not the hash of the given password",
 	loggingUtil:        logging.PrintLogUtil,
 }
+
+// WeakBcryptHashUtil is an implementation of IHashUtil that uses golang.org/x/crypto/bcrypt and minimum cost for testing
+var WeakBcryptHashUtil = bcryptHasher{
+	cost:               4,
+	wrongPasswordError: "hashedPassword is not the hash of the given password",
+	loggingUtil:        logging.PrintLogUtil,
+}
