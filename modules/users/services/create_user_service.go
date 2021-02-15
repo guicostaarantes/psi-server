@@ -52,12 +52,10 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 	}
 
 	user := &models.User{
-		ID:        userID,
-		Active:    true,
-		Email:     userInput.Email,
-		FirstName: userInput.FirstName,
-		LastName:  userInput.LastName,
-		Role:      userInput.Role,
+		ID:     userID,
+		Active: true,
+		Email:  userInput.Email,
+		Role:   userInput.Role,
 	}
 
 	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToExpire)
@@ -86,9 +84,8 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 	buff := new(bytes.Buffer)
 
 	templ.Execute(buff, map[string]string{
-		"FirstName": user.FirstName,
-		"SiteURL":   os.Getenv("PSI_SITE_URL"),
-		"Token":     token,
+		"SiteURL": os.Getenv("PSI_SITE_URL"),
+		"Token":   token,
 	})
 
 	mail := &mails_models.TransientMailMessage{

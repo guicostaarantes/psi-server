@@ -13,15 +13,11 @@ input AuthenticateUserInput @goModel(model: "github.com/guicostaarantes/psi-serv
 input CreateUserWithPasswordInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.CreateUserWithPasswordInput") {
     email: String!
     password: String!
-    firstName: String!
-    lastName: String!
     role: Role!
 }
 
 input CreateUserInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.CreateUserInput") {
     email: String!
-    firstName: String!
-    lastName: String!
 }
 
 input ResetPasswordInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.ResetPasswordInput") {
@@ -29,22 +25,14 @@ input ResetPasswordInput @goModel(model: "github.com/guicostaarantes/psi-server/
     password: String!
 }
 
-input UpdateOwnUserInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.UpdateUserInput") {
-    firstName: String!
-    lastName: String!
-}
-
 input UpdateUserInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.UpdateUserInput") {
-    firstName: String!
-    lastName: String!
+    active: Boolean!
     role: Role!
 }
 
 type User @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.User") {
     id: ID!
     email: String!
-    firstName: String!
-    lastName: String!
     role: Role!
 }
 
@@ -61,14 +49,11 @@ type Query {
 }
 
 type Mutation {
-    activateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     askResetPassword(email: String!): Boolean
     createPatientUser(input: CreateUserInput!): Boolean
     createPsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
     createUserWithPassword(input: CreateUserWithPasswordInput!): Boolean @hasRole(role: [COORDINATOR])
-    deactivateUser(id: ID!): Boolean @hasRole(role: [COORDINATOR])
     resetPassword(input: ResetPasswordInput!): Boolean
-    updateOwnUser(input: UpdateOwnUserInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     updateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 

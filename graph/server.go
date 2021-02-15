@@ -27,11 +27,9 @@ func CreateServer(res *resolvers.Resolver) *chi.Mux {
 	if len(bootstrap) == 2 {
 		fmt.Println("Bootstrap user identified")
 		res.CreateUserWithPasswordService().Execute(&users_models.CreateUserWithPasswordInput{
-			Email:     bootstrap[0],
-			Password:  bootstrap[1],
-			FirstName: "Bootstrap",
-			LastName:  "User",
-			Role:      "COORDINATOR",
+			Email:    bootstrap[0],
+			Password: bootstrap[1],
+			Role:     "COORDINATOR",
 		})
 	}
 

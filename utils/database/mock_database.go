@@ -59,6 +59,19 @@ func (m mockDBClient) GetMockedDatabases() ([]byte, error) {
 	return json.Marshal(result)
 }
 
+func (m mockDBClient) SetMockedDatabases(data []byte) error {
+	newClient := map[string]map[string][][]byte{}
+
+	jsonErr := json.Unmarshal(data, &newClient)
+	if jsonErr != nil {
+		return jsonErr
+	}
+
+	m.client = newClient
+
+	return nil
+}
+
 func (m mockDBClient) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
 	value := map[string]interface{}{}
 	for _, v := range m.client[database][table] {

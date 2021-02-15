@@ -36,6 +36,8 @@ func (s CreatePatientService) Execute(input *models.CreatePatientInput) error {
 	patient := &models.Patient{
 		ID:        patientID,
 		UserID:    input.UserID,
+		FullName:  input.FullName,
+		LikeName:  input.LikeName,
 		BirthDate: input.BirthDate,
 		City:      input.City,
 	}

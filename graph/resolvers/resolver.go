@@ -4,6 +4,8 @@ import (
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
 	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
+	schedule_services "github.com/guicostaarantes/psi-server/modules/schedule/services"
+	treatments_services "github.com/guicostaarantes/psi-server/modules/treatments/services"
 	users_services "github.com/guicostaarantes/psi-server/modules/users/services"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
@@ -20,63 +22,81 @@ import (
 
 // Resolver receives all utils and registers all services within the application
 type Resolver struct {
-	DatabaseUtil                    database.IDatabaseUtil
-	HashUtil                        hash.IHashUtil
-	IdentifierUtil                  identifier.IIdentifierUtil
-	MailUtil                        mail.IMailUtil
-	MatchUtil                       match.IMatchUtil
-	SerializingUtil                 serializing.ISerializingUtil
-	TokenUtil                       token.ITokenUtil
-	SecondsToCooldownReset          int64
-	SecondsToExpire                 int64
-	SecondsToExpireReset            int64
-	activateUserService             *users_services.ActivateUserService
-	askResetPasswordService         *users_services.AskResetPasswordService
-	authenticateUserService         *users_services.AuthenticateUserService
-	createPatientService            *profiles_services.CreatePatientService
-	createPsychologistService       *profiles_services.CreatePsychologistService
-	createUserService               *users_services.CreateUserService
-	createUserWithPasswordService   *users_services.CreateUserWithPasswordService
-	getPatientByUserIDService       *profiles_services.GetPatientByUserIDService
-	getCharacteristicsByIDService   *characteristics_services.GetCharacteristicsByIDService
-	getCharacteristicsService       *characteristics_services.GetCharacteristicsService
-	getPreferencesByIDService       *characteristics_services.GetPreferencesByIDService
-	getPsychologistByUserIDService  *profiles_services.GetPsychologistByUserIDService
-	getUsersByRoleService           *users_services.GetUsersByRoleService
-	getUserByIDService              *users_services.GetUserByIDService
-	processPendingMailsService      *mails_services.ProcessPendingMailsService
-	resetPasswordService            *users_services.ResetPasswordService
-	setCharacteristicChoicesService *characteristics_services.SetCharacteristicChoicesService
-	setCharacteristicsService       *characteristics_services.SetCharacteristicsService
-	setPreferencesService           *characteristics_services.SetPreferencesService
-	updatePatientService            *profiles_services.UpdatePatientService
-	updatePsychologistService       *profiles_services.UpdatePsychologistService
-	updateUserService               *users_services.UpdateUserService
-	validateUserTokenService        *users_services.ValidateUserTokenService
-}
-
-// ActivateUserService gets or sets the service with same name
-func (r *Resolver) ActivateUserService() *users_services.ActivateUserService {
-	if r.activateUserService == nil {
-		r.activateUserService = &users_services.ActivateUserService{
-			DatabaseUtil: r.DatabaseUtil,
-		}
-	}
-	return r.activateUserService
+	DatabaseUtil                            database.IDatabaseUtil
+	HashUtil                                hash.IHashUtil
+	IdentifierUtil                          identifier.IIdentifierUtil
+	MailUtil                                mail.IMailUtil
+	MatchUtil                               match.IMatchUtil
+	SerializingUtil                         serializing.ISerializingUtil
+	TokenUtil                               token.ITokenUtil
+	SecondsLimitAvailability                int64
+	SecondsMinimumAvailability              int64
+	SecondsToCooldownReset                  int64
+	SecondsToExpire                         int64
+	SecondsToExpireReset                    int64
+	askResetPasswordService                 *users_services.AskResetPasswordService
+	assignTreatmentService                  *treatments_services.AssignTreatmentService
+	authenticateUserService                 *users_services.AuthenticateUserService
+	cancelAppointmentByPatientService       *schedule_services.CancelAppointmentByPatientService
+	cancelAppointmentByPsychologistService  *schedule_services.CancelAppointmentByPsychologistService
+	confirmAppointmentService               *schedule_services.ConfirmAppointmentService
+	createPatientService                    *profiles_services.CreatePatientService
+	createPsychologistService               *profiles_services.CreatePsychologistService
+	createTreatmentService                  *treatments_services.CreateTreatmentService
+	createUserService                       *users_services.CreateUserService
+	createUserWithPasswordService           *users_services.CreateUserWithPasswordService
+	deleteTreatmentService                  *treatments_services.DeleteTreatmentService
+	denyAppointmentService                  *schedule_services.DenyAppointmentService
+	finalizeTreatmentService                *treatments_services.FinalizeTreatmentService
+	getAppointmentsOfPatientService         *schedule_services.GetAppointmentsOfPatientService
+	getAppointmentsOfPsychologistService    *schedule_services.GetAppointmentsOfPsychologistService
+	getAvailabilityService                  *schedule_services.GetAvailabilityService
+	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
+	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
+	getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
+	getPatientTreatmentsService             *treatments_services.GetPatientTreatmentsService
+	getPreferencesByIDService               *characteristics_services.GetPreferencesByIDService
+	getPsychologistByUserIDService          *profiles_services.GetPsychologistByUserIDService
+	getPsychologistTreatmentsService        *treatments_services.GetPsychologistTreatmentsService
+	getUserByIDService                      *users_services.GetUserByIDService
+	getUsersByRoleService                   *users_services.GetUsersByRoleService
+	interruptTreatmentByPatientService      *treatments_services.InterruptTreatmentByPatientService
+	interruptTreatmentByPsychologistService *treatments_services.InterruptTreatmentByPsychologistService
+	processPendingMailsService              *mails_services.ProcessPendingMailsService
+	proposeAppointmentService               *schedule_services.ProposeAppointmentService
+	resetPasswordService                    *users_services.ResetPasswordService
+	setAvailabilityService                  *schedule_services.SetAvailabilityService
+	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
+	setCharacteristicsService               *characteristics_services.SetCharacteristicsService
+	setPreferencesService                   *characteristics_services.SetPreferencesService
+	updatePatientService                    *profiles_services.UpdatePatientService
+	updatePsychologistService               *profiles_services.UpdatePsychologistService
+	updateTreatmentService                  *treatments_services.UpdateTreatmentService
+	updateUserService                       *users_services.UpdateUserService
+	validateUserTokenService                *users_services.ValidateUserTokenService
 }
 
 // AskResetPasswordService gets or sets the service with same name
 func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordService {
 	if r.askResetPasswordService == nil {
 		r.askResetPasswordService = &users_services.AskResetPasswordService{
-			DatabaseUtil:      r.DatabaseUtil,
-			IdentifierUtil:    r.IdentifierUtil,
-			TokenUtil:         r.TokenUtil,
-			SecondsToCooldown: r.SecondsToCooldownReset,
-			SecondsToExpire:   r.SecondsToExpire,
+			DatabaseUtil:    r.DatabaseUtil,
+			IdentifierUtil:  r.IdentifierUtil,
+			TokenUtil:       r.TokenUtil,
+			SecondsToExpire: r.SecondsToExpire,
 		}
 	}
 	return r.askResetPasswordService
+}
+
+// AssignTreatmentService gets or sets the service with same name
+func (r *Resolver) AssignTreatmentService() *treatments_services.AssignTreatmentService {
+	if r.assignTreatmentService == nil {
+		r.assignTreatmentService = &treatments_services.AssignTreatmentService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.assignTreatmentService
 }
 
 // AuthenticateUserService gets or sets the service with same name
@@ -91,6 +111,36 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 		}
 	}
 	return r.authenticateUserService
+}
+
+// CancelAppointmentByPatientService gets or sets the service with same name
+func (r *Resolver) CancelAppointmentByPatientService() *schedule_services.CancelAppointmentByPatientService {
+	if r.cancelAppointmentByPatientService == nil {
+		r.cancelAppointmentByPatientService = &schedule_services.CancelAppointmentByPatientService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.cancelAppointmentByPatientService
+}
+
+// CancelAppointmentByPsychologistService gets or sets the service with same name
+func (r *Resolver) CancelAppointmentByPsychologistService() *schedule_services.CancelAppointmentByPsychologistService {
+	if r.cancelAppointmentByPsychologistService == nil {
+		r.cancelAppointmentByPsychologistService = &schedule_services.CancelAppointmentByPsychologistService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.cancelAppointmentByPsychologistService
+}
+
+// ConfirmAppointmentService gets or sets the service with same name
+func (r *Resolver) ConfirmAppointmentService() *schedule_services.ConfirmAppointmentService {
+	if r.confirmAppointmentService == nil {
+		r.confirmAppointmentService = &schedule_services.ConfirmAppointmentService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.confirmAppointmentService
 }
 
 // CreatePatientService gets or sets the service with same name
@@ -113,6 +163,17 @@ func (r *Resolver) CreatePsychologistService() *profiles_services.CreatePsycholo
 		}
 	}
 	return r.createPsychologistService
+}
+
+// CreateTreatmentService gets or sets the service with same name
+func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatmentService {
+	if r.createTreatmentService == nil {
+		r.createTreatmentService = &treatments_services.CreateTreatmentService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+		}
+	}
+	return r.createTreatmentService
 }
 
 // CreateUserService gets or sets the service with same name
@@ -144,14 +205,64 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 	return r.createUserWithPasswordService
 }
 
-// GetPatientByUserIDService gets or sets the service with same name
-func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUserIDService {
-	if r.getPatientByUserIDService == nil {
-		r.getPatientByUserIDService = &profiles_services.GetPatientByUserIDService{
+// DeleteTreatmentService gets or sets the service with same name
+func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatmentService {
+	if r.deleteTreatmentService == nil {
+		r.deleteTreatmentService = &treatments_services.DeleteTreatmentService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
-	return r.getPatientByUserIDService
+	return r.deleteTreatmentService
+}
+
+// DenyAppointmentService gets or sets the service with same name
+func (r *Resolver) DenyAppointmentService() *schedule_services.DenyAppointmentService {
+	if r.denyAppointmentService == nil {
+		r.denyAppointmentService = &schedule_services.DenyAppointmentService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.denyAppointmentService
+}
+
+// FinalizeTreatmentService gets or sets the service with same name
+func (r *Resolver) FinalizeTreatmentService() *treatments_services.FinalizeTreatmentService {
+	if r.finalizeTreatmentService == nil {
+		r.finalizeTreatmentService = &treatments_services.FinalizeTreatmentService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.finalizeTreatmentService
+}
+
+// GetAppointmentsOfPatientService gets or sets the service with same name
+func (r *Resolver) GetAppointmentsOfPatientService() *schedule_services.GetAppointmentsOfPatientService {
+	if r.getAppointmentsOfPatientService == nil {
+		r.getAppointmentsOfPatientService = &schedule_services.GetAppointmentsOfPatientService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getAppointmentsOfPatientService
+}
+
+// GetAppointmentsOfPsychologistService gets or sets the service with same name
+func (r *Resolver) GetAppointmentsOfPsychologistService() *schedule_services.GetAppointmentsOfPsychologistService {
+	if r.getAppointmentsOfPsychologistService == nil {
+		r.getAppointmentsOfPsychologistService = &schedule_services.GetAppointmentsOfPsychologistService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getAppointmentsOfPsychologistService
+}
+
+// GetAvailabilityService gets or sets the service with same name
+func (r *Resolver) GetAvailabilityService() *schedule_services.GetAvailabilityService {
+	if r.getAvailabilityService == nil {
+		r.getAvailabilityService = &schedule_services.GetAvailabilityService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getAvailabilityService
 }
 
 // GetCharacteristicsByIDService gets or sets the service with same name
@@ -174,6 +285,26 @@ func (r *Resolver) GetCharacteristicsService() *characteristics_services.GetChar
 	return r.getCharacteristicsService
 }
 
+// GetPatientByUserIDService gets or sets the service with same name
+func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUserIDService {
+	if r.getPatientByUserIDService == nil {
+		r.getPatientByUserIDService = &profiles_services.GetPatientByUserIDService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPatientByUserIDService
+}
+
+// GetPatientTreatmentsService gets or sets the service with same name
+func (r *Resolver) GetPatientTreatmentsService() *treatments_services.GetPatientTreatmentsService {
+	if r.getPatientTreatmentsService == nil {
+		r.getPatientTreatmentsService = &treatments_services.GetPatientTreatmentsService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPatientTreatmentsService
+}
+
 // GetPreferencesByIDService gets or sets the service with same name
 func (r *Resolver) GetPreferencesByIDService() *characteristics_services.GetPreferencesByIDService {
 	if r.getPreferencesByIDService == nil {
@@ -192,6 +323,16 @@ func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsycho
 		}
 	}
 	return r.getPsychologistByUserIDService
+}
+
+// GetPsychologistTreatmentsService gets or sets the service with same name
+func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPsychologistTreatmentsService {
+	if r.getPsychologistTreatmentsService == nil {
+		r.getPsychologistTreatmentsService = &treatments_services.GetPsychologistTreatmentsService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsychologistTreatmentsService
 }
 
 // GetUsersByRoleService gets or sets the service with same name
@@ -214,6 +355,37 @@ func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService {
 	return r.getUserByIDService
 }
 
+// InterruptTreatmentByPatientService gets or sets the service with same name
+func (r *Resolver) InterruptTreatmentByPatientService() *treatments_services.InterruptTreatmentByPatientService {
+	if r.interruptTreatmentByPatientService == nil {
+		r.interruptTreatmentByPatientService = &treatments_services.InterruptTreatmentByPatientService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.interruptTreatmentByPatientService
+}
+
+// InterruptTreatmentByPsychologistService gets or sets the service with same name
+func (r *Resolver) InterruptTreatmentByPsychologistService() *treatments_services.InterruptTreatmentByPsychologistService {
+	if r.interruptTreatmentByPsychologistService == nil {
+		r.interruptTreatmentByPsychologistService = &treatments_services.InterruptTreatmentByPsychologistService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.interruptTreatmentByPsychologistService
+}
+
+// ProposeAppointmentService gets or sets the service with same name
+func (r *Resolver) ProposeAppointmentService() *schedule_services.ProposeAppointmentService {
+	if r.proposeAppointmentService == nil {
+		r.proposeAppointmentService = &schedule_services.ProposeAppointmentService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+		}
+	}
+	return r.proposeAppointmentService
+}
+
 // ProcessPendingMailsService gets or sets the service with same name
 func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMailsService {
 	if r.processPendingMailsService == nil {
@@ -223,6 +395,18 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 		}
 	}
 	return r.processPendingMailsService
+}
+
+// SetAvailabilityService gets or sets the service with same name
+func (r *Resolver) SetAvailabilityService() *schedule_services.SetAvailabilityService {
+	if r.setAvailabilityService == nil {
+		r.setAvailabilityService = &schedule_services.SetAvailabilityService{
+			DatabaseUtil:               r.DatabaseUtil,
+			SecondsLimitAvailability:   r.SecondsLimitAvailability,
+			SecondsMinimumAvailability: r.SecondsMinimumAvailability,
+		}
+	}
+	return r.setAvailabilityService
 }
 
 // SetCharacteristicChoicesService gets or sets the service with same name
@@ -285,6 +469,16 @@ func (r *Resolver) UpdatePsychologistService() *profiles_services.UpdatePsycholo
 		}
 	}
 	return r.updatePsychologistService
+}
+
+// UpdateTreatmentService gets or sets the service with same name
+func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
+	if r.updateTreatmentService == nil {
+		r.updateTreatmentService = &treatments_services.UpdateTreatmentService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.updateTreatmentService
 }
 
 // UpdateUserService gets or sets the service with same name

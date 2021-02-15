@@ -22,11 +22,17 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"id": id}, &pat)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"id": id}, &pat)
+	if findErr != nil {
+		return findErr
+	}
 	if pat.ID != "" {
 		target = models.PatientTarget
 	} else {
-		s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
+		findErr = s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
+		if findErr != nil {
+			return findErr
+		}
 		if psy.ID != "" {
 			target = models.PsychologistTarget
 		} else {

@@ -1,0 +1,58 @@
+enum TreatmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentStatus") {
+    PENDING
+    ACTIVE
+    FINALIZED
+    INTERRUPTED_BY_PSYCHOLOGIST
+    INTERRUPTED_BY_PATIENT
+}
+
+input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateTreatmentInput") {
+    duration: Int!
+    price: Int!
+    interval: Int!
+}
+
+input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
+    duration: Int!
+    price: Int!
+    interval: Int!
+}
+
+type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientTreatmentsResponse") {
+    id: ID!
+    duration: Int!
+    price: Int!
+    interval: Int!
+    status: TreatmentStatus!
+}
+
+type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistTreatmentsResponse") {
+    id: ID!
+    duration: Int!
+    price: Int!
+    interval: Int!
+    status: TreatmentStatus!
+}
+
+extend type Mutation {
+    """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
+    assignTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The createOwnTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
+    createOwnTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The deleteOwnTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
+    deleteOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The interruptTreatmentByPatient mutation allows a user to choose a treatment under their patient profile and interrupt it."""
+    interruptTreatmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The interruptTreatmentByPsychologist mutation allows a user to choose a treatment under their psychologist profile and interrupt it."""
+    interruptTreatmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The finalizeOwnTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
+    finalizeOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The deleteOwnTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
+    updateOwnTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+}

@@ -74,9 +74,8 @@ func (s AskResetPasswordService) Execute(email string) error {
 	buff := new(bytes.Buffer)
 
 	templ.Execute(buff, map[string]string{
-		"FirstName": user.FirstName,
-		"SiteURL":   os.Getenv("PSI_SITE_URL"),
-		"Token":     token,
+		"SiteURL": os.Getenv("PSI_SITE_URL"),
+		"Token":   token,
 	})
 
 	mail := &mails_models.TransientMailMessage{
@@ -86,7 +85,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 		To:          []string{user.Email},
 		Cc:          []string{},
 		Cco:         []string{},
-		Subject:     "Bem-vindo ao PSI",
+		Subject:     "Redfinir senha do PSI",
 		Html:        buff.String(),
 		Processed:   false,
 	}

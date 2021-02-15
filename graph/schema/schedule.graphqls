@@ -1,0 +1,60 @@
+enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AppointmentStatus") {
+    PROPOSED
+    DENIED
+    CONFIRMED
+    CANCELED_BY_PATIENT
+    CANCELED_BY_PSYCHOLOGIST
+}
+
+input ProposeAppointmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.ProposeAppointmentInput") {
+    treatmentId: ID!
+    start: Int!
+}
+
+input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SetAvailabilityInput") {
+    start: Int!
+    end: Int!
+}
+
+type Appointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
+}
+
+type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {
+    start: Int!
+    end: Int!
+}
+
+extend type Query {
+    """The getOwnAvailability query allows a user to get the availability of their own psychologist profile."""
+    getOwnAvailability: [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The getPsychologistAvailability query allows a user to get the availability of a psychologist profile."""
+    getPsychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+}
+
+extend type Mutation {
+    """The cancelAppointmentByPatient mutation allows a user with a patient profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The cancelAppointmentByPsychologist mutation allows a user with a psychologist profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The confirmAppointment mutation allows a user with a psychologist profile to confirm the proposal of an appointment."""
+    confirmAppointment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The denyAppointment mutation allows a user with a psychologist profile to deny the proposal of an appointment."""
+    denyAppointment(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The proposeAppointment mutation allows a user with a patient profile in treatment to propose a time for a next meeting."""
+    proposeAppointment(input: ProposeAppointmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
+    setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+}
