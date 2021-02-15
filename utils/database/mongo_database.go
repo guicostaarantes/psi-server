@@ -50,6 +50,10 @@ func (m mongoClient) GetMockedDatabases() ([]byte, error) {
 	return nil, errors.New("this is not a mock implementation")
 }
 
+func (m mongoClient) SetMockedDatabases(data []byte) error {
+	return errors.New("this is not a mock implementation")
+}
+
 func (m mongoClient) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
 	collection := m.client.Database(database).Collection(table)
 
