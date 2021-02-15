@@ -44,6 +44,8 @@ type Resolver struct {
 	createUserWithPasswordService           *users_services.CreateUserWithPasswordService
 	deleteTreatmentService                  *treatments_services.DeleteTreatmentService
 	finalizeTreatmentService                *treatments_services.FinalizeTreatmentService
+	getAppointmentsOfPatientService         *schedule_services.GetAppointmentsOfPatientService
+	getAppointmentsOfPsychologistService    *schedule_services.GetAppointmentsOfPsychologistService
 	getAvailabilityService                  *schedule_services.GetAvailabilityService
 	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
 	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
@@ -187,6 +189,26 @@ func (r *Resolver) FinalizeTreatmentService() *treatments_services.FinalizeTreat
 		}
 	}
 	return r.finalizeTreatmentService
+}
+
+// GetAppointmentsOfPatientService gets or sets the service with same name
+func (r *Resolver) GetAppointmentsOfPatientService() *schedule_services.GetAppointmentsOfPatientService {
+	if r.getAppointmentsOfPatientService == nil {
+		r.getAppointmentsOfPatientService = &schedule_services.GetAppointmentsOfPatientService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getAppointmentsOfPatientService
+}
+
+// GetAppointmentsOfPsychologistService gets or sets the service with same name
+func (r *Resolver) GetAppointmentsOfPsychologistService() *schedule_services.GetAppointmentsOfPsychologistService {
+	if r.getAppointmentsOfPsychologistService == nil {
+		r.getAppointmentsOfPsychologistService = &schedule_services.GetAppointmentsOfPsychologistService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getAppointmentsOfPsychologistService
 }
 
 // GetAvailabilityService gets or sets the service with same name

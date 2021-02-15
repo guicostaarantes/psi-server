@@ -2015,7 +2015,44 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+16*3600), storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"proposeAppointment\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"patient already has an appointment with status PROPOSED\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String())
+	})
+
+	t.Run("should get proposed appointment from both patient and psychologist", func(t *testing.T) {
+
+		query := `{
+			getOwnPatientProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		appointmentID := fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "0", "id")
+		assert.NotEqual(t, "", appointmentID)
+		storedVariables["appointment_id"] = appointmentID
+
+		assert.Equal(t, "PROPOSED", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "0", "status"))
+
+		query = `{
+			getOwnPsychologistProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		appointmentID = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "appointments", "0", "id")
+		assert.Equal(t, storedVariables["appointment_id"], appointmentID)
+
+		assert.Equal(t, "PROPOSED", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "appointments", "0", "status"))
+
 	})
 
 }

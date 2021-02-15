@@ -1,3 +1,11 @@
+enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AppointmentStatus") {
+    PROPOSED
+    DENIED
+    CONFIRMED
+    CANCELED_BY_PATIENT
+    CANCELED_BY_PSYCHOLOGIST
+}
+
 input ProposeAppointmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.ProposeAppointmentInput") {
     treatmentId: ID!
     start: Int!
@@ -6,6 +14,16 @@ input ProposeAppointmentInput @goModel(model: "github.com/guicostaarantes/psi-se
 input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SetAvailabilityInput") {
     start: Int!
     end: Int!
+}
+
+type Appointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
 }
 
 type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {

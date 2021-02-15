@@ -10,6 +10,7 @@ import (
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	schedule_models "github.com/guicostaarantes/psi-server/modules/schedule/models"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
@@ -177,6 +178,10 @@ func (r *patientProfileResolver) Treatments(ctx context.Context, obj *profiles_m
 	return r.GetPatientTreatmentsService().Execute(obj.ID)
 }
 
+func (r *patientProfileResolver) Appointments(ctx context.Context, obj *profiles_models.Patient) ([]*schedule_models.Appointment, error) {
+	return r.GetAppointmentsOfPatientService().Execute(obj.ID)
+}
+
 func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
 	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
@@ -187,6 +192,10 @@ func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *prof
 
 func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
 	return r.GetPsychologistTreatmentsService().Execute(obj.ID)
+}
+
+func (r *psychologistProfileResolver) Appointments(ctx context.Context, obj *profiles_models.Psychologist) ([]*schedule_models.Appointment, error) {
+	return r.GetAppointmentsOfPsychologistService().Execute(obj.ID)
 }
 
 func (r *publicPatientProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Patient) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
