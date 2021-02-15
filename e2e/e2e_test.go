@@ -187,7 +187,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}
 
-		regex := regexp.MustCompile("token=(?P<token>[A-Za-z0-9]{64})")
+		regex := regexp.MustCompile("token=(?P<token>[^\"]+)")
 		match := regex.FindStringSubmatch(mailBody)
 
 		query = fmt.Sprintf(`mutation {
@@ -255,7 +255,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}
 
-		regex := regexp.MustCompile("token=(?P<token>[A-Za-z0-9]{64})")
+		regex := regexp.MustCompile("token=(?P<token>[^\"]+)")
 		match := regex.FindStringSubmatch(mailBody)
 
 		query = fmt.Sprintf(`mutation {
@@ -339,7 +339,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}
 
-		regex := regexp.MustCompile("token=(?P<token>[A-Za-z0-9]{64})")
+		regex := regexp.MustCompile("token=(?P<token>[^\"]+)")
 		match := regex.FindStringSubmatch(mailBody)
 
 		query = fmt.Sprintf(`mutation {
@@ -414,7 +414,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}
 
-		regex := regexp.MustCompile("token=(?P<token>[A-Za-z0-9]{64})")
+		regex := regexp.MustCompile("token=(?P<token>[^\"]+)")
 		match := regex.FindStringSubmatch(mailBody)
 
 		query = fmt.Sprintf(`mutation {
