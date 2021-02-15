@@ -55,17 +55,17 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/guicostaarantes/psi-server/graph/generated/generated.go (40.8%)</option>
+				<option value="file0">github.com/guicostaarantes/psi-server/graph/generated/generated.go (41.3%)</option>
 				
 				<option value="file1">github.com/guicostaarantes/psi-server/graph/resolvers/mail.resolvers.go (75.0%)</option>
 				
 				<option value="file2">github.com/guicostaarantes/psi-server/graph/resolvers/profiles.resolvers.go (76.1%)</option>
 				
-				<option value="file3">github.com/guicostaarantes/psi-server/graph/resolvers/resolver.go (84.8%)</option>
+				<option value="file3">github.com/guicostaarantes/psi-server/graph/resolvers/resolver.go (87.9%)</option>
 				
 				<option value="file4">github.com/guicostaarantes/psi-server/graph/resolvers/schedule.resolvers.go (71.9%)</option>
 				
-				<option value="file5">github.com/guicostaarantes/psi-server/graph/resolvers/users.resolvers.go (51.6%)</option>
+				<option value="file5">github.com/guicostaarantes/psi-server/graph/resolvers/users.resolvers.go (61.3%)</option>
 				
 				<option value="file6">github.com/guicostaarantes/psi-server/graph/server.go (86.0%)</option>
 				
@@ -117,7 +117,7 @@
 				
 				<option value="file30">github.com/guicostaarantes/psi-server/modules/schedule/services/update_slot_service.go (84.6%)</option>
 				
-				<option value="file31">github.com/guicostaarantes/psi-server/modules/users/services/ask_reset_password_service.go (0.0%)</option>
+				<option value="file31">github.com/guicostaarantes/psi-server/modules/users/services/ask_reset_password_service.go (71.9%)</option>
 				
 				<option value="file32">github.com/guicostaarantes/psi-server/modules/users/services/authenticate_user_service.go (75.0%)</option>
 				
@@ -135,7 +135,7 @@
 				
 				<option value="file39">github.com/guicostaarantes/psi-server/modules/users/services/validate_user_token_service.go (72.7%)</option>
 				
-				<option value="file40">github.com/guicostaarantes/psi-server/utils/database/mock_database.go (78.7%)</option>
+				<option value="file40">github.com/guicostaarantes/psi-server/utils/database/mock_database.go (80.6%)</option>
 				
 				<option value="file41">github.com/guicostaarantes/psi-server/utils/database/mongo_database.go (8.8%)</option>
 				
@@ -492,8 +492,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
                 <span class="cov0" title="0">return e.complexity.CharacteristicChoice.Type(childComplexity), true</span>
 
-        case "Mutation.askResetPassword":<span class="cov0" title="0">
-                if e.complexity.Mutation.AskResetPassword == nil </span><span class="cov0" title="0">{
+        case "Mutation.askResetPassword":<span class="cov8" title="1">
+                if e.complexity.Mutation.AskResetPassword == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
 
@@ -1598,18 +1598,18 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
         return args, nil</span>
 }
 
-func (ec *executionContext) field_Mutation_askResetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov0" title="0">{
+func (ec *executionContext) field_Mutation_askResetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) <span class="cov8" title="1">{
         var err error
         args := map[string]interface{}{}
         var arg0 string
-        if tmp, ok := rawArgs["email"]; ok </span><span class="cov0" title="0">{
+        if tmp, ok := rawArgs["email"]; ok </span><span class="cov8" title="1">{
                 ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
                 arg0, err = ec.unmarshalNString2string(ctx, tmp)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
         }
-        <span class="cov0" title="0">args["email"] = arg0
+        <span class="cov8" title="1">args["email"] = arg0
         return args, nil</span>
 }
 
@@ -2452,14 +2452,14 @@ func (ec *executionContext) _CharacteristicChoice_possibleValues(ctx context.Con
         return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)</span>
 }
 
-func (ec *executionContext) _Mutation_askResetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov0" title="0">{
-        defer func() </span><span class="cov0" title="0">{
+func (ec *executionContext) _Mutation_askResetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) <span class="cov8" title="1">{
+        defer func() </span><span class="cov8" title="1">{
                 if r := recover(); r != nil </span><span class="cov0" title="0">{
                         ec.Error(ctx, ec.Recover(ctx, r))
                         ret = graphql.Null
                 }</span>
         }()
-        <span class="cov0" title="0">fc := &amp;graphql.FieldContext{
+        <span class="cov8" title="1">fc := &amp;graphql.FieldContext{
                 Object:     "Mutation",
                 Field:      field,
                 Args:       nil,
@@ -2474,19 +2474,19 @@ func (ec *executionContext) _Mutation_askResetPassword(ctx context.Context, fiel
                 ec.Error(ctx, err)
                 return graphql.Null
         }</span>
-        <span class="cov0" title="0">fc.Args = args
-        resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">fc.Args = args
+        resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) </span><span class="cov8" title="1">{
                 ctx = rctx // use context from middleware stack in children
                 return ec.resolvers.Mutation().AskResetPassword(rctx, args["email"].(string))
         }</span>)
-        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
                 ec.Error(ctx, err)
                 return graphql.Null
         }</span>
-        <span class="cov0" title="0">if resTmp == nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if resTmp == nil </span><span class="cov0" title="0">{
                 return graphql.Null
         }</span>
-        <span class="cov0" title="0">res := resTmp.(*bool)
+        <span class="cov8" title="1">res := resTmp.(*bool)
         fc.Result = res
         return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)</span>
 }
@@ -8152,7 +8152,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
                 switch field.Name </span>{
                 case "__typename":<span class="cov0" title="0">
                         out.Values[i] = graphql.MarshalString("Mutation")</span>
-                case "askResetPassword":<span class="cov0" title="0">
+                case "askResetPassword":<span class="cov8" title="1">
                         out.Values[i] = ec._Mutation_askResetPassword(ctx, field)</span>
                 case "createPatientUser":<span class="cov8" title="1">
                         out.Values[i] = ec._Mutation_createPatientUser(ctx, field)</span>
@@ -10745,8 +10745,8 @@ type Resolver struct {
 }
 
 // AskResetPasswordService gets or sets the service with same name
-func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordService <span class="cov0" title="0">{
-        if r.askResetPasswordService == nil </span><span class="cov0" title="0">{
+func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordService <span class="cov8" title="1">{
+        if r.askResetPasswordService == nil </span><span class="cov8" title="1">{
                 r.askResetPasswordService = &amp;users_services.AskResetPasswordService{
                         DatabaseUtil:    r.DatabaseUtil,
                         IdentifierUtil:  r.IdentifierUtil,
@@ -10754,7 +10754,7 @@ func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordSer
                         SecondsToExpire: r.SecondsToExpire,
                 }
         }</span>
-        <span class="cov0" title="0">return r.askResetPasswordService</span>
+        <span class="cov8" title="1">return r.askResetPasswordService</span>
 }
 
 // AssignSlotService gets or sets the service with same name
@@ -11249,14 +11249,14 @@ import (
         users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 )
 
-func (r *mutationResolver) AskResetPassword(ctx context.Context, email string) (*bool, error) <span class="cov0" title="0">{
+func (r *mutationResolver) AskResetPassword(ctx context.Context, email string) (*bool, error) <span class="cov8" title="1">{
         serviceErr := r.AskResetPasswordService().Execute(email)
 
         if serviceErr != nil </span><span class="cov0" title="0">{
                 return nil, serviceErr
         }</span>
 
-        <span class="cov0" title="0">return nil, nil</span>
+        <span class="cov8" title="1">return nil, nil</span>
 }
 
 func (r *mutationResolver) CreatePatientUser(ctx context.Context, input users_models.CreateUserInput) (*bool, error) <span class="cov8" title="1">{
@@ -12803,7 +12803,7 @@ type AskResetPasswordService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s AskResetPasswordService) Execute(email string) error <span class="cov0" title="0">{
+func (s AskResetPasswordService) Execute(email string) error <span class="cov8" title="1">{
 
         user := &amp;models.User{}
 
@@ -12812,27 +12812,27 @@ func (s AskResetPasswordService) Execute(email string) error <span class="cov0" 
                 return findUserErr
         }</span>
 
-        <span class="cov0" title="0">if user.ID == "" || !user.Active </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if user.ID == "" || !user.Active </span><span class="cov0" title="0">{
                 return nil
         }</span>
 
-        <span class="cov0" title="0">existsReset := &amp;models.ResetPassword{}
+        <span class="cov8" title="1">existsReset := &amp;models.ResetPassword{}
 
         findTokenErr := s.DatabaseUtil.FindOne("psi_db", "resets", map[string]interface{}{"userId": user.ID}, existsReset)
         if findTokenErr != nil </span><span class="cov0" title="0">{
                 return findTokenErr
         }</span>
 
-        <span class="cov0" title="0">if existsReset.UserID != "" &amp;&amp; existsReset.IssuedAt &gt; time.Now().Add(-time.Second*time.Duration(s.SecondsToCooldown)).Unix() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if existsReset.UserID != "" &amp;&amp; existsReset.IssuedAt &gt; time.Now().Add(-time.Second*time.Duration(s.SecondsToCooldown)).Unix() </span><span class="cov0" title="0">{
                 return nil
         }</span>
 
-        <span class="cov0" title="0">token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToCooldown)
+        <span class="cov8" title="1">token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToCooldown)
         if tokenErr != nil </span><span class="cov0" title="0">{
                 return tokenErr
         }</span>
 
-        <span class="cov0" title="0">reset := &amp;models.ResetPassword{
+        <span class="cov8" title="1">reset := &amp;models.ResetPassword{
                 UserID:    user.ID,
                 IssuedAt:  time.Now().Unix(),
                 ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToCooldown)).Unix(),
@@ -12845,12 +12845,12 @@ func (s AskResetPasswordService) Execute(email string) error <span class="cov0" 
                 return mailIDErr
         }</span>
 
-        <span class="cov0" title="0">templ, templErr := template.New("ResetPasswordEmail").Parse(templates.ResetPasswordEmailTemplate)
+        <span class="cov8" title="1">templ, templErr := template.New("ResetPasswordEmail").Parse(templates.ResetPasswordEmailTemplate)
         if templErr != nil </span><span class="cov0" title="0">{
                 return templErr
         }</span>
 
-        <span class="cov0" title="0">buff := new(bytes.Buffer)
+        <span class="cov8" title="1">buff := new(bytes.Buffer)
 
         templ.Execute(buff, map[string]string{
                 "SiteURL": os.Getenv("PSI_SITE_URL"),
@@ -12864,7 +12864,7 @@ func (s AskResetPasswordService) Execute(email string) error <span class="cov0" 
                 To:          []string{user.Email},
                 Cc:          []string{},
                 Cco:         []string{},
-                Subject:     "Bem-vindo ao PSI",
+                Subject:     "Redfinir senha do PSI",
                 Html:        buff.String(),
                 Processed:   false,
         }
@@ -12874,12 +12874,12 @@ func (s AskResetPasswordService) Execute(email string) error <span class="cov0" 
                 return writeMailErr
         }</span>
 
-        <span class="cov0" title="0">writeResetErr := s.DatabaseUtil.InsertOne("psi_db", "resets", reset)
+        <span class="cov8" title="1">writeResetErr := s.DatabaseUtil.InsertOne("psi_db", "resets", reset)
         if writeResetErr != nil </span><span class="cov0" title="0">{
                 return writeResetErr
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 
 }
 </pre>
@@ -13587,7 +13587,7 @@ func (m mockDBClient) DeleteOne(database string, table string, matches map[strin
                                 matching = false
                         }</span>
                 }
-                <span class="cov8" title="1">if matching </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if matching </span><span class="cov8" title="1">{
                         m.client[database][table] = append(m.client[database][table][:k], m.client[database][table][k+1:]...)
                         return nil
                 }</span>

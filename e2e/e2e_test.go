@@ -193,7 +193,7 @@ func TestEnd2End(t *testing.T) {
 		query = fmt.Sprintf(`mutation {
 			resetPassword(input: {
 				token: %q,
-				password: "Def456$%%^"
+				password: "Def456$$$"
 			})
 		}`, match[1])
 
@@ -208,7 +208,7 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			authenticateUser(input: { 
 				email: "tom.brady@psi.com.br", 
-				password: "Def456$%^", 
+				password: "Def456$$$", 
 				ipAddress: "100.100.100.100" 
 			}) { 
 				token 
@@ -217,6 +217,70 @@ func TestEnd2End(t *testing.T) {
 		}`
 
 		response := gql(router, query, "")
+
+		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		assert.NotEqual(t, "", token)
+
+		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
+		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+
+	})
+
+	t.Run("should reset password via link sent by email", func(t *testing.T) {
+
+		query := `mutation {
+			askResetPassword(email: "tom.brady@psi.com.br")
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"data\":{\"askResetPassword\":null}}", response.Body.String())
+
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		var mailBody string
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"tom.brady@psi.com.br"}) && mail["subject"] == "Redfinir senha do PSI" {
+				mailBody = mail["body"].(string)
+				break
+			}
+		}
+
+		regex := regexp.MustCompile("token=(?P<token>[A-Za-z0-9]{64})")
+		match := regex.FindStringSubmatch(mailBody)
+
+		query = fmt.Sprintf(`mutation {
+			resetPassword(input: {
+				token: %q,
+				password: "Def456$%%^"
+			})
+		}`, match[1])
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"data\":{\"resetPassword\":null}}", response.Body.String())
+
+		query = `{
+			authenticateUser(input: { 
+				email: "tom.brady@psi.com.br", 
+				password: "Def456$%^", 
+				ipAddress: "100.100.100.100" 
+			}) { 
+				token 
+				expiresAt 
+			} 
+		}`
+
+		response = gql(router, query, "")
 
 		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)

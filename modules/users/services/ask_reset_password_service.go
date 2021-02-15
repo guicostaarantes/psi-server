@@ -85,7 +85,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 		To:          []string{user.Email},
 		Cc:          []string{},
 		Cco:         []string{},
-		Subject:     "Bem-vindo ao PSI",
+		Subject:     "Redfinir senha do PSI",
 		Html:        buff.String(),
 		Processed:   false,
 	}
