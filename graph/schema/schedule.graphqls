@@ -40,11 +40,17 @@ extend type Query {
 }
 
 extend type Mutation {
+    """The cancelAppointmentByPatient mutation allows a user with a patient profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The cancelAppointmentByPsychologist mutation allows a user with a psychologist profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
     """The confirmAppointment mutation allows a user with a psychologist profile to confirm the proposal of an appointment."""
     confirmAppointment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The denyAppointment mutation allows a user with a psychologist profile to deny the proposal of an appointment."""
-    denyAppointment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    denyAppointment(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The proposeAppointment mutation allows a user with a patient profile in treatment to propose a time for a next meeting."""
     proposeAppointment(input: ProposeAppointmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])

@@ -37,6 +37,8 @@ type Resolver struct {
 	askResetPasswordService                 *users_services.AskResetPasswordService
 	assignTreatmentService                  *treatments_services.AssignTreatmentService
 	authenticateUserService                 *users_services.AuthenticateUserService
+	cancelAppointmentByPatientService       *schedule_services.CancelAppointmentByPatientService
+	cancelAppointmentByPsychologistService  *schedule_services.CancelAppointmentByPsychologistService
 	confirmAppointmentService               *schedule_services.ConfirmAppointmentService
 	createPatientService                    *profiles_services.CreatePatientService
 	createPsychologistService               *profiles_services.CreatePsychologistService
@@ -109,6 +111,26 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 		}
 	}
 	return r.authenticateUserService
+}
+
+// CancelAppointmentByPatientService gets or sets the service with same name
+func (r *Resolver) CancelAppointmentByPatientService() *schedule_services.CancelAppointmentByPatientService {
+	if r.cancelAppointmentByPatientService == nil {
+		r.cancelAppointmentByPatientService = &schedule_services.CancelAppointmentByPatientService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.cancelAppointmentByPatientService
+}
+
+// CancelAppointmentByPsychologistService gets or sets the service with same name
+func (r *Resolver) CancelAppointmentByPsychologistService() *schedule_services.CancelAppointmentByPsychologistService {
+	if r.cancelAppointmentByPsychologistService == nil {
+		r.cancelAppointmentByPsychologistService = &schedule_services.CancelAppointmentByPsychologistService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.cancelAppointmentByPsychologistService
 }
 
 // ConfirmAppointmentService gets or sets the service with same name
