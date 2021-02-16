@@ -10,5 +10,5 @@ RUN ./build.sh
 
 FROM alpine:3.12
 COPY --from=build /out /
-EXPOSE 8082
+EXPOSE 8080
 CMD ["/main"]
