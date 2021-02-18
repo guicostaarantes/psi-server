@@ -60,14 +60,26 @@ func (m mockDBClient) GetMockedDatabases() ([]byte, error) {
 }
 
 func (m mockDBClient) SetMockedDatabases(data []byte) error {
-	newClient := map[string]map[string][][]byte{}
+	newClient := map[string]map[string][]string{}
 
 	jsonErr := json.Unmarshal(data, &newClient)
 	if jsonErr != nil {
 		return jsonErr
 	}
 
-	m.client = newClient
+	for dbName, db := range newClient {
+		if m.client[dbName] == nil {
+			m.client[dbName] = map[string][][]byte{}
+		}
+		for tblName, tbl := range db {
+			if m.client[dbName][tblName] == nil {
+				m.client[dbName][tblName] = [][]byte{}
+			}
+			for _, fld := range tbl {
+				m.client[dbName][tblName] = append(m.client[dbName][tblName], []byte(fld))
+			}
+		}
+	}
 
 	return nil
 }
