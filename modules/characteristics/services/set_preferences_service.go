@@ -19,6 +19,7 @@ type SetPreferencesService struct {
 func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceInput) error {
 
 	var target models.CharacteristicTarget
+	var profileType models.CharacteristicTarget
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
@@ -28,6 +29,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 	}
 	if pat.ID != "" {
 		target = models.PsychologistTarget
+		profileType = models.PatientTarget
 	} else {
 		findErr = s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
 		if findErr != nil {
@@ -35,6 +37,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 		}
 		if psy.ID != "" {
 			target = models.PatientTarget
+			profileType = models.PsychologistTarget
 		} else {
 			return errors.New("resource not found")
 		}
@@ -65,6 +68,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 					if i.SelectedValue == p && i.Weight != 0 {
 						preferences = append(preferences, models.Preference{
 							ProfileID:          id,
+							Target:             profileType,
 							CharacteristicName: i.CharacteristicName,
 							SelectedValue:      i.SelectedValue,
 							Weight:             i.Weight,

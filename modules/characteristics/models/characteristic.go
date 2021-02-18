@@ -32,15 +32,17 @@ type Characteristic struct {
 
 // CharacteristicChoice is the schema for a choice of characteristics made by a profile
 type CharacteristicChoice struct {
-	ProfileID          string `json:"profileId" bson:"profileId"`
-	CharacteristicName string `json:"characteristicName" bson:"characteristicName"`
-	SelectedValue      string `json:"selectedValue" bson:"selectedValue"`
+	ProfileID          string               `json:"profileId" bson:"profileId"`
+	Target             CharacteristicTarget `json:"target" bson:"target"`
+	CharacteristicName string               `json:"characteristicName" bson:"characteristicName"`
+	SelectedValue      string               `json:"selectedValue" bson:"selectedValue"`
 }
 
 // Preference is the schema for the fact that a patient prefers working with a certain kind of psychologist, and vice-versa
 type Preference struct {
-	ProfileID          string `json:"profileId" bson:"profileId"`
-	CharacteristicName string `json:"characteristicName" bson:"characteristicName"`
-	SelectedValue      string `json:"selectedValue" bson:"selectedValue"`
-	Weight             int64  `json:"weight" bson:"weight"`
+	ProfileID          string               `json:"profileId" bson:"profileId"`
+	Target             CharacteristicTarget `json:"target" bson:"target"`
+	CharacteristicName string               `json:"characteristicName" bson:"characteristicName"`
+	SelectedValue      string               `json:"selectedValue" bson:"selectedValue"`
+	Weight             int64                `json:"weight" bson:"weight"`
 }

@@ -29,6 +29,7 @@ type Resolver struct {
 	MatchUtil                               match.IMatchUtil
 	SerializingUtil                         serializing.ISerializingUtil
 	TokenUtil                               token.ITokenUtil
+	MaxAffinityNumber                       int64
 	SecondsLimitAvailability                int64
 	SecondsMinimumAvailability              int64
 	SecondsToCooldownReset                  int64
@@ -54,10 +55,13 @@ type Resolver struct {
 	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
 	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
 	getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
+	getPatientService                       *profiles_services.GetPatientService
 	getPatientTreatmentsService             *treatments_services.GetPatientTreatmentsService
 	getPreferencesByIDService               *characteristics_services.GetPreferencesByIDService
 	getPsychologistByUserIDService          *profiles_services.GetPsychologistByUserIDService
+	getPsychologistService                  *profiles_services.GetPsychologistService
 	getPsychologistTreatmentsService        *treatments_services.GetPsychologistTreatmentsService
+	getTopAffinitiesForPatientService       *characteristics_services.GetTopAffinitiesForPatientService
 	getUserByIDService                      *users_services.GetUserByIDService
 	getUsersByRoleService                   *users_services.GetUsersByRoleService
 	interruptTreatmentByPatientService      *treatments_services.InterruptTreatmentByPatientService
@@ -69,6 +73,7 @@ type Resolver struct {
 	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
 	setCharacteristicsService               *characteristics_services.SetCharacteristicsService
 	setPreferencesService                   *characteristics_services.SetPreferencesService
+	setTopAffinitiesForPatientService       *characteristics_services.SetTopAffinitiesForPatientService
 	updatePatientService                    *profiles_services.UpdatePatientService
 	updatePsychologistService               *profiles_services.UpdatePsychologistService
 	updateTreatmentService                  *treatments_services.UpdateTreatmentService
@@ -295,6 +300,16 @@ func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUs
 	return r.getPatientByUserIDService
 }
 
+// GetPsychologistService gets or sets the service with same name
+func (r *Resolver) GetPsychologistService() *profiles_services.GetPsychologistService {
+	if r.getPsychologistService == nil {
+		r.getPsychologistService = &profiles_services.GetPsychologistService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsychologistService
+}
+
 // GetPatientTreatmentsService gets or sets the service with same name
 func (r *Resolver) GetPatientTreatmentsService() *treatments_services.GetPatientTreatmentsService {
 	if r.getPatientTreatmentsService == nil {
@@ -325,6 +340,16 @@ func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsycho
 	return r.getPsychologistByUserIDService
 }
 
+// GetPatientService gets or sets the service with same name
+func (r *Resolver) GetPatientService() *profiles_services.GetPatientService {
+	if r.getPatientService == nil {
+		r.getPatientService = &profiles_services.GetPatientService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPatientService
+}
+
 // GetPsychologistTreatmentsService gets or sets the service with same name
 func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPsychologistTreatmentsService {
 	if r.getPsychologistTreatmentsService == nil {
@@ -333,6 +358,16 @@ func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPs
 		}
 	}
 	return r.getPsychologistTreatmentsService
+}
+
+// GetTopAffinitiesForPatientService gets or sets the service with same name
+func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services.GetTopAffinitiesForPatientService {
+	if r.getTopAffinitiesForPatientService == nil {
+		r.getTopAffinitiesForPatientService = &characteristics_services.GetTopAffinitiesForPatientService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getTopAffinitiesForPatientService
 }
 
 // GetUsersByRoleService gets or sets the service with same name
@@ -437,6 +472,17 @@ func (r *Resolver) SetPreferencesService() *characteristics_services.SetPreferen
 		}
 	}
 	return r.setPreferencesService
+}
+
+// SetTopAffinitiesForPatientService gets or sets the service with same name
+func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services.SetTopAffinitiesForPatientService {
+	if r.setTopAffinitiesForPatientService == nil {
+		r.setTopAffinitiesForPatientService = &characteristics_services.SetTopAffinitiesForPatientService{
+			DatabaseUtil:      r.DatabaseUtil,
+			MaxAffinityNumber: r.MaxAffinityNumber,
+		}
+	}
+	return r.setTopAffinitiesForPatientService
 }
 
 // ResetPasswordService gets or sets the service with same name

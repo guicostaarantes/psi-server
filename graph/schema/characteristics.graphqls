@@ -21,6 +21,11 @@ input SetProfileCharacteristicInput @goModel(model: "github.com/guicostaarantes/
     possibleValues: [String!]!
 }
 
+type Affinity @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.Affinity") {
+    createdAt: Int!
+    psychologist: PsychologistProfile! @goField(forceResolver: true)
+}
+
 type Characteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicResponse") {
     name: String!
     type: CharacteristicType!
@@ -38,4 +43,14 @@ type Preference @goModel(model: "github.com/guicostaarantes/psi-server/modules/c
     characteristicName: String!
     selectedValue: String!
     weight: Int!
+}
+
+extend type Query {
+    """The getTopAffinitiesForOwnPatient query allows a user to get the last calculation of affinities for their patient profile."""
+    getTopAffinitiesForOwnPatient: [Affinity!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+}
+
+extend type Mutation {
+    """The setTopAffinitiesForOwnPatient mutation allows a user to compare its patient profile against all psychologist profiles that have PENDING treatments."""
+    setTopAffinitiesForOwnPatient: Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }

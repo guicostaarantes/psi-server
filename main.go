@@ -32,6 +32,7 @@ func main() {
 		MatchUtil:                  match.RegexpMatchUtil,
 		SerializingUtil:            serializing.JSONSerializingUtil,
 		TokenUtil:                  token.RngTokenUtil,
+		MaxAffinityNumber:          int64(5),
 		SecondsLimitAvailability:   int64(2419200),
 		SecondsMinimumAvailability: int64(1800),
 		SecondsToCooldownReset:     int64(86400),

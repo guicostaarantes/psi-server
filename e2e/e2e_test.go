@@ -54,6 +54,7 @@ func TestEnd2End(t *testing.T) {
 		MatchUtil:                  match.RegexpMatchUtil,
 		SerializingUtil:            serializing.JSONSerializingUtil,
 		TokenUtil:                  token.RngTokenUtil,
+		MaxAffinityNumber:          int64(5),
 		SecondsLimitAvailability:   int64(2419200),
 		SecondsMinimumAvailability: int64(1800),
 		SecondsToCooldownReset:     int64(86400),
@@ -627,6 +628,22 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Indianapolis - IN\"}}}", response.Body.String())
+
+		query = `{
+			getOwnPsychologistProfile {
+				id
+			}
+		}`
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		storedVariables["psychologist_1_id"] = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "id")
+		assert.NotEqual(t, "", storedVariables["psychologist_1_id"])
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		storedVariables["psychologist_2_id"] = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "id")
+		assert.NotEqual(t, "", storedVariables["psychologist_2_id"])
 
 	})
 
@@ -1311,7 +1328,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "gender",
 					selectedValue: "female",
-					weight: 4
+					weight: 6
 				}
 			])
 		}`
@@ -1333,12 +1350,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "disabilities",
 					selectedValue: "vision",
-					weight: 5
+					weight: 7
 				},
 				{
 					characteristicName: "gender",
 					selectedValue: "male",
-					weight: 2
+					weight: 8
 				}
 			])
 		}`
@@ -1365,11 +1382,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":4},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":6},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":2},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":8},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":7}]}}}", response.Body.String())
 
 	})
 
@@ -1380,12 +1397,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "black",
 					selectedValue: "true",
-					weight: 5
+					weight: 1
 				},
 				{
 					characteristicName: "gender",
 					selectedValue: "female",
-					weight: 5
+					weight: 2
 				}
 			])
 		}`
@@ -1407,12 +1424,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "black",
 					selectedValue: "true",
-					weight: 5
+					weight: 3
 				},
 				{
 					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 3
+					selectedValue: "non-binary",
+					weight: 4
 				}
 			])
 		}`
@@ -1445,15 +1462,15 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":811296000,\"city\":\"Kansas City - MS\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":811296000,\"city\":\"Kansas City - MS\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":3}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"non-binary\",\"weight\":4}]}}}", response.Body.String())
 
 	})
 
@@ -1726,6 +1743,14 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
 
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
+
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
@@ -1814,11 +1839,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"treatments\":[{\"duration\":2700,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"treatments\":[{\"duration\":2700,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"treatments\":[{\"duration\":3000,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"treatments\":[{\"duration\":3000,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
 
 	})
 
@@ -2207,6 +2232,54 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"appointments can only be canceled if their current status is CONFIRMED. current status is CANCELED_BY_PATIENT\",\"path\":[\"cancelAppointmentByPatient\"]}],\"data\":{\"cancelAppointmentByPatient\":null}}", response.Body.String())
+	})
+
+	t.Run("should set and check affinities", func(t *testing.T) {
+
+		query := `mutation {
+			setTopAffinitiesForOwnPatient
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setTopAffinitiesForOwnPatient\"]}],\"data\":{\"setTopAffinitiesForOwnPatient\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"setTopAffinitiesForOwnPatient\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"setTopAffinitiesForOwnPatient\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"setTopAffinitiesForOwnPatient\":null}}", response.Body.String())
+
+		query = `{
+			getTopAffinitiesForOwnPatient {
+				psychologist {
+					id
+				}
+			}
+		}`
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"getTopAffinitiesForOwnPatient\"]}],\"data\":null}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, storedVariables["psychologist_2_id"], fastjson.GetString(response.Body.Bytes(), "data", "getTopAffinitiesForOwnPatient", "0", "psychologist", "id"))
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, storedVariables["psychologist_2_id"], fastjson.GetString(response.Body.Bytes(), "data", "getTopAffinitiesForOwnPatient", "0", "psychologist", "id"))
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, storedVariables["psychologist_1_id"], fastjson.GetString(response.Body.Bytes(), "data", "getTopAffinitiesForOwnPatient", "0", "psychologist", "id"))
+
 	})
 
 }

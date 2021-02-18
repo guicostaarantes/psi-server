@@ -69,6 +69,7 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 					choices = append(choices, models.CharacteristicChoice{
 						ProfileID:          id,
+						Target:             target,
 						CharacteristicName: i.CharacteristicName,
 						SelectedValue:      i.SelectedValues[0],
 					})
@@ -98,6 +99,7 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 					choices = append(choices, models.CharacteristicChoice{
 						ProfileID:          id,
+						Target:             target,
 						CharacteristicName: i.CharacteristicName,
 						SelectedValue:      i.SelectedValues[0],
 					})
@@ -123,6 +125,7 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 						choices = append(choices, models.CharacteristicChoice{
 							ProfileID:          id,
+							Target:             target,
 							CharacteristicName: i.CharacteristicName,
 							SelectedValue:      value,
 						})
