@@ -7,7 +7,6 @@ enum Role @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/m
 input AuthenticateUserInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.AuthenticateUserInput") {
     email: String!
     password: String!
-    ipAddress: String!
 }
 
 input CreateUserWithPasswordInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.CreateUserWithPasswordInput") {

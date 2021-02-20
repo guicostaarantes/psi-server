@@ -71,8 +71,7 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			authenticateUser(input: { 
 				email: "coordinator@psi.com", 
-				password: "Abc123!@#", 
-				ipAddress: "100.100.100.100" 
+				password: "Abc123!@#"
 			}) { 
 				token 
 				expiresAt 
@@ -90,8 +89,7 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			authenticateUser(input: { 
 				email: "coordinator@psi.com.br", 
-				password: "123!@#Abc", 
-				ipAddress: "100.100.100.100" 
+				password: "123!@#Abc"
 			}) { 
 				token 
 				expiresAt 
@@ -109,8 +107,7 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			authenticateUser(input: { 
 				email: "coordinator@psi.com.br", 
-				password: "Abc123!@#", 
-				ipAddress: "100.100.100.100" 
+				password: "Abc123!@#"
 			}) { 
 				token 
 				expiresAt 
@@ -209,8 +206,7 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			authenticateUser(input: { 
 				email: "tom.brady@psi.com.br", 
-				password: "Def456$$$", 
-				ipAddress: "100.100.100.100" 
+				password: "Def456$$$"
 			}) { 
 				token 
 				expiresAt 
@@ -273,8 +269,7 @@ func TestEnd2End(t *testing.T) {
 		query = `{
 			authenticateUser(input: { 
 				email: "tom.brady@psi.com.br", 
-				password: "Def456$%^", 
-				ipAddress: "100.100.100.100" 
+				password: "Def456$%^"
 			}) { 
 				token 
 				expiresAt 
@@ -361,8 +356,7 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			authenticateUser(input: { 
 				email: "patrick.mahomes@psi.com.br", 
-				password: "Ghi789&*(", 
-				ipAddress: "100.100.100.100" 
+				password: "Ghi789&*("
 			}) { 
 				token 
 				expiresAt 
@@ -436,8 +430,7 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			authenticateUser(input: { 
 				email: "aaron.rodgers@psi.com.br", 
-				password: "Jkl012)!@", 
-				ipAddress: "100.100.100.100" 
+				password: "Jkl012)!@"
 			}) { 
 				token 
 				expiresAt 

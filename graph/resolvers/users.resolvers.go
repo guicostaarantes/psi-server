@@ -85,9 +85,8 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input user
 
 func (r *queryResolver) AuthenticateUser(ctx context.Context, input users_models.AuthenticateUserInput) (*users_models.Authentication, error) {
 	return r.AuthenticateUserService().Execute(&users_models.AuthenticateUserInput{
-		Email:     input.Email,
-		Password:  input.Password,
-		IPAddress: input.IPAddress,
+		Email:    input.Email,
+		Password: input.Password,
 	})
 }
 

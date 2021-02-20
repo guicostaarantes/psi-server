@@ -23,10 +23,6 @@ type AuthenticateUserService struct {
 // Execute is the method that runs the business logic of the service
 func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput) (*models.Authentication, error) {
 
-	if authInput.IPAddress == "" {
-		return nil, errors.New("must notify IP")
-	}
-
 	user := models.User{}
 
 	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"email": authInput.Email}, &user)
@@ -53,7 +49,6 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 
 	auth := &models.Authentication{
 		UserID:    user.ID,
-		IPAddress: authInput.IPAddress,
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),
 		Token:     token,

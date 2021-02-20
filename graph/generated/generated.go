@@ -1593,7 +1593,6 @@ extend type Mutation {
 input AuthenticateUserInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.AuthenticateUserInput") {
     email: String!
     password: String!
-    ipAddress: String!
 }
 
 input CreateUserWithPasswordInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.CreateUserWithPasswordInput") {
@@ -8454,14 +8453,6 @@ func (ec *executionContext) unmarshalInputAuthenticateUserInput(ctx context.Cont
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "ipAddress":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ipAddress"))
-			it.IPAddress, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
