@@ -36,7 +36,7 @@ services:
       PSI_MONGO_PORT: 27017
       PSI_MONGO_USERNAME: root
       PSI_MONGO_PASSWORD: pass
-      PSI_SITE_URL: https://www.psi.com.br
+      PSI_SITE_URL: http://localhost:3000
       PSI_SMTP_HOST: mailhog
       PSI_SMTP_PORT: 1025
       PSI_SMTP_USERNAME:

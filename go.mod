@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/go-chi/cors v1.1.1
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/stretchr/testify v1.7.0
 	github.com/valyala/fastjson v1.6.3
