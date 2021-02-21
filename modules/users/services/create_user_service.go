@@ -2,7 +2,6 @@ package services
 
 import (
 	"bytes"
-	"errors"
 	"html/template"
 	"os"
 	"time"
@@ -42,8 +41,9 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		return findErr
 	}
 
+	// If user with same email exists, will not send email but will succeed in order not to inform hackers what emails are in the system
 	if userWithSameEmail.ID != "" {
-		return errors.New("user with same email already exists")
+		return nil
 	}
 
 	_, userID, userIDErr := s.IdentifierUtil.GenerateIdentifier()

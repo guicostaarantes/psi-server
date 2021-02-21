@@ -298,7 +298,7 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"user with same email already exists\",\"path\":[\"createPatientUser\"]}],\"data\":{\"createPatientUser\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 	})
 
 	t.Run("should create patient user", func(t *testing.T) {
