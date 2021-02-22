@@ -4,6 +4,8 @@ package models
 type Role string
 
 const (
+	// JobRunner is reserved for robot users that will run jobs in the server
+	JobRunner Role = "JOBRUNNER"
 	// Coordinator is responsible for creating and managing psychologists
 	Coordinator Role = "COORDINATOR"
 	// Psychologist is responsible for treating patients

@@ -126,6 +126,47 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should create jobrunner user only if coordinator", func(t *testing.T) {
+
+		query := `mutation {
+			createUserWithPassword(
+			  input: {
+				email: "jobrunner@psi.com.br"
+				password: "Xyz*()890"
+				role: JOBRUNNER
+			  }
+			)
+		  }`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createUserWithPassword\"]}],\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+
+		query = `{
+			authenticateUser(input: { 
+				email: "jobrunner@psi.com.br", 
+				password: "Xyz*()890"
+			}) { 
+				token 
+				expiresAt 
+			} 
+		}`
+
+		response = gql(router, query, "")
+
+		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		assert.NotEqual(t, "", token)
+
+		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
+		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+
+		storedVariables["jobrunner_token"] = token
+	})
+
 	t.Run("should create psychologist user only if coordinator", func(t *testing.T) {
 
 		query := `mutation {
@@ -151,7 +192,7 @@ func TestEnd2End(t *testing.T) {
 		assert.Equal(t, "{\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 	})
 
-	t.Run("should not create psychologist user with same email", func(t *testing.T) {
+	t.Run("should not create psychologist user with same email but should not warn hackers that this email is already registered", func(t *testing.T) {
 
 		query := `mutation {
 			createPsychologistUser(input: {
@@ -161,7 +202,9 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"user with same email already exists\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
+
+		// TODO: navigate GetMockedDatabases to check if there is only one tom.brady@psi.com.br
 	})
 
 	t.Run("should reset password with token sent via email", func(t *testing.T) {
@@ -170,7 +213,7 @@ func TestEnd2End(t *testing.T) {
 			processPendingMail
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
+		response := gql(router, query, storedVariables["jobrunner_token"])
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
@@ -237,7 +280,7 @@ func TestEnd2End(t *testing.T) {
 			processPendingMail
 		}`
 
-		response = gql(router, query, storedVariables["coordinator_token"])
+		response = gql(router, query, storedVariables["jobrunner_token"])
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
@@ -298,7 +341,7 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, "")
 
-		assert.Equal(t, "{\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"createPatientUser\":null}}", response.Body.String())
 	})
 
 	t.Run("should create patient user", func(t *testing.T) {
@@ -320,7 +363,7 @@ func TestEnd2End(t *testing.T) {
 			processPendingMail
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
+		response := gql(router, query, storedVariables["jobrunner_token"])
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
@@ -394,7 +437,7 @@ func TestEnd2End(t *testing.T) {
 			processPendingMail
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
+		response := gql(router, query, storedVariables["jobrunner_token"])
 
 		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 

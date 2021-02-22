@@ -43,3 +43,12 @@ services:
       PSI_SMTP_PASSWORD:
     depends_on:
       - mongo
+  jobs:
+    build: ./jobs
+    image: psi-jobs:0.1.0
+    environment:
+      PSI_BACKEND_URL: http://host.docker.internal:8080/gql
+      PSI_CONNECT_USER: jobrunner@psi.com.br
+      PSI_CONNECT_PASSWORD: Xyz*()890
+    depends_on:
+      - app

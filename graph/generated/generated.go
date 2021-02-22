@@ -1364,7 +1364,7 @@ extend type Mutation {
     setTopAffinitiesForOwnPatient: Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }`, BuiltIn: false},
 	{Name: "graph/schema/mail.graphqls", Input: `extend type Mutation {
-    processPendingMail: Boolean @hasRole(role: [COORDINATOR])
+    processPendingMail: Boolean @hasRole(role: [JOBRUNNER])
 }`, BuiltIn: false},
 	{Name: "graph/schema/profiles.graphqls", Input: `input CreateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
     fullName: String!
@@ -1585,6 +1585,7 @@ extend type Mutation {
     updateOwnTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
 	{Name: "graph/schema/users.graphqls", Input: `enum Role @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.Role") {
+    JOBRUNNER
     COORDINATOR
     PSYCHOLOGIST
     PATIENT
@@ -3328,7 +3329,7 @@ func (ec *executionContext) _Mutation_processPendingMail(ctx context.Context, fi
 			return ec.resolvers.Mutation().ProcessPendingMail(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"JOBRUNNER"})
 			if err != nil {
 				return nil, err
 			}
