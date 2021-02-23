@@ -231,6 +231,17 @@ func TestEnd2End(t *testing.T) {
 		regex := regexp.MustCompile("token=(?P<token>[^\"]+)")
 		match := regex.FindStringSubmatch(mailBody)
 
+		query = `mutation {
+			resetPassword(input: {
+				token: "randomtoken",
+				password: "Def456$$$"
+			})
+		}`
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"invalid token\",\"path\":[\"resetPassword\"]}],\"data\":{\"resetPassword\":null}}", response.Body.String())
+
 		query = fmt.Sprintf(`mutation {
 			resetPassword(input: {
 				token: %q,
@@ -241,6 +252,17 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"data\":{\"resetPassword\":null}}", response.Body.String())
+
+		query = fmt.Sprintf(`mutation {
+			resetPassword(input: {
+				token: %q,
+				password: "Def456$$*"
+			})
+		}`, match[1])
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"invalid token\",\"path\":[\"resetPassword\"]}],\"data\":{\"resetPassword\":null}}", response.Body.String())
 
 	})
 
