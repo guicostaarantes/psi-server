@@ -559,7 +559,10 @@ func TestEnd2End(t *testing.T) {
 				{
 					name: "black",
 					type: BOOLEAN,
-					possibleValues: []
+					possibleValues: [
+						"true", 
+						"false"
+					]
 				},
 				{
 					name: "gender",
@@ -600,7 +603,7 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
-	t.Run("should get all psychologist available characteristics only if user is coordinator or psychologist", func(t *testing.T) {
+	t.Run("should get all psychologist available characteristics only if logged in", func(t *testing.T) {
 
 		query := `{
 			getPsychologistCharacteristics {
@@ -612,7 +615,7 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"getPsychologistCharacteristics\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getPsychologistCharacteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"techniques\",\"type\":\"MULTIPLE\",\"possibleValues\":[\"technique-1\",\"technique-2\",\"technique-3\"]}]}}", response.Body.String())
 
 		response = gql(router, query, "")
 
@@ -620,11 +623,11 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getPsychologistCharacteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"possibleValues\":[\"\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"techniques\",\"type\":\"MULTIPLE\",\"possibleValues\":[\"technique-1\",\"technique-2\",\"technique-3\"]}]}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getPsychologistCharacteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"techniques\",\"type\":\"MULTIPLE\",\"possibleValues\":[\"technique-1\",\"technique-2\",\"technique-3\"]}]}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getPsychologistCharacteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"possibleValues\":[\"\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"techniques\",\"type\":\"MULTIPLE\",\"possibleValues\":[\"technique-1\",\"technique-2\",\"technique-3\"]}]}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getPsychologistCharacteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"techniques\",\"type\":\"MULTIPLE\",\"possibleValues\":[\"technique-1\",\"technique-2\",\"technique-3\"]}]}}", response.Body.String())
 
 	})
 
@@ -1520,15 +1523,15 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":811296000,\"city\":\"Kansas City - MS\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":811296000,\"city\":\"Kansas City - MS\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":1},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":1},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"non-binary\",\"weight\":4}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"getOwnPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":3},{\"characteristicName\":\"gender\",\"selectedValue\":\"non-binary\",\"weight\":4}]}}}", response.Body.String())
 
 	})
 
