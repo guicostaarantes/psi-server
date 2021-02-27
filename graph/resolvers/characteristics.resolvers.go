@@ -28,6 +28,14 @@ func (r *mutationResolver) SetTopAffinitiesForOwnPatient(ctx context.Context) (*
 	return nil, serviceErr
 }
 
+func (r *queryResolver) GetPatientCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
+	return r.GetCharacteristicsService().Execute(characteristics_models.PatientTarget)
+}
+
+func (r *queryResolver) GetPsychologistCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
+	return r.GetCharacteristicsService().Execute(characteristics_models.PsychologistTarget)
+}
+
 func (r *queryResolver) GetTopAffinitiesForOwnPatient(ctx context.Context) ([]*characteristics_models.Affinity, error) {
 	userID := ctx.Value("userID").(string)
 

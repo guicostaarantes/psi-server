@@ -46,6 +46,12 @@ type Preference @goModel(model: "github.com/guicostaarantes/psi-server/modules/c
 }
 
 extend type Query {
+    """The getPatientCharacteristics query allows a user to get all possible patient characteristics"""
+    getPatientCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The getPsychologistCharacteristics query allows a user to get all possible psychologist characteristics"""
+    getPsychologistCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
     """The getTopAffinitiesForOwnPatient query allows a user to get the last calculation of affinities for their patient profile."""
     getTopAffinitiesForOwnPatient: [Affinity!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
