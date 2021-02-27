@@ -87,7 +87,7 @@ extend type Query {
 extend type Mutation {
     createOwnPatientProfile(input: CreateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPatientCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    setOwnPatientCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     setOwnPatientPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     setOwnPsychologistCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setOwnPsychologistPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])

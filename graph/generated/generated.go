@@ -1461,7 +1461,7 @@ extend type Query {
 extend type Mutation {
     createOwnPatientProfile(input: CreateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPatientCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    setOwnPatientCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     setOwnPatientPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
     setOwnPsychologistCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
     setOwnPsychologistPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
@@ -3522,7 +3522,7 @@ func (ec *executionContext) _Mutation_setOwnPatientCharacteristicChoices(ctx con
 			return ec.resolvers.Mutation().SetOwnPatientCharacteristicChoices(rctx, args["input"].([]*models4.SetCharacteristicChoiceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
 			if err != nil {
 				return nil, err
 			}
