@@ -1188,7 +1188,7 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
-	t.Run("should choose own patient characteristic only if user is coordinator or patient", func(t *testing.T) {
+	t.Run("should choose own patient characteristic only if user is logged in", func(t *testing.T) {
 
 		query := `mutation {
 			setOwnPatientCharacteristicChoices(input: [
@@ -1215,7 +1215,7 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setOwnPatientCharacteristicChoices\"]}],\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"setOwnPatientCharacteristicChoices\":null}}", response.Body.String())
 
 		response = gql(router, query, "")
 
