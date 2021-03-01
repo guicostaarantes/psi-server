@@ -2,9 +2,11 @@ package services
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
@@ -16,9 +18,31 @@ type GetCharacteristicsByIDService struct {
 // Execute is the method that runs the business logic of the service
 func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.CharacteristicChoiceResponse, error) {
 
+	var target models.CharacteristicTarget
+
+	psy := profiles_models.Psychologist{}
+	pat := profiles_models.Patient{}
+	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"id": id}, &pat)
+	if findErr != nil {
+		return nil, findErr
+	}
+	if pat.ID != "" {
+		target = models.PatientTarget
+	} else {
+		findErr = s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
+		if findErr != nil {
+			return nil, findErr
+		}
+		if psy.ID != "" {
+			target = models.PsychologistTarget
+		} else {
+			return nil, errors.New("resource not found")
+		}
+	}
+
 	characteristics := []*models.CharacteristicChoiceResponse{}
 
-	charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristics", map[string]interface{}{})
+	charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
 	if findErr != nil {
 		return nil, findErr
 	}
