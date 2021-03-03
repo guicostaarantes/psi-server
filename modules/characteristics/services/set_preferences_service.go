@@ -65,7 +65,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 			if characteristic.Name == i.CharacteristicName {
 				possibleValues := strings.Split(characteristic.PossibleValues, ",")
 				for _, p := range possibleValues {
-					if i.SelectedValue == p && i.Weight != 0 {
+					if i.SelectedValue == p {
 						preferences = append(preferences, models.Preference{
 							ProfileID:          id,
 							Target:             profileType,
