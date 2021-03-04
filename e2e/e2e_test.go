@@ -2344,4 +2344,64 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should set and get translated messages", func(t *testing.T) {
+
+		query := `mutation {
+			setMessages(
+				lang: "pt-BR", 
+				input: [
+					{
+						key: "pref:gender:female",
+						value: "Quão confortável você se sentiria sendo atendido(a) por uma psicóloga mulher?"
+					},
+					{
+						key: "pref:gender:male",
+						value: "Quão confortável você se sentiria sendo atendido(a) por um psicólogo homem?"
+					}
+				]
+			)
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setMessages\"]}],\"data\":{\"setMessages\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setMessages\"]}],\"data\":{\"setMessages\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setMessages\"]}],\"data\":{\"setMessages\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"setMessages\":null}}", response.Body.String())
+
+		query = `{
+			getMessages(lang: "pt-BR", keys: ["pref:gender:female", "pref:gender:male"]) {
+				lang
+				key
+				value
+			}
+		}`
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"data\":{\"getMessages\":[{\"lang\":\"pt-BR\",\"key\":\"pref:gender:female\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por uma psicóloga mulher?\"},{\"lang\":\"pt-BR\",\"key\":\"pref:gender:male\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por um psicólogo homem?\"}]}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"getMessages\":[{\"lang\":\"pt-BR\",\"key\":\"pref:gender:female\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por uma psicóloga mulher?\"},{\"lang\":\"pt-BR\",\"key\":\"pref:gender:male\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por um psicólogo homem?\"}]}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"getMessages\":[{\"lang\":\"pt-BR\",\"key\":\"pref:gender:female\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por uma psicóloga mulher?\"},{\"lang\":\"pt-BR\",\"key\":\"pref:gender:male\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por um psicólogo homem?\"}]}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"getMessages\":[{\"lang\":\"pt-BR\",\"key\":\"pref:gender:female\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por uma psicóloga mulher?\"},{\"lang\":\"pt-BR\",\"key\":\"pref:gender:male\",\"value\":\"Quão confortável você se sentiria sendo atendido(a) por um psicólogo homem?\"}]}}", response.Body.String())
+
+	})
+
 }

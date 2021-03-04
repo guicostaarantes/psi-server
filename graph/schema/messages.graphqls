@@ -1,0 +1,20 @@
+input MessageInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/messages/models.MessageInput") {
+    key: String!
+    value: String!
+}
+
+type Message @goModel(model: "github.com/guicostaarantes/psi-server/modules/messages/models.Message") {
+    lang: String!
+    key: String!
+    value: String!
+}
+
+extend type Query {
+    """The getMessages query allows a user to get translated messages by language and keys."""
+    getMessages(lang: String!, keys: [String!]!): [Message!]!
+}
+
+extend type Mutation {
+    """The setMessages mutation allows a user to insert or update translated messages."""
+    setMessages(lang: String!, input: [MessageInput!]!): Boolean @hasRole(role: [COORDINATOR])
+}

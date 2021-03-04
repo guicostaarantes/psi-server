@@ -3,6 +3,7 @@ package resolvers
 import (
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
+	messages_services "github.com/guicostaarantes/psi-server/modules/messages/services"
 	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
 	schedule_services "github.com/guicostaarantes/psi-server/modules/schedule/services"
 	treatments_services "github.com/guicostaarantes/psi-server/modules/treatments/services"
@@ -54,6 +55,7 @@ type Resolver struct {
 	getAvailabilityService                  *schedule_services.GetAvailabilityService
 	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
 	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
+	getMessagesService                      *messages_services.GetMessagesService
 	getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
 	getPatientService                       *profiles_services.GetPatientService
 	getPatientTreatmentsService             *treatments_services.GetPatientTreatmentsService
@@ -72,6 +74,7 @@ type Resolver struct {
 	setAvailabilityService                  *schedule_services.SetAvailabilityService
 	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
 	setCharacteristicsService               *characteristics_services.SetCharacteristicsService
+	setMessagesService                      *messages_services.SetMessagesService
 	setPreferencesService                   *characteristics_services.SetPreferencesService
 	setTopAffinitiesForPatientService       *characteristics_services.SetTopAffinitiesForPatientService
 	updatePatientService                    *profiles_services.UpdatePatientService
@@ -290,6 +293,16 @@ func (r *Resolver) GetCharacteristicsService() *characteristics_services.GetChar
 	return r.getCharacteristicsService
 }
 
+// GetMessagesService gets or sets the service with same name
+func (r *Resolver) GetMessagesService() *messages_services.GetMessagesService {
+	if r.getMessagesService == nil {
+		r.getMessagesService = &messages_services.GetMessagesService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getMessagesService
+}
+
 // GetPatientByUserIDService gets or sets the service with same name
 func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUserIDService {
 	if r.getPatientByUserIDService == nil {
@@ -462,6 +475,16 @@ func (r *Resolver) SetCharacteristicsService() *characteristics_services.SetChar
 		}
 	}
 	return r.setCharacteristicsService
+}
+
+// SetMessagesService gets or sets the service with same name
+func (r *Resolver) SetMessagesService() *messages_services.SetMessagesService {
+	if r.setMessagesService == nil {
+		r.setMessagesService = &messages_services.SetMessagesService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.setMessagesService
 }
 
 // SetPreferencesService gets or sets the service with same name
