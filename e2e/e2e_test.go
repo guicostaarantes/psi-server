@@ -2347,64 +2347,116 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should set and get translated messages", func(t *testing.T) {
 
 		query := `mutation {
-			setMessages(
-				lang: "pt-BR"
-				input: [
-					{
-						key: "char:has-consulted-before"
-						value: "Você já se consultou com um psicólogo alguma vez?"
-					}
-					{ key: "char:has-consulted-before:true", value: "Sim" }
-					{ key: "char:has-consulted-before:false", value: "Não" }
-					{
-						key: "char:gender"
-						value: "Com qual desses gêneros você mais se identifica?"
-					}
-					{ key: "char:gender:male", value: "Masculino" }
-					{ key: "char:gender:female", value: "Feminino" }
-					{ key: "char:gender:non-binary", value: "Não binário" }
-					{
-						key: "char:disabilities"
-						value: "Você possui alguma dessas deficiências?"
-					}
-					{ key: "char:disabilities:vision", value: "Visual" }
-					{ key: "char:disabilities:hearing", value: "Auditiva" }
-					{ key: "char:disabilities:locomotion", value: "Locomotiva" }
-					{
-						key: "pref:black:true"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo negro?"
-					}
-					{
-						key: "pref:black:false"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo que não seja negro?"
-					}
-					{
-						key: "pref:gender:male"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?"
-					}
-					{
-						key: "pref:gender:female"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?"
-					}
-					{
-						key: "pref:gender:non-binary"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo de gênero não binário?"
-					}
-					{
-						key: "pref:disabilities:vision"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo com deficiência visual?"
-					}
-					{
-						key: "pref:disabilities:hearing"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo com deficiência auditiva?"
-					}
-					{
-						key: "pref:disabilities:locomotion"
-						value: "Quão confortável você se sente sendo atendido por um psicólogo com deficiência locomotiva?"
-					}
-				]
-			)
-		}`
+				setMessages(
+					lang: "pt-BR"
+					input: [
+						{
+							key: "pat-char:has-consulted-before"
+							value: "Você já se consultou com um psicólogo alguma vez?"
+						}
+						{ key: "pat-char:has-consulted-before:true", value: "Sim" }
+						{ key: "pat-char:has-consulted-before:false", value: "Não" }
+						{
+							key: "pat-char:gender"
+							value: "Com qual desses gêneros você mais se identifica?"
+						}
+						{ key: "pat-char:gender:male", value: "Masculino" }
+						{ key: "pat-char:gender:female", value: "Feminino" }
+						{ key: "pat-char:gender:non-binary", value: "Não binário" }
+						{
+							key: "pat-char:disabilities"
+							value: "Você possui alguma dessas deficiências?"
+						}
+						{ key: "pat-char:disabilities:vision", value: "Visual" }
+						{ key: "pat-char:disabilities:hearing", value: "Auditiva" }
+						{ key: "pat-char:disabilities:locomotion", value: "Locomotiva" }
+						{
+							key: "psy-pref:black:true"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo negro?"
+						}
+						{
+							key: "psy-pref:black:false"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo que não seja negro?"
+						}
+						{
+							key: "psy-pref:gender:male"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?"
+						}
+						{
+							key: "psy-pref:gender:female"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?"
+						}
+						{
+							key: "psy-pref:gender:non-binary"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo de gênero não binário?"
+						}
+						{
+							key: "psy-pref:disabilities:vision"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo com deficiência visual?"
+						}
+						{
+							key: "psy-pref:disabilities:hearing"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo com deficiência auditiva?"
+						}
+						{
+							key: "psy-pref:disabilities:locomotion"
+							value: "Quão confortável você se sente sendo atendido por um psicólogo com deficiência locomotiva?"
+						}
+						{
+							key: "psy-char:black"
+							value: "Você é negro(a)?"
+						}
+						{ key: "psy-char:black:true", value: "Sim" }
+						{ key: "psy-char:black:false", value: "Não" }
+						{
+							key: "psy-char:gender"
+							value: "Com qual desses gêneros você mais se identifica?"
+						}
+						{ key: "psy-char:gender:male", value: "Masculino" }
+						{ key: "psy-char:gender:female", value: "Feminino" }
+						{ key: "psy-char:gender:non-binary", value: "Não binário" }
+						{
+							key: "psy-char:disabilities"
+							value: "Você possui alguma dessas deficiências?"
+						}
+						{ key: "psy-char:disabilities:vision", value: "Visual" }
+						{ key: "psy-char:disabilities:hearing", value: "Auditiva" }
+						{ key: "psy-char:disabilities:locomotion", value: "Locomotiva" }
+						{
+							key: "pat-pref:has-consulted-before:true"
+							value: "Quão interessado você está em atender pacientes negros?"
+						}
+						{
+							key: "pat-pref:has-consulted-before:false"
+							value: "Quão interessado você está em atender pacientes que não sejam negros?"
+						}
+						{
+							key: "pat-pref:gender:male"
+							value: "Quão interessado você está em atender pacientes do gênero masculino?"
+						}
+						{
+							key: "pat-pref:gender:female"
+							value: "Quão interessado você está em atender pacientes do gênero feminino?"
+						}
+						{
+							key: "pat-pref:gender:non-binary"
+							value: "Quão interessado você está em atender pacientes de gênero não binário?"
+						}
+						{
+							key: "pat-pref:disabilities:vision"
+							value: "Quão interessado você está em atender pacientes com deficiência visual?"
+						}
+						{
+							key: "pat-pref:disabilities:hearing"
+							value: "Quão interessado você está em atender pacientes com deficiência auditiva?"
+						}
+						{
+							key: "pat-pref:disabilities:locomotion"
+							value: "Quão interessado você está em atender pacientes com deficiência locomotiva?"
+						}
+					]
+				)
+			}`
 
 		response := gql(router, query, "")
 
