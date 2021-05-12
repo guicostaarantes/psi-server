@@ -208,6 +208,7 @@ type ComplexityRoot struct {
 		GetTopAffinitiesForOwnPatient  func(childComplexity int) int
 		GetUser                        func(childComplexity int, id string) int
 		ListUsersByRole                func(childComplexity int, role models.Role) int
+		Time                           func(childComplexity int) int
 	}
 
 	Token struct {
@@ -292,6 +293,7 @@ type QueryResolver interface {
 	GetPsychologistProfile(ctx context.Context, id string) (*models1.Psychologist, error)
 	GetOwnAvailability(ctx context.Context) ([]*models3.AvailabilityResponse, error)
 	GetPsychologistAvailability(ctx context.Context, id string) ([]*models3.AvailabilityResponse, error)
+	Time(ctx context.Context) (int64, error)
 }
 
 type executableSchema struct {
@@ -1264,6 +1266,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ListUsersByRole(childComplexity, args["role"].(models.Role)), true
 
+	case "Query.time":
+		if e.complexity.Query.Time == nil {
+			break
+		}
+
+		return e.complexity.Query.Time(childComplexity), true
+
 	case "Token.expiresAt":
 		if e.complexity.Token.ExpiresAt == nil {
 			break
@@ -1605,6 +1614,9 @@ extend type Mutation {
 
     """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
     setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+}`, BuiltIn: false},
+	{Name: "graph/schema/time.graphqls", Input: `extend type Query {
+    time: Int!
 }`, BuiltIn: false},
 	{Name: "graph/schema/treatments.graphqls", Input: `enum TreatmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentStatus") {
     PENDING
@@ -7440,6 +7452,41 @@ func (ec *executionContext) _Query_getPsychologistAvailability(ctx context.Conte
 	return ec.marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_time(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Time(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -10406,6 +10453,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getPsychologistAvailability(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "time":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_time(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
