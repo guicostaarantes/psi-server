@@ -62,6 +62,10 @@ func TestEnd2End(t *testing.T) {
 		SecondsToExpireReset:       int64(86400),
 	}
 
+	// If you need to debug the contents of the database at a specific point, insert this code:
+	// db, _ := res.DatabaseUtil.GetMockedDatabases()
+	// ioutil.WriteFile("./db.json", db, 0644);
+
 	os.Setenv("PSI_BOOTSTRAP_USER", "coordinator@psi.com.br|Abc123!@#")
 
 	router := graph.CreateServer(res)
@@ -1813,6 +1817,14 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
 
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
+
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createOwnTreatment\":null}}", response.Body.String())
@@ -1845,6 +1857,10 @@ func TestEnd2End(t *testing.T) {
 		storedVariables["psychologist_treatment_id"] = treatmentID
 		treatmentID = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "treatments", "1", "id")
 		storedVariables["psychologist_treatment_2_id"] = treatmentID
+		treatmentID = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "treatments", "2", "id")
+		storedVariables["psychologist_treatment_3_id"] = treatmentID
+		treatmentID = fastjson.GetString(response.Body.Bytes(), "data", "getOwnPsychologistProfile", "treatments", "3", "id")
+		storedVariables["psychologist_treatment_4_id"] = treatmentID
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
@@ -1905,10 +1921,10 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"treatments\":[{\"duration\":2700,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
-
+		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"treatments\":[{\"duration\":2700,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())	
+		
 		response = gql(router, query, storedVariables["coordinator_token"])
-
+		
 		assert.Equal(t, "{\"data\":{\"getOwnPsychologistProfile\":{\"treatments\":[{\"duration\":3000,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
 
 	})
@@ -2299,6 +2315,176 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"appointments can only be canceled if their current status is CONFIRMED. current status is CANCELED_BY_PATIENT\",\"path\":[\"cancelAppointmentByPatient\"]}],\"data\":{\"cancelAppointmentByPatient\":null}}", response.Body.String())
 	})
+
+	t.Run("should cancel future appointments when patient interrupts treatment", func(t *testing.T) {
+
+		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
+
+		query := fmt.Sprintf(`mutation {
+			proposeAppointment(input: {
+				treatmentId: %q,
+				start: %d
+			})
+		}`, storedVariables["psychologist_treatment_2_id"], tomorrow+9*3600)
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"proposeAppointment\":null}}", response.Body.String())
+
+		query = `{
+			getOwnPatientProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "PROPOSED", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "3", "status"))
+
+		query = fmt.Sprintf(`mutation {
+			interruptTreatmentByPatient(id: %q, reason: "synergy with psychologist was not good")
+		}`, storedVariables["psychologist_treatment_2_id"])
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"interruptTreatmentByPatient\":null}}", response.Body.String())
+
+		query = `{
+			getOwnPatientProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "CANCELED_BY_PATIENT", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "3", "status"))
+
+	})
+
+	t.Run("should cancel future appointments when psychologist interrupts treatment", func(t *testing.T) {
+
+		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
+
+		query := fmt.Sprintf(`mutation {
+			assignTreatment(id: %q)
+		}`, storedVariables["psychologist_treatment_3_id"])
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"assignTreatment\":null}}", response.Body.String())
+
+		query = fmt.Sprintf(`mutation {
+			proposeAppointment(input: {
+				treatmentId: %q,
+				start: %d
+			})
+		}`, storedVariables["psychologist_treatment_3_id"], tomorrow+9*3600)
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"proposeAppointment\":null}}", response.Body.String())
+
+		query = `{
+			getOwnPatientProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "PROPOSED", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "4", "status"))
+
+		query = fmt.Sprintf(`mutation {
+			interruptTreatmentByPsychologist(id: %q, reason: "")
+		}`, storedVariables["psychologist_treatment_3_id"])
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"interruptTreatmentByPsychologist\":null}}", response.Body.String())
+
+		query = `{
+			getOwnPatientProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "CANCELED_BY_PSYCHOLOGIST", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "4", "status"))
+
+	})
+
+	t.Run("should cancel future appointments when psychologist finalizes treatment", func(t *testing.T) {
+
+		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
+
+		query := fmt.Sprintf(`mutation {
+			assignTreatment(id: %q)
+		}`, storedVariables["psychologist_treatment_4_id"])
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"assignTreatment\":null}}", response.Body.String())
+
+		query = fmt.Sprintf(`mutation {
+			proposeAppointment(input: {
+				treatmentId: %q,
+				start: %d
+			})
+		}`, storedVariables["psychologist_treatment_4_id"], tomorrow+9*3600)
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"proposeAppointment\":null}}", response.Body.String())
+
+		query = `{
+			getOwnPatientProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "PROPOSED", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "5", "status"))
+
+		query = fmt.Sprintf(`mutation {
+			finalizeOwnTreatment(id: %q)
+		}`, storedVariables["psychologist_treatment_4_id"])
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"finalizeOwnTreatment\":null}}", response.Body.String())
+
+		query = `{
+			getOwnPatientProfile {
+				appointments {
+					id
+					status
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "CANCELED_BY_PSYCHOLOGIST", fastjson.GetString(response.Body.Bytes(), "data", "getOwnPatientProfile", "appointments", "5", "status"))
+
+	})
+
 
 	t.Run("should set and check affinities", func(t *testing.T) {
 

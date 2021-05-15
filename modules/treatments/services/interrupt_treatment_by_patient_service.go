@@ -1,10 +1,12 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
 
+	schedule_models "github.com/guicostaarantes/psi-server/modules/schedule/models"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
@@ -30,6 +32,32 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 
 	if treatment.Status != models.Active {
 		return fmt.Errorf("treatments can only be interrupted if their current status is ACTIVE. current status is %s", string(treatment.Status))
+	}
+
+	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{"treatmentId": id})
+	if findErr != nil {
+		return findErr
+	}
+
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		appointment := schedule_models.Appointment{}
+
+		decodeErr := cursor.Decode(&appointment)
+		if decodeErr != nil {
+			return decodeErr
+		}
+
+		if appointment.Start > time.Now().Unix() && (appointment.Status == schedule_models.Proposed || appointment.Status == schedule_models.Confirmed) {
+			appointment.Status = schedule_models.CanceledByPatient
+			appointment.Reason = reason
+
+			writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": appointment.ID}, appointment)
+			if writeErr != nil {
+				return writeErr
+			}
+		}
 	}
 
 	treatment.EndDate = time.Now().Unix()
