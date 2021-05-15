@@ -6,6 +6,8 @@ package resolvers
 import (
 	"context"
 
+	"github.com/guicostaarantes/psi-server/graph/generated"
+	models1 "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
@@ -99,3 +101,24 @@ func (r *mutationResolver) UpdateOwnTreatment(ctx context.Context, id string, in
 
 	return nil, serviceErr
 }
+
+func (r *patientTreatmentResolver) Psychologist(ctx context.Context, obj *models.GetPatientTreatmentsResponse) (*models1.Psychologist, error) {
+	return r.GetPsychologistService().Execute(obj.PsychologistID)
+}
+
+func (r *psychologistTreatmentResolver) Patient(ctx context.Context, obj *models.GetPsychologistTreatmentsResponse) (*models1.Patient, error) {
+	return r.GetPatientService().Execute(obj.PatientID)
+}
+
+// PatientTreatment returns generated.PatientTreatmentResolver implementation.
+func (r *Resolver) PatientTreatment() generated.PatientTreatmentResolver {
+	return &patientTreatmentResolver{r}
+}
+
+// PsychologistTreatment returns generated.PsychologistTreatmentResolver implementation.
+func (r *Resolver) PsychologistTreatment() generated.PsychologistTreatmentResolver {
+	return &psychologistTreatmentResolver{r}
+}
+
+type patientTreatmentResolver struct{ *Resolver }
+type psychologistTreatmentResolver struct{ *Resolver }

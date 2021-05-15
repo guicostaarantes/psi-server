@@ -44,7 +44,9 @@ type ResolverRoot interface {
 	Affinity() AffinityResolver
 	Mutation() MutationResolver
 	PatientProfile() PatientProfileResolver
+	PatientTreatment() PatientTreatmentResolver
 	PsychologistProfile() PsychologistProfileResolver
+	PsychologistTreatment() PsychologistTreatmentResolver
 	PublicPatientProfile() PublicPatientProfileResolver
 	PublicPsychologistProfile() PublicPsychologistProfileResolver
 	Query() QueryResolver
@@ -142,11 +144,12 @@ type ComplexityRoot struct {
 	}
 
 	PatientTreatment struct {
-		Duration func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Interval func(childComplexity int) int
-		Price    func(childComplexity int) int
-		Status   func(childComplexity int) int
+		Duration     func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Interval     func(childComplexity int) int
+		Price        func(childComplexity int) int
+		Psychologist func(childComplexity int) int
+		Status       func(childComplexity int) int
 	}
 
 	Preference struct {
@@ -171,6 +174,7 @@ type ComplexityRoot struct {
 		Duration func(childComplexity int) int
 		ID       func(childComplexity int) int
 		Interval func(childComplexity int) int
+		Patient  func(childComplexity int) int
 		Price    func(childComplexity int) int
 		Status   func(childComplexity int) int
 	}
@@ -266,11 +270,17 @@ type PatientProfileResolver interface {
 	Treatments(ctx context.Context, obj *models1.Patient) ([]*models2.GetPatientTreatmentsResponse, error)
 	Appointments(ctx context.Context, obj *models1.Patient) ([]*models3.Appointment, error)
 }
+type PatientTreatmentResolver interface {
+	Psychologist(ctx context.Context, obj *models2.GetPatientTreatmentsResponse) (*models1.Psychologist, error)
+}
 type PsychologistProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models5.CharacteristicChoiceResponse, error)
 	Preferences(ctx context.Context, obj *models1.Psychologist) ([]*models5.PreferenceResponse, error)
 	Treatments(ctx context.Context, obj *models1.Psychologist) ([]*models2.GetPsychologistTreatmentsResponse, error)
 	Appointments(ctx context.Context, obj *models1.Psychologist) ([]*models3.Appointment, error)
+}
+type PsychologistTreatmentResolver interface {
+	Patient(ctx context.Context, obj *models2.GetPsychologistTreatmentsResponse) (*models1.Patient, error)
 }
 type PublicPatientProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models5.CharacteristicChoiceResponse, error)
@@ -923,6 +933,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PatientTreatment.Price(childComplexity), true
 
+	case "PatientTreatment.psychologist":
+		if e.complexity.PatientTreatment.Psychologist == nil {
+			break
+		}
+
+		return e.complexity.PatientTreatment.Psychologist(childComplexity), true
+
 	case "PatientTreatment.status":
 		if e.complexity.PatientTreatment.Status == nil {
 			break
@@ -1034,6 +1051,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PsychologistTreatment.Interval(childComplexity), true
+
+	case "PsychologistTreatment.patient":
+		if e.complexity.PsychologistTreatment.Patient == nil {
+			break
+		}
+
+		return e.complexity.PsychologistTreatment.Patient(childComplexity), true
 
 	case "PsychologistTreatment.price":
 		if e.complexity.PsychologistTreatment.Price == nil {
@@ -1644,6 +1668,7 @@ type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/mod
     price: Int!
     interval: Int!
     status: TreatmentStatus!
+    psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
 
 type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistTreatmentsResponse") {
@@ -1652,6 +1677,7 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
     price: Int!
     interval: Int!
     status: TreatmentStatus!
+    patient: PublicPatientProfile! @goField(forceResolver: true)
 }
 
 extend type Mutation {
@@ -5610,6 +5636,41 @@ func (ec *executionContext) _PatientTreatment_status(ctx context.Context, field 
 	return ec.marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PatientTreatment_psychologist(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientTreatment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.PatientTreatment().Psychologist(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models1.Psychologist)
+	fc.Result = res
+	return ec.marshalNPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Preference_characteristicName(ctx context.Context, field graphql.CollectedField, obj *models5.PreferenceResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6203,6 +6264,41 @@ func (ec *executionContext) _PsychologistTreatment_status(ctx context.Context, f
 	res := resTmp.(models2.TreatmentStatus)
 	fc.Result = res
 	return ec.marshalNTreatmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistTreatment_patient(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistTreatment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.PsychologistTreatment().Patient(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models1.Patient)
+	fc.Result = res
+	return ec.marshalNPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PublicPatientProfile_id(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) {
@@ -9905,28 +10001,42 @@ func (ec *executionContext) _PatientTreatment(ctx context.Context, sel ast.Selec
 		case "id":
 			out.Values[i] = ec._PatientTreatment_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "duration":
 			out.Values[i] = ec._PatientTreatment_duration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "price":
 			out.Values[i] = ec._PatientTreatment_price(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "interval":
 			out.Values[i] = ec._PatientTreatment_interval(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "status":
 			out.Values[i] = ec._PatientTreatment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
+		case "psychologist":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PatientTreatment_psychologist(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10092,28 +10202,42 @@ func (ec *executionContext) _PsychologistTreatment(ctx context.Context, sel ast.
 		case "id":
 			out.Values[i] = ec._PsychologistTreatment_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "duration":
 			out.Values[i] = ec._PsychologistTreatment_duration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "price":
 			out.Values[i] = ec._PsychologistTreatment_price(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "interval":
 			out.Values[i] = ec._PsychologistTreatment_interval(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "status":
 			out.Values[i] = ec._PsychologistTreatment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
+		case "patient":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PsychologistTreatment_patient(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

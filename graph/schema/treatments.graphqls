@@ -24,6 +24,7 @@ type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/mod
     price: Int!
     interval: Int!
     status: TreatmentStatus!
+    psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
 
 type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistTreatmentsResponse") {
@@ -32,6 +33,7 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
     price: Int!
     interval: Int!
     status: TreatmentStatus!
+    patient: PublicPatientProfile! @goField(forceResolver: true)
 }
 
 extend type Mutation {
