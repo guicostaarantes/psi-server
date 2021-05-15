@@ -1951,10 +1951,6 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"treatments can only be assigned if their current status is PENDING. current status is ACTIVE\",\"path\":[\"assignTreatment\"]}],\"data\":{\"assignTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["no_profile_user_token"])
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"assignTreatment\"]}],\"data\":{\"assignTreatment\":null}}", response.Body.String())
-
 	})
 
 	t.Run("should not assign a treatment to a patient profile if they already have an active treatment taken", func(t *testing.T) {

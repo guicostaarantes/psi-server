@@ -1,8 +1,6 @@
 package services
 
 import (
-	"errors"
-
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
@@ -23,9 +21,9 @@ func (s GetPsychologistByUserIDService) Execute(id string) (*models.Psychologist
 	}
 
 	if psy.ID == "" {
-		return nil, errors.New("resource not found")
+		return nil, nil
 	}
-
+	
 	return psy, nil
 
 }

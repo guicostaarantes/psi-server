@@ -1772,7 +1772,7 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
     price: Int!
     interval: Int!
     status: TreatmentStatus!
-    patient: PublicPatientProfile! @goField(forceResolver: true)
+    patient: PublicPatientProfile @goField(forceResolver: true)
 }
 
 extend type Mutation {
@@ -6701,14 +6701,11 @@ func (ec *executionContext) _PsychologistTreatment_patient(ctx context.Context, 
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*models1.Patient)
 	fc.Result = res
-	return ec.marshalNPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
+	return ec.marshalOPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PublicPatientProfile_id(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) {
@@ -10728,9 +10725,6 @@ func (ec *executionContext) _PsychologistTreatment(ctx context.Context, sel ast.
 					}
 				}()
 				res = ec._PsychologistTreatment_patient(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			})
 		default:
@@ -12664,6 +12658,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
+}
+
+func (ec *executionContext) marshalOPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v *models1.Patient) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PublicPatientProfile(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
