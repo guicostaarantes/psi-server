@@ -16,7 +16,7 @@ input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-serve
     end: Int!
 }
 
-type Appointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
     id: ID!
     start: Int!
     end: Int!
@@ -24,6 +24,18 @@ type Appointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/
     status: AppointmentStatus!
     reason: String!
     link: String!
+    psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
+}
+
+type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
+    patient: PublicPatientProfile! @goField(forceResolver: true)
 }
 
 type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {

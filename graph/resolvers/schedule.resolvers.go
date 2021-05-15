@@ -6,6 +6,8 @@ package resolvers
 import (
 	"context"
 
+	"github.com/guicostaarantes/psi-server/graph/generated"
+	models1 "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/modules/schedule/models"
 )
 
@@ -87,6 +89,14 @@ func (r *mutationResolver) SetOwnAvailability(ctx context.Context, input []*mode
 	return nil, serviceErr
 }
 
+func (r *patientAppointmentResolver) Psychologist(ctx context.Context, obj *models.Appointment) (*models1.Psychologist, error) {
+	return r.GetPsychologistService().Execute(obj.PsychologistID)
+}
+
+func (r *psychologistAppointmentResolver) Patient(ctx context.Context, obj *models.Appointment) (*models1.Patient, error) {
+	return r.GetPatientService().Execute(obj.PatientID)
+}
+
 func (r *queryResolver) GetOwnAvailability(ctx context.Context) ([]*models.AvailabilityResponse, error) {
 	userID := ctx.Value("userID").(string)
 
@@ -106,3 +116,16 @@ func (r *queryResolver) GetPsychologistAvailability(ctx context.Context, id stri
 
 	return r.GetAvailabilityService().Execute(servicePsy.ID)
 }
+
+// PatientAppointment returns generated.PatientAppointmentResolver implementation.
+func (r *Resolver) PatientAppointment() generated.PatientAppointmentResolver {
+	return &patientAppointmentResolver{r}
+}
+
+// PsychologistAppointment returns generated.PsychologistAppointmentResolver implementation.
+func (r *Resolver) PsychologistAppointment() generated.PsychologistAppointmentResolver {
+	return &psychologistAppointmentResolver{r}
+}
+
+type patientAppointmentResolver struct{ *Resolver }
+type psychologistAppointmentResolver struct{ *Resolver }

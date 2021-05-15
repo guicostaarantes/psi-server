@@ -43,8 +43,10 @@ type Config struct {
 type ResolverRoot interface {
 	Affinity() AffinityResolver
 	Mutation() MutationResolver
+	PatientAppointment() PatientAppointmentResolver
 	PatientProfile() PatientProfileResolver
 	PatientTreatment() PatientTreatmentResolver
+	PsychologistAppointment() PsychologistAppointmentResolver
 	PsychologistProfile() PsychologistProfileResolver
 	PsychologistTreatment() PsychologistTreatmentResolver
 	PublicPatientProfile() PublicPatientProfileResolver
@@ -60,16 +62,6 @@ type ComplexityRoot struct {
 	Affinity struct {
 		CreatedAt    func(childComplexity int) int
 		Psychologist func(childComplexity int) int
-	}
-
-	Appointment struct {
-		End    func(childComplexity int) int
-		ID     func(childComplexity int) int
-		Link   func(childComplexity int) int
-		Price  func(childComplexity int) int
-		Reason func(childComplexity int) int
-		Start  func(childComplexity int) int
-		Status func(childComplexity int) int
 	}
 
 	AvailabilityResponse struct {
@@ -131,6 +123,17 @@ type ComplexityRoot struct {
 		UpdateUser                              func(childComplexity int, id string, input models.UpdateUserInput) int
 	}
 
+	PatientAppointment struct {
+		End          func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Link         func(childComplexity int) int
+		Price        func(childComplexity int) int
+		Psychologist func(childComplexity int) int
+		Reason       func(childComplexity int) int
+		Start        func(childComplexity int) int
+		Status       func(childComplexity int) int
+	}
+
 	PatientProfile struct {
 		Appointments    func(childComplexity int) int
 		BirthDate       func(childComplexity int) int
@@ -156,6 +159,17 @@ type ComplexityRoot struct {
 		CharacteristicName func(childComplexity int) int
 		SelectedValue      func(childComplexity int) int
 		Weight             func(childComplexity int) int
+	}
+
+	PsychologistAppointment struct {
+		End     func(childComplexity int) int
+		ID      func(childComplexity int) int
+		Link    func(childComplexity int) int
+		Patient func(childComplexity int) int
+		Price   func(childComplexity int) int
+		Reason  func(childComplexity int) int
+		Start   func(childComplexity int) int
+		Status  func(childComplexity int) int
 	}
 
 	PsychologistProfile struct {
@@ -264,6 +278,9 @@ type MutationResolver interface {
 	FinalizeOwnTreatment(ctx context.Context, id string) (*bool, error)
 	UpdateOwnTreatment(ctx context.Context, id string, input models2.UpdateTreatmentInput) (*bool, error)
 }
+type PatientAppointmentResolver interface {
+	Psychologist(ctx context.Context, obj *models3.Appointment) (*models1.Psychologist, error)
+}
 type PatientProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models1.Patient) ([]*models5.CharacteristicChoiceResponse, error)
 	Preferences(ctx context.Context, obj *models1.Patient) ([]*models5.PreferenceResponse, error)
@@ -272,6 +289,9 @@ type PatientProfileResolver interface {
 }
 type PatientTreatmentResolver interface {
 	Psychologist(ctx context.Context, obj *models2.GetPatientTreatmentsResponse) (*models1.Psychologist, error)
+}
+type PsychologistAppointmentResolver interface {
+	Patient(ctx context.Context, obj *models3.Appointment) (*models1.Patient, error)
 }
 type PsychologistProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models1.Psychologist) ([]*models5.CharacteristicChoiceResponse, error)
@@ -334,55 +354,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Affinity.Psychologist(childComplexity), true
-
-	case "Appointment.end":
-		if e.complexity.Appointment.End == nil {
-			break
-		}
-
-		return e.complexity.Appointment.End(childComplexity), true
-
-	case "Appointment.id":
-		if e.complexity.Appointment.ID == nil {
-			break
-		}
-
-		return e.complexity.Appointment.ID(childComplexity), true
-
-	case "Appointment.link":
-		if e.complexity.Appointment.Link == nil {
-			break
-		}
-
-		return e.complexity.Appointment.Link(childComplexity), true
-
-	case "Appointment.price":
-		if e.complexity.Appointment.Price == nil {
-			break
-		}
-
-		return e.complexity.Appointment.Price(childComplexity), true
-
-	case "Appointment.reason":
-		if e.complexity.Appointment.Reason == nil {
-			break
-		}
-
-		return e.complexity.Appointment.Reason(childComplexity), true
-
-	case "Appointment.start":
-		if e.complexity.Appointment.Start == nil {
-			break
-		}
-
-		return e.complexity.Appointment.Start(childComplexity), true
-
-	case "Appointment.status":
-		if e.complexity.Appointment.Status == nil {
-			break
-		}
-
-		return e.complexity.Appointment.Status(childComplexity), true
 
 	case "AvailabilityResponse.end":
 		if e.complexity.AvailabilityResponse.End == nil {
@@ -842,6 +813,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(string), args["input"].(models.UpdateUserInput)), true
 
+	case "PatientAppointment.end":
+		if e.complexity.PatientAppointment.End == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.End(childComplexity), true
+
+	case "PatientAppointment.id":
+		if e.complexity.PatientAppointment.ID == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.ID(childComplexity), true
+
+	case "PatientAppointment.link":
+		if e.complexity.PatientAppointment.Link == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.Link(childComplexity), true
+
+	case "PatientAppointment.price":
+		if e.complexity.PatientAppointment.Price == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.Price(childComplexity), true
+
+	case "PatientAppointment.psychologist":
+		if e.complexity.PatientAppointment.Psychologist == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.Psychologist(childComplexity), true
+
+	case "PatientAppointment.reason":
+		if e.complexity.PatientAppointment.Reason == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.Reason(childComplexity), true
+
+	case "PatientAppointment.start":
+		if e.complexity.PatientAppointment.Start == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.Start(childComplexity), true
+
+	case "PatientAppointment.status":
+		if e.complexity.PatientAppointment.Status == nil {
+			break
+		}
+
+		return e.complexity.PatientAppointment.Status(childComplexity), true
+
 	case "PatientProfile.appointments":
 		if e.complexity.PatientProfile.Appointments == nil {
 			break
@@ -967,6 +994,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Preference.Weight(childComplexity), true
+
+	case "PsychologistAppointment.end":
+		if e.complexity.PsychologistAppointment.End == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.End(childComplexity), true
+
+	case "PsychologistAppointment.id":
+		if e.complexity.PsychologistAppointment.ID == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.ID(childComplexity), true
+
+	case "PsychologistAppointment.link":
+		if e.complexity.PsychologistAppointment.Link == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.Link(childComplexity), true
+
+	case "PsychologistAppointment.patient":
+		if e.complexity.PsychologistAppointment.Patient == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.Patient(childComplexity), true
+
+	case "PsychologistAppointment.price":
+		if e.complexity.PsychologistAppointment.Price == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.Price(childComplexity), true
+
+	case "PsychologistAppointment.reason":
+		if e.complexity.PsychologistAppointment.Reason == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.Reason(childComplexity), true
+
+	case "PsychologistAppointment.start":
+		if e.complexity.PsychologistAppointment.Start == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.Start(childComplexity), true
+
+	case "PsychologistAppointment.status":
+		if e.complexity.PsychologistAppointment.Status == nil {
+			break
+		}
+
+		return e.complexity.PsychologistAppointment.Status(childComplexity), true
 
 	case "PsychologistProfile.appointments":
 		if e.complexity.PsychologistProfile.Appointments == nil {
@@ -1526,7 +1609,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PatientTreatment!]! @goField(forceResolver: true)
-    appointments: [Appointment!]! @goField(forceResolver: true)
+    appointments: [PatientAppointment!]! @goField(forceResolver: true)
 }
 
 type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
@@ -1538,7 +1621,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
-    appointments: [Appointment!]! @goField(forceResolver: true)
+    appointments: [PsychologistAppointment!]! @goField(forceResolver: true)
 }
 
 type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
@@ -1597,7 +1680,7 @@ input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-serve
     end: Int!
 }
 
-type Appointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
     id: ID!
     start: Int!
     end: Int!
@@ -1605,6 +1688,18 @@ type Appointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/
     status: AppointmentStatus!
     reason: String!
     link: String!
+    psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
+}
+
+type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
+    patient: PublicPatientProfile! @goField(forceResolver: true)
 }
 
 type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {
@@ -2549,251 +2644,6 @@ func (ec *executionContext) _Affinity_psychologist(ctx context.Context, field gr
 	res := resTmp.(*models1.Psychologist)
 	fc.Result = res
 	return ec.marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Appointment_id(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Appointment",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Appointment_start(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Appointment",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Start, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int64)
-	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Appointment_end(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Appointment",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.End, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int64)
-	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Appointment_price(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Appointment",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Price, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int64)
-	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Appointment_status(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Appointment",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Status, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(models3.AppointmentStatus)
-	fc.Result = res
-	return ec.marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Appointment_reason(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Appointment",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Reason, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Appointment_link(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Appointment",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Link, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _AvailabilityResponse_start(ctx context.Context, field graphql.CollectedField, obj *models3.AvailabilityResponse) (ret graphql.Marshaler) {
@@ -5146,6 +4996,286 @@ func (ec *executionContext) _Mutation_updateOwnTreatment(ctx context.Context, fi
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PatientAppointment_id(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientAppointment_start(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Start, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientAppointment_end(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.End, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientAppointment_price(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Price, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientAppointment_status(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models3.AppointmentStatus)
+	fc.Result = res
+	return ec.marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientAppointment_reason(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reason, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientAppointment_link(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Link, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientAppointment_psychologist(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.PatientAppointment().Psychologist(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models1.Psychologist)
+	fc.Result = res
+	return ec.marshalNPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PatientProfile_id(ctx context.Context, field graphql.CollectedField, obj *models1.Patient) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5458,7 +5588,7 @@ func (ec *executionContext) _PatientProfile_appointments(ctx context.Context, fi
 	}
 	res := resTmp.([]*models3.Appointment)
 	fc.Result = res
-	return ec.marshalNAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
+	return ec.marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
@@ -5776,6 +5906,286 @@ func (ec *executionContext) _Preference_weight(ctx context.Context, field graphq
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PsychologistAppointment_id(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistAppointment_start(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Start, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistAppointment_end(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.End, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistAppointment_price(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Price, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistAppointment_status(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models3.AppointmentStatus)
+	fc.Result = res
+	return ec.marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistAppointment_reason(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reason, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistAppointment_link(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Link, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistAppointment_patient(ctx context.Context, field graphql.CollectedField, obj *models3.Appointment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistAppointment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.PsychologistAppointment().Patient(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models1.Patient)
+	fc.Result = res
+	return ec.marshalNPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PsychologistProfile_id(ctx context.Context, field graphql.CollectedField, obj *models1.Psychologist) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6088,7 +6498,7 @@ func (ec *executionContext) _PsychologistProfile_appointments(ctx context.Contex
 	}
 	res := resTmp.([]*models3.Appointment)
 	fc.Result = res
-	return ec.marshalNAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
+	return ec.marshalNPsychologistAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models2.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
@@ -9589,63 +9999,6 @@ func (ec *executionContext) _Affinity(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
-var appointmentImplementors = []string{"Appointment"}
-
-func (ec *executionContext) _Appointment(ctx context.Context, sel ast.SelectionSet, obj *models3.Appointment) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, appointmentImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Appointment")
-		case "id":
-			out.Values[i] = ec._Appointment_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "start":
-			out.Values[i] = ec._Appointment_start(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "end":
-			out.Values[i] = ec._Appointment_end(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "price":
-			out.Values[i] = ec._Appointment_price(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "status":
-			out.Values[i] = ec._Appointment_status(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "reason":
-			out.Values[i] = ec._Appointment_reason(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "link":
-			out.Values[i] = ec._Appointment_link(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var availabilityResponseImplementors = []string{"AvailabilityResponse"}
 
 func (ec *executionContext) _AvailabilityResponse(ctx context.Context, sel ast.SelectionSet, obj *models3.AvailabilityResponse) graphql.Marshaler {
@@ -9884,6 +10237,77 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var patientAppointmentImplementors = []string{"PatientAppointment"}
+
+func (ec *executionContext) _PatientAppointment(ctx context.Context, sel ast.SelectionSet, obj *models3.Appointment) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, patientAppointmentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PatientAppointment")
+		case "id":
+			out.Values[i] = ec._PatientAppointment_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "start":
+			out.Values[i] = ec._PatientAppointment_start(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "end":
+			out.Values[i] = ec._PatientAppointment_end(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "price":
+			out.Values[i] = ec._PatientAppointment_price(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "status":
+			out.Values[i] = ec._PatientAppointment_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "reason":
+			out.Values[i] = ec._PatientAppointment_reason(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "link":
+			out.Values[i] = ec._PatientAppointment_link(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "psychologist":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PatientAppointment_psychologist(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var patientProfileImplementors = []string{"PatientProfile"}
 
 func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.SelectionSet, obj *models1.Patient) graphql.Marshaler {
@@ -10074,6 +10498,77 @@ func (ec *executionContext) _Preference(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var psychologistAppointmentImplementors = []string{"PsychologistAppointment"}
+
+func (ec *executionContext) _PsychologistAppointment(ctx context.Context, sel ast.SelectionSet, obj *models3.Appointment) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, psychologistAppointmentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PsychologistAppointment")
+		case "id":
+			out.Values[i] = ec._PsychologistAppointment_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "start":
+			out.Values[i] = ec._PsychologistAppointment_start(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "end":
+			out.Values[i] = ec._PsychologistAppointment_end(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "price":
+			out.Values[i] = ec._PsychologistAppointment_price(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "status":
+			out.Values[i] = ec._PsychologistAppointment_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "reason":
+			out.Values[i] = ec._PsychologistAppointment_reason(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "link":
+			out.Values[i] = ec._PsychologistAppointment_link(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "patient":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PsychologistAppointment_patient(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10972,53 +11467,6 @@ func (ec *executionContext) marshalNAffinity2ᚖgithubᚗcomᚋguicostaarantes�
 	return ec._Affinity(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models3.Appointment) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx context.Context, sel ast.SelectionSet, v *models3.Appointment) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Appointment(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx context.Context, v interface{}) (models3.AppointmentStatus, error) {
 	tmp, err := graphql.UnmarshalString(v)
 	res := models3.AppointmentStatus(tmp)
@@ -11340,6 +11788,53 @@ func (ec *executionContext) unmarshalNMessageInput2ᚖgithubᚗcomᚋguicostaara
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models3.Appointment) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPatientAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNPatientAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx context.Context, sel ast.SelectionSet, v *models3.Appointment) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PatientAppointment(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNPatientProfile2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v models1.Patient) graphql.Marshaler {
 	return ec._PatientProfile(ctx, sel, &v)
 }
@@ -11451,6 +11946,53 @@ func (ec *executionContext) marshalNPreference2ᚖgithubᚗcomᚋguicostaarantes
 func (ec *executionContext) unmarshalNProposeAppointmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐProposeAppointmentInput(ctx context.Context, v interface{}) (models3.ProposeAppointmentInput, error) {
 	res, err := ec.unmarshalInputProposeAppointmentInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPsychologistAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models3.Appointment) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPsychologistAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNPsychologistAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx context.Context, sel ast.SelectionSet, v *models3.Appointment) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PsychologistAppointment(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPsychologistProfile2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx context.Context, sel ast.SelectionSet, v models1.Psychologist) graphql.Marshaler {

@@ -43,7 +43,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PatientTreatment!]! @goField(forceResolver: true)
-    appointments: [Appointment!]! @goField(forceResolver: true)
+    appointments: [PatientAppointment!]! @goField(forceResolver: true)
 }
 
 type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Psychologist") {
@@ -55,7 +55,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
-    appointments: [Appointment!]! @goField(forceResolver: true)
+    appointments: [PsychologistAppointment!]! @goField(forceResolver: true)
 }
 
 type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
