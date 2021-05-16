@@ -1632,16 +1632,16 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
 
 extend type Query {
     """The myPatientProfile query allows a user to get their own patient profile."""
-    myPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    myPatientProfile: PatientProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
     """The myPsychologistProfile query allows a user to get their own patient profile."""
-    myPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    myPsychologistProfile: PsychologistProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 
     """The patientProfile query allows a user to get a patient profile from other user."""
-    patientProfile(id: ID!): PublicPatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    patientProfile(id: ID!): PublicPatientProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 
     """The psychologistProfile query allows a user to get a psychologist profile from other user."""
-    psychologistProfile(id: ID!): PublicPsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    psychologistProfile(id: ID!): PublicPsychologistProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
@@ -7528,14 +7528,11 @@ func (ec *executionContext) _Query_myPatientProfile(ctx context.Context, field g
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*models1.Patient)
 	fc.Result = res
-	return ec.marshalNPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
+	return ec.marshalOPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_myPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7587,14 +7584,11 @@ func (ec *executionContext) _Query_myPsychologistProfile(ctx context.Context, fi
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*models1.Psychologist)
 	fc.Result = res
-	return ec.marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
+	return ec.marshalOPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_patientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7653,14 +7647,11 @@ func (ec *executionContext) _Query_patientProfile(ctx context.Context, field gra
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*models1.Patient)
 	fc.Result = res
-	return ec.marshalNPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
+	return ec.marshalOPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_psychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7719,14 +7710,11 @@ func (ec *executionContext) _Query_psychologistProfile(ctx context.Context, fiel
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*models1.Psychologist)
 	fc.Result = res
-	return ec.marshalNPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
+	return ec.marshalOPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_myAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -10991,9 +10979,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_myPatientProfile(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			})
 		case "myPsychologistProfile":
@@ -11005,9 +10990,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_myPsychologistProfile(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			})
 		case "patientProfile":
@@ -11019,9 +11001,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_patientProfile(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			})
 		case "psychologistProfile":
@@ -11033,9 +11012,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_psychologistProfile(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			})
 		case "myAvailability":
@@ -11800,20 +11776,6 @@ func (ec *executionContext) marshalNPatientAppointment2ᚖgithubᚗcomᚋguicost
 		return graphql.Null
 	}
 	return ec._PatientAppointment(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNPatientProfile2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v models1.Patient) graphql.Marshaler {
-	return ec._PatientProfile(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v *models1.Patient) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._PatientProfile(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPatientTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPatientTreatmentsResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.GetPatientTreatmentsResponse) graphql.Marshaler {
@@ -12706,11 +12668,32 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
+func (ec *executionContext) marshalOPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v *models1.Patient) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PatientProfile(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx context.Context, sel ast.SelectionSet, v *models1.Psychologist) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PsychologistProfile(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx context.Context, sel ast.SelectionSet, v *models1.Patient) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._PublicPatientProfile(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx context.Context, sel ast.SelectionSet, v *models1.Psychologist) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PublicPsychologistProfile(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

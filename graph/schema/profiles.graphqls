@@ -79,16 +79,16 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
 
 extend type Query {
     """The myPatientProfile query allows a user to get their own patient profile."""
-    myPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    myPatientProfile: PatientProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
     """The myPsychologistProfile query allows a user to get their own patient profile."""
-    myPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    myPsychologistProfile: PsychologistProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 
     """The patientProfile query allows a user to get a patient profile from other user."""
-    patientProfile(id: ID!): PublicPatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    patientProfile(id: ID!): PublicPatientProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 
     """The psychologistProfile query allows a user to get a psychologist profile from other user."""
-    psychologistProfile(id: ID!): PublicPsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    psychologistProfile(id: ID!): PublicPsychologistProfile @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
