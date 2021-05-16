@@ -1,0 +1,20 @@
+input TranslationInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/translations/models.TranslationInput") {
+    key: String!
+    value: String!
+}
+
+type Translation @goModel(model: "github.com/guicostaarantes/psi-server/modules/translations/models.Translation") {
+    lang: String!
+    key: String!
+    value: String!
+}
+
+extend type Query {
+    """The translations query allows a user to get translated translations by language and keys."""
+    translations(lang: String!, keys: [String!]!): [Translation!]!
+}
+
+extend type Mutation {
+    """The setTranslations mutation allows a user to insert or update translated translations."""
+    setTranslations(lang: String!, input: [TranslationInput!]!): Boolean @hasRole(role: [COORDINATOR])
+}

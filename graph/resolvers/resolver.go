@@ -3,9 +3,9 @@ package resolvers
 import (
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
-	messages_services "github.com/guicostaarantes/psi-server/modules/messages/services"
 	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
 	schedule_services "github.com/guicostaarantes/psi-server/modules/schedule/services"
+	translations_services "github.com/guicostaarantes/psi-server/modules/translations/services"
 	treatments_services "github.com/guicostaarantes/psi-server/modules/treatments/services"
 	users_services "github.com/guicostaarantes/psi-server/modules/users/services"
 	"github.com/guicostaarantes/psi-server/utils/database"
@@ -55,7 +55,6 @@ type Resolver struct {
 	getAvailabilityService                  *schedule_services.GetAvailabilityService
 	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
 	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
-	getMessagesService                      *messages_services.GetMessagesService
 	getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
 	getPatientService                       *profiles_services.GetPatientService
 	getPatientTreatmentsService             *treatments_services.GetPatientTreatmentsService
@@ -64,6 +63,7 @@ type Resolver struct {
 	getPsychologistService                  *profiles_services.GetPsychologistService
 	getPsychologistTreatmentsService        *treatments_services.GetPsychologistTreatmentsService
 	getTopAffinitiesForPatientService       *characteristics_services.GetTopAffinitiesForPatientService
+	getTranslationsService                  *translations_services.GetTranslationsService
 	getUserByIDService                      *users_services.GetUserByIDService
 	getUsersByRoleService                   *users_services.GetUsersByRoleService
 	interruptTreatmentByPatientService      *treatments_services.InterruptTreatmentByPatientService
@@ -74,9 +74,9 @@ type Resolver struct {
 	setAvailabilityService                  *schedule_services.SetAvailabilityService
 	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
 	setCharacteristicsService               *characteristics_services.SetCharacteristicsService
-	setMessagesService                      *messages_services.SetMessagesService
 	setPreferencesService                   *characteristics_services.SetPreferencesService
 	setTopAffinitiesForPatientService       *characteristics_services.SetTopAffinitiesForPatientService
+	setTranslationsService                  *translations_services.SetTranslationsService
 	updatePatientService                    *profiles_services.UpdatePatientService
 	updatePsychologistService               *profiles_services.UpdatePsychologistService
 	updateTreatmentService                  *treatments_services.UpdateTreatmentService
@@ -293,14 +293,14 @@ func (r *Resolver) GetCharacteristicsService() *characteristics_services.GetChar
 	return r.getCharacteristicsService
 }
 
-// GetMessagesService gets or sets the service with same name
-func (r *Resolver) GetMessagesService() *messages_services.GetMessagesService {
-	if r.getMessagesService == nil {
-		r.getMessagesService = &messages_services.GetMessagesService{
+// GetTranslationsService gets or sets the service with same name
+func (r *Resolver) GetTranslationsService() *translations_services.GetTranslationsService {
+	if r.getTranslationsService == nil {
+		r.getTranslationsService = &translations_services.GetTranslationsService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
-	return r.getMessagesService
+	return r.getTranslationsService
 }
 
 // GetPatientByUserIDService gets or sets the service with same name
@@ -477,14 +477,14 @@ func (r *Resolver) SetCharacteristicsService() *characteristics_services.SetChar
 	return r.setCharacteristicsService
 }
 
-// SetMessagesService gets or sets the service with same name
-func (r *Resolver) SetMessagesService() *messages_services.SetMessagesService {
-	if r.setMessagesService == nil {
-		r.setMessagesService = &messages_services.SetMessagesService{
+// SetTranslationsService gets or sets the service with same name
+func (r *Resolver) SetTranslationsService() *translations_services.SetTranslationsService {
+	if r.setTranslationsService == nil {
+		r.setTranslationsService = &translations_services.SetTranslationsService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
-	return r.setMessagesService
+	return r.setTranslationsService
 }
 
 // SetPreferencesService gets or sets the service with same name
