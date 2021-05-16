@@ -42,18 +42,36 @@ type Token @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/
 }
 
 type Query {
+    """The authenticateUser query allows a user to exchange their email and password for an authentication token."""
     authenticateUser(input: AuthenticateUserInput!): Token!
-    getOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    getUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    listUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The myUser query allows a user to get information about their own user."""
+    myUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The user query allows a user to get information about another user."""
+    user(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The usersByRole query allows a user to get users that have a specified role in the application."""
+    usersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 type Mutation {
+    """The askResetPassword mutation allows a user to start a reset password procedure."""
     askResetPassword(email: String!): Boolean
+
+    """The createPatientUser mutation allows a non-user to create a user with the PATIENT role."""
     createPatientUser(input: CreateUserInput!): Boolean
+
+    """The createPatientUser mutation allows a user to create a user with the PSYCHOLOGIST role."""
     createPsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+
+    """The createUserWithPassword mutation allows a user to create a user and set their password manually instead of sending an invitation email."""
     createUserWithPassword(input: CreateUserWithPasswordInput!): Boolean @hasRole(role: [COORDINATOR])
+
+    """The resetPassword mutation allows a user to reset their password using a token sent to their email."""
     resetPassword(input: ResetPasswordInput!): Boolean
+
+    """The updateUser mutation allows a user to update specific information about another user."""
     updateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 

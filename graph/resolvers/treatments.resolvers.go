@@ -24,7 +24,7 @@ func (r *mutationResolver) AssignTreatment(ctx context.Context, id string) (*boo
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) CreateOwnTreatment(ctx context.Context, input models.CreateTreatmentInput) (*bool, error) {
+func (r *mutationResolver) CreateTreatment(ctx context.Context, input models.CreateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -37,7 +37,7 @@ func (r *mutationResolver) CreateOwnTreatment(ctx context.Context, input models.
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) DeleteOwnTreatment(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) DeleteTreatment(ctx context.Context, id string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -76,7 +76,7 @@ func (r *mutationResolver) InterruptTreatmentByPsychologist(ctx context.Context,
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) FinalizeOwnTreatment(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) FinalizeTreatment(ctx context.Context, id string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -89,7 +89,7 @@ func (r *mutationResolver) FinalizeOwnTreatment(ctx context.Context, id string) 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) UpdateOwnTreatment(ctx context.Context, id string, input models.UpdateTreatmentInput) (*bool, error) {
+func (r *mutationResolver) UpdateTreatment(ctx context.Context, id string, input models.UpdateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)

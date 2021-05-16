@@ -10,8 +10,8 @@ type Message @goModel(model: "github.com/guicostaarantes/psi-server/modules/mess
 }
 
 extend type Query {
-    """The getMessages query allows a user to get translated messages by language and keys."""
-    getMessages(lang: String!, keys: [String!]!): [Message!]!
+    """The messages query allows a user to get translated messages by language and keys."""
+    messages(lang: String!, keys: [String!]!): [Message!]!
 }
 
 extend type Mutation {

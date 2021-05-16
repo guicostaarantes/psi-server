@@ -15,7 +15,25 @@ func (r *affinityResolver) Psychologist(ctx context.Context, obj *characteristic
 	return r.GetPsychologistService().Execute(obj.PsychologistID)
 }
 
-func (r *mutationResolver) SetTopAffinitiesForOwnPatient(ctx context.Context) (*bool, error) {
+func (r *mutationResolver) SetPatientCharacteristics(ctx context.Context, input []*characteristics_models.SetCharacteristicInput) (*bool, error) {
+	serviceErr := r.SetCharacteristicsService().Execute(characteristics_models.PatientTarget, input)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
+func (r *mutationResolver) SetPsychologistCharacteristics(ctx context.Context, input []*characteristics_models.SetCharacteristicInput) (*bool, error) {
+	serviceErr := r.SetCharacteristicsService().Execute(characteristics_models.PsychologistTarget, input)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+
+	return nil, nil
+}
+
+func (r *mutationResolver) SetMyPatientTopAffinities(ctx context.Context) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -28,15 +46,15 @@ func (r *mutationResolver) SetTopAffinitiesForOwnPatient(ctx context.Context) (*
 	return nil, serviceErr
 }
 
-func (r *queryResolver) GetPatientCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
+func (r *queryResolver) PatientCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
 	return r.GetCharacteristicsService().Execute(characteristics_models.PatientTarget)
 }
 
-func (r *queryResolver) GetPsychologistCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
+func (r *queryResolver) PsychologistCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
 	return r.GetCharacteristicsService().Execute(characteristics_models.PsychologistTarget)
 }
 
-func (r *queryResolver) GetTopAffinitiesForOwnPatient(ctx context.Context) ([]*characteristics_models.Affinity, error) {
+func (r *queryResolver) MyPatientTopAffinities(ctx context.Context) ([]*characteristics_models.Affinity, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)

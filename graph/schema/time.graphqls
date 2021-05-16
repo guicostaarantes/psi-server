@@ -1,3 +1,4 @@
 extend type Query {
+    """The time query allows the user to know the timestamp of the server."""
     time: Int!
 }

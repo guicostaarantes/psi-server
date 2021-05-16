@@ -1,11 +1,11 @@
-input CreateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
+input CreateMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
     city: String!
 }
 
-input CreateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
+input CreateMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
@@ -20,14 +20,14 @@ input CreatePsychologistInput @goModel(model: "github.com/guicostaarantes/psi-se
     city: String!
 }
 
-input UpdateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
+input UpdateMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
     city: String!
 }
 
-input UpdateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
+input UpdateMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
@@ -78,21 +78,41 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
 }
 
 extend type Query {
-    getOwnPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    getPatientProfile(id: ID!): PublicPatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    getPsychologistProfile(id: ID!): PublicPsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The myPatientProfile query allows a user to get their own patient profile."""
+    myPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The myPsychologistProfile query allows a user to get their own patient profile."""
+    myPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The patientProfile query allows a user to get a patient profile from other user."""
+    patientProfile(id: ID!): PublicPatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The psychologistProfile query allows a user to get a psychologist profile from other user."""
+    psychologistProfile(id: ID!): PublicPsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
-    createOwnPatientProfile(input: CreateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPatientCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    setOwnPatientPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    setOwnPsychologistCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPsychologistPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setPatientCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
-    setPsychologistCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
-    updateOwnPatientProfile(input: UpdateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    """The createMyPatientProfile mutation allows a user to create a patient profile."""
+    createMyPatientProfile(input: CreateMyPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The createMyPsychologistProfile mutation allows a user to create a psychologist profile."""
+    createMyPsychologistProfile(input: CreateMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The setMyPatientCharacteristicChoices mutation allows a user to set characteristics for their patient profile."""
+    setMyPatientCharacteristicChoices(input: [SetMyProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The setMyPatientPreferences mutation allows a user to set preferences for their patient profile."""
+    setMyPatientPreferences(input: [SetMyProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The setMyPsychologistCharacteristicChoices mutation allows a user to set characteristics for their psychologist profile."""
+    setMyPsychologistCharacteristicChoices(input: [SetMyProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The setMyPsychologistPreferences mutation allows a user to set preferences for their psychologist profile."""
+    setMyPsychologistPreferences(input: [SetMyProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The updateMyPatientProfile mutation allows a user to make changes to their patient profile."""
+    updateMyPatientProfile(input: UpdateMyPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The updateMyPsychologistProfile mutation allows a user to make changes to their psychologist profile."""
+    updateMyPsychologistProfile(input: UpdateMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }

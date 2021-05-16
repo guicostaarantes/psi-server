@@ -44,11 +44,11 @@ type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server
 }
 
 extend type Query {
-    """The getOwnAvailability query allows a user to get the availability of their own psychologist profile."""
-    getOwnAvailability: [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The myAvailability query allows a user to get the availability of their own psychologist profile."""
+    myAvailability: [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The getPsychologistAvailability query allows a user to get the availability of a psychologist profile."""
-    getPsychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The psychologistAvailability query allows a user to get the availability of a psychologist profile."""
+    psychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
@@ -67,6 +67,6 @@ extend type Mutation {
     """The proposeAppointment mutation allows a user with a patient profile in treatment to propose a time for a next meeting."""
     proposeAppointment(input: ProposeAppointmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
-    setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The setMyAvailability mutation allows a user to set their availability to receive appointments."""
+    setMyAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }

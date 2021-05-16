@@ -89,38 +89,38 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AskResetPassword                        func(childComplexity int, email string) int
-		AssignTreatment                         func(childComplexity int, id string) int
-		CancelAppointmentByPatient              func(childComplexity int, id string, reason string) int
-		CancelAppointmentByPsychologist         func(childComplexity int, id string, reason string) int
-		ConfirmAppointment                      func(childComplexity int, id string) int
-		CreateOwnPatientProfile                 func(childComplexity int, input models1.CreatePatientInput) int
-		CreateOwnPsychologistProfile            func(childComplexity int, input models1.CreatePsychologistInput) int
-		CreateOwnTreatment                      func(childComplexity int, input models2.CreateTreatmentInput) int
-		CreatePatientUser                       func(childComplexity int, input models.CreateUserInput) int
-		CreatePsychologistUser                  func(childComplexity int, input models.CreateUserInput) int
-		CreateUserWithPassword                  func(childComplexity int, input models.CreateUserWithPasswordInput) int
-		DeleteOwnTreatment                      func(childComplexity int, id string) int
-		DenyAppointment                         func(childComplexity int, id string, reason string) int
-		FinalizeOwnTreatment                    func(childComplexity int, id string) int
-		InterruptTreatmentByPatient             func(childComplexity int, id string, reason string) int
-		InterruptTreatmentByPsychologist        func(childComplexity int, id string, reason string) int
-		ProcessPendingMail                      func(childComplexity int) int
-		ProposeAppointment                      func(childComplexity int, input models3.ProposeAppointmentInput) int
-		ResetPassword                           func(childComplexity int, input models.ResetPasswordInput) int
-		SetMessages                             func(childComplexity int, lang string, input []*models4.MessageInput) int
-		SetOwnAvailability                      func(childComplexity int, input []*models3.SetAvailabilityInput) int
-		SetOwnPatientCharacteristicChoices      func(childComplexity int, input []*models5.SetCharacteristicChoiceInput) int
-		SetOwnPatientPreferences                func(childComplexity int, input []*models5.SetPreferenceInput) int
-		SetOwnPsychologistCharacteristicChoices func(childComplexity int, input []*models5.SetCharacteristicChoiceInput) int
-		SetOwnPsychologistPreferences           func(childComplexity int, input []*models5.SetPreferenceInput) int
-		SetPatientCharacteristics               func(childComplexity int, input []*models5.SetCharacteristicInput) int
-		SetPsychologistCharacteristics          func(childComplexity int, input []*models5.SetCharacteristicInput) int
-		SetTopAffinitiesForOwnPatient           func(childComplexity int) int
-		UpdateOwnPatientProfile                 func(childComplexity int, input models1.UpdatePatientInput) int
-		UpdateOwnPsychologistProfile            func(childComplexity int, input models1.UpdatePsychologistInput) int
-		UpdateOwnTreatment                      func(childComplexity int, id string, input models2.UpdateTreatmentInput) int
-		UpdateUser                              func(childComplexity int, id string, input models.UpdateUserInput) int
+		AskResetPassword                       func(childComplexity int, email string) int
+		AssignTreatment                        func(childComplexity int, id string) int
+		CancelAppointmentByPatient             func(childComplexity int, id string, reason string) int
+		CancelAppointmentByPsychologist        func(childComplexity int, id string, reason string) int
+		ConfirmAppointment                     func(childComplexity int, id string) int
+		CreateMyPatientProfile                 func(childComplexity int, input models1.CreatePatientInput) int
+		CreateMyPsychologistProfile            func(childComplexity int, input models1.CreatePsychologistInput) int
+		CreatePatientUser                      func(childComplexity int, input models.CreateUserInput) int
+		CreatePsychologistUser                 func(childComplexity int, input models.CreateUserInput) int
+		CreateTreatment                        func(childComplexity int, input models2.CreateTreatmentInput) int
+		CreateUserWithPassword                 func(childComplexity int, input models.CreateUserWithPasswordInput) int
+		DeleteTreatment                        func(childComplexity int, id string) int
+		DenyAppointment                        func(childComplexity int, id string, reason string) int
+		FinalizeTreatment                      func(childComplexity int, id string) int
+		InterruptTreatmentByPatient            func(childComplexity int, id string, reason string) int
+		InterruptTreatmentByPsychologist       func(childComplexity int, id string, reason string) int
+		ProcessPendingMail                     func(childComplexity int) int
+		ProposeAppointment                     func(childComplexity int, input models3.ProposeAppointmentInput) int
+		ResetPassword                          func(childComplexity int, input models.ResetPasswordInput) int
+		SetMessages                            func(childComplexity int, lang string, input []*models4.MessageInput) int
+		SetMyAvailability                      func(childComplexity int, input []*models3.SetAvailabilityInput) int
+		SetMyPatientCharacteristicChoices      func(childComplexity int, input []*models5.SetCharacteristicChoiceInput) int
+		SetMyPatientPreferences                func(childComplexity int, input []*models5.SetPreferenceInput) int
+		SetMyPatientTopAffinities              func(childComplexity int) int
+		SetMyPsychologistCharacteristicChoices func(childComplexity int, input []*models5.SetCharacteristicChoiceInput) int
+		SetMyPsychologistPreferences           func(childComplexity int, input []*models5.SetPreferenceInput) int
+		SetPatientCharacteristics              func(childComplexity int, input []*models5.SetCharacteristicInput) int
+		SetPsychologistCharacteristics         func(childComplexity int, input []*models5.SetCharacteristicInput) int
+		UpdateMyPatientProfile                 func(childComplexity int, input models1.UpdatePatientInput) int
+		UpdateMyPsychologistProfile            func(childComplexity int, input models1.UpdatePsychologistInput) int
+		UpdateTreatment                        func(childComplexity int, id string, input models2.UpdateTreatmentInput) int
+		UpdateUser                             func(childComplexity int, id string, input models.UpdateUserInput) int
 	}
 
 	PatientAppointment struct {
@@ -212,21 +212,21 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AuthenticateUser               func(childComplexity int, input models.AuthenticateUserInput) int
-		GetMessages                    func(childComplexity int, lang string, keys []string) int
-		GetOwnAvailability             func(childComplexity int) int
-		GetOwnPatientProfile           func(childComplexity int) int
-		GetOwnPsychologistProfile      func(childComplexity int) int
-		GetOwnUser                     func(childComplexity int) int
-		GetPatientCharacteristics      func(childComplexity int) int
-		GetPatientProfile              func(childComplexity int, id string) int
-		GetPsychologistAvailability    func(childComplexity int, id string) int
-		GetPsychologistCharacteristics func(childComplexity int) int
-		GetPsychologistProfile         func(childComplexity int, id string) int
-		GetTopAffinitiesForOwnPatient  func(childComplexity int) int
-		GetUser                        func(childComplexity int, id string) int
-		ListUsersByRole                func(childComplexity int, role models.Role) int
-		Time                           func(childComplexity int) int
+		AuthenticateUser            func(childComplexity int, input models.AuthenticateUserInput) int
+		Messages                    func(childComplexity int, lang string, keys []string) int
+		MyAvailability              func(childComplexity int) int
+		MyPatientProfile            func(childComplexity int) int
+		MyPatientTopAffinities      func(childComplexity int) int
+		MyPsychologistProfile       func(childComplexity int) int
+		MyUser                      func(childComplexity int) int
+		PatientCharacteristics      func(childComplexity int) int
+		PatientProfile              func(childComplexity int, id string) int
+		PsychologistAvailability    func(childComplexity int, id string) int
+		PsychologistCharacteristics func(childComplexity int) int
+		PsychologistProfile         func(childComplexity int, id string) int
+		Time                        func(childComplexity int) int
+		User                        func(childComplexity int, id string) int
+		UsersByRole                 func(childComplexity int, role models.Role) int
 	}
 
 	Token struct {
@@ -251,32 +251,32 @@ type MutationResolver interface {
 	CreateUserWithPassword(ctx context.Context, input models.CreateUserWithPasswordInput) (*bool, error)
 	ResetPassword(ctx context.Context, input models.ResetPasswordInput) (*bool, error)
 	UpdateUser(ctx context.Context, id string, input models.UpdateUserInput) (*bool, error)
-	SetTopAffinitiesForOwnPatient(ctx context.Context) (*bool, error)
-	ProcessPendingMail(ctx context.Context) (*bool, error)
-	SetMessages(ctx context.Context, lang string, input []*models4.MessageInput) (*bool, error)
-	CreateOwnPatientProfile(ctx context.Context, input models1.CreatePatientInput) (*bool, error)
-	CreateOwnPsychologistProfile(ctx context.Context, input models1.CreatePsychologistInput) (*bool, error)
-	SetOwnPatientCharacteristicChoices(ctx context.Context, input []*models5.SetCharacteristicChoiceInput) (*bool, error)
-	SetOwnPatientPreferences(ctx context.Context, input []*models5.SetPreferenceInput) (*bool, error)
-	SetOwnPsychologistCharacteristicChoices(ctx context.Context, input []*models5.SetCharacteristicChoiceInput) (*bool, error)
-	SetOwnPsychologistPreferences(ctx context.Context, input []*models5.SetPreferenceInput) (*bool, error)
 	SetPatientCharacteristics(ctx context.Context, input []*models5.SetCharacteristicInput) (*bool, error)
 	SetPsychologistCharacteristics(ctx context.Context, input []*models5.SetCharacteristicInput) (*bool, error)
-	UpdateOwnPatientProfile(ctx context.Context, input models1.UpdatePatientInput) (*bool, error)
-	UpdateOwnPsychologistProfile(ctx context.Context, input models1.UpdatePsychologistInput) (*bool, error)
+	SetMyPatientTopAffinities(ctx context.Context) (*bool, error)
+	ProcessPendingMail(ctx context.Context) (*bool, error)
+	SetMessages(ctx context.Context, lang string, input []*models4.MessageInput) (*bool, error)
+	CreateMyPatientProfile(ctx context.Context, input models1.CreatePatientInput) (*bool, error)
+	CreateMyPsychologistProfile(ctx context.Context, input models1.CreatePsychologistInput) (*bool, error)
+	SetMyPatientCharacteristicChoices(ctx context.Context, input []*models5.SetCharacteristicChoiceInput) (*bool, error)
+	SetMyPatientPreferences(ctx context.Context, input []*models5.SetPreferenceInput) (*bool, error)
+	SetMyPsychologistCharacteristicChoices(ctx context.Context, input []*models5.SetCharacteristicChoiceInput) (*bool, error)
+	SetMyPsychologistPreferences(ctx context.Context, input []*models5.SetPreferenceInput) (*bool, error)
+	UpdateMyPatientProfile(ctx context.Context, input models1.UpdatePatientInput) (*bool, error)
+	UpdateMyPsychologistProfile(ctx context.Context, input models1.UpdatePsychologistInput) (*bool, error)
 	CancelAppointmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
 	CancelAppointmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
 	ConfirmAppointment(ctx context.Context, id string) (*bool, error)
 	DenyAppointment(ctx context.Context, id string, reason string) (*bool, error)
 	ProposeAppointment(ctx context.Context, input models3.ProposeAppointmentInput) (*bool, error)
-	SetOwnAvailability(ctx context.Context, input []*models3.SetAvailabilityInput) (*bool, error)
+	SetMyAvailability(ctx context.Context, input []*models3.SetAvailabilityInput) (*bool, error)
 	AssignTreatment(ctx context.Context, id string) (*bool, error)
-	CreateOwnTreatment(ctx context.Context, input models2.CreateTreatmentInput) (*bool, error)
-	DeleteOwnTreatment(ctx context.Context, id string) (*bool, error)
+	CreateTreatment(ctx context.Context, input models2.CreateTreatmentInput) (*bool, error)
+	DeleteTreatment(ctx context.Context, id string) (*bool, error)
 	InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
 	InterruptTreatmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
-	FinalizeOwnTreatment(ctx context.Context, id string) (*bool, error)
-	UpdateOwnTreatment(ctx context.Context, id string, input models2.UpdateTreatmentInput) (*bool, error)
+	FinalizeTreatment(ctx context.Context, id string) (*bool, error)
+	UpdateTreatment(ctx context.Context, id string, input models2.UpdateTreatmentInput) (*bool, error)
 }
 type PatientAppointmentResolver interface {
 	Psychologist(ctx context.Context, obj *models3.Appointment) (*models1.Psychologist, error)
@@ -310,19 +310,19 @@ type PublicPsychologistProfileResolver interface {
 }
 type QueryResolver interface {
 	AuthenticateUser(ctx context.Context, input models.AuthenticateUserInput) (*models.Authentication, error)
-	GetOwnUser(ctx context.Context) (*models.User, error)
-	GetUser(ctx context.Context, id string) (*models.User, error)
-	ListUsersByRole(ctx context.Context, role models.Role) ([]*models.User, error)
-	GetPatientCharacteristics(ctx context.Context) ([]*models5.CharacteristicResponse, error)
-	GetPsychologistCharacteristics(ctx context.Context) ([]*models5.CharacteristicResponse, error)
-	GetTopAffinitiesForOwnPatient(ctx context.Context) ([]*models5.Affinity, error)
-	GetMessages(ctx context.Context, lang string, keys []string) ([]*models4.Message, error)
-	GetOwnPatientProfile(ctx context.Context) (*models1.Patient, error)
-	GetOwnPsychologistProfile(ctx context.Context) (*models1.Psychologist, error)
-	GetPatientProfile(ctx context.Context, id string) (*models1.Patient, error)
-	GetPsychologistProfile(ctx context.Context, id string) (*models1.Psychologist, error)
-	GetOwnAvailability(ctx context.Context) ([]*models3.AvailabilityResponse, error)
-	GetPsychologistAvailability(ctx context.Context, id string) ([]*models3.AvailabilityResponse, error)
+	MyUser(ctx context.Context) (*models.User, error)
+	User(ctx context.Context, id string) (*models.User, error)
+	UsersByRole(ctx context.Context, role models.Role) ([]*models.User, error)
+	PatientCharacteristics(ctx context.Context) ([]*models5.CharacteristicResponse, error)
+	PsychologistCharacteristics(ctx context.Context) ([]*models5.CharacteristicResponse, error)
+	MyPatientTopAffinities(ctx context.Context) ([]*models5.Affinity, error)
+	Messages(ctx context.Context, lang string, keys []string) ([]*models4.Message, error)
+	MyPatientProfile(ctx context.Context) (*models1.Patient, error)
+	MyPsychologistProfile(ctx context.Context) (*models1.Psychologist, error)
+	PatientProfile(ctx context.Context, id string) (*models1.Patient, error)
+	PsychologistProfile(ctx context.Context, id string) (*models1.Psychologist, error)
+	MyAvailability(ctx context.Context) ([]*models3.AvailabilityResponse, error)
+	PsychologistAvailability(ctx context.Context, id string) ([]*models3.AvailabilityResponse, error)
 	Time(ctx context.Context) (int64, error)
 }
 
@@ -499,41 +499,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ConfirmAppointment(childComplexity, args["id"].(string)), true
 
-	case "Mutation.createOwnPatientProfile":
-		if e.complexity.Mutation.CreateOwnPatientProfile == nil {
+	case "Mutation.createMyPatientProfile":
+		if e.complexity.Mutation.CreateMyPatientProfile == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createOwnPatientProfile_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createMyPatientProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateOwnPatientProfile(childComplexity, args["input"].(models1.CreatePatientInput)), true
+		return e.complexity.Mutation.CreateMyPatientProfile(childComplexity, args["input"].(models1.CreatePatientInput)), true
 
-	case "Mutation.createOwnPsychologistProfile":
-		if e.complexity.Mutation.CreateOwnPsychologistProfile == nil {
+	case "Mutation.createMyPsychologistProfile":
+		if e.complexity.Mutation.CreateMyPsychologistProfile == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createOwnPsychologistProfile_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createMyPsychologistProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateOwnPsychologistProfile(childComplexity, args["input"].(models1.CreatePsychologistInput)), true
-
-	case "Mutation.createOwnTreatment":
-		if e.complexity.Mutation.CreateOwnTreatment == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_createOwnTreatment_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateOwnTreatment(childComplexity, args["input"].(models2.CreateTreatmentInput)), true
+		return e.complexity.Mutation.CreateMyPsychologistProfile(childComplexity, args["input"].(models1.CreatePsychologistInput)), true
 
 	case "Mutation.createPatientUser":
 		if e.complexity.Mutation.CreatePatientUser == nil {
@@ -559,6 +547,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreatePsychologistUser(childComplexity, args["input"].(models.CreateUserInput)), true
 
+	case "Mutation.createTreatment":
+		if e.complexity.Mutation.CreateTreatment == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTreatment_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTreatment(childComplexity, args["input"].(models2.CreateTreatmentInput)), true
+
 	case "Mutation.createUserWithPassword":
 		if e.complexity.Mutation.CreateUserWithPassword == nil {
 			break
@@ -571,17 +571,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateUserWithPassword(childComplexity, args["input"].(models.CreateUserWithPasswordInput)), true
 
-	case "Mutation.deleteOwnTreatment":
-		if e.complexity.Mutation.DeleteOwnTreatment == nil {
+	case "Mutation.deleteTreatment":
+		if e.complexity.Mutation.DeleteTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_deleteOwnTreatment_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_deleteTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteOwnTreatment(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.DeleteTreatment(childComplexity, args["id"].(string)), true
 
 	case "Mutation.denyAppointment":
 		if e.complexity.Mutation.DenyAppointment == nil {
@@ -595,17 +595,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DenyAppointment(childComplexity, args["id"].(string), args["reason"].(string)), true
 
-	case "Mutation.finalizeOwnTreatment":
-		if e.complexity.Mutation.FinalizeOwnTreatment == nil {
+	case "Mutation.finalizeTreatment":
+		if e.complexity.Mutation.FinalizeTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_finalizeOwnTreatment_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_finalizeTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.FinalizeOwnTreatment(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.FinalizeTreatment(childComplexity, args["id"].(string)), true
 
 	case "Mutation.interruptTreatmentByPatient":
 		if e.complexity.Mutation.InterruptTreatmentByPatient == nil {
@@ -674,65 +674,72 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.SetMessages(childComplexity, args["lang"].(string), args["input"].([]*models4.MessageInput)), true
 
-	case "Mutation.setOwnAvailability":
-		if e.complexity.Mutation.SetOwnAvailability == nil {
+	case "Mutation.setMyAvailability":
+		if e.complexity.Mutation.SetMyAvailability == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_setOwnAvailability_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_setMyAvailability_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnAvailability(childComplexity, args["input"].([]*models3.SetAvailabilityInput)), true
+		return e.complexity.Mutation.SetMyAvailability(childComplexity, args["input"].([]*models3.SetAvailabilityInput)), true
 
-	case "Mutation.setOwnPatientCharacteristicChoices":
-		if e.complexity.Mutation.SetOwnPatientCharacteristicChoices == nil {
+	case "Mutation.setMyPatientCharacteristicChoices":
+		if e.complexity.Mutation.SetMyPatientCharacteristicChoices == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_setOwnPatientCharacteristicChoices_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_setMyPatientCharacteristicChoices_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPatientCharacteristicChoices(childComplexity, args["input"].([]*models5.SetCharacteristicChoiceInput)), true
+		return e.complexity.Mutation.SetMyPatientCharacteristicChoices(childComplexity, args["input"].([]*models5.SetCharacteristicChoiceInput)), true
 
-	case "Mutation.setOwnPatientPreferences":
-		if e.complexity.Mutation.SetOwnPatientPreferences == nil {
+	case "Mutation.setMyPatientPreferences":
+		if e.complexity.Mutation.SetMyPatientPreferences == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_setOwnPatientPreferences_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_setMyPatientPreferences_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPatientPreferences(childComplexity, args["input"].([]*models5.SetPreferenceInput)), true
+		return e.complexity.Mutation.SetMyPatientPreferences(childComplexity, args["input"].([]*models5.SetPreferenceInput)), true
 
-	case "Mutation.setOwnPsychologistCharacteristicChoices":
-		if e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices == nil {
+	case "Mutation.setMyPatientTopAffinities":
+		if e.complexity.Mutation.SetMyPatientTopAffinities == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_setOwnPsychologistCharacteristicChoices_args(context.TODO(), rawArgs)
+		return e.complexity.Mutation.SetMyPatientTopAffinities(childComplexity), true
+
+	case "Mutation.setMyPsychologistCharacteristicChoices":
+		if e.complexity.Mutation.SetMyPsychologistCharacteristicChoices == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setMyPsychologistCharacteristicChoices_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPsychologistCharacteristicChoices(childComplexity, args["input"].([]*models5.SetCharacteristicChoiceInput)), true
+		return e.complexity.Mutation.SetMyPsychologistCharacteristicChoices(childComplexity, args["input"].([]*models5.SetCharacteristicChoiceInput)), true
 
-	case "Mutation.setOwnPsychologistPreferences":
-		if e.complexity.Mutation.SetOwnPsychologistPreferences == nil {
+	case "Mutation.setMyPsychologistPreferences":
+		if e.complexity.Mutation.SetMyPsychologistPreferences == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_setOwnPsychologistPreferences_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_setMyPsychologistPreferences_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetOwnPsychologistPreferences(childComplexity, args["input"].([]*models5.SetPreferenceInput)), true
+		return e.complexity.Mutation.SetMyPsychologistPreferences(childComplexity, args["input"].([]*models5.SetPreferenceInput)), true
 
 	case "Mutation.setPatientCharacteristics":
 		if e.complexity.Mutation.SetPatientCharacteristics == nil {
@@ -758,48 +765,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.SetPsychologistCharacteristics(childComplexity, args["input"].([]*models5.SetCharacteristicInput)), true
 
-	case "Mutation.setTopAffinitiesForOwnPatient":
-		if e.complexity.Mutation.SetTopAffinitiesForOwnPatient == nil {
+	case "Mutation.updateMyPatientProfile":
+		if e.complexity.Mutation.UpdateMyPatientProfile == nil {
 			break
 		}
 
-		return e.complexity.Mutation.SetTopAffinitiesForOwnPatient(childComplexity), true
-
-	case "Mutation.updateOwnPatientProfile":
-		if e.complexity.Mutation.UpdateOwnPatientProfile == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_updateOwnPatientProfile_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateMyPatientProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateOwnPatientProfile(childComplexity, args["input"].(models1.UpdatePatientInput)), true
+		return e.complexity.Mutation.UpdateMyPatientProfile(childComplexity, args["input"].(models1.UpdatePatientInput)), true
 
-	case "Mutation.updateOwnPsychologistProfile":
-		if e.complexity.Mutation.UpdateOwnPsychologistProfile == nil {
+	case "Mutation.updateMyPsychologistProfile":
+		if e.complexity.Mutation.UpdateMyPsychologistProfile == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_updateOwnPsychologistProfile_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateMyPsychologistProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateOwnPsychologistProfile(childComplexity, args["input"].(models1.UpdatePsychologistInput)), true
+		return e.complexity.Mutation.UpdateMyPsychologistProfile(childComplexity, args["input"].(models1.UpdatePsychologistInput)), true
 
-	case "Mutation.updateOwnTreatment":
-		if e.complexity.Mutation.UpdateOwnTreatment == nil {
+	case "Mutation.updateTreatment":
+		if e.complexity.Mutation.UpdateTreatment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_updateOwnTreatment_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateTreatment_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateOwnTreatment(childComplexity, args["id"].(string), args["input"].(models2.UpdateTreatmentInput)), true
+		return e.complexity.Mutation.UpdateTreatment(childComplexity, args["id"].(string), args["input"].(models2.UpdateTreatmentInput)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -1252,126 +1252,102 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.AuthenticateUser(childComplexity, args["input"].(models.AuthenticateUserInput)), true
 
-	case "Query.getMessages":
-		if e.complexity.Query.GetMessages == nil {
+	case "Query.messages":
+		if e.complexity.Query.Messages == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getMessages_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_messages_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetMessages(childComplexity, args["lang"].(string), args["keys"].([]string)), true
+		return e.complexity.Query.Messages(childComplexity, args["lang"].(string), args["keys"].([]string)), true
 
-	case "Query.getOwnAvailability":
-		if e.complexity.Query.GetOwnAvailability == nil {
+	case "Query.myAvailability":
+		if e.complexity.Query.MyAvailability == nil {
 			break
 		}
 
-		return e.complexity.Query.GetOwnAvailability(childComplexity), true
+		return e.complexity.Query.MyAvailability(childComplexity), true
 
-	case "Query.getOwnPatientProfile":
-		if e.complexity.Query.GetOwnPatientProfile == nil {
+	case "Query.myPatientProfile":
+		if e.complexity.Query.MyPatientProfile == nil {
 			break
 		}
 
-		return e.complexity.Query.GetOwnPatientProfile(childComplexity), true
+		return e.complexity.Query.MyPatientProfile(childComplexity), true
 
-	case "Query.getOwnPsychologistProfile":
-		if e.complexity.Query.GetOwnPsychologistProfile == nil {
+	case "Query.myPatientTopAffinities":
+		if e.complexity.Query.MyPatientTopAffinities == nil {
 			break
 		}
 
-		return e.complexity.Query.GetOwnPsychologistProfile(childComplexity), true
+		return e.complexity.Query.MyPatientTopAffinities(childComplexity), true
 
-	case "Query.getOwnUser":
-		if e.complexity.Query.GetOwnUser == nil {
+	case "Query.myPsychologistProfile":
+		if e.complexity.Query.MyPsychologistProfile == nil {
 			break
 		}
 
-		return e.complexity.Query.GetOwnUser(childComplexity), true
+		return e.complexity.Query.MyPsychologistProfile(childComplexity), true
 
-	case "Query.getPatientCharacteristics":
-		if e.complexity.Query.GetPatientCharacteristics == nil {
+	case "Query.myUser":
+		if e.complexity.Query.MyUser == nil {
 			break
 		}
 
-		return e.complexity.Query.GetPatientCharacteristics(childComplexity), true
+		return e.complexity.Query.MyUser(childComplexity), true
 
-	case "Query.getPatientProfile":
-		if e.complexity.Query.GetPatientProfile == nil {
+	case "Query.patientCharacteristics":
+		if e.complexity.Query.PatientCharacteristics == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getPatientProfile_args(context.TODO(), rawArgs)
+		return e.complexity.Query.PatientCharacteristics(childComplexity), true
+
+	case "Query.patientProfile":
+		if e.complexity.Query.PatientProfile == nil {
+			break
+		}
+
+		args, err := ec.field_Query_patientProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetPatientProfile(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.PatientProfile(childComplexity, args["id"].(string)), true
 
-	case "Query.getPsychologistAvailability":
-		if e.complexity.Query.GetPsychologistAvailability == nil {
+	case "Query.psychologistAvailability":
+		if e.complexity.Query.PsychologistAvailability == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getPsychologistAvailability_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_psychologistAvailability_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetPsychologistAvailability(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.PsychologistAvailability(childComplexity, args["id"].(string)), true
 
-	case "Query.getPsychologistCharacteristics":
-		if e.complexity.Query.GetPsychologistCharacteristics == nil {
+	case "Query.psychologistCharacteristics":
+		if e.complexity.Query.PsychologistCharacteristics == nil {
 			break
 		}
 
-		return e.complexity.Query.GetPsychologistCharacteristics(childComplexity), true
+		return e.complexity.Query.PsychologistCharacteristics(childComplexity), true
 
-	case "Query.getPsychologistProfile":
-		if e.complexity.Query.GetPsychologistProfile == nil {
+	case "Query.psychologistProfile":
+		if e.complexity.Query.PsychologistProfile == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getPsychologistProfile_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_psychologistProfile_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetPsychologistProfile(childComplexity, args["id"].(string)), true
-
-	case "Query.getTopAffinitiesForOwnPatient":
-		if e.complexity.Query.GetTopAffinitiesForOwnPatient == nil {
-			break
-		}
-
-		return e.complexity.Query.GetTopAffinitiesForOwnPatient(childComplexity), true
-
-	case "Query.getUser":
-		if e.complexity.Query.GetUser == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getUser_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetUser(childComplexity, args["id"].(string)), true
-
-	case "Query.listUsersByRole":
-		if e.complexity.Query.ListUsersByRole == nil {
-			break
-		}
-
-		args, err := ec.field_Query_listUsersByRole_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.ListUsersByRole(childComplexity, args["role"].(models.Role)), true
+		return e.complexity.Query.PsychologistProfile(childComplexity, args["id"].(string)), true
 
 	case "Query.time":
 		if e.complexity.Query.Time == nil {
@@ -1379,6 +1355,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Time(childComplexity), true
+
+	case "Query.user":
+		if e.complexity.Query.User == nil {
+			break
+		}
+
+		args, err := ec.field_Query_user_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.User(childComplexity, args["id"].(string)), true
+
+	case "Query.usersByRole":
+		if e.complexity.Query.UsersByRole == nil {
+			break
+		}
+
+		args, err := ec.field_Query_usersByRole_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.UsersByRole(childComplexity, args["role"].(models.Role)), true
 
 	case "Token.expiresAt":
 		if e.complexity.Token.ExpiresAt == nil {
@@ -1485,12 +1485,12 @@ var sources = []*ast.Source{
     MULTIPLE
 }
 
-input SetOwnProfileCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetCharacteristicChoiceInput") {
+input SetMyProfileCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetCharacteristicChoiceInput") {
     characteristicName: String!
     selectedValues: [String!]!
 }
 
-input SetOwnProfilePreferenceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetPreferenceInput") {
+input SetMyProfilePreferenceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetPreferenceInput") {
     characteristicName: String!
     selectedValue: String!
     weight: Int!
@@ -1527,21 +1527,28 @@ type Preference @goModel(model: "github.com/guicostaarantes/psi-server/modules/c
 }
 
 extend type Query {
-    """The getPatientCharacteristics query allows a user to get all possible patient characteristics"""
-    getPatientCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The patientCharacteristics query allows a user to get all possible patient characteristics."""
+    patientCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The getPsychologistCharacteristics query allows a user to get all possible psychologist characteristics"""
-    getPsychologistCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The psychologistCharacteristics query allows a user to get all possible psychologist characteristics."""
+    psychologistCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The getTopAffinitiesForOwnPatient query allows a user to get the last calculation of affinities for their patient profile."""
-    getTopAffinitiesForOwnPatient: [Affinity!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The myPatientTopAffinities query allows a user to get the last calculation of affinities for their patient profile."""
+    myPatientTopAffinities: [Affinity!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
-    """The setTopAffinitiesForOwnPatient mutation allows a user to compare its patient profile against all psychologist profiles that have PENDING treatments."""
-    setTopAffinitiesForOwnPatient: Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The setPatientCharacteristics mutation allows a user to change the possible characteristics for all patients."""
+    setPatientCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
+    
+    """The setPsychologistCharacteristics mutation allows a user to change the possible characteristics for all psychologists."""
+    setPsychologistCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
+    
+    """The setMyPatientTopAffinities mutation allows a user to compare its patient profile against all psychologist profiles that have PENDING treatments."""
+    setMyPatientTopAffinities: Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }`, BuiltIn: false},
 	{Name: "graph/schema/mail.graphqls", Input: `extend type Mutation {
+    """The processPendingMail mutation allows a user to send emails that are waiting in the queue."""
     processPendingMail: Boolean @hasRole(role: [JOBRUNNER])
 }`, BuiltIn: false},
 	{Name: "graph/schema/messages.graphqls", Input: `input MessageInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/messages/models.MessageInput") {
@@ -1556,22 +1563,22 @@ type Message @goModel(model: "github.com/guicostaarantes/psi-server/modules/mess
 }
 
 extend type Query {
-    """The getMessages query allows a user to get translated messages by language and keys."""
-    getMessages(lang: String!, keys: [String!]!): [Message!]!
+    """The messages query allows a user to get translated messages by language and keys."""
+    messages(lang: String!, keys: [String!]!): [Message!]!
 }
 
 extend type Mutation {
     """The setMessages mutation allows a user to insert or update translated messages."""
     setMessages(lang: String!, input: [MessageInput!]!): Boolean @hasRole(role: [COORDINATOR])
 }`, BuiltIn: false},
-	{Name: "graph/schema/profiles.graphqls", Input: `input CreateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
+	{Name: "graph/schema/profiles.graphqls", Input: `input CreateMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
     city: String!
 }
 
-input CreateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
+input CreateMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
@@ -1586,14 +1593,14 @@ input CreatePsychologistInput @goModel(model: "github.com/guicostaarantes/psi-se
     city: String!
 }
 
-input UpdateOwnPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
+input UpdateMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
     city: String!
 }
 
-input UpdateOwnPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
+input UpdateMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
@@ -1644,23 +1651,43 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
 }
 
 extend type Query {
-    getOwnPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    getOwnPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    getPatientProfile(id: ID!): PublicPatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    getPsychologistProfile(id: ID!): PublicPsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The myPatientProfile query allows a user to get their own patient profile."""
+    myPatientProfile: PatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The myPsychologistProfile query allows a user to get their own patient profile."""
+    myPsychologistProfile: PsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The patientProfile query allows a user to get a patient profile from other user."""
+    patientProfile(id: ID!): PublicPatientProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The psychologistProfile query allows a user to get a psychologist profile from other user."""
+    psychologistProfile(id: ID!): PublicPsychologistProfile! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
-    createOwnPatientProfile(input: CreateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    createOwnPsychologistProfile(input: CreateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPatientCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    setOwnPatientPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    setOwnPsychologistCharacteristicChoices(input: [SetOwnProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setOwnPsychologistPreferences(input: [SetOwnProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    setPatientCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
-    setPsychologistCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
-    updateOwnPatientProfile(input: UpdateOwnPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    updateOwnPsychologistProfile(input: UpdateOwnPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    """The createMyPatientProfile mutation allows a user to create a patient profile."""
+    createMyPatientProfile(input: CreateMyPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The createMyPsychologistProfile mutation allows a user to create a psychologist profile."""
+    createMyPsychologistProfile(input: CreateMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The setMyPatientCharacteristicChoices mutation allows a user to set characteristics for their patient profile."""
+    setMyPatientCharacteristicChoices(input: [SetMyProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The setMyPatientPreferences mutation allows a user to set preferences for their patient profile."""
+    setMyPatientPreferences(input: [SetMyProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The setMyPsychologistCharacteristicChoices mutation allows a user to set characteristics for their psychologist profile."""
+    setMyPsychologistCharacteristicChoices(input: [SetMyProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The setMyPsychologistPreferences mutation allows a user to set preferences for their psychologist profile."""
+    setMyPsychologistPreferences(input: [SetMyProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The updateMyPatientProfile mutation allows a user to make changes to their patient profile."""
+    updateMyPatientProfile(input: UpdateMyPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The updateMyPsychologistProfile mutation allows a user to make changes to their psychologist profile."""
+    updateMyPsychologistProfile(input: UpdateMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
 	{Name: "graph/schema/schedule.graphqls", Input: `enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AppointmentStatus") {
     PROPOSED
@@ -1708,11 +1735,11 @@ type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server
 }
 
 extend type Query {
-    """The getOwnAvailability query allows a user to get the availability of their own psychologist profile."""
-    getOwnAvailability: [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The myAvailability query allows a user to get the availability of their own psychologist profile."""
+    myAvailability: [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The getPsychologistAvailability query allows a user to get the availability of a psychologist profile."""
-    getPsychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The psychologistAvailability query allows a user to get the availability of a psychologist profile."""
+    psychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
@@ -1731,10 +1758,11 @@ extend type Mutation {
     """The proposeAppointment mutation allows a user with a patient profile in treatment to propose a time for a next meeting."""
     proposeAppointment(input: ProposeAppointmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The setOwnAvailability mutation allows a user to set their availability to receive appointments."""
-    setOwnAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The setMyAvailability mutation allows a user to set their availability to receive appointments."""
+    setMyAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
 	{Name: "graph/schema/time.graphqls", Input: `extend type Query {
+    """The time query allows the user to know the timestamp of the server."""
     time: Int!
 }`, BuiltIn: false},
 	{Name: "graph/schema/treatments.graphqls", Input: `enum TreatmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentStatus") {
@@ -1779,11 +1807,11 @@ extend type Mutation {
     """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
     assignTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The createOwnTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
-    createOwnTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The createTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
+    createTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
-    deleteOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The deleteTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
+    deleteTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The interruptTreatmentByPatient mutation allows a user to choose a treatment under their patient profile and interrupt it."""
     interruptTreatmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
@@ -1791,11 +1819,11 @@ extend type Mutation {
     """The interruptTreatmentByPsychologist mutation allows a user to choose a treatment under their psychologist profile and interrupt it."""
     interruptTreatmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The finalizeOwnTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
-    finalizeOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The finalizeTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
+    finalizeTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
-    updateOwnTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The updateTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
+    updateTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
 	{Name: "graph/schema/users.graphqls", Input: `enum Role @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.Role") {
     JOBRUNNER
@@ -1841,18 +1869,36 @@ type Token @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/
 }
 
 type Query {
+    """The authenticateUser query allows a user to exchange their email and password for an authentication token."""
     authenticateUser(input: AuthenticateUserInput!): Token!
-    getOwnUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-    getUser(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-    listUsersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The myUser query allows a user to get information about their own user."""
+    myUser: User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The user query allows a user to get information about another user."""
+    user(id: ID!): User! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+
+    """The usersByRole query allows a user to get users that have a specified role in the application."""
+    usersByRole(role: Role!): [User!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 type Mutation {
+    """The askResetPassword mutation allows a user to start a reset password procedure."""
     askResetPassword(email: String!): Boolean
+
+    """The createPatientUser mutation allows a non-user to create a user with the PATIENT role."""
     createPatientUser(input: CreateUserInput!): Boolean
+
+    """The createPatientUser mutation allows a user to create a user with the PSYCHOLOGIST role."""
     createPsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
+
+    """The createUserWithPassword mutation allows a user to create a user and set their password manually instead of sending an invitation email."""
     createUserWithPassword(input: CreateUserWithPasswordInput!): Boolean @hasRole(role: [COORDINATOR])
+
+    """The resetPassword mutation allows a user to reset their password using a token sent to their email."""
     resetPassword(input: ResetPasswordInput!): Boolean
+
+    """The updateUser mutation allows a user to update specific information about another user."""
     updateUser(id: ID!, input: UpdateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 }
 
@@ -1980,13 +2026,13 @@ func (ec *executionContext) field_Mutation_confirmAppointment_args(ctx context.C
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createOwnPatientProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createMyPatientProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.CreatePatientInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateOwnPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePatientInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateMyPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePatientInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1995,28 +2041,13 @@ func (ec *executionContext) field_Mutation_createOwnPatientProfile_args(ctx cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createMyPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.CreatePsychologistInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePsychologistInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_createOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 models2.CreateTreatmentInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateTreatmentInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateMyPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePsychologistInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2055,6 +2086,21 @@ func (ec *executionContext) field_Mutation_createPsychologistUser_args(ctx conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models2.CreateTreatmentInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateTreatmentInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐCreateTreatmentInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createUserWithPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2070,7 +2116,7 @@ func (ec *executionContext) field_Mutation_createUserWithPassword_args(ctx conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_deleteTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2109,7 +2155,7 @@ func (ec *executionContext) field_Mutation_denyAppointment_args(ctx context.Cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_finalizeOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_finalizeTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2226,7 +2272,7 @@ func (ec *executionContext) field_Mutation_setMessages_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_setOwnAvailability_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_setMyAvailability_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []*models3.SetAvailabilityInput
@@ -2241,13 +2287,13 @@ func (ec *executionContext) field_Mutation_setOwnAvailability_args(ctx context.C
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_setOwnPatientCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_setMyPatientCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []*models5.SetCharacteristicChoiceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNSetMyProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2256,13 +2302,13 @@ func (ec *executionContext) field_Mutation_setOwnPatientCharacteristicChoices_ar
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_setOwnPatientPreferences_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_setMyPatientPreferences_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []*models5.SetPreferenceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNSetMyProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2271,13 +2317,13 @@ func (ec *executionContext) field_Mutation_setOwnPatientPreferences_args(ctx con
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_setOwnPsychologistCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_setMyPsychologistCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []*models5.SetCharacteristicChoiceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNSetMyProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2286,13 +2332,13 @@ func (ec *executionContext) field_Mutation_setOwnPsychologistCharacteristicChoic
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_setOwnPsychologistPreferences_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_setMyPsychologistPreferences_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []*models5.SetPreferenceInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNSetMyProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2331,13 +2377,13 @@ func (ec *executionContext) field_Mutation_setPsychologistCharacteristics_args(c
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_updateOwnPatientProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateMyPatientProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.UpdatePatientInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateOwnPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePatientInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateMyPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePatientInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2346,13 +2392,13 @@ func (ec *executionContext) field_Mutation_updateOwnPatientProfile_args(ctx cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_updateOwnPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateMyPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models1.UpdatePsychologistInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePsychologistInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateMyPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePsychologistInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2361,7 +2407,7 @@ func (ec *executionContext) field_Mutation_updateOwnPsychologistProfile_args(ctx
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_updateOwnTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateTreatment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2439,7 +2485,7 @@ func (ec *executionContext) field_Query_authenticateUser_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_messages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2463,7 +2509,7 @@ func (ec *executionContext) field_Query_getMessages_args(ctx context.Context, ra
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getPatientProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_patientProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2478,7 +2524,7 @@ func (ec *executionContext) field_Query_getPatientProfile_args(ctx context.Conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getPsychologistAvailability_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_psychologistAvailability_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2493,7 +2539,7 @@ func (ec *executionContext) field_Query_getPsychologistAvailability_args(ctx con
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getPsychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_psychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2508,7 +2554,7 @@ func (ec *executionContext) field_Query_getPsychologistProfile_args(ctx context.
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2523,7 +2569,7 @@ func (ec *executionContext) field_Query_getUser_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_listUsersByRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_usersByRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.Role
@@ -3372,7 +3418,133 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setTopAffinitiesForOwnPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setPatientCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setPatientCharacteristics_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().SetPatientCharacteristics(rctx, args["input"].([]*models5.SetCharacteristicInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_setPsychologistCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setPsychologistCharacteristics_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().SetPsychologistCharacteristics(rctx, args["input"].([]*models5.SetCharacteristicInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_setMyPatientTopAffinities(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3391,7 +3563,7 @@ func (ec *executionContext) _Mutation_setTopAffinitiesForOwnPatient(ctx context.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetTopAffinitiesForOwnPatient(rctx)
+			return ec.resolvers.Mutation().SetMyPatientTopAffinities(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3547,7 +3719,7 @@ func (ec *executionContext) _Mutation_setMessages(ctx context.Context, field gra
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_createOwnPatientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createMyPatientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3564,7 +3736,7 @@ func (ec *executionContext) _Mutation_createOwnPatientProfile(ctx context.Contex
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createOwnPatientProfile_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createMyPatientProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3573,7 +3745,7 @@ func (ec *executionContext) _Mutation_createOwnPatientProfile(ctx context.Contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateOwnPatientProfile(rctx, args["input"].(models1.CreatePatientInput))
+			return ec.resolvers.Mutation().CreateMyPatientProfile(rctx, args["input"].(models1.CreatePatientInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3610,7 +3782,7 @@ func (ec *executionContext) _Mutation_createOwnPatientProfile(ctx context.Contex
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_createOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createMyPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3627,7 +3799,7 @@ func (ec *executionContext) _Mutation_createOwnPsychologistProfile(ctx context.C
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createOwnPsychologistProfile_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createMyPsychologistProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3636,7 +3808,7 @@ func (ec *executionContext) _Mutation_createOwnPsychologistProfile(ctx context.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateOwnPsychologistProfile(rctx, args["input"].(models1.CreatePsychologistInput))
+			return ec.resolvers.Mutation().CreateMyPsychologistProfile(rctx, args["input"].(models1.CreatePsychologistInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3673,7 +3845,7 @@ func (ec *executionContext) _Mutation_createOwnPsychologistProfile(ctx context.C
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setOwnPatientCharacteristicChoices(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setMyPatientCharacteristicChoices(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3690,7 +3862,7 @@ func (ec *executionContext) _Mutation_setOwnPatientCharacteristicChoices(ctx con
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setOwnPatientCharacteristicChoices_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setMyPatientCharacteristicChoices_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3699,7 +3871,7 @@ func (ec *executionContext) _Mutation_setOwnPatientCharacteristicChoices(ctx con
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPatientCharacteristicChoices(rctx, args["input"].([]*models5.SetCharacteristicChoiceInput))
+			return ec.resolvers.Mutation().SetMyPatientCharacteristicChoices(rctx, args["input"].([]*models5.SetCharacteristicChoiceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3736,7 +3908,7 @@ func (ec *executionContext) _Mutation_setOwnPatientCharacteristicChoices(ctx con
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setOwnPatientPreferences(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setMyPatientPreferences(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3753,7 +3925,7 @@ func (ec *executionContext) _Mutation_setOwnPatientPreferences(ctx context.Conte
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setOwnPatientPreferences_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setMyPatientPreferences_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3762,7 +3934,7 @@ func (ec *executionContext) _Mutation_setOwnPatientPreferences(ctx context.Conte
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPatientPreferences(rctx, args["input"].([]*models5.SetPreferenceInput))
+			return ec.resolvers.Mutation().SetMyPatientPreferences(rctx, args["input"].([]*models5.SetPreferenceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -3799,7 +3971,7 @@ func (ec *executionContext) _Mutation_setOwnPatientPreferences(ctx context.Conte
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoices(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setMyPsychologistCharacteristicChoices(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3816,7 +3988,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoices(ct
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setOwnPsychologistCharacteristicChoices_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setMyPsychologistCharacteristicChoices_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3825,7 +3997,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoices(ct
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPsychologistCharacteristicChoices(rctx, args["input"].([]*models5.SetCharacteristicChoiceInput))
+			return ec.resolvers.Mutation().SetMyPsychologistCharacteristicChoices(rctx, args["input"].([]*models5.SetCharacteristicChoiceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3862,7 +4034,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistCharacteristicChoices(ct
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setOwnPsychologistPreferences(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setMyPsychologistPreferences(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3879,7 +4051,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistPreferences(ctx context.
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setOwnPsychologistPreferences_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setMyPsychologistPreferences_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3888,7 +4060,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistPreferences(ctx context.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnPsychologistPreferences(rctx, args["input"].([]*models5.SetPreferenceInput))
+			return ec.resolvers.Mutation().SetMyPsychologistPreferences(rctx, args["input"].([]*models5.SetPreferenceInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -3925,7 +4097,7 @@ func (ec *executionContext) _Mutation_setOwnPsychologistPreferences(ctx context.
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setPatientCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updateMyPatientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3942,7 +4114,7 @@ func (ec *executionContext) _Mutation_setPatientCharacteristics(ctx context.Cont
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setPatientCharacteristics_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updateMyPatientProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3951,133 +4123,7 @@ func (ec *executionContext) _Mutation_setPatientCharacteristics(ctx context.Cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetPatientCharacteristics(rctx, args["input"].([]*models5.SetCharacteristicInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_setPsychologistCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setPsychologistCharacteristics_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetPsychologistCharacteristics(rctx, args["input"].([]*models5.SetCharacteristicInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_updateOwnPatientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updateOwnPatientProfile_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateOwnPatientProfile(rctx, args["input"].(models1.UpdatePatientInput))
+			return ec.resolvers.Mutation().UpdateMyPatientProfile(rctx, args["input"].(models1.UpdatePatientInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -4114,7 +4160,7 @@ func (ec *executionContext) _Mutation_updateOwnPatientProfile(ctx context.Contex
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_updateOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updateMyPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4131,7 +4177,7 @@ func (ec *executionContext) _Mutation_updateOwnPsychologistProfile(ctx context.C
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updateOwnPsychologistProfile_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updateMyPsychologistProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4140,7 +4186,7 @@ func (ec *executionContext) _Mutation_updateOwnPsychologistProfile(ctx context.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateOwnPsychologistProfile(rctx, args["input"].(models1.UpdatePsychologistInput))
+			return ec.resolvers.Mutation().UpdateMyPsychologistProfile(rctx, args["input"].(models1.UpdatePsychologistInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4492,7 +4538,7 @@ func (ec *executionContext) _Mutation_proposeAppointment(ctx context.Context, fi
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setOwnAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setMyAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4509,7 +4555,7 @@ func (ec *executionContext) _Mutation_setOwnAvailability(ctx context.Context, fi
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setOwnAvailability_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setMyAvailability_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4518,7 +4564,7 @@ func (ec *executionContext) _Mutation_setOwnAvailability(ctx context.Context, fi
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetOwnAvailability(rctx, args["input"].([]*models3.SetAvailabilityInput))
+			return ec.resolvers.Mutation().SetMyAvailability(rctx, args["input"].([]*models3.SetAvailabilityInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4618,7 +4664,7 @@ func (ec *executionContext) _Mutation_assignTreatment(ctx context.Context, field
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_createOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4635,7 +4681,7 @@ func (ec *executionContext) _Mutation_createOwnTreatment(ctx context.Context, fi
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createOwnTreatment_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4644,7 +4690,7 @@ func (ec *executionContext) _Mutation_createOwnTreatment(ctx context.Context, fi
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateOwnTreatment(rctx, args["input"].(models2.CreateTreatmentInput))
+			return ec.resolvers.Mutation().CreateTreatment(rctx, args["input"].(models2.CreateTreatmentInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4681,7 +4727,7 @@ func (ec *executionContext) _Mutation_createOwnTreatment(ctx context.Context, fi
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_deleteOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_deleteTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4698,7 +4744,7 @@ func (ec *executionContext) _Mutation_deleteOwnTreatment(ctx context.Context, fi
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_deleteOwnTreatment_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_deleteTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4707,7 +4753,7 @@ func (ec *executionContext) _Mutation_deleteOwnTreatment(ctx context.Context, fi
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().DeleteOwnTreatment(rctx, args["id"].(string))
+			return ec.resolvers.Mutation().DeleteTreatment(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4870,7 +4916,7 @@ func (ec *executionContext) _Mutation_interruptTreatmentByPsychologist(ctx conte
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_finalizeOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_finalizeTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4887,7 +4933,7 @@ func (ec *executionContext) _Mutation_finalizeOwnTreatment(ctx context.Context, 
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_finalizeOwnTreatment_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_finalizeTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4896,7 +4942,7 @@ func (ec *executionContext) _Mutation_finalizeOwnTreatment(ctx context.Context, 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().FinalizeOwnTreatment(rctx, args["id"].(string))
+			return ec.resolvers.Mutation().FinalizeTreatment(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4933,7 +4979,7 @@ func (ec *executionContext) _Mutation_finalizeOwnTreatment(ctx context.Context, 
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_updateOwnTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updateTreatment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4950,7 +4996,7 @@ func (ec *executionContext) _Mutation_updateOwnTreatment(ctx context.Context, fi
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updateOwnTreatment_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updateTreatment_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4959,7 +5005,7 @@ func (ec *executionContext) _Mutation_updateOwnTreatment(ctx context.Context, fi
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateOwnTreatment(rctx, args["id"].(string), args["input"].(models2.UpdateTreatmentInput))
+			return ec.resolvers.Mutation().UpdateTreatment(rctx, args["id"].(string), args["input"].(models2.UpdateTreatmentInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -7170,7 +7216,7 @@ func (ec *executionContext) _Query_authenticateUser(ctx context.Context, field g
 	return ec.marshalNToken2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐAuthentication(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getOwnUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_myUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7189,7 +7235,7 @@ func (ec *executionContext) _Query_getOwnUser(ctx context.Context, field graphql
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetOwnUser(rctx)
+			return ec.resolvers.Query().MyUser(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -7229,7 +7275,7 @@ func (ec *executionContext) _Query_getOwnUser(ctx context.Context, field graphql
 	return ec.marshalNUser2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7246,7 +7292,7 @@ func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.Co
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getUser_args(ctx, rawArgs)
+	args, err := ec.field_Query_user_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -7255,7 +7301,7 @@ func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetUser(rctx, args["id"].(string))
+			return ec.resolvers.Query().User(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -7295,7 +7341,7 @@ func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.Co
 	return ec.marshalNUser2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_listUsersByRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_usersByRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7312,7 +7358,7 @@ func (ec *executionContext) _Query_listUsersByRole(ctx context.Context, field gr
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_listUsersByRole_args(ctx, rawArgs)
+	args, err := ec.field_Query_usersByRole_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -7321,7 +7367,7 @@ func (ec *executionContext) _Query_listUsersByRole(ctx context.Context, field gr
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().ListUsersByRole(rctx, args["role"].(models.Role))
+			return ec.resolvers.Query().UsersByRole(rctx, args["role"].(models.Role))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -7361,7 +7407,7 @@ func (ec *executionContext) _Query_listUsersByRole(ctx context.Context, field gr
 	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐUserᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getPatientCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_patientCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7380,7 +7426,7 @@ func (ec *executionContext) _Query_getPatientCharacteristics(ctx context.Context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetPatientCharacteristics(rctx)
+			return ec.resolvers.Query().PatientCharacteristics(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -7420,7 +7466,7 @@ func (ec *executionContext) _Query_getPatientCharacteristics(ctx context.Context
 	return ec.marshalNCharacteristic2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getPsychologistCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_psychologistCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7439,7 +7485,7 @@ func (ec *executionContext) _Query_getPsychologistCharacteristics(ctx context.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetPsychologistCharacteristics(rctx)
+			return ec.resolvers.Query().PsychologistCharacteristics(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -7479,7 +7525,7 @@ func (ec *executionContext) _Query_getPsychologistCharacteristics(ctx context.Co
 	return ec.marshalNCharacteristic2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getTopAffinitiesForOwnPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_myPatientTopAffinities(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7498,7 +7544,7 @@ func (ec *executionContext) _Query_getTopAffinitiesForOwnPatient(ctx context.Con
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetTopAffinitiesForOwnPatient(rctx)
+			return ec.resolvers.Query().MyPatientTopAffinities(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -7538,7 +7584,7 @@ func (ec *executionContext) _Query_getTopAffinitiesForOwnPatient(ctx context.Con
 	return ec.marshalNAffinity2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐAffinityᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getMessages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_messages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7555,7 +7601,7 @@ func (ec *executionContext) _Query_getMessages(ctx context.Context, field graphq
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getMessages_args(ctx, rawArgs)
+	args, err := ec.field_Query_messages_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -7563,7 +7609,7 @@ func (ec *executionContext) _Query_getMessages(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetMessages(rctx, args["lang"].(string), args["keys"].([]string))
+		return ec.resolvers.Query().Messages(rctx, args["lang"].(string), args["keys"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7580,7 +7626,7 @@ func (ec *executionContext) _Query_getMessages(ctx context.Context, field graphq
 	return ec.marshalNMessage2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋmessagesᚋmodelsᚐMessageᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getOwnPatientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_myPatientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7599,7 +7645,7 @@ func (ec *executionContext) _Query_getOwnPatientProfile(ctx context.Context, fie
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetOwnPatientProfile(rctx)
+			return ec.resolvers.Query().MyPatientProfile(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -7639,7 +7685,7 @@ func (ec *executionContext) _Query_getOwnPatientProfile(ctx context.Context, fie
 	return ec.marshalNPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getOwnPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_myPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7658,7 +7704,7 @@ func (ec *executionContext) _Query_getOwnPsychologistProfile(ctx context.Context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetOwnPsychologistProfile(rctx)
+			return ec.resolvers.Query().MyPsychologistProfile(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -7698,7 +7744,7 @@ func (ec *executionContext) _Query_getOwnPsychologistProfile(ctx context.Context
 	return ec.marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getPatientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_patientProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7715,7 +7761,7 @@ func (ec *executionContext) _Query_getPatientProfile(ctx context.Context, field 
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getPatientProfile_args(ctx, rawArgs)
+	args, err := ec.field_Query_patientProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -7724,7 +7770,7 @@ func (ec *executionContext) _Query_getPatientProfile(ctx context.Context, field 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetPatientProfile(rctx, args["id"].(string))
+			return ec.resolvers.Query().PatientProfile(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -7764,7 +7810,7 @@ func (ec *executionContext) _Query_getPatientProfile(ctx context.Context, field 
 	return ec.marshalNPublicPatientProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPatient(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getPsychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_psychologistProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7781,7 +7827,7 @@ func (ec *executionContext) _Query_getPsychologistProfile(ctx context.Context, f
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getPsychologistProfile_args(ctx, rawArgs)
+	args, err := ec.field_Query_psychologistProfile_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -7790,7 +7836,7 @@ func (ec *executionContext) _Query_getPsychologistProfile(ctx context.Context, f
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetPsychologistProfile(rctx, args["id"].(string))
+			return ec.resolvers.Query().PsychologistProfile(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -7830,7 +7876,7 @@ func (ec *executionContext) _Query_getPsychologistProfile(ctx context.Context, f
 	return ec.marshalNPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getOwnAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_myAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7849,7 +7895,7 @@ func (ec *executionContext) _Query_getOwnAvailability(ctx context.Context, field
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetOwnAvailability(rctx)
+			return ec.resolvers.Query().MyAvailability(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -7889,7 +7935,7 @@ func (ec *executionContext) _Query_getOwnAvailability(ctx context.Context, field
 	return ec.marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getPsychologistAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_psychologistAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7906,7 +7952,7 @@ func (ec *executionContext) _Query_getPsychologistAvailability(ctx context.Conte
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getPsychologistAvailability_args(ctx, rawArgs)
+	args, err := ec.field_Query_psychologistAvailability_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -7915,7 +7961,7 @@ func (ec *executionContext) _Query_getPsychologistAvailability(ctx context.Conte
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetPsychologistAvailability(rctx, args["id"].(string))
+			return ec.resolvers.Query().PsychologistAvailability(rctx, args["id"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -9351,7 +9397,7 @@ func (ec *executionContext) unmarshalInputAuthenticateUserInput(ctx context.Cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreateOwnPatientProfileInput(ctx context.Context, obj interface{}) (models1.CreatePatientInput, error) {
+func (ec *executionContext) unmarshalInputCreateMyPatientProfileInput(ctx context.Context, obj interface{}) (models1.CreatePatientInput, error) {
 	var it models1.CreatePatientInput
 	var asMap = obj.(map[string]interface{})
 
@@ -9395,7 +9441,7 @@ func (ec *executionContext) unmarshalInputCreateOwnPatientProfileInput(ctx conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreateOwnPsychologistProfileInput(ctx context.Context, obj interface{}) (models1.CreatePsychologistInput, error) {
+func (ec *executionContext) unmarshalInputCreateMyPsychologistProfileInput(ctx context.Context, obj interface{}) (models1.CreatePsychologistInput, error) {
 	var it models1.CreatePsychologistInput
 	var asMap = obj.(map[string]interface{})
 
@@ -9695,7 +9741,7 @@ func (ec *executionContext) unmarshalInputSetAvailabilityInput(ctx context.Conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSetOwnProfileCharacteristicChoiceInput(ctx context.Context, obj interface{}) (models5.SetCharacteristicChoiceInput, error) {
+func (ec *executionContext) unmarshalInputSetMyProfileCharacteristicChoiceInput(ctx context.Context, obj interface{}) (models5.SetCharacteristicChoiceInput, error) {
 	var it models5.SetCharacteristicChoiceInput
 	var asMap = obj.(map[string]interface{})
 
@@ -9723,7 +9769,7 @@ func (ec *executionContext) unmarshalInputSetOwnProfileCharacteristicChoiceInput
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSetOwnProfilePreferenceInput(ctx context.Context, obj interface{}) (models5.SetPreferenceInput, error) {
+func (ec *executionContext) unmarshalInputSetMyProfilePreferenceInput(ctx context.Context, obj interface{}) (models5.SetPreferenceInput, error) {
 	var it models5.SetPreferenceInput
 	var asMap = obj.(map[string]interface{})
 
@@ -9795,7 +9841,7 @@ func (ec *executionContext) unmarshalInputSetProfileCharacteristicInput(ctx cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateOwnPatientProfileInput(ctx context.Context, obj interface{}) (models1.UpdatePatientInput, error) {
+func (ec *executionContext) unmarshalInputUpdateMyPatientProfileInput(ctx context.Context, obj interface{}) (models1.UpdatePatientInput, error) {
 	var it models1.UpdatePatientInput
 	var asMap = obj.(map[string]interface{})
 
@@ -9839,7 +9885,7 @@ func (ec *executionContext) unmarshalInputUpdateOwnPatientProfileInput(ctx conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateOwnPsychologistProfileInput(ctx context.Context, obj interface{}) (models1.UpdatePsychologistInput, error) {
+func (ec *executionContext) unmarshalInputUpdateMyPsychologistProfileInput(ctx context.Context, obj interface{}) (models1.UpdatePsychologistInput, error) {
 	var it models1.UpdatePsychologistInput
 	var asMap = obj.(map[string]interface{})
 
@@ -10171,32 +10217,32 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_resetPassword(ctx, field)
 		case "updateUser":
 			out.Values[i] = ec._Mutation_updateUser(ctx, field)
-		case "setTopAffinitiesForOwnPatient":
-			out.Values[i] = ec._Mutation_setTopAffinitiesForOwnPatient(ctx, field)
-		case "processPendingMail":
-			out.Values[i] = ec._Mutation_processPendingMail(ctx, field)
-		case "setMessages":
-			out.Values[i] = ec._Mutation_setMessages(ctx, field)
-		case "createOwnPatientProfile":
-			out.Values[i] = ec._Mutation_createOwnPatientProfile(ctx, field)
-		case "createOwnPsychologistProfile":
-			out.Values[i] = ec._Mutation_createOwnPsychologistProfile(ctx, field)
-		case "setOwnPatientCharacteristicChoices":
-			out.Values[i] = ec._Mutation_setOwnPatientCharacteristicChoices(ctx, field)
-		case "setOwnPatientPreferences":
-			out.Values[i] = ec._Mutation_setOwnPatientPreferences(ctx, field)
-		case "setOwnPsychologistCharacteristicChoices":
-			out.Values[i] = ec._Mutation_setOwnPsychologistCharacteristicChoices(ctx, field)
-		case "setOwnPsychologistPreferences":
-			out.Values[i] = ec._Mutation_setOwnPsychologistPreferences(ctx, field)
 		case "setPatientCharacteristics":
 			out.Values[i] = ec._Mutation_setPatientCharacteristics(ctx, field)
 		case "setPsychologistCharacteristics":
 			out.Values[i] = ec._Mutation_setPsychologistCharacteristics(ctx, field)
-		case "updateOwnPatientProfile":
-			out.Values[i] = ec._Mutation_updateOwnPatientProfile(ctx, field)
-		case "updateOwnPsychologistProfile":
-			out.Values[i] = ec._Mutation_updateOwnPsychologistProfile(ctx, field)
+		case "setMyPatientTopAffinities":
+			out.Values[i] = ec._Mutation_setMyPatientTopAffinities(ctx, field)
+		case "processPendingMail":
+			out.Values[i] = ec._Mutation_processPendingMail(ctx, field)
+		case "setMessages":
+			out.Values[i] = ec._Mutation_setMessages(ctx, field)
+		case "createMyPatientProfile":
+			out.Values[i] = ec._Mutation_createMyPatientProfile(ctx, field)
+		case "createMyPsychologistProfile":
+			out.Values[i] = ec._Mutation_createMyPsychologistProfile(ctx, field)
+		case "setMyPatientCharacteristicChoices":
+			out.Values[i] = ec._Mutation_setMyPatientCharacteristicChoices(ctx, field)
+		case "setMyPatientPreferences":
+			out.Values[i] = ec._Mutation_setMyPatientPreferences(ctx, field)
+		case "setMyPsychologistCharacteristicChoices":
+			out.Values[i] = ec._Mutation_setMyPsychologistCharacteristicChoices(ctx, field)
+		case "setMyPsychologistPreferences":
+			out.Values[i] = ec._Mutation_setMyPsychologistPreferences(ctx, field)
+		case "updateMyPatientProfile":
+			out.Values[i] = ec._Mutation_updateMyPatientProfile(ctx, field)
+		case "updateMyPsychologistProfile":
+			out.Values[i] = ec._Mutation_updateMyPsychologistProfile(ctx, field)
 		case "cancelAppointmentByPatient":
 			out.Values[i] = ec._Mutation_cancelAppointmentByPatient(ctx, field)
 		case "cancelAppointmentByPsychologist":
@@ -10207,22 +10253,22 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_denyAppointment(ctx, field)
 		case "proposeAppointment":
 			out.Values[i] = ec._Mutation_proposeAppointment(ctx, field)
-		case "setOwnAvailability":
-			out.Values[i] = ec._Mutation_setOwnAvailability(ctx, field)
+		case "setMyAvailability":
+			out.Values[i] = ec._Mutation_setMyAvailability(ctx, field)
 		case "assignTreatment":
 			out.Values[i] = ec._Mutation_assignTreatment(ctx, field)
-		case "createOwnTreatment":
-			out.Values[i] = ec._Mutation_createOwnTreatment(ctx, field)
-		case "deleteOwnTreatment":
-			out.Values[i] = ec._Mutation_deleteOwnTreatment(ctx, field)
+		case "createTreatment":
+			out.Values[i] = ec._Mutation_createTreatment(ctx, field)
+		case "deleteTreatment":
+			out.Values[i] = ec._Mutation_deleteTreatment(ctx, field)
 		case "interruptTreatmentByPatient":
 			out.Values[i] = ec._Mutation_interruptTreatmentByPatient(ctx, field)
 		case "interruptTreatmentByPsychologist":
 			out.Values[i] = ec._Mutation_interruptTreatmentByPsychologist(ctx, field)
-		case "finalizeOwnTreatment":
-			out.Values[i] = ec._Mutation_finalizeOwnTreatment(ctx, field)
-		case "updateOwnTreatment":
-			out.Values[i] = ec._Mutation_updateOwnTreatment(ctx, field)
+		case "finalizeTreatment":
+			out.Values[i] = ec._Mutation_finalizeTreatment(ctx, field)
+		case "updateTreatment":
+			out.Values[i] = ec._Mutation_updateTreatment(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10889,7 +10935,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
-		case "getOwnUser":
+		case "myUser":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10897,13 +10943,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getOwnUser(ctx, field)
+				res = ec._Query_myUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getUser":
+		case "user":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10911,13 +10957,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getUser(ctx, field)
+				res = ec._Query_user(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "listUsersByRole":
+		case "usersByRole":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10925,13 +10971,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_listUsersByRole(ctx, field)
+				res = ec._Query_usersByRole(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getPatientCharacteristics":
+		case "patientCharacteristics":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10939,13 +10985,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getPatientCharacteristics(ctx, field)
+				res = ec._Query_patientCharacteristics(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getPsychologistCharacteristics":
+		case "psychologistCharacteristics":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10953,13 +10999,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getPsychologistCharacteristics(ctx, field)
+				res = ec._Query_psychologistCharacteristics(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getTopAffinitiesForOwnPatient":
+		case "myPatientTopAffinities":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10967,13 +11013,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getTopAffinitiesForOwnPatient(ctx, field)
+				res = ec._Query_myPatientTopAffinities(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getMessages":
+		case "messages":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10981,13 +11027,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getMessages(ctx, field)
+				res = ec._Query_messages(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getOwnPatientProfile":
+		case "myPatientProfile":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -10995,13 +11041,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getOwnPatientProfile(ctx, field)
+				res = ec._Query_myPatientProfile(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getOwnPsychologistProfile":
+		case "myPsychologistProfile":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -11009,13 +11055,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getOwnPsychologistProfile(ctx, field)
+				res = ec._Query_myPsychologistProfile(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getPatientProfile":
+		case "patientProfile":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -11023,13 +11069,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getPatientProfile(ctx, field)
+				res = ec._Query_patientProfile(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getPsychologistProfile":
+		case "psychologistProfile":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -11037,13 +11083,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getPsychologistProfile(ctx, field)
+				res = ec._Query_psychologistProfile(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getOwnAvailability":
+		case "myAvailability":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -11051,13 +11097,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getOwnAvailability(ctx, field)
+				res = ec._Query_myAvailability(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getPsychologistAvailability":
+		case "psychologistAvailability":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -11065,7 +11111,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getPsychologistAvailability(ctx, field)
+				res = ec._Query_psychologistAvailability(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -11654,13 +11700,13 @@ func (ec *executionContext) marshalNCharacteristicType2githubᚗcomᚋguicostaar
 	return res
 }
 
-func (ec *executionContext) unmarshalNCreateOwnPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePatientInput(ctx context.Context, v interface{}) (models1.CreatePatientInput, error) {
-	res, err := ec.unmarshalInputCreateOwnPatientProfileInput(ctx, v)
+func (ec *executionContext) unmarshalNCreateMyPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePatientInput(ctx context.Context, v interface{}) (models1.CreatePatientInput, error) {
+	res, err := ec.unmarshalInputCreateMyPatientProfileInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCreateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePsychologistInput(ctx context.Context, v interface{}) (models1.CreatePsychologistInput, error) {
-	res, err := ec.unmarshalInputCreateOwnPsychologistProfileInput(ctx, v)
+func (ec *executionContext) unmarshalNCreateMyPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐCreatePsychologistInput(ctx context.Context, v interface{}) (models1.CreatePsychologistInput, error) {
+	res, err := ec.unmarshalInputCreateMyPsychologistProfileInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -12183,7 +12229,7 @@ func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚖgithubᚗcomᚋgui
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx context.Context, v interface{}) ([]*models5.SetCharacteristicChoiceInput, error) {
+func (ec *executionContext) unmarshalNSetMyProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx context.Context, v interface{}) ([]*models5.SetCharacteristicChoiceInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -12196,7 +12242,7 @@ func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕ
 	res := make([]*models5.SetCharacteristicChoiceInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNSetMyProfileCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -12204,12 +12250,12 @@ func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚕ
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfileCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInput(ctx context.Context, v interface{}) (*models5.SetCharacteristicChoiceInput, error) {
-	res, err := ec.unmarshalInputSetOwnProfileCharacteristicChoiceInput(ctx, v)
+func (ec *executionContext) unmarshalNSetMyProfileCharacteristicChoiceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInput(ctx context.Context, v interface{}) (*models5.SetCharacteristicChoiceInput, error) {
+	res, err := ec.unmarshalInputSetMyProfileCharacteristicChoiceInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx context.Context, v interface{}) ([]*models5.SetPreferenceInput, error) {
+func (ec *executionContext) unmarshalNSetMyProfilePreferenceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInputᚄ(ctx context.Context, v interface{}) ([]*models5.SetPreferenceInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -12222,7 +12268,7 @@ func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithub�
 	res := make([]*models5.SetPreferenceInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNSetOwnProfilePreferenceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNSetMyProfilePreferenceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -12230,8 +12276,8 @@ func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚕᚖgithub�
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNSetOwnProfilePreferenceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInput(ctx context.Context, v interface{}) (*models5.SetPreferenceInput, error) {
-	res, err := ec.unmarshalInputSetOwnProfilePreferenceInput(ctx, v)
+func (ec *executionContext) unmarshalNSetMyProfilePreferenceInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetPreferenceInput(ctx context.Context, v interface{}) (*models5.SetPreferenceInput, error) {
+	res, err := ec.unmarshalInputSetMyProfilePreferenceInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -12336,13 +12382,13 @@ func (ec *executionContext) marshalNTreatmentStatus2githubᚗcomᚋguicostaarant
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdateOwnPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePatientInput(ctx context.Context, v interface{}) (models1.UpdatePatientInput, error) {
-	res, err := ec.unmarshalInputUpdateOwnPatientProfileInput(ctx, v)
+func (ec *executionContext) unmarshalNUpdateMyPatientProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePatientInput(ctx context.Context, v interface{}) (models1.UpdatePatientInput, error) {
+	res, err := ec.unmarshalInputUpdateMyPatientProfileInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateOwnPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePsychologistInput(ctx context.Context, v interface{}) (models1.UpdatePsychologistInput, error) {
-	res, err := ec.unmarshalInputUpdateOwnPsychologistProfileInput(ctx, v)
+func (ec *executionContext) unmarshalNUpdateMyPsychologistProfileInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐUpdatePsychologistInput(ctx context.Context, v interface{}) (models1.UpdatePsychologistInput, error) {
+	res, err := ec.unmarshalInputUpdateMyPsychologistProfileInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

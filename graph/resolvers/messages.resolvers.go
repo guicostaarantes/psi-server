@@ -18,6 +18,6 @@ func (r *mutationResolver) SetMessages(ctx context.Context, lang string, input [
 	return nil, nil
 }
 
-func (r *queryResolver) GetMessages(ctx context.Context, lang string, keys []string) ([]*models.Message, error) {
+func (r *queryResolver) Messages(ctx context.Context, lang string, keys []string) ([]*models.Message, error) {
 	return r.GetMessagesService().Execute(lang, keys)
 }

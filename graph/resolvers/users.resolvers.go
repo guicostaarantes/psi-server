@@ -90,16 +90,16 @@ func (r *queryResolver) AuthenticateUser(ctx context.Context, input users_models
 	})
 }
 
-func (r *queryResolver) GetOwnUser(ctx context.Context) (*users_models.User, error) {
+func (r *queryResolver) MyUser(ctx context.Context) (*users_models.User, error) {
 	userID := ctx.Value("userID").(string)
 	return r.GetUserByIDService().Execute(userID)
 }
 
-func (r *queryResolver) GetUser(ctx context.Context, id string) (*users_models.User, error) {
+func (r *queryResolver) User(ctx context.Context, id string) (*users_models.User, error) {
 	return r.GetUserByIDService().Execute(id)
 }
 
-func (r *queryResolver) ListUsersByRole(ctx context.Context, role users_models.Role) ([]*users_models.User, error) {
+func (r *queryResolver) UsersByRole(ctx context.Context, role users_models.Role) ([]*users_models.User, error) {
 	return r.GetUsersByRoleService().Execute(string(role))
 }
 

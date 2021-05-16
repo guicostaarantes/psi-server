@@ -4,12 +4,12 @@ enum CharacteristicType @goModel(model: "github.com/guicostaarantes/psi-server/m
     MULTIPLE
 }
 
-input SetOwnProfileCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetCharacteristicChoiceInput") {
+input SetMyProfileCharacteristicChoiceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetCharacteristicChoiceInput") {
     characteristicName: String!
     selectedValues: [String!]!
 }
 
-input SetOwnProfilePreferenceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetPreferenceInput") {
+input SetMyProfilePreferenceInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.SetPreferenceInput") {
     characteristicName: String!
     selectedValue: String!
     weight: Int!
@@ -46,17 +46,23 @@ type Preference @goModel(model: "github.com/guicostaarantes/psi-server/modules/c
 }
 
 extend type Query {
-    """The getPatientCharacteristics query allows a user to get all possible patient characteristics"""
-    getPatientCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The patientCharacteristics query allows a user to get all possible patient characteristics."""
+    patientCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The getPsychologistCharacteristics query allows a user to get all possible psychologist characteristics"""
-    getPsychologistCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The psychologistCharacteristics query allows a user to get all possible psychologist characteristics."""
+    psychologistCharacteristics: [Characteristic!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The getTopAffinitiesForOwnPatient query allows a user to get the last calculation of affinities for their patient profile."""
-    getTopAffinitiesForOwnPatient: [Affinity!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The myPatientTopAffinities query allows a user to get the last calculation of affinities for their patient profile."""
+    myPatientTopAffinities: [Affinity!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }
 
 extend type Mutation {
-    """The setTopAffinitiesForOwnPatient mutation allows a user to compare its patient profile against all psychologist profiles that have PENDING treatments."""
-    setTopAffinitiesForOwnPatient: Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The setPatientCharacteristics mutation allows a user to change the possible characteristics for all patients."""
+    setPatientCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
+    
+    """The setPsychologistCharacteristics mutation allows a user to change the possible characteristics for all psychologists."""
+    setPsychologistCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
+    
+    """The setMyPatientTopAffinities mutation allows a user to compare its patient profile against all psychologist profiles that have PENDING treatments."""
+    setMyPatientTopAffinities: Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }

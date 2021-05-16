@@ -76,7 +76,7 @@ func (r *mutationResolver) ProposeAppointment(ctx context.Context, input models.
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) SetOwnAvailability(ctx context.Context, input []*models.SetAvailabilityInput) (*bool, error) {
+func (r *mutationResolver) SetMyAvailability(ctx context.Context, input []*models.SetAvailabilityInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -97,7 +97,7 @@ func (r *psychologistAppointmentResolver) Patient(ctx context.Context, obj *mode
 	return r.GetPatientService().Execute(obj.PatientID)
 }
 
-func (r *queryResolver) GetOwnAvailability(ctx context.Context) ([]*models.AvailabilityResponse, error) {
+func (r *queryResolver) MyAvailability(ctx context.Context) ([]*models.AvailabilityResponse, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -108,7 +108,7 @@ func (r *queryResolver) GetOwnAvailability(ctx context.Context) ([]*models.Avail
 	return r.GetAvailabilityService().Execute(servicePsy.ID)
 }
 
-func (r *queryResolver) GetPsychologistAvailability(ctx context.Context, id string) ([]*models.AvailabilityResponse, error) {
+func (r *queryResolver) PsychologistAvailability(ctx context.Context, id string) ([]*models.AvailabilityResponse, error) {
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(id)
 	if servicePsyErr != nil {
 		return nil, servicePsyErr

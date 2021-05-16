@@ -1,3 +1,4 @@
 extend type Mutation {
+    """The processPendingMail mutation allows a user to send emails that are waiting in the queue."""
     processPendingMail: Boolean @hasRole(role: [JOBRUNNER])
 }

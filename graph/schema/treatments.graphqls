@@ -40,11 +40,11 @@ extend type Mutation {
     """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
     assignTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The createOwnTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
-    createOwnTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The createTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
+    createTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
-    deleteOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The deleteTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
+    deleteTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The interruptTreatmentByPatient mutation allows a user to choose a treatment under their patient profile and interrupt it."""
     interruptTreatmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
@@ -52,9 +52,9 @@ extend type Mutation {
     """The interruptTreatmentByPsychologist mutation allows a user to choose a treatment under their psychologist profile and interrupt it."""
     interruptTreatmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The finalizeOwnTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
-    finalizeOwnTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The finalizeTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
+    finalizeTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
-    """The deleteOwnTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
-    updateOwnTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    """The updateTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
+    updateTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }
