@@ -680,11 +680,11 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":{\"myPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":{\"myPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
@@ -759,11 +759,11 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":{\"myPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":{\"myPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
@@ -1024,7 +1024,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientProfile\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientProfile\"]}],\"data\":{\"myPatientProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["patient_token"])
 
@@ -1096,7 +1096,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientProfile\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientProfile\"]}],\"data\":{\"myPatientProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["patient_token"])
 
@@ -1528,7 +1528,7 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientProfile\"]}],\"data\":null}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientProfile\"]}],\"data\":{\"myPatientProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["patient_token"])
 
@@ -1921,10 +1921,10 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"duration\":2700,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())	
-		
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"duration\":2700,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
+
 		response = gql(router, query, storedVariables["coordinator_token"])
-		
+
 		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"duration\":3000,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
 
 	})
@@ -2476,7 +2476,6 @@ func TestEnd2End(t *testing.T) {
 		assert.Equal(t, "CANCELED_BY_PSYCHOLOGIST", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "5", "status"))
 
 	})
-
 
 	t.Run("should set and check affinities", func(t *testing.T) {
 
