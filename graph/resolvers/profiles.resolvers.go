@@ -13,44 +13,6 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
-func (r *mutationResolver) CreateMyPatientProfile(ctx context.Context, input profiles_models.CreatePatientInput) (*bool, error) {
-	userID := ctx.Value("userID").(string)
-
-	serviceInput := &profiles_models.CreatePatientInput{
-		UserID:    userID,
-		FullName:  input.FullName,
-		LikeName:  input.LikeName,
-		BirthDate: input.BirthDate,
-		City:      input.City,
-	}
-
-	serviceErr := r.CreatePatientService().Execute(serviceInput)
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
-
-	return nil, nil
-}
-
-func (r *mutationResolver) CreateMyPsychologistProfile(ctx context.Context, input profiles_models.CreatePsychologistInput) (*bool, error) {
-	userID := ctx.Value("userID").(string)
-
-	serviceInput := &profiles_models.CreatePsychologistInput{
-		UserID:    userID,
-		FullName:  input.FullName,
-		LikeName:  input.LikeName,
-		BirthDate: input.BirthDate,
-		City:      input.City,
-	}
-
-	serviceErr := r.CreatePsychologistService().Execute(serviceInput)
-	if serviceErr != nil {
-		return nil, serviceErr
-	}
-
-	return nil, nil
-}
-
 func (r *mutationResolver) SetMyPatientCharacteristicChoices(ctx context.Context, input []*characteristics_models.SetCharacteristicChoiceInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
@@ -115,15 +77,18 @@ func (r *mutationResolver) SetMyPsychologistPreferences(ctx context.Context, inp
 	return nil, nil
 }
 
-func (r *mutationResolver) UpdateMyPatientProfile(ctx context.Context, input profiles_models.UpdatePatientInput) (*bool, error) {
+func (r *mutationResolver) UpsertMyPatientProfile(ctx context.Context, input profiles_models.UpsertPatientInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
-	servicePsy, servicePsyErr := r.GetPatientByUserIDService().Execute(userID)
-	if servicePsyErr != nil {
-		return nil, servicePsyErr
+	serviceInput := &profiles_models.UpsertPatientInput{
+		UserID:    userID,
+		FullName:  input.FullName,
+		LikeName:  input.LikeName,
+		BirthDate: input.BirthDate,
+		City:      input.City,
 	}
 
-	serviceErr := r.UpdatePatientService().Execute(servicePsy.ID, &input)
+	serviceErr := r.UpsertPatientService().Execute(serviceInput)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -131,15 +96,18 @@ func (r *mutationResolver) UpdateMyPatientProfile(ctx context.Context, input pro
 	return nil, nil
 }
 
-func (r *mutationResolver) UpdateMyPsychologistProfile(ctx context.Context, input profiles_models.UpdatePsychologistInput) (*bool, error) {
+func (r *mutationResolver) UpsertMyPsychologistProfile(ctx context.Context, input profiles_models.UpsertPsychologistInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
-	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
-	if servicePsyErr != nil {
-		return nil, servicePsyErr
+	serviceInput := &profiles_models.UpsertPsychologistInput{
+		UserID:    userID,
+		FullName:  input.FullName,
+		LikeName:  input.LikeName,
+		BirthDate: input.BirthDate,
+		City:      input.City,
 	}
 
-	serviceErr := r.UpdatePsychologistService().Execute(servicePsy.ID, &input)
+	serviceErr := r.UpsertPsychologistService().Execute(serviceInput)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}

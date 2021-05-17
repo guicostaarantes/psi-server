@@ -1,33 +1,11 @@
-input CreateMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePatientInput") {
+input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPatientInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
     city: String!
 }
 
-input CreateMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
-    fullName: String!
-    likeName: String!
-    birthDate: Int!
-    city: String!
-}
-
-input CreatePsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.CreatePsychologistInput") {
-    userId: String!
-    fullName: String!
-    likeName: String!
-    birthDate: Int!
-    city: String!
-}
-
-input UpdateMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePatientInput") {
-    fullName: String!
-    likeName: String!
-    birthDate: Int!
-    city: String!
-}
-
-input UpdateMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpdatePsychologistInput") {
+input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPsychologistInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
@@ -92,12 +70,6 @@ extend type Query {
 }
 
 extend type Mutation {
-    """The createMyPatientProfile mutation allows a user to create a patient profile."""
-    createMyPatientProfile(input: CreateMyPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The createMyPsychologistProfile mutation allows a user to create a psychologist profile."""
-    createMyPsychologistProfile(input: CreateMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-
     """The setMyPatientCharacteristicChoices mutation allows a user to set characteristics for their patient profile."""
     setMyPatientCharacteristicChoices(input: [SetMyProfileCharacteristicChoiceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
@@ -110,9 +82,9 @@ extend type Mutation {
     """The setMyPsychologistPreferences mutation allows a user to set preferences for their psychologist profile."""
     setMyPsychologistPreferences(input: [SetMyProfilePreferenceInput!]!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 
-    """The updateMyPatientProfile mutation allows a user to make changes to their patient profile."""
-    updateMyPatientProfile(input: UpdateMyPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+    """The upsertMyPatientProfile mutation allows a user to create or make changes to their patient profile."""
+    upsertMyPatientProfile(input: UpsertMyPatientProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 
-    """The updateMyPsychologistProfile mutation allows a user to make changes to their psychologist profile."""
-    updateMyPsychologistProfile(input: UpdateMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
+    """The upsertMyPsychologistProfile mutation allows a user to create or make changes to their psychologist profile."""
+    upsertMyPsychologistProfile(input: UpsertMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }

@@ -1,31 +1,39 @@
 package services
 
 import (
-	"errors"
-
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// CreatePsychologistService is a service that creates a psychologist profile
-type CreatePsychologistService struct {
+// UpsertPsychologistService is a service that creates a psychologist profile
+type UpsertPsychologistService struct {
 	DatabaseUtil   database.IDatabaseUtil
 	IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreatePsychologistService) Execute(input *models.CreatePsychologistInput) error {
+func (s UpsertPsychologistService) Execute(input *models.UpsertPsychologistInput) error {
 
-	psyWithSameUserID := models.Psychologist{}
+	existantPsy := models.Psychologist{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"userId": input.UserID}, &psyWithSameUserID)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"userId": input.UserID}, &existantPsy)
 	if findErr != nil {
 		return findErr
 	}
 
-	if psyWithSameUserID.ID != "" {
-		return errors.New("cannot create two psychologist profiles for the same user")
+	if existantPsy.ID != "" {
+		existantPsy.FullName = input.FullName
+		existantPsy.LikeName = input.LikeName
+		existantPsy.BirthDate = input.BirthDate
+		existantPsy.City = input.City
+
+		writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologists", map[string]interface{}{"id": existantPsy.ID}, existantPsy)
+		if writeErr != nil {
+			return writeErr
+		}
+
+		return nil
 	}
 
 	_, psyID, psyIDErr := s.IdentifierUtil.GenerateIdentifier()

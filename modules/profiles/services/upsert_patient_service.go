@@ -1,31 +1,39 @@
 package services
 
 import (
-	"errors"
-
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 )
 
-// CreatePatientService is a service that creates a patient profile
-type CreatePatientService struct {
+// UpsertPatientService is a service that creates or updates a patient profile
+type UpsertPatientService struct {
 	DatabaseUtil   database.IDatabaseUtil
 	IdentifierUtil identifier.IIdentifierUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreatePatientService) Execute(input *models.CreatePatientInput) error {
+func (s UpsertPatientService) Execute(input *models.UpsertPatientInput) error {
 
-	patientWithSameUserID := models.Patient{}
+	existantPatient := models.Patient{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"userId": input.UserID}, &patientWithSameUserID)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"userId": input.UserID}, &existantPatient)
 	if findErr != nil {
 		return findErr
 	}
 
-	if patientWithSameUserID.ID != "" {
-		return errors.New("cannot create two patient profiles for the same user")
+	if existantPatient.ID != "" {
+		existantPatient.FullName = input.FullName
+		existantPatient.LikeName = input.LikeName
+		existantPatient.BirthDate = input.BirthDate
+		existantPatient.City = input.City
+
+		writeErr := s.DatabaseUtil.UpdateOne("psi_db", "patients", map[string]interface{}{"id": existantPatient.ID}, existantPatient)
+		if writeErr != nil {
+			return writeErr
+		}
+
+		return nil
 	}
 
 	_, patientID, patientIDErr := s.IdentifierUtil.GenerateIdentifier()

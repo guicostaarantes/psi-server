@@ -42,8 +42,6 @@ type Resolver struct {
 	cancelAppointmentByPatientService       *schedule_services.CancelAppointmentByPatientService
 	cancelAppointmentByPsychologistService  *schedule_services.CancelAppointmentByPsychologistService
 	confirmAppointmentService               *schedule_services.ConfirmAppointmentService
-	createPatientService                    *profiles_services.CreatePatientService
-	createPsychologistService               *profiles_services.CreatePsychologistService
 	createTreatmentService                  *treatments_services.CreateTreatmentService
 	createUserService                       *users_services.CreateUserService
 	createUserWithPasswordService           *users_services.CreateUserWithPasswordService
@@ -77,10 +75,10 @@ type Resolver struct {
 	setPreferencesService                   *characteristics_services.SetPreferencesService
 	setTopAffinitiesForPatientService       *characteristics_services.SetTopAffinitiesForPatientService
 	setTranslationsService                  *translations_services.SetTranslationsService
-	updatePatientService                    *profiles_services.UpdatePatientService
-	updatePsychologistService               *profiles_services.UpdatePsychologistService
 	updateTreatmentService                  *treatments_services.UpdateTreatmentService
 	updateUserService                       *users_services.UpdateUserService
+	upsertPatientService                    *profiles_services.UpsertPatientService
+	upsertPsychologistService               *profiles_services.UpsertPsychologistService
 	validateUserTokenService                *users_services.ValidateUserTokenService
 }
 
@@ -149,28 +147,6 @@ func (r *Resolver) ConfirmAppointmentService() *schedule_services.ConfirmAppoint
 		}
 	}
 	return r.confirmAppointmentService
-}
-
-// CreatePatientService gets or sets the service with same name
-func (r *Resolver) CreatePatientService() *profiles_services.CreatePatientService {
-	if r.createPatientService == nil {
-		r.createPatientService = &profiles_services.CreatePatientService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
-		}
-	}
-	return r.createPatientService
-}
-
-// CreatePsychologistService gets or sets the service with same name
-func (r *Resolver) CreatePsychologistService() *profiles_services.CreatePsychologistService {
-	if r.createPsychologistService == nil {
-		r.createPsychologistService = &profiles_services.CreatePsychologistService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
-		}
-	}
-	return r.createPsychologistService
 }
 
 // CreateTreatmentService gets or sets the service with same name
@@ -520,26 +496,6 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 	return r.resetPasswordService
 }
 
-// UpdatePatientService gets or sets the service with same name
-func (r *Resolver) UpdatePatientService() *profiles_services.UpdatePatientService {
-	if r.updatePatientService == nil {
-		r.updatePatientService = &profiles_services.UpdatePatientService{
-			DatabaseUtil: r.DatabaseUtil,
-		}
-	}
-	return r.updatePatientService
-}
-
-// UpdatePsychologistService gets or sets the service with same name
-func (r *Resolver) UpdatePsychologistService() *profiles_services.UpdatePsychologistService {
-	if r.updatePsychologistService == nil {
-		r.updatePsychologistService = &profiles_services.UpdatePsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
-		}
-	}
-	return r.updatePsychologistService
-}
-
 // UpdateTreatmentService gets or sets the service with same name
 func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
 	if r.updateTreatmentService == nil {
@@ -558,6 +514,28 @@ func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
 		}
 	}
 	return r.updateUserService
+}
+
+// UpsertPatientService gets or sets the service with same name
+func (r *Resolver) UpsertPatientService() *profiles_services.UpsertPatientService {
+	if r.upsertPatientService == nil {
+		r.upsertPatientService = &profiles_services.UpsertPatientService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+		}
+	}
+	return r.upsertPatientService
+}
+
+// UpsertPsychologistService gets or sets the service with same name
+func (r *Resolver) UpsertPsychologistService() *profiles_services.UpsertPsychologistService {
+	if r.upsertPsychologistService == nil {
+		r.upsertPsychologistService = &profiles_services.UpsertPsychologistService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+		}
+	}
+	return r.upsertPsychologistService
 }
 
 // ValidateUserTokenService gets or sets the service with same name

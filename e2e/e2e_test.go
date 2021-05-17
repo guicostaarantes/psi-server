@@ -638,7 +638,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should create own psychologist profile only if user is coordinator or psychologist", func(t *testing.T) {
 
 		query := `mutation {
-			createMyPsychologistProfile(input: {
+			upsertMyPsychologistProfile(input: {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
 				birthDate: 239414400,
@@ -648,18 +648,18 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createMyPsychologistProfile\"]}],\"data\":{\"createMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertMyPsychologistProfile\"]}],\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createMyPsychologistProfile\"]}],\"data\":{\"createMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertMyPsychologistProfile\"]}],\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"createMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		query = `mutation {
-			createMyPsychologistProfile(input: {
+			upsertMyPsychologistProfile(input: {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
@@ -669,7 +669,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"createMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		query = `{
 			myPsychologistProfile {
@@ -715,7 +715,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should update own psychologist profile only if user is coordinator or psychologist", func(t *testing.T) {
 
 		query := `mutation {
-			updateMyPsychologistProfile(input: {
+			upsertMyPsychologistProfile(input: {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
 				birthDate: 239414400,
@@ -725,18 +725,18 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updateMyPsychologistProfile\"]}],\"data\":{\"updateMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertMyPsychologistProfile\"]}],\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updateMyPsychologistProfile\"]}],\"data\":{\"updateMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertMyPsychologistProfile\"]}],\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"updateMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		query = `mutation {
-			updateMyPsychologistProfile(input: {
+			upsertMyPsychologistProfile(input: {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
@@ -746,7 +746,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"updateMyPsychologistProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
 
 		query = `{
 			myPsychologistProfile {
@@ -971,7 +971,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should create own patient profile if user is logged in", func(t *testing.T) {
 
 		query := `mutation {
-			createMyPatientProfile(input: {
+			upsertMyPatientProfile(input: {
 				fullName: "Patrick Lavon Mahomes II",
 				likeName: "Patrick Mahomes",
 				birthDate: 811296000,
@@ -981,14 +981,14 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"createMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createMyPatientProfile\"]}],\"data\":{\"createMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertMyPatientProfile\"]}],\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		query = `mutation {
-			createMyPatientProfile(input: {
+			upsertMyPatientProfile(input: {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
 				birthDate: 239414400,
@@ -998,10 +998,10 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"createMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		query = `mutation {
-			createMyPatientProfile(input: {
+			upsertMyPatientProfile(input: {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
@@ -1011,7 +1011,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"createMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		query = `{
 			myPatientProfile {
@@ -1043,7 +1043,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should update own patient profile if user is logged in", func(t *testing.T) {
 
 		query := `mutation {
-		updateMyPatientProfile(input: {
+		upsertMyPatientProfile(input: {
 			fullName: "Patrick Lavon Mahomes II",
 			likeName: "Patrick Mahomes",
 			birthDate: 811296000,
@@ -1053,14 +1053,14 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"updateMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"updateMyPatientProfile\"]}],\"data\":{\"updateMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertMyPatientProfile\"]}],\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		query = `mutation {
-		updateMyPatientProfile(input: {
+		upsertMyPatientProfile(input: {
 			fullName: "Thomas Edward Patrick Brady, Jr."
 			likeName: "Tom Brady",
 			birthDate: 239414400,
@@ -1070,10 +1070,10 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"updateMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		query = `mutation {
-		updateMyPatientProfile(input: {
+		upsertMyPatientProfile(input: {
 			fullName: "Peyton Williams Manning",
 			likeName: "Peyton Manning",
 			birthDate: 196484400,
@@ -1083,7 +1083,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"updateMyPatientProfile\":null}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
 
 		query = `{
 		myPatientProfile {
