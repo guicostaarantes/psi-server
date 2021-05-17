@@ -2605,11 +2605,11 @@ func TestEnd2End(t *testing.T) {
 						{ key: "psy-char:disabilities:locomotion", value: "Locomotiva" }
 						{
 							key: "pat-pref:has-consulted-before:true"
-							value: "Quão interessado você está em atender pacientes negros?"
+							value: "Quão interessado você está em atender pacientes que já fizeram tratamento psicológico anteriormente?"
 						}
 						{
 							key: "pat-pref:has-consulted-before:false"
-							value: "Quão interessado você está em atender pacientes que não sejam negros?"
+							value: "Quão interessado você está em atender pacientes que nunca fizeram tratamento psicológico?"
 						}
 						{
 							key: "pat-pref:gender:male"
