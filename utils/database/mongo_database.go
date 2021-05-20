@@ -106,6 +106,10 @@ func (m mongoClient) InsertOne(database string, table string, provider interface
 func (m mongoClient) InsertMany(database string, table string, provider []interface{}) error {
 	collection := m.client.Database(database).Collection(table)
 
+	if len(provider) == 0 {
+		return nil
+	}
+
 	_, insertErr := collection.InsertMany(m.context, provider)
 
 	if insertErr != nil {
