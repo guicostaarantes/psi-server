@@ -26,9 +26,12 @@ services:
       - 1025:1025
       - 8082:8025
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile-debug
     ports:
       - 8080:8080
+      - 40000:40000
     environment:
       PSI_BOOTSTRAP_USER: coordinator@psi.com.br|Abc123!@#
       PSI_MONGO_HOST: mongo

@@ -11,7 +11,13 @@
       "mode": "test",
       "program": "${workspaceRoot}/e2e",
       "args": []
+    },
+    {
+      "name": "Attach",
+      "type": "go",
+      "request": "attach",
+      "mode": "remote",
+      "port": 40000
     }
-
   ]
 }
