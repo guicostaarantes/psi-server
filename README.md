@@ -49,15 +49,22 @@ Feel free to open an issue or create a pull request. Please follow the rules:
 - Running `./test-e2e.sh` will execute the tests and output the coverage percentage. We are currently at 75% coverage. Most of the non-covered code is error handling which I don't really know how to tackle. If you do, please let me know.
 - Tests should be fast. In my PC, `./test-e2e.sh` finishes in 45 milliseconds. Run the tests in your PC before you start coding as set it as a benchmark. Then run again after your functionality is ready and the new tests are created. If the time increases too much, it is likely that something is not working the way it should.
 - Tests must not produce side effects. Despite speed, that's another reason to create mock utils for things such as databases, mail sending, etc.
+- If you want to debug the e2e tests in VSCode, run the `Launch e2e tests` debug configuration. 
 
 ### Running locally
 
-- The instructions for docker to run all the containers we need is inside `./docker-compose.yml`. If you have docker installed in your PC, run `docker-compose up --build` and it will build this app and run it alongside the other containers needed.
+- The instructions for docker to run all the containers we need is inside `./docker-compose.yml`. If you have docker installed in your PC, run `docker compose up --build` and it will build this app and run it alongside the other containers needed.
 - The containers that run in this file are:
   - `mongo`: the database for our application
   - `mongo-express`: a web application to explore mongo collections
   - `mailhog`: a SMTP server that will intercept all mails sent by it and show in a web application
-- After docker-compose is up and running, go to your web browser and open 3 tabs:
+- After docker compose is up and running, go to your web browser and open 3 tabs:
   - `localhost:8080`: GraphQL Playground to execute queries/mutations/subscriptions
   - `localhost:8081`: Mongo Express Web Application to monitor mongo collections
   - `localhost:8082`: Mailhog Web Application to monitor mails being sent
+
+### Debugging locally
+
+- If you want to debug your code in VSCode, you need to run `docker compose --file docker-compose-debug.yml up --build` instead.
+- After it finishes loading, run the `Attach server` debug configuration.
+- When the attachment to the debug session finishes, you will see `connect to http://localhost:8080/ for GraphQL playground` logged in the terminal.

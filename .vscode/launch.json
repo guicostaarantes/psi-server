@@ -5,19 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch test function",
+      "name": "Attach server",
+      "type": "go",
+      "request": "attach",
+      "mode": "remote",
+      "port": 40000
+    },
+    {
+      "name": "Launch e2e tests",
       "type": "go",
       "request": "launch",
       "mode": "test",
       "program": "${workspaceRoot}/e2e",
       "args": []
-    },
-    {
-      "name": "Attach",
-      "type": "go",
-      "request": "attach",
-      "mode": "remote",
-      "port": 40000
     }
   ]
 }
