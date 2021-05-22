@@ -36,7 +36,7 @@ func main() {
 		SecondsLimitAvailability:   int64(2419200),
 		SecondsMinimumAvailability: int64(1800),
 		SecondsToCooldownReset:     int64(86400),
-		SecondsToExpire:            int64(1800),
+		SecondsToExpire:            int64(28800),
 		SecondsToExpireReset:       int64(86400),
 	}
 
