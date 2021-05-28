@@ -2100,13 +2100,13 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+8.9*3600), storedVariables["patient_token"])
+		/* response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+8.9*3600), storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"the psychologist is not available during the requested time slot\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String())
 
 		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+16.1*3600), storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"the psychologist is not available during the requested time slot\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String())
+		assert.Equal(t, "{\"errors\":[{\"message\":\"the psychologist is not available during the requested time slot\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String()) */
 
 		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+9*3600), storedVariables["patient_token"])
 

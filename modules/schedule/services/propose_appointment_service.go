@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"errors"
 
 	"github.com/guicostaarantes/psi-server/modules/schedule/models"
@@ -43,7 +42,10 @@ func (s ProposeAppointmentService) Execute(patientID string, input models.Propos
 
 	end := input.Start + treatment.Duration
 
-	isAvailable := false
+	// The code below validates if the psychologist has agenda for the proposed appointment.
+	// It has been commented since it's not strictly necessary for the MVP, and also the stakeholders think it will bring more complications than benefits.
+
+	/* isAvailable := false
 
 	avalCursor, findAvalErr := s.DatabaseUtil.FindMany("psi_db", "availabilities", map[string]interface{}{"psychologistId": treatment.PsychologistID})
 	if findAvalErr != nil {
@@ -99,7 +101,7 @@ func (s ProposeAppointmentService) Execute(patientID string, input models.Propos
 
 	if isClash {
 		return errors.New("the psychologist is not available during the requested time slot")
-	}
+	} */
 
 	_, appoID, appoIDErr := s.IdentifierUtil.GenerateIdentifier()
 	if appoIDErr != nil {
