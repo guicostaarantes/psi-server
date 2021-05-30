@@ -53,18 +53,17 @@ Feel free to open an issue or create a pull request. Please follow the rules:
 
 ### Running locally
 
-- The instructions for docker to run all the containers we need is inside `./docker-compose.yml`. If you have docker installed in your PC, run `docker compose up --build` and it will build this app and run it alongside the other containers needed.
+- The instructions for docker to run all the containers we need is inside `./docker-compose.yml`. If you have docker installed in your PC, run `docker-compose up --build` and it will build this app and run it alongside the other containers needed.
 - The containers that run in this file are:
   - `mongo`: the database for our application
   - `mongo-express`: a web application to explore mongo collections
   - `mailhog`: a SMTP server that will intercept all mails sent by it and show in a web application
 - After docker compose is up and running, go to your web browser and open 3 tabs:
-  - `localhost:8080`: GraphQL Playground to execute queries/mutations/subscriptions
-  - `localhost:8081`: Mongo Express Web Application to monitor mongo collections
-  - `localhost:8082`: Mailhog Web Application to monitor mails being sent
+  - `localhost:7070`: GraphQL Playground to execute queries/mutations/subscriptions
+  - `localhost:7071`: Mongo Express Web Application to monitor mongo collections
+  - `localhost:7072`: Mailhog Web Application to monitor mails being sent
 
 ### Debugging locally
 
-- If you want to debug your code in VSCode, you need to run `docker compose --file docker-compose-debug.yml up --build` instead.
-- After it finishes loading, run the `Attach server` debug configuration.
-- When the attachment to the debug session finishes, you will see `connect to http://localhost:8080/ for GraphQL playground` logged in the terminal.
+- If you want to debug your code in VSCode, change `docker-compose.yml` replacing `prod.Dockerfile` to `debug.Dockerfile` in the field `services -> app -> build -> dockerfile`, then run `docker-compose up --build`.
+- After it finishes loading, run the `Attach server` debug configuration in VSCode.

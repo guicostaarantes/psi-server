@@ -1,8 +1,8 @@
 #!/bin/bash
 
 URL=$(printenv PSI_BACKEND_URL)
-USER=$(printenv PSI_CONNECT_USER)
-PASS=$(printenv PSI_CONNECT_PASSWORD)
+USER=$(printenv PSI_JOBRUNNER_USERNAME)
+PASS=$(printenv PSI_JOBRUNNER_PASSWORD)
 
 BASEDIR=$( dirname $(readlink -f "$0") )
 COUNTER=0
