@@ -7,31 +7,31 @@ enum TreatmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modu
 }
 
 input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateTreatmentInput") {
+    weeklyStart: Int!
     duration: Int!
     price: Int!
-    interval: Int!
 }
 
 input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
+    weeklyStart: Int!
     duration: Int!
     price: Int!
-    interval: Int!
 }
 
 type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientTreatmentsResponse") {
     id: ID!
+    weeklyStart: Int!
     duration: Int!
     price: Int!
-    interval: Int!
     status: TreatmentStatus!
     psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
 
 type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistTreatmentsResponse") {
     id: ID!
+    weeklyStart: Int!
     duration: Int!
     price: Int!
-    interval: Int!
     status: TreatmentStatus!
     patient: PublicPatientProfile @goField(forceResolver: true)
 }

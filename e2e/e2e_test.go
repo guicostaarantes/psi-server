@@ -1791,49 +1791,57 @@ func TestEnd2End(t *testing.T) {
 
 		query := `mutation {
 			createTreatment(input: {
+				weeklyStart: %d,
 				duration: 3600,
 				price: 30,
-				interval: 604800
 			})
 		}`
 
-		response := gql(router, query, "")
+		response := gql(router, fmt.Sprintf(query, 226800), "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, fmt.Sprintf(query, 226800), storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 226800), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 226800), storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"there is another treatment in the same period\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, 228600), storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"there is another treatment in the same period\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, 230400), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 234000), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 237600), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 241200), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["coordinator_token"])
+		response = gql(router, fmt.Sprintf(query, 226800), storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["coordinator_token"])
+		response = gql(router, fmt.Sprintf(query, 230400), storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["coordinator_token"])
+		response = gql(router, fmt.Sprintf(query, 234000), storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 	})
@@ -1879,9 +1887,9 @@ func TestEnd2End(t *testing.T) {
 			updateTreatment(
 				id: %q,
 				input: {
+					weeklyStart: 226800,
 					duration: %d,
 					price: 30,
-					interval: 604800
 				}
 			)
 		}`
@@ -1912,20 +1920,20 @@ func TestEnd2End(t *testing.T) {
 		query := `{
 			myPsychologistProfile {
 				treatments {
+					weeklyStart
 					duration
 					price
-					interval
 				}
 			}
 		}`
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"duration\":2700,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"weeklyStart\":226800,\"duration\":2700,\"price\":30},{\"weeklyStart\":230400,\"duration\":3600,\"price\":30},{\"weeklyStart\":234000,\"duration\":3600,\"price\":30},{\"weeklyStart\":237600,\"duration\":3600,\"price\":30},{\"weeklyStart\":241200,\"duration\":3600,\"price\":30}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"duration\":3000,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800},{\"duration\":3600,\"price\":30,\"interval\":604800}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"weeklyStart\":226800,\"duration\":3000,\"price\":30},{\"weeklyStart\":230400,\"duration\":3600,\"price\":30},{\"weeklyStart\":234000,\"duration\":3600,\"price\":30}]}}}", response.Body.String())
 
 	})
 

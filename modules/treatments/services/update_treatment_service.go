@@ -26,9 +26,18 @@ func (s UpdateTreatmentService) Execute(id string, psychologistID string, input 
 		return errors.New("resource not found")
 	}
 
+	checkTreatmentCollisionService := CheckTreatmentCollisionService{
+		DatabaseUtil: s.DatabaseUtil,
+	}
+
+	checkErr := checkTreatmentCollisionService.Execute(psychologistID, input.WeeklyStart, input.Duration, id)
+	if checkErr != nil {
+		return checkErr
+	}
+
+	treatment.WeeklyStart = input.WeeklyStart
 	treatment.Duration = input.Duration
 	treatment.Price = input.Price
-	treatment.Interval = input.Interval
 
 	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {

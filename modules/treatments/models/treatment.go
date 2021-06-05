@@ -16,14 +16,15 @@ const (
 	InterruptedByPatient TreatmentStatus = "INTERRUPTED_BY_PATIENT"
 )
 
-// Treatment represents the intention from a psychologist to treat a patient, defining the session duration, price and interval between sessions
+// Treatment represents the intention from a psychologist to treat a patient, defining the session weeklyStart, duration and price of sessions
+// All treatments have weekly sessions, and WeeklyStart is the number of seconds from Sundays at midnight where the sessions happen
 type Treatment struct {
 	ID             string          `json:"id" bson:"id"`
 	PsychologistID string          `json:"psychologistId" bson:"psychologistId"`
 	PatientID      string          `json:"patientId" bson:"patientId"`
+	WeeklyStart    int64           `json:"weeklyStart" bson:"weeklyStart"`
 	Duration       int64           `json:"duration" bson:"duration"`
 	Price          int64           `json:"price" bson:"price"`
-	Interval       int64           `json:"interval" bson:"interval"`
 	Status         TreatmentStatus `json:"status" bson:"status"`
 	StartDate      int64           `json:"startDate" bson:"startDate"`
 	EndDate        int64           `json:"endDate" bson:"endDate"`

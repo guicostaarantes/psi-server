@@ -15,6 +15,15 @@ type CreateTreatmentService struct {
 // Execute is the method that runs the business logic of the service
 func (s CreateTreatmentService) Execute(psychologistID string, input models.CreateTreatmentInput) error {
 
+	checkTreatmentCollisionService := CheckTreatmentCollisionService{
+		DatabaseUtil: s.DatabaseUtil,
+	}
+
+	checkErr := checkTreatmentCollisionService.Execute(psychologistID, input.WeeklyStart, input.Duration, "")
+	if checkErr != nil {
+		return checkErr
+	}
+
 	_, treatmentID, treatmentIDErr := s.IdentifierUtil.GenerateIdentifier()
 	if treatmentIDErr != nil {
 		return treatmentIDErr
@@ -23,9 +32,9 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 	treatment := models.Treatment{
 		ID:             treatmentID,
 		PsychologistID: psychologistID,
+		WeeklyStart:    input.WeeklyStart,
 		Duration:       input.Duration,
 		Price:          input.Price,
-		Interval:       input.Interval,
 		Status:         models.Pending,
 	}
 
