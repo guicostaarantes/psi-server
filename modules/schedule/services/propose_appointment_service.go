@@ -42,67 +42,6 @@ func (s ProposeAppointmentService) Execute(patientID string, input models.Propos
 
 	end := input.Start + treatment.Duration
 
-	// The code below validates if the psychologist has agenda for the proposed appointment.
-	// It has been commented since it's not strictly necessary for the MVP, and also the stakeholders think it will bring more complications than benefits.
-
-	/* isAvailable := false
-
-	avalCursor, findAvalErr := s.DatabaseUtil.FindMany("psi_db", "availabilities", map[string]interface{}{"psychologistId": treatment.PsychologistID})
-	if findAvalErr != nil {
-		return findAvalErr
-	}
-
-	defer avalCursor.Close(context.Background())
-
-	for avalCursor.Next(context.Background()) {
-
-		aval := models.Availability{}
-
-		decodeErr := avalCursor.Decode(&aval)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		if aval.Start <= input.Start && aval.End >= end {
-			isAvailable = true
-			break
-		}
-
-	}
-
-	if !isAvailable {
-		return errors.New("the psychologist is not available during the requested time slot")
-	}
-
-	isClash := false
-
-	clashCursor, findClashErr := s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{"psychologistId": treatment.PsychologistID, "status": string(models.Confirmed)})
-	if findClashErr != nil {
-		return findClashErr
-	}
-
-	defer clashCursor.Close(context.Background())
-
-	for clashCursor.Next(context.Background()) {
-
-		appointment := models.Appointment{}
-
-		decodeErr := clashCursor.Decode(&appointment)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		if appointment.End > input.Start && appointment.Start < end {
-			isClash = true
-			break
-		}
-
-	}
-
-	if isClash {
-		return errors.New("the psychologist is not available during the requested time slot")
-	} */
-
 	_, appoID, appoIDErr := s.IdentifierUtil.GenerateIdentifier()
 	if appoIDErr != nil {
 		return appoIDErr

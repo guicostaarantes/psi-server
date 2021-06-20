@@ -64,11 +64,6 @@ type ComplexityRoot struct {
 		Psychologist func(childComplexity int) int
 	}
 
-	AvailabilityResponse struct {
-		End   func(childComplexity int) int
-		Start func(childComplexity int) int
-	}
-
 	Characteristic struct {
 		Name           func(childComplexity int) int
 		PossibleValues func(childComplexity int) int
@@ -100,7 +95,6 @@ type ComplexityRoot struct {
 		ProcessPendingMail                     func(childComplexity int) int
 		ProposeAppointment                     func(childComplexity int, input models2.ProposeAppointmentInput) int
 		ResetPassword                          func(childComplexity int, input models.ResetPasswordInput) int
-		SetMyAvailability                      func(childComplexity int, input []*models2.SetAvailabilityInput) int
 		SetMyPatientCharacteristicChoices      func(childComplexity int, input []*models3.SetCharacteristicChoiceInput) int
 		SetMyPatientPreferences                func(childComplexity int, input []*models3.SetPreferenceInput) int
 		SetMyPatientTopAffinities              func(childComplexity int) int
@@ -205,14 +199,12 @@ type ComplexityRoot struct {
 
 	Query struct {
 		AuthenticateUser            func(childComplexity int, input models.AuthenticateUserInput) int
-		MyAvailability              func(childComplexity int) int
 		MyPatientProfile            func(childComplexity int) int
 		MyPatientTopAffinities      func(childComplexity int) int
 		MyPsychologistProfile       func(childComplexity int) int
 		MyUser                      func(childComplexity int) int
 		PatientCharacteristics      func(childComplexity int) int
 		PatientProfile              func(childComplexity int, id string) int
-		PsychologistAvailability    func(childComplexity int, id string) int
 		PsychologistCharacteristics func(childComplexity int) int
 		PsychologistProfile         func(childComplexity int, id string) int
 		Time                        func(childComplexity int) int
@@ -264,7 +256,6 @@ type MutationResolver interface {
 	ConfirmAppointment(ctx context.Context, id string) (*bool, error)
 	DenyAppointment(ctx context.Context, id string, reason string) (*bool, error)
 	ProposeAppointment(ctx context.Context, input models2.ProposeAppointmentInput) (*bool, error)
-	SetMyAvailability(ctx context.Context, input []*models2.SetAvailabilityInput) (*bool, error)
 	SetTranslations(ctx context.Context, lang string, input []*models4.TranslationInput) (*bool, error)
 	AssignTreatment(ctx context.Context, id string) (*bool, error)
 	CreateTreatment(ctx context.Context, input models1.CreateTreatmentInput) (*bool, error)
@@ -316,8 +307,6 @@ type QueryResolver interface {
 	MyPsychologistProfile(ctx context.Context) (*models5.Psychologist, error)
 	PatientProfile(ctx context.Context, id string) (*models5.Patient, error)
 	PsychologistProfile(ctx context.Context, id string) (*models5.Psychologist, error)
-	MyAvailability(ctx context.Context) ([]*models2.AvailabilityResponse, error)
-	PsychologistAvailability(ctx context.Context, id string) ([]*models2.AvailabilityResponse, error)
 	Time(ctx context.Context) (int64, error)
 	Translations(ctx context.Context, lang string, keys []string) ([]*models4.Translation, error)
 }
@@ -350,20 +339,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Affinity.Psychologist(childComplexity), true
-
-	case "AvailabilityResponse.end":
-		if e.complexity.AvailabilityResponse.End == nil {
-			break
-		}
-
-		return e.complexity.AvailabilityResponse.End(childComplexity), true
-
-	case "AvailabilityResponse.start":
-		if e.complexity.AvailabilityResponse.Start == nil {
-			break
-		}
-
-		return e.complexity.AvailabilityResponse.Start(childComplexity), true
 
 	case "Characteristic.name":
 		if e.complexity.Characteristic.Name == nil {
@@ -612,18 +587,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ResetPassword(childComplexity, args["input"].(models.ResetPasswordInput)), true
-
-	case "Mutation.setMyAvailability":
-		if e.complexity.Mutation.SetMyAvailability == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_setMyAvailability_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.SetMyAvailability(childComplexity, args["input"].([]*models2.SetAvailabilityInput)), true
 
 	case "Mutation.setMyPatientCharacteristicChoices":
 		if e.complexity.Mutation.SetMyPatientCharacteristicChoices == nil {
@@ -1203,13 +1166,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.AuthenticateUser(childComplexity, args["input"].(models.AuthenticateUserInput)), true
 
-	case "Query.myAvailability":
-		if e.complexity.Query.MyAvailability == nil {
-			break
-		}
-
-		return e.complexity.Query.MyAvailability(childComplexity), true
-
 	case "Query.myPatientProfile":
 		if e.complexity.Query.MyPatientProfile == nil {
 			break
@@ -1256,18 +1212,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.PatientProfile(childComplexity, args["id"].(string)), true
-
-	case "Query.psychologistAvailability":
-		if e.complexity.Query.PsychologistAvailability == nil {
-			break
-		}
-
-		args, err := ec.field_Query_psychologistAvailability_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.PsychologistAvailability(childComplexity, args["id"].(string)), true
 
 	case "Query.psychologistCharacteristics":
 		if e.complexity.Query.PsychologistCharacteristics == nil {
@@ -1626,11 +1570,6 @@ input ProposeAppointmentInput @goModel(model: "github.com/guicostaarantes/psi-se
     start: Int!
 }
 
-input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SetAvailabilityInput") {
-    start: Int!
-    end: Int!
-}
-
 type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
     id: ID!
     start: Int!
@@ -1653,19 +1592,6 @@ type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-ser
     patient: PublicPatientProfile! @goField(forceResolver: true)
 }
 
-type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {
-    start: Int!
-    end: Int!
-}
-
-extend type Query {
-    """The myAvailability query allows a user to get the availability of their own psychologist profile."""
-    myAvailability: [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The psychologistAvailability query allows a user to get the availability of a psychologist profile."""
-    psychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-}
-
 extend type Mutation {
     """The cancelAppointmentByPatient mutation allows a user with a patient profile to cancel the confirmation of an appointment."""
     cancelAppointmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
@@ -1681,9 +1607,6 @@ extend type Mutation {
 
     """The proposeAppointment mutation allows a user with a patient profile in treatment to propose a time for a next meeting."""
     proposeAppointment(input: ProposeAppointmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The setMyAvailability mutation allows a user to set their availability to receive appointments."""
-    setMyAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
 	{Name: "graph/schema/time.graphqls", Input: `extend type Query {
     """The time query allows the user to know the timestamp of the server."""
@@ -2162,21 +2085,6 @@ func (ec *executionContext) field_Mutation_resetPassword_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_setMyAvailability_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 []*models2.SetAvailabilityInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSetAvailabilityInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInputᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_setMyPatientCharacteristicChoices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2414,21 +2322,6 @@ func (ec *executionContext) field_Query_patientProfile_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_psychologistAvailability_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Query_psychologistProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2604,76 +2497,6 @@ func (ec *executionContext) _Affinity_psychologist(ctx context.Context, field gr
 	res := resTmp.(*models5.Psychologist)
 	fc.Result = res
 	return ec.marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _AvailabilityResponse_start(ctx context.Context, field graphql.CollectedField, obj *models2.AvailabilityResponse) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "AvailabilityResponse",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Start, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int64)
-	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _AvailabilityResponse_end(ctx context.Context, field graphql.CollectedField, obj *models2.AvailabilityResponse) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "AvailabilityResponse",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.End, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int64)
-	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Characteristic_name(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicResponse) (ret graphql.Marshaler) {
@@ -4125,69 +3948,6 @@ func (ec *executionContext) _Mutation_proposeAppointment(ctx context.Context, fi
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_setMyAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setMyAvailability_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().SetMyAvailability(rctx, args["input"].([]*models2.SetAvailabilityInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
 			if err != nil {
 				return nil, err
 			}
@@ -7505,131 +7265,6 @@ func (ec *executionContext) _Query_psychologistProfile(ctx context.Context, fiel
 	return ec.marshalOPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_myAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().MyAvailability(rctx)
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*models2.AvailabilityResponse); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*models2.AvailabilityResponse)
-	fc.Result = res
-	return ec.marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_psychologistAvailability(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_psychologistAvailability_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().PsychologistAvailability(rctx, args["id"].(string))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.([]*models2.AvailabilityResponse); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*models2.AvailabilityResponse)
-	fc.Result = res
-	return ec.marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Query_time(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -9321,34 +8956,6 @@ func (ec *executionContext) unmarshalInputResetPasswordInput(ctx context.Context
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSetAvailabilityInput(ctx context.Context, obj interface{}) (models2.SetAvailabilityInput, error) {
-	var it models2.SetAvailabilityInput
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "start":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start"))
-			it.Start, err = ec.unmarshalNInt2int64(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "end":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("end"))
-			it.End, err = ec.unmarshalNInt2int64(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputSetMyProfileCharacteristicChoiceInput(ctx context.Context, obj interface{}) (models3.SetCharacteristicChoiceInput, error) {
 	var it models3.SetCharacteristicChoiceInput
 	var asMap = obj.(map[string]interface{})
@@ -9678,38 +9285,6 @@ func (ec *executionContext) _Affinity(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
-var availabilityResponseImplementors = []string{"AvailabilityResponse"}
-
-func (ec *executionContext) _AvailabilityResponse(ctx context.Context, sel ast.SelectionSet, obj *models2.AvailabilityResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, availabilityResponseImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("AvailabilityResponse")
-		case "start":
-			out.Values[i] = ec._AvailabilityResponse_start(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "end":
-			out.Values[i] = ec._AvailabilityResponse_end(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var characteristicImplementors = []string{"Characteristic"}
 
 func (ec *executionContext) _Characteristic(ctx context.Context, sel ast.SelectionSet, obj *models3.CharacteristicResponse) graphql.Marshaler {
@@ -9846,8 +9421,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_denyAppointment(ctx, field)
 		case "proposeAppointment":
 			out.Values[i] = ec._Mutation_proposeAppointment(ctx, field)
-		case "setMyAvailability":
-			out.Values[i] = ec._Mutation_setMyAvailability(ctx, field)
 		case "setTranslations":
 			out.Values[i] = ec._Mutation_setTranslations(ctx, field)
 		case "assignTreatment":
@@ -10658,34 +10231,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_psychologistProfile(ctx, field)
 				return res
 			})
-		case "myAvailability":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_myAvailability(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "psychologistAvailability":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_psychologistAvailability(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
 		case "time":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -11146,53 +10691,6 @@ func (ec *executionContext) marshalNAppointmentStatus2githubᚗcomᚋguicostaara
 func (ec *executionContext) unmarshalNAuthenticateUserInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐAuthenticateUserInput(ctx context.Context, v interface{}) (models.AuthenticateUserInput, error) {
 	res, err := ec.unmarshalInputAuthenticateUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNAvailabilityResponse2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.AvailabilityResponse) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNAvailabilityResponse2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponse(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNAvailabilityResponse2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAvailabilityResponse(ctx context.Context, sel ast.SelectionSet, v *models2.AvailabilityResponse) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._AvailabilityResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
@@ -11724,32 +11222,6 @@ func (ec *executionContext) marshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsi
 	}
 	wg.Wait()
 	return ret
-}
-
-func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInputᚄ(ctx context.Context, v interface{}) ([]*models2.SetAvailabilityInput, error) {
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]*models2.SetAvailabilityInput, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNSetAvailabilityInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInput(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) unmarshalNSetAvailabilityInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐSetAvailabilityInput(ctx context.Context, v interface{}) (*models2.SetAvailabilityInput, error) {
-	res, err := ec.unmarshalInputSetAvailabilityInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNSetMyProfileCharacteristicChoiceInput2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐSetCharacteristicChoiceInputᚄ(ctx context.Context, v interface{}) ([]*models3.SetCharacteristicChoiceInput, error) {
