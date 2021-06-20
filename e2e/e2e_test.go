@@ -47,19 +47,17 @@ func TestEnd2End(t *testing.T) {
 	storedVariables := map[string]string{}
 
 	res := &resolvers.Resolver{
-		DatabaseUtil:               database.MockDatabaseUtil,
-		HashUtil:                   hash.WeakBcryptHashUtil,
-		IdentifierUtil:             identifier.UUIDIdentifierUtil,
-		MailUtil:                   mail.MockMailUtil,
-		MatchUtil:                  match.RegexpMatchUtil,
-		SerializingUtil:            serializing.JSONSerializingUtil,
-		TokenUtil:                  token.RngTokenUtil,
-		MaxAffinityNumber:          int64(5),
-		SecondsLimitAvailability:   int64(2419200),
-		SecondsMinimumAvailability: int64(1800),
-		SecondsToCooldownReset:     int64(86400),
-		SecondsToExpire:            int64(1800),
-		SecondsToExpireReset:       int64(86400),
+		DatabaseUtil:           database.MockDatabaseUtil,
+		HashUtil:               hash.WeakBcryptHashUtil,
+		IdentifierUtil:         identifier.UUIDIdentifierUtil,
+		MailUtil:               mail.MockMailUtil,
+		MatchUtil:              match.RegexpMatchUtil,
+		SerializingUtil:        serializing.JSONSerializingUtil,
+		TokenUtil:              token.RngTokenUtil,
+		MaxAffinityNumber:      int64(5),
+		SecondsToCooldownReset: int64(86400),
+		SecondsToExpire:        int64(1800),
+		SecondsToExpireReset:   int64(86400),
 	}
 
 	// If you need to debug the contents of the database at a specific point, insert this code:
@@ -1544,249 +1542,6 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
-	t.Run("should set own availability only if coordinator or psychologist", func(t *testing.T) {
-
-		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
-
-		query := fmt.Sprintf(
-			`mutation {
-				setMyAvailability(input: [
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d }
-				])
-			}`,
-			tomorrow+8*3600,
-			tomorrow+16*3600,
-			tomorrow+32*3600,
-			tomorrow+40*3600,
-			tomorrow+56*3600,
-			tomorrow+64*3600,
-			tomorrow+80*3600,
-			tomorrow+88*3600,
-			tomorrow+104*3600,
-			tomorrow+112*3600,
-		)
-
-		response := gql(router, query, "")
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setMyAvailability\"]}],\"data\":{\"setMyAvailability\":null}}", response.Body.String())
-
-		response = gql(router, query, storedVariables["patient_token"])
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setMyAvailability\"]}],\"data\":{\"setMyAvailability\":null}}", response.Body.String())
-
-		response = gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, "{\"data\":{\"setMyAvailability\":null}}", response.Body.String())
-
-		response = gql(router, query, storedVariables["coordinator_token"])
-
-		assert.Equal(t, "{\"data\":{\"setMyAvailability\":null}}", response.Body.String())
-
-	})
-
-	t.Run("should not set availability if span is less than SecondsMinimumAvailability", func(t *testing.T) {
-
-		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
-
-		query := fmt.Sprintf(
-			`mutation {
-				setMyAvailability(input: [
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d }
-				])
-			}`,
-			tomorrow+8*3600,
-			tomorrow+16*3600,
-			tomorrow+32*3600,
-			tomorrow+40*3600,
-			tomorrow+56*3600,
-			tomorrow+64*3600,
-			tomorrow+80*3600,
-			tomorrow+88*3600,
-			tomorrow+104*3600,
-			tomorrow+104*3600+res.SecondsMinimumAvailability/2,
-		)
-
-		response := gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, fmt.Sprintf("{\"errors\":[{\"message\":\"availabilities must last at least %d seconds: one availability starting at %d, ending at %d\",\"path\":[\"setMyAvailability\"]}],\"data\":{\"setMyAvailability\":null}}", res.SecondsMinimumAvailability, tomorrow+104*3600, tomorrow+104*3600+res.SecondsMinimumAvailability/2), response.Body.String())
-
-	})
-
-	t.Run("should not set availability if one starts in the past or ends after now + SecondsLimitAvailability", func(t *testing.T) {
-
-		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
-
-		query := fmt.Sprintf(
-			`mutation {
-				setMyAvailability(input: [
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d }
-				])
-			}`,
-			tomorrow-40*3600,
-			tomorrow-32*3600,
-			tomorrow+32*3600,
-			tomorrow+40*3600,
-			tomorrow+56*3600,
-			tomorrow+64*3600,
-			tomorrow+80*3600,
-			tomorrow+88*3600,
-			tomorrow+104*3600,
-			tomorrow+112*3600,
-		)
-
-		response := gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, fmt.Sprintf("{\"errors\":[{\"message\":\"availabilities must not start in the past: one availability starting at %d, current time is %d\",\"path\":[\"setMyAvailability\"]}],\"data\":{\"setMyAvailability\":null}}", tomorrow-40*3600, time.Now().Unix()), response.Body.String())
-
-		query = fmt.Sprintf(
-			`mutation {
-				setMyAvailability(input: [
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d },
-					{ start: %d, end: %d }
-				])
-			}`,
-			tomorrow+8*3600,
-			tomorrow+16*3600,
-			tomorrow+32*3600,
-			tomorrow+40*3600,
-			tomorrow+56*3600,
-			tomorrow+64*3600,
-			tomorrow+80*3600,
-			tomorrow+88*3600,
-			tomorrow+104*3600,
-			time.Now().Unix()+res.SecondsLimitAvailability+1,
-		)
-
-		response = gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, fmt.Sprintf("{\"errors\":[{\"message\":\"availabilities must not finish later than %d seconds from now: one availability ending at %d, limit time is %d\",\"path\":[\"setMyAvailability\"]}],\"data\":{\"setMyAvailability\":null}}", res.SecondsLimitAvailability, time.Now().Unix()+res.SecondsLimitAvailability+1, time.Now().Unix()+res.SecondsLimitAvailability), response.Body.String())
-
-	})
-
-	t.Run("should get own availability only if coordinator or psychologist", func(t *testing.T) {
-
-		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
-
-		query := `{
-			myAvailability {
-				start
-				end
-			}
-		}`
-
-		response := gql(router, query, "")
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myAvailability\"]}],\"data\":null}", response.Body.String())
-
-		response = gql(router, query, storedVariables["patient_token"])
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myAvailability\"]}],\"data\":null}", response.Body.String())
-
-		response = gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, fmt.Sprintf(
-			"{\"data\":{\"myAvailability\":[{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d}]}}",
-			tomorrow+8*3600,
-			tomorrow+16*3600,
-			tomorrow+32*3600,
-			tomorrow+40*3600,
-			tomorrow+56*3600,
-			tomorrow+64*3600,
-			tomorrow+80*3600,
-			tomorrow+88*3600,
-			tomorrow+104*3600,
-			tomorrow+112*3600,
-		), response.Body.String())
-
-		response = gql(router, query, storedVariables["coordinator_token"])
-
-		assert.Equal(t, fmt.Sprintf(
-			"{\"data\":{\"myAvailability\":[{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d}]}}",
-			tomorrow+8*3600,
-			tomorrow+16*3600,
-			tomorrow+32*3600,
-			tomorrow+40*3600,
-			tomorrow+56*3600,
-			tomorrow+64*3600,
-			tomorrow+80*3600,
-			tomorrow+88*3600,
-			tomorrow+104*3600,
-			tomorrow+112*3600,
-		), response.Body.String())
-
-	})
-
-	t.Run("should overwrite old availabilities when new ones are set", func(t *testing.T) {
-
-		tomorrow := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour).Unix()
-
-		query := fmt.Sprintf(
-			`mutation {
-				setMyAvailability(input: [
-					{ start: %d, end: %d },
-					{ start: %d, end: %d }
-				])
-			}`,
-			tomorrow+33*3600,
-			tomorrow+41*3600,
-			tomorrow+9*3600,
-			tomorrow+17*3600,
-		)
-
-		response := gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, "{\"data\":{\"setMyAvailability\":null}}", response.Body.String())
-
-		query = `{
-			myAvailability {
-				start
-				end
-			}
-		}`
-
-		response = gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, fmt.Sprintf(
-			"{\"data\":{\"myAvailability\":[{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d}]}}",
-			tomorrow+9*3600,
-			tomorrow+17*3600,
-			tomorrow+33*3600,
-			tomorrow+41*3600,
-		), response.Body.String())
-
-		response = gql(router, query, storedVariables["coordinator_token"])
-
-		assert.Equal(t, fmt.Sprintf(
-			"{\"data\":{\"myAvailability\":[{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d},{\"start\":%d,\"end\":%d}]}}",
-			tomorrow+8*3600,
-			tomorrow+16*3600,
-			tomorrow+32*3600,
-			tomorrow+40*3600,
-			tomorrow+56*3600,
-			tomorrow+64*3600,
-			tomorrow+80*3600,
-			tomorrow+88*3600,
-			tomorrow+104*3600,
-			tomorrow+112*3600,
-		), response.Body.String())
-
-	})
-
 	t.Run("should create treatment only if coordinator or psychologist", func(t *testing.T) {
 
 		query := `mutation {
@@ -2107,14 +1862,6 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_id"], tomorrow+9*3600), storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String())
-
-		/* response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+8.9*3600), storedVariables["patient_token"])
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"the psychologist is not available during the requested time slot\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String())
-
-		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+16.1*3600), storedVariables["patient_token"])
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"the psychologist is not available during the requested time slot\",\"path\":[\"proposeAppointment\"]}],\"data\":{\"proposeAppointment\":null}}", response.Body.String()) */
 
 		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_2_id"], tomorrow+9*3600), storedVariables["patient_token"])
 

@@ -11,11 +11,6 @@ input ProposeAppointmentInput @goModel(model: "github.com/guicostaarantes/psi-se
     start: Int!
 }
 
-input SetAvailabilityInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.SetAvailabilityInput") {
-    start: Int!
-    end: Int!
-}
-
 type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
     id: ID!
     start: Int!
@@ -38,19 +33,6 @@ type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-ser
     patient: PublicPatientProfile! @goField(forceResolver: true)
 }
 
-type AvailabilityResponse @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AvailabilityResponse") {
-    start: Int!
-    end: Int!
-}
-
-extend type Query {
-    """The myAvailability query allows a user to get the availability of their own psychologist profile."""
-    myAvailability: [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The psychologistAvailability query allows a user to get the availability of a psychologist profile."""
-    psychologistAvailability(id: ID!): [AvailabilityResponse!]! @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-}
-
 extend type Mutation {
     """The cancelAppointmentByPatient mutation allows a user with a patient profile to cancel the confirmation of an appointment."""
     cancelAppointmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
@@ -66,7 +48,4 @@ extend type Mutation {
 
     """The proposeAppointment mutation allows a user with a patient profile in treatment to propose a time for a next meeting."""
     proposeAppointment(input: ProposeAppointmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The setMyAvailability mutation allows a user to set their availability to receive appointments."""
-    setMyAvailability(input: [SetAvailabilityInput!]!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }

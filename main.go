@@ -25,19 +25,17 @@ func main() {
 	}
 
 	res := &resolvers.Resolver{
-		DatabaseUtil:               database.MongoDatabaseUtil,
-		HashUtil:                   hash.BcryptHashUtil,
-		IdentifierUtil:             identifier.UUIDIdentifierUtil,
-		MailUtil:                   mail.SMTPMailUtil,
-		MatchUtil:                  match.RegexpMatchUtil,
-		SerializingUtil:            serializing.JSONSerializingUtil,
-		TokenUtil:                  token.RngTokenUtil,
-		MaxAffinityNumber:          int64(5),
-		SecondsLimitAvailability:   int64(2419200),
-		SecondsMinimumAvailability: int64(1800),
-		SecondsToCooldownReset:     int64(86400),
-		SecondsToExpire:            int64(28800),
-		SecondsToExpireReset:       int64(86400),
+		DatabaseUtil:           database.MongoDatabaseUtil,
+		HashUtil:               hash.BcryptHashUtil,
+		IdentifierUtil:         identifier.UUIDIdentifierUtil,
+		MailUtil:               mail.SMTPMailUtil,
+		MatchUtil:              match.RegexpMatchUtil,
+		SerializingUtil:        serializing.JSONSerializingUtil,
+		TokenUtil:              token.RngTokenUtil,
+		MaxAffinityNumber:      int64(5),
+		SecondsToCooldownReset: int64(86400),
+		SecondsToExpire:        int64(28800),
+		SecondsToExpireReset:   int64(86400),
 	}
 
 	router := graph.CreateServer(res)

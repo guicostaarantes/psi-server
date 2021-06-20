@@ -31,8 +31,6 @@ type Resolver struct {
 	SerializingUtil                         serializing.ISerializingUtil
 	TokenUtil                               token.ITokenUtil
 	MaxAffinityNumber                       int64
-	SecondsLimitAvailability                int64
-	SecondsMinimumAvailability              int64
 	SecondsToCooldownReset                  int64
 	SecondsToExpire                         int64
 	SecondsToExpireReset                    int64
@@ -50,7 +48,6 @@ type Resolver struct {
 	finalizeTreatmentService                *treatments_services.FinalizeTreatmentService
 	getAppointmentsOfPatientService         *schedule_services.GetAppointmentsOfPatientService
 	getAppointmentsOfPsychologistService    *schedule_services.GetAppointmentsOfPsychologistService
-	getAvailabilityService                  *schedule_services.GetAvailabilityService
 	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
 	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
 	getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
@@ -69,7 +66,6 @@ type Resolver struct {
 	processPendingMailsService              *mails_services.ProcessPendingMailsService
 	proposeAppointmentService               *schedule_services.ProposeAppointmentService
 	resetPasswordService                    *users_services.ResetPasswordService
-	setAvailabilityService                  *schedule_services.SetAvailabilityService
 	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
 	setCharacteristicsService               *characteristics_services.SetCharacteristicsService
 	setPreferencesService                   *characteristics_services.SetPreferencesService
@@ -237,16 +233,6 @@ func (r *Resolver) GetAppointmentsOfPsychologistService() *schedule_services.Get
 		}
 	}
 	return r.getAppointmentsOfPsychologistService
-}
-
-// GetAvailabilityService gets or sets the service with same name
-func (r *Resolver) GetAvailabilityService() *schedule_services.GetAvailabilityService {
-	if r.getAvailabilityService == nil {
-		r.getAvailabilityService = &schedule_services.GetAvailabilityService{
-			DatabaseUtil: r.DatabaseUtil,
-		}
-	}
-	return r.getAvailabilityService
 }
 
 // GetCharacteristicsByIDService gets or sets the service with same name
@@ -419,18 +405,6 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 		}
 	}
 	return r.processPendingMailsService
-}
-
-// SetAvailabilityService gets or sets the service with same name
-func (r *Resolver) SetAvailabilityService() *schedule_services.SetAvailabilityService {
-	if r.setAvailabilityService == nil {
-		r.setAvailabilityService = &schedule_services.SetAvailabilityService{
-			DatabaseUtil:               r.DatabaseUtil,
-			SecondsLimitAvailability:   r.SecondsLimitAvailability,
-			SecondsMinimumAvailability: r.SecondsMinimumAvailability,
-		}
-	}
-	return r.setAvailabilityService
 }
 
 // SetCharacteristicChoicesService gets or sets the service with same name
