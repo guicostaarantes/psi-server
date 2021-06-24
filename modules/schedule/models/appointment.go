@@ -4,19 +4,25 @@ package models
 type AppointmentStatus string
 
 const (
-	// Proposed means that the patient has chosen a time for the appointment and is waiting for the psychologist's confirmation
-	Proposed AppointmentStatus = "PROPOSED"
-	// Denied means that the psychologist denied the proposed appointment
-	Denied AppointmentStatus = "DENIED"
-	// Confirmed means that the psychologist has confirmed the proposed appointment
-	Confirmed AppointmentStatus = "CONFIRMED"
-	// CanceledByPatient means that the appointment has once been confirmed but then was cancelled by the patient
+	// Created means that the appointment was created by the jobrunner user
+	Created AppointmentStatus = "CREATED"
+	// ConfirmedByPatient means only that the patient has confirmed the appointment
+	ConfirmedByPatient AppointmentStatus = "CONFIRMED_BY_PATIENT"
+	// ConfirmedByPsychologist means only that the psychologist has confirmed the appointment
+	ConfirmedByPsychologist AppointmentStatus = "CONFIRMED_BY_PSYCHOLOGIST"
+	// ConfirmedByBoth means that both the patient and the psychologist have confirmed the appointment
+	ConfirmedByBoth AppointmentStatus = "CONFIRMED_BY_BOTH"
+	// EditedByPatient means that the patient has suggested a new time for the appointment and the psychologist needs to confirm
+	EditedByPatient AppointmentStatus = "EDITED_BY_PATIENT"
+	// EditedByPsychologist means that the psychologist has suggested a new time for the appointment and the patient needs to confirm
+	EditedByPsychologist AppointmentStatus = "EDITED_BY_PSYCHOLOGIST"
+	// CanceledByPatient means that the appointment was cancelled by the patient
 	CanceledByPatient AppointmentStatus = "CANCELED_BY_PATIENT"
-	// CanceledByPsychologist means that the appointment has once been confirmed but then was cancelled by the psychologist
+	// CanceledByPsychologist means that the appointment was cancelled by the psychologist
 	CanceledByPsychologist AppointmentStatus = "CANCELED_BY_PSYCHOLOGIST"
 )
 
-// Appointment represents the mutual promise of psychologist and patient to consult at a specific time
+// Appointment represents the mutual promise of psychologist and patient to meet at a specific time
 type Appointment struct {
 	ID             string            `json:"id" bson:"id"`
 	TreatmentID    string            `json:"treatmentId" bson:"treatmentId"`

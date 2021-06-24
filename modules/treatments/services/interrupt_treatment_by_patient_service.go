@@ -49,7 +49,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 			return decodeErr
 		}
 
-		if appointment.Start > time.Now().Unix() && (appointment.Status == schedule_models.Proposed || appointment.Status == schedule_models.Confirmed) {
+		if appointment.Start > time.Now().Unix() && appointment.Status != schedule_models.CanceledByPsychologist {
 			appointment.Status = schedule_models.CanceledByPatient
 			appointment.Reason = reason
 

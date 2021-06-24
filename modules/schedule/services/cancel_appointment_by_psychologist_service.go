@@ -8,7 +8,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// CancelAppointmentByPsychologistService is a service that the psychologist will use to cancel an appointment made for him
+// CancelAppointmentByPsychologistService is a service that the psychologist will use to cancel an appointment
 type CancelAppointmentByPsychologistService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
@@ -27,8 +27,8 @@ func (s CancelAppointmentByPsychologistService) Execute(id string, psychologistI
 		return errors.New("resource not found")
 	}
 
-	if appointment.Status != models.Confirmed {
-		return fmt.Errorf("appointments can only be canceled if their current status is CONFIRMED. current status is %s", string(appointment.Status))
+	if appointment.Status == models.CanceledByPatient || appointment.Status == models.CanceledByPsychologist {
+		return fmt.Errorf("appointment status cannot change from %s to CANCELED_BY_PSYCHOLOGIST", string(appointment.Status))
 	}
 
 	appointment.Status = models.CanceledByPsychologist
