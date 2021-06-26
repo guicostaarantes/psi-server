@@ -4,21 +4,21 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/guicostaarantes/psi-server/modules/schedule/models"
+	"github.com/guicostaarantes/psi-server/modules/appointments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
-// CancelAppointmentByPatientService is a service that the patient will use to cancel an appointment
-type CancelAppointmentByPatientService struct {
+// CancelAppointmentByPsychologistService is a service that the psychologist will use to cancel an appointment
+type CancelAppointmentByPsychologistService struct {
 	DatabaseUtil database.IDatabaseUtil
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CancelAppointmentByPatientService) Execute(id string, patientID string, reason string) error {
+func (s CancelAppointmentByPsychologistService) Execute(id string, psychologistID string, reason string) error {
 
 	appointment := models.Appointment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "appointments", map[string]interface{}{"id": id, "patientId": patientID}, &appointment)
+	findErr := s.DatabaseUtil.FindOne("psi_db", "appointments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &appointment)
 	if findErr != nil {
 		return findErr
 	}
@@ -28,10 +28,10 @@ func (s CancelAppointmentByPatientService) Execute(id string, patientID string, 
 	}
 
 	if appointment.Status == models.CanceledByPatient || appointment.Status == models.CanceledByPsychologist {
-		return fmt.Errorf("appointment status cannot change from %s to CANCELED_BY_PATIENT", string(appointment.Status))
+		return fmt.Errorf("appointment status cannot change from %s to CANCELED_BY_PSYCHOLOGIST", string(appointment.Status))
 	}
 
-	appointment.Status = models.CanceledByPatient
+	appointment.Status = models.CanceledByPsychologist
 	appointment.Reason = reason
 
 	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": id}, appointment)

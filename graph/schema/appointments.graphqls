@@ -1,4 +1,4 @@
-enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AppointmentStatus") {
+enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.AppointmentStatus") {
     CREATED
     CONFIRMED_BY_PATIENT
     CONFIRMED_BY_PSYCHOLOGIST
@@ -9,19 +9,19 @@ enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/mo
     CANCELED_BY_PSYCHOLOGIST
 }
 
-input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.EditAppointmentByPatientInput") {
+input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPatientInput") {
     start: Int!
     reason: String!
 }
 
-input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.EditAppointmentByPsychologistInput") {
+input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
     start: Int!
     end: Int!
     price: Int!
     reason: String!
 }
 
-type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
     id: ID!
     start: Int!
     end: Int!
@@ -32,7 +32,7 @@ type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/m
     treatment: PatientTreatment! @goField(forceResolver: true)
 }
 
-type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
+type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
     id: ID!
     start: Int!
     end: Int!

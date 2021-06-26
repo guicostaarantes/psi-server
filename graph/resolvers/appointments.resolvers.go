@@ -7,8 +7,8 @@ import (
 	"context"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
-	"github.com/guicostaarantes/psi-server/modules/schedule/models"
-	models2 "github.com/guicostaarantes/psi-server/modules/treatments/models"
+	"github.com/guicostaarantes/psi-server/modules/appointments/models"
+	models1 "github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
 func (r *mutationResolver) CancelAppointmentByPatient(ctx context.Context, id string, reason string) (*bool, error) {
@@ -95,11 +95,11 @@ func (r *mutationResolver) EditAppointmentByPsychologist(ctx context.Context, id
 	return nil, serviceErr
 }
 
-func (r *patientAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models2.GetPatientTreatmentsResponse, error) {
+func (r *patientAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPatientTreatmentsResponse, error) {
 	return r.GetTreatmentForPatientService().Execute(obj.TreatmentID)
 }
 
-func (r *psychologistAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models2.GetPsychologistTreatmentsResponse, error) {
+func (r *psychologistAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPsychologistTreatmentsResponse, error) {
 	return r.GetTreatmentForPsychologistService().Execute(obj.TreatmentID)
 }
 

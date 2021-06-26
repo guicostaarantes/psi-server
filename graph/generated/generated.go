@@ -13,9 +13,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	models2 "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	models3 "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	models5 "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	models2 "github.com/guicostaarantes/psi-server/modules/schedule/models"
 	models4 "github.com/guicostaarantes/psi-server/modules/translations/models"
 	models1 "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/modules/users/models"
@@ -243,6 +243,13 @@ type MutationResolver interface {
 	CreateUserWithPassword(ctx context.Context, input models.CreateUserWithPasswordInput) (*bool, error)
 	ResetPassword(ctx context.Context, input models.ResetPasswordInput) (*bool, error)
 	UpdateUser(ctx context.Context, id string, input models.UpdateUserInput) (*bool, error)
+	CancelAppointmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
+	CancelAppointmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
+	ConfirmAppointmentByPatient(ctx context.Context, id string) (*bool, error)
+	ConfirmAppointmentByPsychologist(ctx context.Context, id string) (*bool, error)
+	CreatePendingAppointments(ctx context.Context) (*bool, error)
+	EditAppointmentByPatient(ctx context.Context, id string, input models2.EditAppointmentByPatientInput) (*bool, error)
+	EditAppointmentByPsychologist(ctx context.Context, id string, input models2.EditAppointmentByPsychologistInput) (*bool, error)
 	SetPatientCharacteristics(ctx context.Context, input []*models3.SetCharacteristicInput) (*bool, error)
 	SetPsychologistCharacteristics(ctx context.Context, input []*models3.SetCharacteristicInput) (*bool, error)
 	SetMyPatientTopAffinities(ctx context.Context) (*bool, error)
@@ -253,13 +260,6 @@ type MutationResolver interface {
 	SetMyPsychologistPreferences(ctx context.Context, input []*models3.SetPreferenceInput) (*bool, error)
 	UpsertMyPatientProfile(ctx context.Context, input models5.UpsertPatientInput) (*bool, error)
 	UpsertMyPsychologistProfile(ctx context.Context, input models5.UpsertPsychologistInput) (*bool, error)
-	CancelAppointmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
-	CancelAppointmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
-	ConfirmAppointmentByPatient(ctx context.Context, id string) (*bool, error)
-	ConfirmAppointmentByPsychologist(ctx context.Context, id string) (*bool, error)
-	CreatePendingAppointments(ctx context.Context) (*bool, error)
-	EditAppointmentByPatient(ctx context.Context, id string, input models2.EditAppointmentByPatientInput) (*bool, error)
-	EditAppointmentByPsychologist(ctx context.Context, id string, input models2.EditAppointmentByPsychologistInput) (*bool, error)
 	SetTranslations(ctx context.Context, lang string, input []*models4.TranslationInput) (*bool, error)
 	AssignTreatment(ctx context.Context, id string) (*bool, error)
 	CreateTreatment(ctx context.Context, input models1.CreateTreatmentInput) (*bool, error)
@@ -1418,6 +1418,73 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "graph/schema/appointments.graphqls", Input: `enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.AppointmentStatus") {
+    CREATED
+    CONFIRMED_BY_PATIENT
+    CONFIRMED_BY_PSYCHOLOGIST
+    CONFIRMED_BY_BOTH
+    EDITED_BY_PATIENT
+    EDITED_BY_PSYCHOLOGIST
+    CANCELED_BY_PATIENT
+    CANCELED_BY_PSYCHOLOGIST
+}
+
+input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPatientInput") {
+    start: Int!
+    reason: String!
+}
+
+input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
+    start: Int!
+    end: Int!
+    price: Int!
+    reason: String!
+}
+
+type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
+    treatment: PatientTreatment! @goField(forceResolver: true)
+}
+
+type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
+    treatment: PsychologistTreatment! @goField(forceResolver: true)
+}
+
+extend type Mutation {
+    """The cancelAppointmentByPatient mutation allows a user with a patient profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The cancelAppointmentByPsychologist mutation allows a user with a psychologist profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The confirmAppointmentByPatient mutation allows a user with a patient profile to confirm an appointment."""
+    confirmAppointmentByPatient(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The confirmAppointmentByPsychologist mutation allows a user with a psychologist profile to confirm an appointment."""
+    confirmAppointmentByPsychologist(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The createPendingAppointments mutation allows a user to create appointments for all treatments in the system that are missing one in the future."""
+    createPendingAppointments: Boolean @hasRole(role:[JOBRUNNER])
+
+    """The editAppointmentByPatient mutation allows a user with a patient profile to edit the confirmation of an appointment."""
+    editAppointmentByPatient(id: ID!, input: EditAppointmentByPatientInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The editAppointmentByPsychologist mutation allows a user with a psychologist profile to edit the confirmation of an appointment."""
+    editAppointmentByPsychologist(id: ID!, input: EditAppointmentByPsychologistInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+}`, BuiltIn: false},
 	{Name: "graph/schema/characteristics.graphqls", Input: `enum CharacteristicType @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicType") {
     BOOLEAN
     SINGLE
@@ -1579,73 +1646,6 @@ extend type Mutation {
 
     """The upsertMyPsychologistProfile mutation allows a user to create or make changes to their psychologist profile."""
     upsertMyPsychologistProfile(input: UpsertMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
-}`, BuiltIn: false},
-	{Name: "graph/schema/schedule.graphqls", Input: `enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.AppointmentStatus") {
-    CREATED
-    CONFIRMED_BY_PATIENT
-    CONFIRMED_BY_PSYCHOLOGIST
-    CONFIRMED_BY_BOTH
-    EDITED_BY_PATIENT
-    EDITED_BY_PSYCHOLOGIST
-    CANCELED_BY_PATIENT
-    CANCELED_BY_PSYCHOLOGIST
-}
-
-input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.EditAppointmentByPatientInput") {
-    start: Int!
-    reason: String!
-}
-
-input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.EditAppointmentByPsychologistInput") {
-    start: Int!
-    end: Int!
-    price: Int!
-    reason: String!
-}
-
-type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
-    id: ID!
-    start: Int!
-    end: Int!
-    price: Int!
-    status: AppointmentStatus!
-    reason: String!
-    link: String!
-    treatment: PatientTreatment! @goField(forceResolver: true)
-}
-
-type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/schedule/models.Appointment") {
-    id: ID!
-    start: Int!
-    end: Int!
-    price: Int!
-    status: AppointmentStatus!
-    reason: String!
-    link: String!
-    treatment: PsychologistTreatment! @goField(forceResolver: true)
-}
-
-extend type Mutation {
-    """The cancelAppointmentByPatient mutation allows a user with a patient profile to cancel the confirmation of an appointment."""
-    cancelAppointmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The cancelAppointmentByPsychologist mutation allows a user with a psychologist profile to cancel the confirmation of an appointment."""
-    cancelAppointmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The confirmAppointmentByPatient mutation allows a user with a patient profile to confirm an appointment."""
-    confirmAppointmentByPatient(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The confirmAppointmentByPsychologist mutation allows a user with a psychologist profile to confirm an appointment."""
-    confirmAppointmentByPsychologist(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
-
-    """The createPendingAppointments mutation allows a user to create appointments for all treatments in the system that are missing one in the future."""
-    createPendingAppointments: Boolean @hasRole(role:[JOBRUNNER])
-
-    """The editAppointmentByPatient mutation allows a user with a patient profile to edit the confirmation of an appointment."""
-    editAppointmentByPatient(id: ID!, input: EditAppointmentByPatientInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
-
-    """The editAppointmentByPsychologist mutation allows a user with a psychologist profile to edit the confirmation of an appointment."""
-    editAppointmentByPsychologist(id: ID!, input: EditAppointmentByPsychologistInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
 	{Name: "graph/schema/time.graphqls", Input: `extend type Query {
     """The time query allows the user to know the timestamp of the server."""
@@ -2037,7 +2037,7 @@ func (ec *executionContext) field_Mutation_editAppointmentByPatient_args(ctx con
 	var arg1 models2.EditAppointmentByPatientInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNEditAppointmentByPatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐEditAppointmentByPatientInput(ctx, tmp)
+		arg1, err = ec.unmarshalNEditAppointmentByPatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐEditAppointmentByPatientInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2061,7 +2061,7 @@ func (ec *executionContext) field_Mutation_editAppointmentByPsychologist_args(ct
 	var arg1 models2.EditAppointmentByPsychologistInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNEditAppointmentByPsychologistInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐEditAppointmentByPsychologistInput(ctx, tmp)
+		arg1, err = ec.unmarshalNEditAppointmentByPsychologistInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐEditAppointmentByPsychologistInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3113,6 +3113,440 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_cancelAppointmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_cancelAppointmentByPatient_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CancelAppointmentByPatient(rctx, args["id"].(string), args["reason"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_cancelAppointmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_cancelAppointmentByPsychologist_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CancelAppointmentByPsychologist(rctx, args["id"].(string), args["reason"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_confirmAppointmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_confirmAppointmentByPatient_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().ConfirmAppointmentByPatient(rctx, args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_confirmAppointmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_confirmAppointmentByPsychologist_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().ConfirmAppointmentByPsychologist(rctx, args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createPendingAppointments(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreatePendingAppointments(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"JOBRUNNER"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_editAppointmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_editAppointmentByPatient_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().EditAppointmentByPatient(rctx, args["id"].(string), args["input"].(models2.EditAppointmentByPatientInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_editAppointmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_editAppointmentByPsychologist_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().EditAppointmentByPsychologist(rctx, args["id"].(string), args["input"].(models2.EditAppointmentByPsychologistInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_setPatientCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3693,440 +4127,6 @@ func (ec *executionContext) _Mutation_upsertMyPsychologistProfile(ctx context.Co
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpsertMyPsychologistProfile(rctx, args["input"].(models5.UpsertPsychologistInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_cancelAppointmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_cancelAppointmentByPatient_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CancelAppointmentByPatient(rctx, args["id"].(string), args["reason"].(string))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_cancelAppointmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_cancelAppointmentByPsychologist_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CancelAppointmentByPsychologist(rctx, args["id"].(string), args["reason"].(string))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_confirmAppointmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_confirmAppointmentByPatient_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().ConfirmAppointmentByPatient(rctx, args["id"].(string))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_confirmAppointmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_confirmAppointmentByPsychologist_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().ConfirmAppointmentByPsychologist(rctx, args["id"].(string))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_createPendingAppointments(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreatePendingAppointments(rctx)
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"JOBRUNNER"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_editAppointmentByPatient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_editAppointmentByPatient_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().EditAppointmentByPatient(rctx, args["id"].(string), args["input"].(models2.EditAppointmentByPatientInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*bool); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_editAppointmentByPsychologist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_editAppointmentByPsychologist_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().EditAppointmentByPsychologist(rctx, args["id"].(string), args["input"].(models2.EditAppointmentByPsychologistInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
@@ -4839,7 +4839,7 @@ func (ec *executionContext) _PatientAppointment_status(ctx context.Context, fiel
 	}
 	res := resTmp.(models2.AppointmentStatus)
 	fc.Result = res
-	return ec.marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx, field.Selections, res)
+	return ec.marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientAppointment_reason(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
@@ -5259,7 +5259,7 @@ func (ec *executionContext) _PatientProfile_appointments(ctx context.Context, fi
 	}
 	res := resTmp.([]*models2.Appointment)
 	fc.Result = res
-	return ec.marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
+	return ec.marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
@@ -5749,7 +5749,7 @@ func (ec *executionContext) _PsychologistAppointment_status(ctx context.Context,
 	}
 	res := resTmp.(models2.AppointmentStatus)
 	fc.Result = res
-	return ec.marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx, field.Selections, res)
+	return ec.marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistAppointment_reason(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
@@ -6169,7 +6169,7 @@ func (ec *executionContext) _PsychologistProfile_appointments(ctx context.Contex
 	}
 	res := resTmp.([]*models2.Appointment)
 	fc.Result = res
-	return ec.marshalNPsychologistAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
+	return ec.marshalNPsychologistAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistTreatment_id(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
@@ -9617,6 +9617,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_resetPassword(ctx, field)
 		case "updateUser":
 			out.Values[i] = ec._Mutation_updateUser(ctx, field)
+		case "cancelAppointmentByPatient":
+			out.Values[i] = ec._Mutation_cancelAppointmentByPatient(ctx, field)
+		case "cancelAppointmentByPsychologist":
+			out.Values[i] = ec._Mutation_cancelAppointmentByPsychologist(ctx, field)
+		case "confirmAppointmentByPatient":
+			out.Values[i] = ec._Mutation_confirmAppointmentByPatient(ctx, field)
+		case "confirmAppointmentByPsychologist":
+			out.Values[i] = ec._Mutation_confirmAppointmentByPsychologist(ctx, field)
+		case "createPendingAppointments":
+			out.Values[i] = ec._Mutation_createPendingAppointments(ctx, field)
+		case "editAppointmentByPatient":
+			out.Values[i] = ec._Mutation_editAppointmentByPatient(ctx, field)
+		case "editAppointmentByPsychologist":
+			out.Values[i] = ec._Mutation_editAppointmentByPsychologist(ctx, field)
 		case "setPatientCharacteristics":
 			out.Values[i] = ec._Mutation_setPatientCharacteristics(ctx, field)
 		case "setPsychologistCharacteristics":
@@ -9637,20 +9651,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_upsertMyPatientProfile(ctx, field)
 		case "upsertMyPsychologistProfile":
 			out.Values[i] = ec._Mutation_upsertMyPsychologistProfile(ctx, field)
-		case "cancelAppointmentByPatient":
-			out.Values[i] = ec._Mutation_cancelAppointmentByPatient(ctx, field)
-		case "cancelAppointmentByPsychologist":
-			out.Values[i] = ec._Mutation_cancelAppointmentByPsychologist(ctx, field)
-		case "confirmAppointmentByPatient":
-			out.Values[i] = ec._Mutation_confirmAppointmentByPatient(ctx, field)
-		case "confirmAppointmentByPsychologist":
-			out.Values[i] = ec._Mutation_confirmAppointmentByPsychologist(ctx, field)
-		case "createPendingAppointments":
-			out.Values[i] = ec._Mutation_createPendingAppointments(ctx, field)
-		case "editAppointmentByPatient":
-			out.Values[i] = ec._Mutation_editAppointmentByPatient(ctx, field)
-		case "editAppointmentByPsychologist":
-			out.Values[i] = ec._Mutation_editAppointmentByPsychologist(ctx, field)
 		case "setTranslations":
 			out.Values[i] = ec._Mutation_setTranslations(ctx, field)
 		case "assignTreatment":
@@ -10902,13 +10902,13 @@ func (ec *executionContext) marshalNAffinity2ᚖgithubᚗcomᚋguicostaarantes�
 	return ec._Affinity(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx context.Context, v interface{}) (models2.AppointmentStatus, error) {
+func (ec *executionContext) unmarshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentStatus(ctx context.Context, v interface{}) (models2.AppointmentStatus, error) {
 	tmp, err := graphql.UnmarshalString(v)
 	res := models2.AppointmentStatus(tmp)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentStatus(ctx context.Context, sel ast.SelectionSet, v models2.AppointmentStatus) graphql.Marshaler {
+func (ec *executionContext) marshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentStatus(ctx context.Context, sel ast.SelectionSet, v models2.AppointmentStatus) graphql.Marshaler {
 	res := graphql.MarshalString(string(v))
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -11063,12 +11063,12 @@ func (ec *executionContext) unmarshalNCreateUserWithPasswordInput2githubᚗcom�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNEditAppointmentByPatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐEditAppointmentByPatientInput(ctx context.Context, v interface{}) (models2.EditAppointmentByPatientInput, error) {
+func (ec *executionContext) unmarshalNEditAppointmentByPatientInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐEditAppointmentByPatientInput(ctx context.Context, v interface{}) (models2.EditAppointmentByPatientInput, error) {
 	res, err := ec.unmarshalInputEditAppointmentByPatientInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNEditAppointmentByPsychologistInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐEditAppointmentByPsychologistInput(ctx context.Context, v interface{}) (models2.EditAppointmentByPsychologistInput, error) {
+func (ec *executionContext) unmarshalNEditAppointmentByPsychologistInput2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐEditAppointmentByPsychologistInput(ctx context.Context, v interface{}) (models2.EditAppointmentByPsychologistInput, error) {
 	res, err := ec.unmarshalInputEditAppointmentByPsychologistInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -11103,7 +11103,7 @@ func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.Appointment) graphql.Marshaler {
+func (ec *executionContext) marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.Appointment) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11127,7 +11127,7 @@ func (ec *executionContext) marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguic
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPatientAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx, sel, v[i])
+			ret[i] = ec.marshalNPatientAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointment(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11140,7 +11140,7 @@ func (ec *executionContext) marshalNPatientAppointment2ᚕᚖgithubᚗcomᚋguic
 	return ret
 }
 
-func (ec *executionContext) marshalNPatientAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx context.Context, sel ast.SelectionSet, v *models2.Appointment) graphql.Marshaler {
+func (ec *executionContext) marshalNPatientAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointment(ctx context.Context, sel ast.SelectionSet, v *models2.Appointment) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -11248,7 +11248,7 @@ func (ec *executionContext) marshalNPreference2ᚖgithubᚗcomᚋguicostaarantes
 	return ec._Preference(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPsychologistAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.Appointment) graphql.Marshaler {
+func (ec *executionContext) marshalNPsychologistAppointment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models2.Appointment) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11272,7 +11272,7 @@ func (ec *executionContext) marshalNPsychologistAppointment2ᚕᚖgithubᚗcom�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPsychologistAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx, sel, v[i])
+			ret[i] = ec.marshalNPsychologistAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointment(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11285,7 +11285,7 @@ func (ec *executionContext) marshalNPsychologistAppointment2ᚕᚖgithubᚗcom�
 	return ret
 }
 
-func (ec *executionContext) marshalNPsychologistAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋscheduleᚋmodelsᚐAppointment(ctx context.Context, sel ast.SelectionSet, v *models2.Appointment) graphql.Marshaler {
+func (ec *executionContext) marshalNPsychologistAppointment2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointment(ctx context.Context, sel ast.SelectionSet, v *models2.Appointment) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
