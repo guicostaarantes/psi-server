@@ -2271,7 +2271,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"INTERRUPTED_BY_PATIENT\",\"reason\":\"Synergy with psychologist was not good.\"}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"TREATMENT_INTERRUPTED_BY_PATIENT\",\"reason\":\"Synergy with psychologist was not good.\"}]}}}", response.Body.String())
 
 	})
 
@@ -2296,7 +2296,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"INTERRUPTED_BY_PSYCHOLOGIST\",\"reason\":\"Patient has not shown in last three appointments.\"}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"TREATMENT_INTERRUPTED_BY_PSYCHOLOGIST\",\"reason\":\"Patient has not shown in last three appointments.\"}]}}}", response.Body.String())
 
 	})
 
@@ -2337,7 +2337,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "CANCELED_BY_PSYCHOLOGIST", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "1", "status"))
+		assert.Equal(t, "TREATMENT_FINALIZED", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "1", "status"))
 		assert.Equal(t, "Tratamento finalizado", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "1", "reason"))
 
 	})

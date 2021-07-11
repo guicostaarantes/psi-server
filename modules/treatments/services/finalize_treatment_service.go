@@ -50,7 +50,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 		}
 
 		if appointment.Start > time.Now().Unix() && appointment.Status != appointments_models.CanceledByPatient {
-			appointment.Status = appointments_models.CanceledByPsychologist
+			appointment.Status = appointments_models.TreatmentFinalized
 			appointment.Reason = "Tratamento finalizado"
 
 			writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": appointment.ID}, appointment)
