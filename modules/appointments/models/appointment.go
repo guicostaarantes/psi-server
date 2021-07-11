@@ -20,6 +20,10 @@ const (
 	CanceledByPatient AppointmentStatus = "CANCELED_BY_PATIENT"
 	// CanceledByPsychologist means that the appointment was cancelled by the psychologist
 	CanceledByPsychologist AppointmentStatus = "CANCELED_BY_PSYCHOLOGIST"
+	// InterruptedByPatient means that the whole treatment was interrupted by the patient
+	InterruptedByPatient AppointmentStatus = "INTERRUPTED_BY_PATIENT"
+	// InterruptedByPsychologist means that the whole treatment was interrupted by the psychologist
+	InterruptedByPsychologist AppointmentStatus = "INTERRUPTED_BY_PSYCHOLOGIST"
 )
 
 // Appointment represents the mutual promise of psychologist and patient to meet at a specific time

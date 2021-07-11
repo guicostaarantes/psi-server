@@ -50,7 +50,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 		}
 
 		if appointment.Start > time.Now().Unix() && appointment.Status != appointments_models.CanceledByPsychologist {
-			appointment.Status = appointments_models.CanceledByPatient
+			appointment.Status = appointments_models.InterruptedByPatient
 			appointment.Reason = reason
 
 			writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": appointment.ID}, appointment)
