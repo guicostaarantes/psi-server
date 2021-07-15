@@ -23,7 +23,7 @@ input SetProfileCharacteristicInput @goModel(model: "github.com/guicostaarantes/
 
 type Affinity @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.Affinity") {
     createdAt: Int!
-    psychologist: PsychologistProfile! @goField(forceResolver: true)
+    psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
 
 type Characteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicResponse") {

@@ -59,6 +59,7 @@ type Resolver struct {
 	getPreferencesByIDService               *characteristics_services.GetPreferencesByIDService
 	getPsychologistByUserIDService          *profiles_services.GetPsychologistByUserIDService
 	getPsychologistService                  *profiles_services.GetPsychologistService
+	getPsychologistPendingTreatmentsService *treatments_services.GetPsychologistPendingTreatmentsService
 	getPsychologistTreatmentsService        *treatments_services.GetPsychologistTreatmentsService
 	getTopAffinitiesForPatientService       *characteristics_services.GetTopAffinitiesForPatientService
 	getTranslationsService                  *translations_services.GetTranslationsService
@@ -378,6 +379,16 @@ func (r *Resolver) GetPatientService() *profiles_services.GetPatientService {
 		}
 	}
 	return r.getPatientService
+}
+
+// GetPsychologistPendingTreatmentsService gets or sets the service with same name
+func (r *Resolver) GetPsychologistPendingTreatmentsService() *treatments_services.GetPsychologistPendingTreatmentsService {
+	if r.getPsychologistPendingTreatmentsService == nil {
+		r.getPsychologistPendingTreatmentsService = &treatments_services.GetPsychologistPendingTreatmentsService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsychologistPendingTreatmentsService
 }
 
 // GetPsychologistTreatmentsService gets or sets the service with same name

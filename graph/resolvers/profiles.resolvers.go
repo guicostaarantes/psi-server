@@ -155,6 +155,10 @@ func (r *publicPsychologistProfileResolver) Characteristics(ctx context.Context,
 	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
 
+func (r *publicPsychologistProfileResolver) PendingTreatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
+	return r.GetPsychologistPendingTreatmentsService().Execute(obj.ID)
+}
+
 func (r *queryResolver) MyPatientProfile(ctx context.Context) (*profiles_models.Patient, error) {
 	userID := ctx.Value("userID").(string)
 	return r.GetPatientByUserIDService().Execute(userID)
@@ -166,11 +170,11 @@ func (r *queryResolver) MyPsychologistProfile(ctx context.Context) (*profiles_mo
 }
 
 func (r *queryResolver) PatientProfile(ctx context.Context, id string) (*profiles_models.Patient, error) {
-	return r.GetPatientByUserIDService().Execute(id)
+	return r.GetPatientService().Execute(id)
 }
 
 func (r *queryResolver) PsychologistProfile(ctx context.Context, id string) (*profiles_models.Psychologist, error) {
-	return r.GetPsychologistByUserIDService().Execute(id)
+	return r.GetPsychologistService().Execute(id)
 }
 
 // PatientProfile returns generated.PatientProfileResolver implementation.

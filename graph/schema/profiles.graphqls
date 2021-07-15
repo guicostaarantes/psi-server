@@ -50,9 +50,7 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
     id: ID!
     fullName: String!
     likeName: String!
-    birthDate: Int!
-    city: String!
-    characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
+    pendingTreatments: [PsychologistTreatment!]! @goField(forceResolver: true)
 }
 
 extend type Query {

@@ -191,12 +191,13 @@ type ComplexityRoot struct {
 	}
 
 	PublicPsychologistProfile struct {
-		BirthDate       func(childComplexity int) int
-		Characteristics func(childComplexity int) int
-		City            func(childComplexity int) int
-		FullName        func(childComplexity int) int
-		ID              func(childComplexity int) int
-		LikeName        func(childComplexity int) int
+		BirthDate         func(childComplexity int) int
+		Characteristics   func(childComplexity int) int
+		City              func(childComplexity int) int
+		FullName          func(childComplexity int) int
+		ID                func(childComplexity int) int
+		LikeName          func(childComplexity int) int
+		PendingTreatments func(childComplexity int) int
 	}
 
 	Query struct {
@@ -298,6 +299,7 @@ type PublicPatientProfileResolver interface {
 }
 type PublicPsychologistProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models5.Psychologist) ([]*models3.CharacteristicChoiceResponse, error)
+	PendingTreatments(ctx context.Context, obj *models5.Psychologist) ([]*models1.GetPsychologistTreatmentsResponse, error)
 }
 type QueryResolver interface {
 	AuthenticateUser(ctx context.Context, input models.AuthenticateUserInput) (*models.Authentication, error)
@@ -1177,6 +1179,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PublicPsychologistProfile.LikeName(childComplexity), true
 
+	case "PublicPsychologistProfile.pendingTreatments":
+		if e.complexity.PublicPsychologistProfile.PendingTreatments == nil {
+			break
+		}
+
+		return e.complexity.PublicPsychologistProfile.PendingTreatments(childComplexity), true
+
 	case "Query.authenticateUser":
 		if e.complexity.Query.AuthenticateUser == nil {
 			break
@@ -1510,7 +1519,7 @@ input SetProfileCharacteristicInput @goModel(model: "github.com/guicostaarantes/
 
 type Affinity @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.Affinity") {
     createdAt: Int!
-    psychologist: PsychologistProfile! @goField(forceResolver: true)
+    psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
 
 type Characteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicResponse") {
@@ -1612,6 +1621,7 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
     birthDate: Int!
     city: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
+    pendingTreatments: [PsychologistTreatment!]! @goField(forceResolver: true)
 }
 
 extend type Query {
@@ -2559,7 +2569,7 @@ func (ec *executionContext) _Affinity_psychologist(ctx context.Context, field gr
 	}
 	res := resTmp.(*models5.Psychologist)
 	fc.Result = res
-	return ec.marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
+	return ec.marshalNPublicPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Characteristic_name(ctx context.Context, field graphql.CollectedField, obj *models3.CharacteristicResponse) (ret graphql.Marshaler) {
@@ -6799,6 +6809,41 @@ func (ec *executionContext) _PublicPsychologistProfile_characteristics(ctx conte
 	return ec.marshalNCharacteristicChoice2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋcharacteristicsᚋmodelsᚐCharacteristicChoiceResponseᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PublicPsychologistProfile_pendingTreatments(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.PublicPsychologistProfile().PendingTreatments(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models1.GetPsychologistTreatmentsResponse)
+	fc.Result = res
+	return ec.marshalNPsychologistTreatment2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponseᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_authenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -10293,6 +10338,20 @@ func (ec *executionContext) _PublicPsychologistProfile(ctx context.Context, sel 
 				}
 				return res
 			})
+		case "pendingTreatments":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PublicPsychologistProfile_pendingTreatments(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -11293,20 +11352,6 @@ func (ec *executionContext) marshalNPsychologistAppointment2ᚖgithubᚗcomᚋgu
 		return graphql.Null
 	}
 	return ec._PsychologistAppointment(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNPsychologistProfile2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx context.Context, sel ast.SelectionSet, v models5.Psychologist) graphql.Marshaler {
-	return ec._PsychologistProfile(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNPsychologistProfile2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋprofilesᚋmodelsᚐPsychologist(ctx context.Context, sel ast.SelectionSet, v *models5.Psychologist) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._PsychologistProfile(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPsychologistTreatment2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐGetPsychologistTreatmentsResponse(ctx context.Context, sel ast.SelectionSet, v models1.GetPsychologistTreatmentsResponse) graphql.Marshaler {
