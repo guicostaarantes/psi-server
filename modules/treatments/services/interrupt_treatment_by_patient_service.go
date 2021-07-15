@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	schedule_models "github.com/guicostaarantes/psi-server/modules/schedule/models"
+	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
@@ -42,15 +42,15 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
-		appointment := schedule_models.Appointment{}
+		appointment := appointments_models.Appointment{}
 
 		decodeErr := cursor.Decode(&appointment)
 		if decodeErr != nil {
 			return decodeErr
 		}
 
-		if appointment.Start > time.Now().Unix() && (appointment.Status == schedule_models.Proposed || appointment.Status == schedule_models.Confirmed) {
-			appointment.Status = schedule_models.CanceledByPatient
+		if appointment.Start > time.Now().Unix() && appointment.Status != appointments_models.CanceledByPsychologist {
+			appointment.Status = appointments_models.TreatmentInterruptedByPatient
 			appointment.Reason = reason
 
 			writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": appointment.ID}, appointment)

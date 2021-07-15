@@ -1,0 +1,67 @@
+enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.AppointmentStatus") {
+    CREATED
+    CONFIRMED_BY_PATIENT
+    CONFIRMED_BY_PSYCHOLOGIST
+    CONFIRMED_BY_BOTH
+    EDITED_BY_PATIENT
+    EDITED_BY_PSYCHOLOGIST
+    CANCELED_BY_PATIENT
+    CANCELED_BY_PSYCHOLOGIST
+}
+
+input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPatientInput") {
+    start: Int!
+    reason: String!
+}
+
+input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
+    start: Int!
+    end: Int!
+    price: Int!
+    reason: String!
+}
+
+type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
+    treatment: PatientTreatment! @goField(forceResolver: true)
+}
+
+type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
+    id: ID!
+    start: Int!
+    end: Int!
+    price: Int!
+    status: AppointmentStatus!
+    reason: String!
+    link: String!
+    treatment: PsychologistTreatment! @goField(forceResolver: true)
+}
+
+extend type Mutation {
+    """The cancelAppointmentByPatient mutation allows a user with a patient profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The cancelAppointmentByPsychologist mutation allows a user with a psychologist profile to cancel the confirmation of an appointment."""
+    cancelAppointmentByPsychologist(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The confirmAppointmentByPatient mutation allows a user with a patient profile to confirm an appointment."""
+    confirmAppointmentByPatient(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The confirmAppointmentByPsychologist mutation allows a user with a psychologist profile to confirm an appointment."""
+    confirmAppointmentByPsychologist(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The createPendingAppointments mutation allows a user to create appointments for all treatments in the system that are missing one in the future."""
+    createPendingAppointments: Boolean @hasRole(role:[JOBRUNNER])
+
+    """The editAppointmentByPatient mutation allows a user with a patient profile to edit the confirmation of an appointment."""
+    editAppointmentByPatient(id: ID!, input: EditAppointmentByPatientInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The editAppointmentByPsychologist mutation allows a user with a psychologist profile to edit the confirmation of an appointment."""
+    editAppointmentByPsychologist(id: ID!, input: EditAppointmentByPsychologistInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+}

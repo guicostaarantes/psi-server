@@ -7,8 +7,8 @@ import (
 	"context"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
-	models1 "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/modules/schedule/models"
+	"github.com/guicostaarantes/psi-server/modules/appointments/models"
+	models1 "github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
 func (r *mutationResolver) CancelAppointmentByPatient(ctx context.Context, id string, reason string) (*bool, error) {
@@ -37,33 +37,7 @@ func (r *mutationResolver) CancelAppointmentByPsychologist(ctx context.Context, 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) ConfirmAppointment(ctx context.Context, id string) (*bool, error) {
-	userID := ctx.Value("userID").(string)
-
-	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
-	if servicePsyErr != nil {
-		return nil, servicePsyErr
-	}
-
-	serviceErr := r.ConfirmAppointmentService().Execute(id, servicePsy.ID)
-
-	return nil, serviceErr
-}
-
-func (r *mutationResolver) DenyAppointment(ctx context.Context, id string, reason string) (*bool, error) {
-	userID := ctx.Value("userID").(string)
-
-	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
-	if servicePsyErr != nil {
-		return nil, servicePsyErr
-	}
-
-	serviceErr := r.DenyAppointmentService().Execute(id, servicePsy.ID, reason)
-
-	return nil, serviceErr
-}
-
-func (r *mutationResolver) ProposeAppointment(ctx context.Context, input models.ProposeAppointmentInput) (*bool, error) {
+func (r *mutationResolver) ConfirmAppointmentByPatient(ctx context.Context, id string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -71,17 +45,62 @@ func (r *mutationResolver) ProposeAppointment(ctx context.Context, input models.
 		return nil, servicePatientErr
 	}
 
-	serviceErr := r.ProposeAppointmentService().Execute(servicePatient.ID, input)
+	serviceErr := r.ConfirmAppointmentByPatientService().Execute(id, servicePatient.ID)
 
 	return nil, serviceErr
 }
 
-func (r *patientAppointmentResolver) Psychologist(ctx context.Context, obj *models.Appointment) (*models1.Psychologist, error) {
-	return r.GetPsychologistService().Execute(obj.PsychologistID)
+func (r *mutationResolver) ConfirmAppointmentByPsychologist(ctx context.Context, id string) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
+	if servicePsyErr != nil {
+		return nil, servicePsyErr
+	}
+
+	serviceErr := r.ConfirmAppointmentByPsychologistService().Execute(id, servicePsy.ID)
+
+	return nil, serviceErr
 }
 
-func (r *psychologistAppointmentResolver) Patient(ctx context.Context, obj *models.Appointment) (*models1.Patient, error) {
-	return r.GetPatientService().Execute(obj.PatientID)
+func (r *mutationResolver) CreatePendingAppointments(ctx context.Context) (*bool, error) {
+	serviceErr := r.CreatePendingAppointmentsService().Execute()
+
+	return nil, serviceErr
+}
+
+func (r *mutationResolver) EditAppointmentByPatient(ctx context.Context, id string, input models.EditAppointmentByPatientInput) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
+	if servicePatientErr != nil {
+		return nil, servicePatientErr
+	}
+
+	serviceErr := r.EditAppointmentByPatientService().Execute(id, servicePatient.ID, input)
+
+	return nil, serviceErr
+}
+
+func (r *mutationResolver) EditAppointmentByPsychologist(ctx context.Context, id string, input models.EditAppointmentByPsychologistInput) (*bool, error) {
+	userID := ctx.Value("userID").(string)
+
+	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
+	if servicePsyErr != nil {
+		return nil, servicePsyErr
+	}
+
+	serviceErr := r.EditAppointmentByPsychologistService().Execute(id, servicePsy.ID, input)
+
+	return nil, serviceErr
+}
+
+func (r *patientAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPatientTreatmentsResponse, error) {
+	return r.GetTreatmentForPatientService().Execute(obj.TreatmentID)
+}
+
+func (r *psychologistAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPsychologistTreatmentsResponse, error) {
+	return r.GetTreatmentForPsychologistService().Execute(obj.TreatmentID)
 }
 
 // PatientAppointment returns generated.PatientAppointmentResolver implementation.
