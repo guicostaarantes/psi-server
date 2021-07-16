@@ -151,10 +151,6 @@ func (r *publicPatientProfileResolver) Characteristics(ctx context.Context, obj 
 	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
 
-func (r *publicPsychologistProfileResolver) Characteristics(ctx context.Context, obj *profiles_models.Psychologist) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
-	return r.GetCharacteristicsByIDService().Execute(obj.ID)
-}
-
 func (r *publicPsychologistProfileResolver) PendingTreatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
 	return r.GetPsychologistPendingTreatmentsService().Execute(obj.ID)
 }

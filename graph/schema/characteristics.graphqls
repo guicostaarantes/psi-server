@@ -23,7 +23,7 @@ input SetProfileCharacteristicInput @goModel(model: "github.com/guicostaarantes/
 
 type Affinity @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.Affinity") {
     createdAt: Int!
-    psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
+    psychologist: PublicPsychologistProfile @goField(forceResolver: true)
 }
 
 type Characteristic @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.CharacteristicResponse") {
@@ -62,7 +62,4 @@ extend type Mutation {
     
     """The setPsychologistCharacteristics mutation allows a user to change the possible characteristics for all psychologists."""
     setPsychologistCharacteristics(input: [SetProfileCharacteristicInput!]!): Boolean @hasRole(role: [COORDINATOR])
-    
-    """The setMyPatientTopAffinities mutation allows a user to compare its patient profile against all psychologist profiles that have PENDING treatments."""
-    setMyPatientTopAffinities: Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
 }

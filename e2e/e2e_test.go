@@ -47,17 +47,18 @@ func TestEnd2End(t *testing.T) {
 	storedVariables := map[string]string{}
 
 	res := &resolvers.Resolver{
-		DatabaseUtil:           database.MockDatabaseUtil,
-		HashUtil:               hash.WeakBcryptHashUtil,
-		IdentifierUtil:         identifier.UUIDIdentifierUtil,
-		MailUtil:               mail.MockMailUtil,
-		MatchUtil:              match.RegexpMatchUtil,
-		SerializingUtil:        serializing.JSONSerializingUtil,
-		TokenUtil:              token.RngTokenUtil,
-		MaxAffinityNumber:      int64(5),
-		SecondsToCooldownReset: int64(86400),
-		SecondsToExpire:        int64(1800),
-		SecondsToExpireReset:   int64(86400),
+		DatabaseUtil:                 database.MockDatabaseUtil,
+		HashUtil:                     hash.WeakBcryptHashUtil,
+		IdentifierUtil:               identifier.UUIDIdentifierUtil,
+		MailUtil:                     mail.MockMailUtil,
+		MatchUtil:                    match.RegexpMatchUtil,
+		SerializingUtil:              serializing.JSONSerializingUtil,
+		TokenUtil:                    token.RngTokenUtil,
+		MaxAffinityNumber:            int64(5),
+		SecondsToCooldownReset:       int64(86400),
+		SecondsToExpire:              int64(1800),
+		SecondsToExpireReset:         int64(86400),
+		TopAffinitiesCooldownSeconds: int64(86400),
 	}
 
 	// If you need to debug the contents of the database at a specific point, insert this code:
@@ -2344,27 +2345,7 @@ func TestEnd2End(t *testing.T) {
 
 	t.Run("should set and check affinities", func(t *testing.T) {
 
-		query := `mutation {
-			setMyPatientTopAffinities
-		}`
-
-		response := gql(router, query, "")
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"setMyPatientTopAffinities\"]}],\"data\":{\"setMyPatientTopAffinities\":null}}", response.Body.String())
-
-		response = gql(router, query, storedVariables["patient_token"])
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientTopAffinities\":null}}", response.Body.String())
-
-		response = gql(router, query, storedVariables["psychologist_token"])
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientTopAffinities\":null}}", response.Body.String())
-
-		response = gql(router, query, storedVariables["coordinator_token"])
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientTopAffinities\":null}}", response.Body.String())
-
-		query = `{
+		query := `{
 			myPatientTopAffinities {
 				psychologist {
 					id
@@ -2372,7 +2353,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response := gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientTopAffinities\"]}],\"data\":null}", response.Body.String())
 

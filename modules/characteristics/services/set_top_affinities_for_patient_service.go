@@ -174,6 +174,14 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		resultSlice = resultSlice[:s.MaxAffinityNumber]
 	}
 
+	// If resultSlice has no values, add a dummy one to the table to register that an empty search was made
+	if len(resultSlice) == 0 {
+		resultSlice = append(resultSlice, models.Affinity{
+			PatientID: patientID,
+			CreatedAt: time.Now().Unix(),
+		})
+	}
+
 	// Transferring to []interface{} in order to add to database
 	topAffinities := []interface{}{}
 	for _, slice := range resultSlice {

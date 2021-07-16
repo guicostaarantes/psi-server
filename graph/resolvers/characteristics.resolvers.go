@@ -33,19 +33,6 @@ func (r *mutationResolver) SetPsychologistCharacteristics(ctx context.Context, i
 	return nil, nil
 }
 
-func (r *mutationResolver) SetMyPatientTopAffinities(ctx context.Context) (*bool, error) {
-	userID := ctx.Value("userID").(string)
-
-	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
-	if servicePatientErr != nil {
-		return nil, servicePatientErr
-	}
-
-	serviceErr := r.SetTopAffinitiesForPatientService().Execute(servicePatient.ID)
-
-	return nil, serviceErr
-}
-
 func (r *queryResolver) PatientCharacteristics(ctx context.Context) ([]*characteristics_models.CharacteristicResponse, error) {
 	return r.GetCharacteristicsService().Execute(characteristics_models.PatientTarget)
 }

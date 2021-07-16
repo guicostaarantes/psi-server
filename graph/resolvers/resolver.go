@@ -34,6 +34,7 @@ type Resolver struct {
 	SecondsToCooldownReset                  int64
 	SecondsToExpire                         int64
 	SecondsToExpireReset                    int64
+	TopAffinitiesCooldownSeconds            int64
 	askResetPasswordService                 *users_services.AskResetPasswordService
 	assignTreatmentService                  *treatments_services.AssignTreatmentService
 	authenticateUserService                 *users_services.AuthenticateUserService
@@ -405,7 +406,9 @@ func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPs
 func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services.GetTopAffinitiesForPatientService {
 	if r.getTopAffinitiesForPatientService == nil {
 		r.getTopAffinitiesForPatientService = &characteristics_services.GetTopAffinitiesForPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			DatabaseUtil:                      r.DatabaseUtil,
+			TopAffinitiesCooldownSeconds:      r.TopAffinitiesCooldownSeconds,
+			SetTopAffinitiesForPatientService: *r.SetTopAffinitiesForPatientService(),
 		}
 	}
 	return r.getTopAffinitiesForPatientService
