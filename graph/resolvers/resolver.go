@@ -3,6 +3,7 @@ package resolvers
 import (
 	appointments_services "github.com/guicostaarantes/psi-server/modules/appointments/services"
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
+	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
 	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
 	translations_services "github.com/guicostaarantes/psi-server/modules/translations/services"
@@ -54,6 +55,7 @@ type Resolver struct {
 	getAppointmentsOfPsychologistService    *appointments_services.GetAppointmentsOfPsychologistService
 	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
 	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
+	getCooldownService                      *cooldowns_services.GetCooldownService
 	getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
 	getPatientService                       *profiles_services.GetPatientService
 	getPatientTreatmentsService             *treatments_services.GetPatientTreatmentsService
@@ -72,6 +74,7 @@ type Resolver struct {
 	interruptTreatmentByPsychologistService *treatments_services.InterruptTreatmentByPsychologistService
 	processPendingMailsService              *mails_services.ProcessPendingMailsService
 	resetPasswordService                    *users_services.ResetPasswordService
+	saveCooldownService                     *cooldowns_services.SaveCooldownService
 	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
 	setCharacteristicsService               *characteristics_services.SetCharacteristicsService
 	setPreferencesService                   *characteristics_services.SetPreferencesService
@@ -292,6 +295,16 @@ func (r *Resolver) GetCharacteristicsService() *characteristics_services.GetChar
 	return r.getCharacteristicsService
 }
 
+// GetCooldownService gets or sets the service with same name
+func (r *Resolver) GetCooldownService() *cooldowns_services.GetCooldownService {
+	if r.getCooldownService == nil {
+		r.getCooldownService = &cooldowns_services.GetCooldownService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getCooldownService
+}
+
 // GetTranslationsService gets or sets the service with same name
 func (r *Resolver) GetTranslationsService() *translations_services.GetTranslationsService {
 	if r.getTranslationsService == nil {
@@ -408,6 +421,7 @@ func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services
 		r.getTopAffinitiesForPatientService = &characteristics_services.GetTopAffinitiesForPatientService{
 			DatabaseUtil:                      r.DatabaseUtil,
 			TopAffinitiesCooldownSeconds:      r.TopAffinitiesCooldownSeconds,
+			GetCooldownService:                *r.GetCooldownService(),
 			SetTopAffinitiesForPatientService: *r.SetTopAffinitiesForPatientService(),
 		}
 	}
@@ -465,6 +479,18 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 	return r.processPendingMailsService
 }
 
+// SaveCooldownService gets or sets the service with same name
+func (r *Resolver) SaveCooldownService() *cooldowns_services.SaveCooldownService {
+	if r.saveCooldownService == nil {
+		r.saveCooldownService = &cooldowns_services.SaveCooldownService{
+			DatabaseUtil:                 r.DatabaseUtil,
+			IdentifierUtil:               r.IdentifierUtil,
+			TopAffinitiesCooldownSeconds: r.TopAffinitiesCooldownSeconds,
+		}
+	}
+	return r.saveCooldownService
+}
+
 // SetCharacteristicChoicesService gets or sets the service with same name
 func (r *Resolver) SetCharacteristicChoicesService() *characteristics_services.SetCharacteristicChoicesService {
 	if r.setCharacteristicChoicesService == nil {
@@ -509,8 +535,9 @@ func (r *Resolver) SetPreferencesService() *characteristics_services.SetPreferen
 func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services.SetTopAffinitiesForPatientService {
 	if r.setTopAffinitiesForPatientService == nil {
 		r.setTopAffinitiesForPatientService = &characteristics_services.SetTopAffinitiesForPatientService{
-			DatabaseUtil:      r.DatabaseUtil,
-			MaxAffinityNumber: r.MaxAffinityNumber,
+			DatabaseUtil:        r.DatabaseUtil,
+			MaxAffinityNumber:   r.MaxAffinityNumber,
+			SaveCooldownService: *r.SaveCooldownService(),
 		}
 	}
 	return r.setTopAffinitiesForPatientService

@@ -6,14 +6,17 @@ import (
 	"time"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
+	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 )
 
 // SetTopAffinitiesForPatientService is a service that calculates the affinity between a given patient and all psychologists with pending treatments, and saves the most relevant ones to a table
 type SetTopAffinitiesForPatientService struct {
-	DatabaseUtil      database.IDatabaseUtil
-	MaxAffinityNumber int64
+	DatabaseUtil        database.IDatabaseUtil
+	MaxAffinityNumber   int64
+	SaveCooldownService cooldowns_services.SaveCooldownService
 }
 
 // Execute is the method that runs the business logic of the service
@@ -174,14 +177,6 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		resultSlice = resultSlice[:s.MaxAffinityNumber]
 	}
 
-	// If resultSlice has no values, add a dummy one to the table to register that an empty search was made
-	if len(resultSlice) == 0 {
-		resultSlice = append(resultSlice, models.Affinity{
-			PatientID: patientID,
-			CreatedAt: time.Now().Unix(),
-		})
-	}
-
 	// Transferring to []interface{} in order to add to database
 	topAffinities := []interface{}{}
 	for _, slice := range resultSlice {
@@ -196,6 +191,11 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	writeErr := s.DatabaseUtil.InsertMany("psi_db", "top_affinities", topAffinities)
 	if writeErr != nil {
 		return writeErr
+	}
+
+	saveErr := s.SaveCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TopAffinitiesSet)
+	if saveErr != nil {
+		return saveErr
 	}
 
 	return nil
