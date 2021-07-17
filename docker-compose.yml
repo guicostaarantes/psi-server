@@ -32,10 +32,7 @@ services:
       - 40000:40000
     environment:
       PSI_BOOTSTRAP_USER: coordinator@psi.com.br|Abc123!@#
-      PSI_MONGO_HOST: mongo
-      PSI_MONGO_PORT: 27017
-      PSI_MONGO_USERNAME: root
-      PSI_MONGO_PASSWORD: pass
+      PSI_MONGO_URI: mongodb://root:pass@mongo
       PSI_SITE_URL: http://localhost:7007
       PSI_SMTP_HOST: mailhog
       PSI_SMTP_PORT: 1025

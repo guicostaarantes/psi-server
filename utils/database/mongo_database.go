@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/guicostaarantes/psi-server/utils/logging"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,18 +14,7 @@ import (
 )
 
 func connect() *mongo.Client {
-	uri := []string{
-		"mongodb://",
-		os.Getenv("PSI_MONGO_USERNAME"),
-		":",
-		os.Getenv("PSI_MONGO_PASSWORD"),
-		"@",
-		os.Getenv("PSI_MONGO_HOST"),
-		":",
-		os.Getenv("PSI_MONGO_PORT"),
-	}
-
-	client, err := mongo.NewClient(options.Client().ApplyURI(strings.Join(uri, "")))
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("PSI_MONGO_URI")))
 	if err != nil {
 		log.Fatal(err)
 	}
