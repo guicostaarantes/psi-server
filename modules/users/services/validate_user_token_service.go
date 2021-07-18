@@ -21,7 +21,7 @@ func (s ValidateUserTokenService) Execute(token string) (string, error) {
 
 	auth := models.Authentication{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "auths", map[string]interface{}{"token": token}, &auth)
+	findErr := s.DatabaseUtil.FindOne("auths", map[string]interface{}{"token": token}, &auth)
 	if findErr != nil {
 		return "", findErr
 	}
@@ -32,7 +32,7 @@ func (s ValidateUserTokenService) Execute(token string) (string, error) {
 
 	auth.ExpiresAt = time.Now().Unix() + s.SecondsToExpire
 
-	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "auths", map[string]interface{}{"token": token}, auth)
+	updateErr := s.DatabaseUtil.UpdateOne("auths", map[string]interface{}{"token": token}, auth)
 	if updateErr != nil {
 		return "", updateErr
 	}

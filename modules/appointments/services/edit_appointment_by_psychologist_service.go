@@ -19,7 +19,7 @@ func (s EditAppointmentByPsychologistService) Execute(id string, psychologistID 
 
 	appointment := models.Appointment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "appointments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &appointment)
+	findErr := s.DatabaseUtil.FindOne("appointments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &appointment)
 	if findErr != nil {
 		return findErr
 	}
@@ -46,7 +46,7 @@ func (s EditAppointmentByPsychologistService) Execute(id string, psychologistID 
 	appointment.Price = input.Price
 	appointment.Reason = input.Reason
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": id}, appointment)
+	writeErr := s.DatabaseUtil.UpdateOne("appointments", map[string]interface{}{"id": id}, appointment)
 	if writeErr != nil {
 		return writeErr
 	}

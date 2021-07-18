@@ -21,7 +21,7 @@ func (s AssignTreatmentService) Execute(id string, patientID string) error {
 
 	patientInOtherTreatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"patientId": patientID, "status": string(models.Active)}, &patientInOtherTreatment)
+	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"patientId": patientID, "status": string(models.Active)}, &patientInOtherTreatment)
 	if findErr != nil {
 		return findErr
 	}
@@ -30,7 +30,7 @@ func (s AssignTreatmentService) Execute(id string, patientID string) error {
 		return errors.New("patient is already in an active treatment")
 	}
 
-	findErr = s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id}, &treatment)
+	findErr = s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
@@ -47,7 +47,7 @@ func (s AssignTreatmentService) Execute(id string, patientID string) error {
 	treatment.StartDate = time.Now().Unix()
 	treatment.Status = models.Active
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
+	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {
 		return writeErr
 	}

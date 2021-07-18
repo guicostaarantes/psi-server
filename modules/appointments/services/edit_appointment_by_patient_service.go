@@ -19,7 +19,7 @@ func (s EditAppointmentByPatientService) Execute(id string, patientID string, in
 
 	appointment := models.Appointment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "appointments", map[string]interface{}{"id": id, "patientId": patientID}, &appointment)
+	findErr := s.DatabaseUtil.FindOne("appointments", map[string]interface{}{"id": id, "patientId": patientID}, &appointment)
 	if findErr != nil {
 		return findErr
 	}
@@ -41,7 +41,7 @@ func (s EditAppointmentByPatientService) Execute(id string, patientID string, in
 	appointment.Start = input.Start
 	appointment.Reason = input.Reason
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": id}, appointment)
+	writeErr := s.DatabaseUtil.UpdateOne("appointments", map[string]interface{}{"id": id}, appointment)
 	if writeErr != nil {
 		return writeErr
 	}

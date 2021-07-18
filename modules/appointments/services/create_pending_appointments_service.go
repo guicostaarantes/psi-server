@@ -21,7 +21,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 
 	activeTreatments := map[string]*treatments_models.Treatment{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", map[string]interface{}{"status": string(treatments_models.Active)})
+	cursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{"status": string(treatments_models.Active)})
 	if findErr != nil {
 		return findErr
 	}
@@ -39,7 +39,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 		activeTreatments[treatment.ID] = &treatment
 	}
 
-	cursor, findErr = s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{})
+	cursor, findErr = s.DatabaseUtil.FindMany("appointments", map[string]interface{}{})
 	if findErr != nil {
 		return findErr
 	}
@@ -95,7 +95,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 		appointmentsToCreate = append(appointmentsToCreate, newAppointment)
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("psi_db", "appointments", appointmentsToCreate)
+	writeErr := s.DatabaseUtil.InsertMany("appointments", appointmentsToCreate)
 	if writeErr != nil {
 		return writeErr
 	}

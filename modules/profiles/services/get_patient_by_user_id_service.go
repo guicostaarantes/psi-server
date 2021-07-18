@@ -15,7 +15,7 @@ func (s GetPatientByUserIDService) Execute(id string) (*models.Patient, error) {
 
 	patient := &models.Patient{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"userId": id}, patient)
+	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"userId": id}, patient)
 	if findErr != nil {
 		return nil, findErr
 	}
@@ -23,7 +23,7 @@ func (s GetPatientByUserIDService) Execute(id string) (*models.Patient, error) {
 	if patient.ID == "" {
 		return nil, nil
 	}
-	
+
 	return patient, nil
 
 }

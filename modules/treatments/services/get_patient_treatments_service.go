@@ -19,7 +19,7 @@ func (s GetPatientTreatmentsService) Execute(patientID string) ([]*models.GetPat
 
 	filter := map[string]interface{}{"patientId": patientID}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", filter)
+	cursor, findErr := s.DatabaseUtil.FindMany("treatments", filter)
 	if findErr != nil {
 		return nil, findErr
 	}

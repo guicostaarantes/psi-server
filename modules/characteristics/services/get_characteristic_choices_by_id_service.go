@@ -22,14 +22,14 @@ func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.Characteris
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"id": id}, &pat)
+	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"id": id}, &pat)
 	if findErr != nil {
 		return nil, findErr
 	}
 	if pat.ID != "" {
 		target = models.PatientTarget
 	} else {
-		findErr = s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
+		findErr = s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"id": id}, &psy)
 		if findErr != nil {
 			return nil, findErr
 		}
@@ -42,7 +42,7 @@ func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.Characteris
 
 	characteristics := []*models.CharacteristicChoiceResponse{}
 
-	charCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
+	charCursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
 	if findErr != nil {
 		return nil, findErr
 	}
@@ -67,7 +67,7 @@ func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.Characteris
 		characteristics = append(characteristics, &characteristicResponse)
 	}
 
-	choiceCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristic_choices", map[string]interface{}{"profileId": id})
+	choiceCursor, findErr := s.DatabaseUtil.FindMany("characteristic_choices", map[string]interface{}{"profileId": id})
 	if findErr != nil {
 		return nil, findErr
 	}

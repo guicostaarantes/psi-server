@@ -12,9 +12,10 @@ import (
 )
 
 type MongoDatabaseUtil struct {
-	Context     context.Context
-	Client      *mongo.Client
-	LoggingUtil logging.ILoggingUtil
+	Context      context.Context
+	Client       *mongo.Client
+	DatabaseName string
+	LoggingUtil  logging.ILoggingUtil
 }
 
 func (m *MongoDatabaseUtil) Connect(uri string) error {
@@ -33,8 +34,8 @@ func (m *MongoDatabaseUtil) Connect(uri string) error {
 	return nil
 }
 
-func (m *MongoDatabaseUtil) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
-	collection := m.Client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) FindOne(table string, matches map[string]interface{}, receiver interface{}) error {
+	collection := m.Client.Database(m.DatabaseName).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
@@ -51,8 +52,8 @@ func (m *MongoDatabaseUtil) FindOne(database string, table string, matches map[s
 	return nil
 }
 
-func (m *MongoDatabaseUtil) FindMany(database string, table string, matches map[string]interface{}) (ICursor, error) {
-	collection := m.Client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) FindMany(table string, matches map[string]interface{}) (ICursor, error) {
+	collection := m.Client.Database(m.DatabaseName).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
@@ -69,8 +70,8 @@ func (m *MongoDatabaseUtil) FindMany(database string, table string, matches map[
 	return cursor, nil
 }
 
-func (m *MongoDatabaseUtil) InsertOne(database string, table string, provider interface{}) error {
-	collection := m.Client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) InsertOne(table string, provider interface{}) error {
+	collection := m.Client.Database(m.DatabaseName).Collection(table)
 
 	_, insertErr := collection.InsertOne(m.Context, provider)
 
@@ -82,8 +83,8 @@ func (m *MongoDatabaseUtil) InsertOne(database string, table string, provider in
 	return nil
 }
 
-func (m *MongoDatabaseUtil) InsertMany(database string, table string, provider []interface{}) error {
-	collection := m.Client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) InsertMany(table string, provider []interface{}) error {
+	collection := m.Client.Database(m.DatabaseName).Collection(table)
 
 	if len(provider) == 0 {
 		return nil
@@ -99,8 +100,8 @@ func (m *MongoDatabaseUtil) InsertMany(database string, table string, provider [
 	return nil
 }
 
-func (m *MongoDatabaseUtil) UpdateOne(database string, table string, matches map[string]interface{}, provider interface{}) error {
-	collection := m.Client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) UpdateOne(table string, matches map[string]interface{}, provider interface{}) error {
+	collection := m.Client.Database(m.DatabaseName).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
@@ -121,8 +122,8 @@ func (m *MongoDatabaseUtil) UpdateOne(database string, table string, matches map
 	return nil
 }
 
-func (m *MongoDatabaseUtil) DeleteOne(database string, table string, matches map[string]interface{}) error {
-	collection := m.Client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) DeleteOne(table string, matches map[string]interface{}) error {
+	collection := m.Client.Database(m.DatabaseName).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
@@ -139,8 +140,8 @@ func (m *MongoDatabaseUtil) DeleteOne(database string, table string, matches map
 	return nil
 }
 
-func (m *MongoDatabaseUtil) DeleteMany(database string, table string, matches map[string]interface{}) error {
-	collection := m.Client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) DeleteMany(table string, matches map[string]interface{}) error {
+	collection := m.Client.Database(m.DatabaseName).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {

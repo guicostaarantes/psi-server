@@ -17,7 +17,7 @@ func (s GetPreferencesByIDService) Execute(id string) ([]*models.PreferenceRespo
 
 	preferences := []*models.PreferenceResponse{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "preferences", map[string]interface{}{"profileId": id})
+	cursor, findErr := s.DatabaseUtil.FindMany("preferences", map[string]interface{}{"profileId": id})
 	if findErr != nil {
 		return nil, findErr
 	}

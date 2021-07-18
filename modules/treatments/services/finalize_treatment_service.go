@@ -21,7 +21,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 
 	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
+	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
@@ -34,7 +34,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 		return fmt.Errorf("treatments can only be finalized if their current status is ACTIVE. current status is %s", string(treatment.Status))
 	}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{"treatmentId": id})
+	cursor, findErr := s.DatabaseUtil.FindMany("appointments", map[string]interface{}{"treatmentId": id})
 	if findErr != nil {
 		return findErr
 	}
@@ -53,7 +53,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 			appointment.Status = appointments_models.TreatmentFinalized
 			appointment.Reason = "Tratamento finalizado"
 
-			writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": appointment.ID}, appointment)
+			writeErr := s.DatabaseUtil.UpdateOne("appointments", map[string]interface{}{"id": appointment.ID}, appointment)
 			if writeErr != nil {
 				return writeErr
 			}
@@ -63,7 +63,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 	treatment.EndDate = time.Now().Unix()
 	treatment.Status = models.Finalized
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
+	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {
 		return writeErr
 	}

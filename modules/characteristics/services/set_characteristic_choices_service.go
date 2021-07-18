@@ -22,14 +22,14 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"id": id}, &pat)
+	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"id": id}, &pat)
 	if findErr != nil {
 		return findErr
 	}
 	if pat.ID != "" {
 		target = models.PatientTarget
 	} else {
-		findErr = s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
+		findErr = s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"id": id}, &psy)
 		if findErr != nil {
 			return findErr
 		}
@@ -42,7 +42,7 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 	choices := []interface{}{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
+	cursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
 	if findErr != nil {
 		return findErr
 	}
@@ -141,12 +141,12 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "characteristic_choices", map[string]interface{}{"profileId": id})
+	deleteErr := s.DatabaseUtil.DeleteMany("characteristic_choices", map[string]interface{}{"profileId": id})
 	if deleteErr != nil {
 		return deleteErr
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("psi_db", "characteristic_choices", choices)
+	writeErr := s.DatabaseUtil.InsertMany("characteristic_choices", choices)
 	if writeErr != nil {
 		return writeErr
 	}

@@ -25,7 +25,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	result := map[string]*models.AffinityScore{}
 
 	// Get available psychologist IDs from PENDING treatments
-	treatmentCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", map[string]interface{}{})
+	treatmentCursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{})
 	if findErr != nil {
 		return findErr
 	}
@@ -53,7 +53,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	// Get patient characteristics choices
 	patientCharacteristicChoices := []models.CharacteristicChoice{}
 
-	patientChoicesCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristic_choices", map[string]interface{}{"profileId": patientID})
+	patientChoicesCursor, findErr := s.DatabaseUtil.FindMany("characteristic_choices", map[string]interface{}{"profileId": patientID})
 	if findErr != nil {
 		return findErr
 	}
@@ -74,7 +74,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	}
 
 	// Get all psychologists preferences and calculate score for psychologist
-	preferencesCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "preferences", map[string]interface{}{"target": string(models.PsychologistTarget)})
+	preferencesCursor, findErr := s.DatabaseUtil.FindMany("preferences", map[string]interface{}{"target": string(models.PsychologistTarget)})
 	if findErr != nil {
 		return findErr
 	}
@@ -104,7 +104,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	// Get patient preferences
 	patientPreferences := []models.Preference{}
 
-	patientPreferencesCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "preferences", map[string]interface{}{"profileId": patientID})
+	patientPreferencesCursor, findErr := s.DatabaseUtil.FindMany("preferences", map[string]interface{}{"profileId": patientID})
 	if findErr != nil {
 		return findErr
 	}
@@ -125,7 +125,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	}
 
 	// Get all psychologists characteristic choices and calculate score for patient
-	choicesCursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristic_choices", map[string]interface{}{"target": string(models.PsychologistTarget)})
+	choicesCursor, findErr := s.DatabaseUtil.FindMany("characteristic_choices", map[string]interface{}{"target": string(models.PsychologistTarget)})
 	if findErr != nil {
 		return findErr
 	}
@@ -183,12 +183,12 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		topAffinities = append(topAffinities, slice)
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "top_affinities", map[string]interface{}{"patientId": patientID})
+	deleteErr := s.DatabaseUtil.DeleteMany("top_affinities", map[string]interface{}{"patientId": patientID})
 	if deleteErr != nil {
 		return deleteErr
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("psi_db", "top_affinities", topAffinities)
+	writeErr := s.DatabaseUtil.InsertMany("top_affinities", topAffinities)
 	if writeErr != nil {
 		return writeErr
 	}

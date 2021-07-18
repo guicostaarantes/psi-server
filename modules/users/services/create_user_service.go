@@ -36,7 +36,7 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 
 	userWithSameEmail := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"email": userInput.Email}, &userWithSameEmail)
+	findErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"email": userInput.Email}, &userWithSameEmail)
 	if findErr != nil {
 		return findErr
 	}
@@ -100,17 +100,17 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		Processed:   false,
 	}
 
-	writeMailErr := s.DatabaseUtil.InsertOne("psi_db", "mails", mail)
+	writeMailErr := s.DatabaseUtil.InsertOne("mails", mail)
 	if writeMailErr != nil {
 		return writeMailErr
 	}
 
-	writeResetErr := s.DatabaseUtil.InsertOne("psi_db", "resets", reset)
+	writeResetErr := s.DatabaseUtil.InsertOne("resets", reset)
 	if writeResetErr != nil {
 		return writeResetErr
 	}
 
-	writeUserErr := s.DatabaseUtil.InsertOne("psi_db", "users", user)
+	writeUserErr := s.DatabaseUtil.InsertOne("users", user)
 	if writeUserErr != nil {
 		return writeUserErr
 	}

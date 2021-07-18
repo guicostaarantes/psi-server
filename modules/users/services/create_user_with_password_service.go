@@ -35,7 +35,7 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 
 	userWithSameEmail := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"email": userInput.Email}, &userWithSameEmail)
+	findErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"email": userInput.Email}, &userWithSameEmail)
 	if findErr != nil {
 		return findErr
 	}
@@ -63,7 +63,7 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 
 	user.Password = hashedPwd
 
-	writeErr := s.DatabaseUtil.InsertOne("psi_db", "users", user)
+	writeErr := s.DatabaseUtil.InsertOne("users", user)
 	if writeErr != nil {
 		return writeErr
 	}

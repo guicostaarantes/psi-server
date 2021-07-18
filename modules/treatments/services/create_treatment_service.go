@@ -38,7 +38,7 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		Status:         models.Pending,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("psi_db", "treatments", treatment)
+	writeErr := s.DatabaseUtil.InsertOne("treatments", treatment)
 	if writeErr != nil {
 		return writeErr
 	}

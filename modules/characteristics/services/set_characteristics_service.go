@@ -28,12 +28,12 @@ func (s SetCharacteristicsService) Execute(target models.CharacteristicTarget, i
 		newCharacteristics = append(newCharacteristics, characteristic)
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
+	deleteErr := s.DatabaseUtil.DeleteMany("characteristics", map[string]interface{}{"target": string(target)})
 	if deleteErr != nil {
 		return deleteErr
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("psi_db", "characteristics", newCharacteristics)
+	writeErr := s.DatabaseUtil.InsertMany("characteristics", newCharacteristics)
 	if writeErr != nil {
 		return writeErr
 	}

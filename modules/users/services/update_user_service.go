@@ -17,7 +17,7 @@ func (s UpdateUserService) Execute(userID string, input *models.UpdateUserInput)
 
 	user := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "users", map[string]interface{}{"id": userID}, &user)
+	findErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"id": userID}, &user)
 	if findErr != nil {
 		return findErr
 	}
@@ -29,7 +29,7 @@ func (s UpdateUserService) Execute(userID string, input *models.UpdateUserInput)
 	user.Active = input.Active
 	user.Role = input.Role
 
-	updateErr := s.DatabaseUtil.UpdateOne("psi_db", "users", map[string]interface{}{"id": userID}, user)
+	updateErr := s.DatabaseUtil.UpdateOne("users", map[string]interface{}{"id": userID}, user)
 	if updateErr != nil {
 		return updateErr
 	}

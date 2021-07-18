@@ -15,7 +15,7 @@ func (s GetPsychologistByUserIDService) Execute(id string) (*models.Psychologist
 
 	psy := &models.Psychologist{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"userId": id}, psy)
+	findErr := s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"userId": id}, psy)
 	if findErr != nil {
 		return nil, findErr
 	}
@@ -23,7 +23,7 @@ func (s GetPsychologistByUserIDService) Execute(id string) (*models.Psychologist
 	if psy.ID == "" {
 		return nil, nil
 	}
-	
+
 	return psy, nil
 
 }

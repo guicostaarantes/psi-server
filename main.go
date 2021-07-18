@@ -30,8 +30,9 @@ func main() {
 	loggingUtil := logging.PrintLoggingUtil{}
 
 	databaseUtil := database.MongoDatabaseUtil{
-		Context:     context.Background(),
-		LoggingUtil: loggingUtil,
+		Context:      context.Background(),
+		DatabaseName: "psi_db",
+		LoggingUtil:  loggingUtil,
 	}
 
 	databaseUtil.Connect(mongoUri)

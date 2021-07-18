@@ -42,7 +42,7 @@ func (s SaveCooldownService) Execute(profileID string, profileType models.Cooldo
 		ValidUntil:   validUntil,
 	}
 
-	insertErr := s.DatabaseUtil.InsertOne("psi_db", "cooldowns", cooldown)
+	insertErr := s.DatabaseUtil.InsertOne("cooldowns", cooldown)
 	if insertErr != nil {
 		return insertErr
 	}

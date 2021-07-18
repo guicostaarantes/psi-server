@@ -17,7 +17,7 @@ func (s UpsertPatientService) Execute(input *models.UpsertPatientInput) error {
 
 	existantPatient := models.Patient{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"userId": input.UserID}, &existantPatient)
+	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"userId": input.UserID}, &existantPatient)
 	if findErr != nil {
 		return findErr
 	}
@@ -28,7 +28,7 @@ func (s UpsertPatientService) Execute(input *models.UpsertPatientInput) error {
 		existantPatient.BirthDate = input.BirthDate
 		existantPatient.City = input.City
 
-		writeErr := s.DatabaseUtil.UpdateOne("psi_db", "patients", map[string]interface{}{"id": existantPatient.ID}, existantPatient)
+		writeErr := s.DatabaseUtil.UpdateOne("patients", map[string]interface{}{"id": existantPatient.ID}, existantPatient)
 		if writeErr != nil {
 			return writeErr
 		}
@@ -50,7 +50,7 @@ func (s UpsertPatientService) Execute(input *models.UpsertPatientInput) error {
 		City:      input.City,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("psi_db", "patients", patient)
+	writeErr := s.DatabaseUtil.InsertOne("patients", patient)
 	if writeErr != nil {
 		return writeErr
 	}

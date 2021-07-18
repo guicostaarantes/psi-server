@@ -17,7 +17,7 @@ func (s UpsertPsychologistService) Execute(input *models.UpsertPsychologistInput
 
 	existantPsy := models.Psychologist{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"userId": input.UserID}, &existantPsy)
+	findErr := s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"userId": input.UserID}, &existantPsy)
 	if findErr != nil {
 		return findErr
 	}
@@ -28,7 +28,7 @@ func (s UpsertPsychologistService) Execute(input *models.UpsertPsychologistInput
 		existantPsy.BirthDate = input.BirthDate
 		existantPsy.City = input.City
 
-		writeErr := s.DatabaseUtil.UpdateOne("psi_db", "psychologists", map[string]interface{}{"id": existantPsy.ID}, existantPsy)
+		writeErr := s.DatabaseUtil.UpdateOne("psychologists", map[string]interface{}{"id": existantPsy.ID}, existantPsy)
 		if writeErr != nil {
 			return writeErr
 		}
@@ -50,7 +50,7 @@ func (s UpsertPsychologistService) Execute(input *models.UpsertPsychologistInput
 		City:      input.City,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("psi_db", "psychologists", psy)
+	writeErr := s.DatabaseUtil.InsertOne("psychologists", psy)
 	if writeErr != nil {
 		return writeErr
 	}
