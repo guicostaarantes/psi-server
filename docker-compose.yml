@@ -31,6 +31,7 @@ services:
       - 7070:8080
       - 40000:40000
     environment:
+      PSI_APP_PORT: 8080
       PSI_BOOTSTRAP_USER: coordinator@psi.com.br|Abc123!@#
       PSI_MONGO_URI: mongodb://root:pass@mongo
       PSI_SITE_URL: http://localhost:7007

@@ -9,15 +9,19 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-type smtpMailer struct {
-	loggingUtil logging.ILoggingUtil
+type SmtpMailUtil struct {
+	Host        string
+	Port        int
+	Username    string
+	Password    string
+	LoggingUtil logging.ILoggingUtil
 }
 
-func (s smtpMailer) GetMockedMessages() (*[]map[string]interface{}, error) {
+func (s SmtpMailUtil) GetMockedMessages() (*[]map[string]interface{}, error) {
 	return nil, errors.New("this is not a mock implementation")
 }
 
-func (s smtpMailer) Send(msg Message) error {
+func (s SmtpMailUtil) Send(msg Message) error {
 	envSMTPPort, _ := strconv.Atoi(os.Getenv("PSI_SMTP_PORT"))
 
 	dialer := gomail.NewDialer(os.Getenv("PSI_SMTP_HOST"), envSMTPPort, os.Getenv("PSI_SMTP_USERNAME"), os.Getenv("PSI_SMTP_PASSWORD"))
@@ -32,14 +36,9 @@ func (s smtpMailer) Send(msg Message) error {
 
 	sendErr := dialer.DialAndSend(gomsg)
 	if sendErr != nil {
-		s.loggingUtil.Error("fb59180c", sendErr)
+		s.LoggingUtil.Error("fb59180c", sendErr)
 		return errors.New("internal server error")
 	}
 
 	return nil
-}
-
-// SMTPMailUtil is an implementation of IMailUtil that uses SMTP via gopkg.in/gomail.v2
-var SMTPMailUtil = smtpMailer{
-	loggingUtil: logging.PrintLogUtil,
 }

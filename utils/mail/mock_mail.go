@@ -1,14 +1,14 @@
 package mail
 
-type mockMailer struct {
-	mockedMessages *[]map[string]interface{}
+type FakeMailUtil struct {
+	MockedMessages *[]map[string]interface{}
 }
 
-func (s mockMailer) GetMockedMessages() (*[]map[string]interface{}, error) {
-	return s.mockedMessages, nil
+func (s FakeMailUtil) GetMockedMessages() (*[]map[string]interface{}, error) {
+	return s.MockedMessages, nil
 }
 
-func (s mockMailer) Send(msg Message) error {
+func (s FakeMailUtil) Send(msg Message) error {
 	mail := map[string]interface{}{
 		"to":      msg.To,
 		"cc":      msg.Cc,
@@ -17,12 +17,7 @@ func (s mockMailer) Send(msg Message) error {
 		"body":    msg.HTML,
 	}
 
-	*s.mockedMessages = append(*s.mockedMessages, mail)
+	*s.MockedMessages = append(*s.MockedMessages, mail)
 
 	return nil
-}
-
-// MockMailUtil is an implementation of IMailUtil that writes to disk
-var MockMailUtil = mockMailer{
-	mockedMessages: &[]map[string]interface{}{},
 }

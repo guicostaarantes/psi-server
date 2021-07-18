@@ -3,8 +3,6 @@ package database
 import (
 	"context"
 	"errors"
-	"log"
-	"os"
 
 	"github.com/guicostaarantes/psi-server/utils/logging"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,103 +11,96 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func connect() *mongo.Client {
-	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("PSI_MONGO_URI")))
-	if err != nil {
-		log.Fatal(err)
+type MongoDatabaseUtil struct {
+	Context     context.Context
+	Client      *mongo.Client
+	LoggingUtil logging.ILoggingUtil
+}
+
+func (m *MongoDatabaseUtil) Connect(uri string) error {
+	client, connectErr := mongo.NewClient(options.Client().ApplyURI(uri))
+	if connectErr != nil {
+		return connectErr
 	}
 
-	err = client.Connect(context.Background())
-	if err != nil {
-		log.Fatal(err)
+	connectErr = client.Connect(context.Background())
+	if connectErr != nil {
+		return connectErr
 	}
 
-	return client
+	m.Client = client
+
+	return nil
 }
 
-type mongoClient struct {
-	context          context.Context
-	client           *mongo.Client
-	loggingUtil      logging.ILoggingUtil
-	noDocumentsError string
-}
-
-func (m mongoClient) GetMockedDatabases() ([]byte, error) {
-	return nil, errors.New("this is not a mock implementation")
-}
-
-func (m mongoClient) SetMockedDatabases(data []byte) error {
-	return errors.New("this is not a mock implementation")
-}
-
-func (m mongoClient) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
-	collection := m.client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) FindOne(database string, table string, matches map[string]interface{}, receiver interface{}) error {
+	collection := m.Client.Database(database).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
 		filter = append(filter, primitive.E{Key: k, Value: v})
 	}
 
-	mongoErr := collection.FindOne(m.context, filter).Decode(receiver)
+	mongoErr := collection.FindOne(m.Context, filter).Decode(receiver)
 
-	if mongoErr != nil && mongoErr.Error() != m.noDocumentsError {
-		m.loggingUtil.Error("d98dc14d", mongoErr)
+	if mongoErr != nil && mongoErr.Error() != "mongo: no documents in result" {
+		m.LoggingUtil.Error("d98dc14d", mongoErr)
 		return errors.New("internal server error")
 	}
 
 	return nil
 }
 
-func (m mongoClient) FindMany(database string, table string, matches map[string]interface{}) (ICursor, error) {
-	collection := m.client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) FindMany(database string, table string, matches map[string]interface{}) (ICursor, error) {
+	collection := m.Client.Database(database).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
 		filter = append(filter, primitive.E{Key: k, Value: v})
 	}
 
-	cursor, mongoErr := collection.Find(m.context, filter)
+	cursor, mongoErr := collection.Find(m.Context, filter)
 
-	if mongoErr != nil && mongoErr.Error() != m.noDocumentsError {
-		m.loggingUtil.Error("d98dc14d", mongoErr)
+	if mongoErr != nil && mongoErr.Error() != "mongo: no documents in result" {
+		m.LoggingUtil.Error("d98dc14d", mongoErr)
 		return nil, errors.New("internal server error")
 	}
 
 	return cursor, nil
 }
 
-func (m mongoClient) InsertOne(database string, table string, provider interface{}) error {
-	collection := m.client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) InsertOne(database string, table string, provider interface{}) error {
+	collection := m.Client.Database(database).Collection(table)
 
-	_, insertErr := collection.InsertOne(m.context, provider)
+	_, insertErr := collection.InsertOne(m.Context, provider)
 
 	if insertErr != nil {
-		m.loggingUtil.Error("018778ce", insertErr)
+		m.LoggingUtil.Error("018778ce", insertErr)
 		return errors.New("internal server error")
 	}
 
 	return nil
 }
 
-func (m mongoClient) InsertMany(database string, table string, provider []interface{}) error {
-	collection := m.client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) InsertMany(database string, table string, provider []interface{}) error {
+	collection := m.Client.Database(database).Collection(table)
 
 	if len(provider) == 0 {
 		return nil
 	}
 
-	_, insertErr := collection.InsertMany(m.context, provider)
+	_, insertErr := collection.InsertMany(m.Context, provider)
 
 	if insertErr != nil {
-		m.loggingUtil.Error("3789b465", insertErr)
+		m.LoggingUtil.Error("3789b465", insertErr)
 		return errors.New("internal server error")
 	}
 
 	return nil
 }
 
-func (m mongoClient) UpdateOne(database string, table string, matches map[string]interface{}, provider interface{}) error {
-	collection := m.client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) UpdateOne(database string, table string, matches map[string]interface{}, provider interface{}) error {
+	collection := m.Client.Database(database).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
@@ -120,56 +111,48 @@ func (m mongoClient) UpdateOne(database string, table string, matches map[string
 		"$set": provider,
 	}
 
-	_, updateErr := collection.UpdateOne(m.context, filter, update)
+	_, updateErr := collection.UpdateOne(m.Context, filter, update)
 
 	if updateErr != nil {
-		m.loggingUtil.Error("cf9a49be", updateErr)
+		m.LoggingUtil.Error("cf9a49be", updateErr)
 		return errors.New("internal server error")
 	}
 
 	return nil
 }
 
-func (m mongoClient) DeleteOne(database string, table string, matches map[string]interface{}) error {
-	collection := m.client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) DeleteOne(database string, table string, matches map[string]interface{}) error {
+	collection := m.Client.Database(database).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
 		filter = append(filter, primitive.E{Key: k, Value: v})
 	}
 
-	_, deleteErr := collection.DeleteOne(m.context, filter)
+	_, deleteErr := collection.DeleteOne(m.Context, filter)
 
 	if deleteErr != nil {
-		m.loggingUtil.Error("c6280e5a", deleteErr)
+		m.LoggingUtil.Error("c6280e5a", deleteErr)
 		return errors.New("internal server error")
 	}
 
 	return nil
 }
 
-func (m mongoClient) DeleteMany(database string, table string, matches map[string]interface{}) error {
-	collection := m.client.Database(database).Collection(table)
+func (m *MongoDatabaseUtil) DeleteMany(database string, table string, matches map[string]interface{}) error {
+	collection := m.Client.Database(database).Collection(table)
 
 	filter := bson.D{}
 	for k, v := range matches {
 		filter = append(filter, primitive.E{Key: k, Value: v})
 	}
 
-	_, deleteErr := collection.DeleteMany(m.context, filter)
+	_, deleteErr := collection.DeleteMany(m.Context, filter)
 
 	if deleteErr != nil {
-		m.loggingUtil.Error("d802d913", deleteErr)
+		m.LoggingUtil.Error("d802d913", deleteErr)
 		return errors.New("internal server error")
 	}
 
 	return nil
-}
-
-// MongoDatabaseUtil is an implementation of IQueryUtil that uses MongoDB via go.mongodb.org/mongo-driver/mongo
-var MongoDatabaseUtil = mongoClient{
-	context:          context.Background(),
-	client:           connect(),
-	loggingUtil:      logging.PrintLogUtil,
-	noDocumentsError: "mongo: no documents in result",
 }
