@@ -7,6 +7,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: pass
     volumes:
       - ./.tmp/mongodb:/data/db
+    ports:
+      - 27017:27017
   mongo-express:
     image: mongo-express:0.54.0
     restart: on-failure:3
