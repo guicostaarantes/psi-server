@@ -7,50 +7,35 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type bcryptHasher struct {
-	cost               int
-	wrongPasswordError string
-	loggingUtil        logging.ILoggingUtil
+type BcryptHashUtil struct {
+	Cost        int
+	LoggingUtil logging.ILoggingUtil
 }
 
-func (h bcryptHasher) Hash(plain string) (string, error) {
-	hashedBytes, hashErr := bcrypt.GenerateFromPassword([]byte(plain), h.cost)
+func (h BcryptHashUtil) Hash(plain string) (string, error) {
+	hashedBytes, hashErr := bcrypt.GenerateFromPassword([]byte(plain), h.Cost)
 	if hashErr != nil {
-		h.loggingUtil.Error("e3092a73", hashErr)
+		h.LoggingUtil.Error("e3092a73", hashErr)
 		return "", errors.New("internal server error")
 	}
 	return string(hashedBytes), hashErr
 }
 
-func (h bcryptHasher) Compare(plain string, hashed string) error {
+func (h BcryptHashUtil) Compare(plain string, hashed string) error {
 	compareErr := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(plain))
 	if compareErr != nil {
 		if compareErr.Error() == "crypto/bcrypt: hashedPassword is not the hash of the given password" {
-			return errors.New(h.wrongPasswordError)
+			return errors.New("hashedPassword is not the hash of the given password")
 		}
 		if compareErr.Error() == "crypto/bcrypt: hashedSecret too short to be a bcrypted password" {
-			return errors.New(h.wrongPasswordError)
+			return errors.New("hashedPassword is not the hash of the given password")
 		}
-		h.loggingUtil.Error("1f3b1849", compareErr)
+		h.LoggingUtil.Error("1f3b1849", compareErr)
 		return errors.New("internal server error")
 	}
 	return nil
 }
 
-func (h bcryptHasher) GetWrongPasswordError() string {
-	return h.wrongPasswordError
-}
-
-// BcryptHashUtil is an implementation of IHashUtil that uses golang.org/x/crypto/bcrypt
-var BcryptHashUtil = bcryptHasher{
-	cost:               8,
-	wrongPasswordError: "hashedPassword is not the hash of the given password",
-	loggingUtil:        logging.PrintLogUtil,
-}
-
-// WeakBcryptHashUtil is an implementation of IHashUtil that uses golang.org/x/crypto/bcrypt and minimum cost for testing
-var WeakBcryptHashUtil = bcryptHasher{
-	cost:               4,
-	wrongPasswordError: "hashedPassword is not the hash of the given password",
-	loggingUtil:        logging.PrintLogUtil,
+func (h BcryptHashUtil) GetWrongPasswordError() string {
+	return "hashedPassword is not the hash of the given password"
 }

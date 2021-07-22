@@ -19,7 +19,7 @@ func (s GetPsychologistPendingTreatmentsService) Execute(psychologistID string) 
 
 	filter := map[string]interface{}{"psychologistId": psychologistID}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", filter)
+	cursor, findErr := s.DatabaseUtil.FindMany("treatments", filter)
 	if findErr != nil {
 		return nil, findErr
 	}

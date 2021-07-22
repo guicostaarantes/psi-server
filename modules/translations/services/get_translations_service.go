@@ -17,7 +17,7 @@ func (s GetTranslationsService) Execute(lang string, keys []string) ([]*models.T
 
 	translations := []*models.Translation{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "translations", map[string]interface{}{"lang": lang})
+	cursor, findErr := s.DatabaseUtil.FindMany("translations", map[string]interface{}{"lang": lang})
 	if findErr != nil {
 		return nil, findErr
 	}

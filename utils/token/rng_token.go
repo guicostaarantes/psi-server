@@ -4,13 +4,13 @@ import (
 	"crypto/rand"
 )
 
-type rngToken struct {
-	runes string
-	size  int
+type RngTokenUtil struct {
+	Runes string
+	Size  int
 }
 
-func (r rngToken) GenerateToken(payload string, secondsToExpire int64) (string, error) {
-	bytes := make([]byte, r.size)
+func (r RngTokenUtil) GenerateToken(payload string, secondsToExpire int64) (string, error) {
+	bytes := make([]byte, r.Size)
 
 	_, err := rand.Read(bytes)
 	if err != nil {
@@ -18,14 +18,8 @@ func (r rngToken) GenerateToken(payload string, secondsToExpire int64) (string, 
 	}
 
 	for i, b := range bytes {
-		bytes[i] = r.runes[b%byte(len(r.runes))]
+		bytes[i] = r.Runes[b%byte(len(r.Runes))]
 	}
 
 	return string(bytes), nil
-}
-
-// RngTokenUtil is an implementation of ITokenUtil that uses crypto/rand
-var RngTokenUtil = rngToken{
-	runes: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-	size:  64,
 }

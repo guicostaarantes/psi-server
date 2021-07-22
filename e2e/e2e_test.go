@@ -17,6 +17,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/logging"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
@@ -46,14 +47,46 @@ func TestEnd2End(t *testing.T) {
 
 	storedVariables := map[string]string{}
 
+	loggingUtil := logging.PrintLoggingUtil{}
+
+	databaseUtil := database.FakeDatabaseUtil{
+		Client: database.FakeDBClientFactory(),
+	}
+
+	hashUtil := hash.BcryptHashUtil{
+		Cost:        4,
+		LoggingUtil: loggingUtil,
+	}
+
+	identifierUtil := identifier.UuidIdentifierUtil{
+		LoggingUtil: loggingUtil,
+	}
+
+	mailUtil := mail.FakeMailUtil{
+		MockedMessages: &[]map[string]interface{}{},
+	}
+
+	matchUtil := match.RegexpMatchUtil{
+		LoggingUtil: loggingUtil,
+	}
+
+	serializingUtil := serializing.JsonSerializingUtil{
+		LoggingUtil: loggingUtil,
+	}
+
+	tokenUtil := token.RngTokenUtil{
+		Runes: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+		Size:  8,
+	}
+
 	res := &resolvers.Resolver{
-		DatabaseUtil:                 database.MockDatabaseUtil,
-		HashUtil:                     hash.WeakBcryptHashUtil,
-		IdentifierUtil:               identifier.UUIDIdentifierUtil,
-		MailUtil:                     mail.MockMailUtil,
-		MatchUtil:                    match.RegexpMatchUtil,
-		SerializingUtil:              serializing.JSONSerializingUtil,
-		TokenUtil:                    token.RngTokenUtil,
+		DatabaseUtil:                 &databaseUtil,
+		HashUtil:                     hashUtil,
+		IdentifierUtil:               identifierUtil,
+		MailUtil:                     mailUtil,
+		MatchUtil:                    matchUtil,
+		SerializingUtil:              serializingUtil,
+		TokenUtil:                    tokenUtil,
 		MaxAffinityNumber:            int64(5),
 		SecondsToCooldownReset:       int64(86400),
 		SecondsToExpire:              int64(1800),

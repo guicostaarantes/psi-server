@@ -17,7 +17,7 @@ func (s GetAppointmentsOfPsychologistService) Execute(psychologistID string) ([]
 
 	appointments := []*models.Appointment{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{"psychologistId": psychologistID})
+	cursor, findErr := s.DatabaseUtil.FindMany("appointments", map[string]interface{}{"psychologistId": psychologistID})
 	if findErr != nil {
 		return nil, findErr
 	}

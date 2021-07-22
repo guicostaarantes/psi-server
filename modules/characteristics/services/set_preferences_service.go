@@ -23,7 +23,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	findErr := s.DatabaseUtil.FindOne("psi_db", "patients", map[string]interface{}{"id": id}, &pat)
+	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"id": id}, &pat)
 	if findErr != nil {
 		return findErr
 	}
@@ -31,7 +31,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 		target = models.PsychologistTarget
 		profileType = models.PatientTarget
 	} else {
-		findErr = s.DatabaseUtil.FindOne("psi_db", "psychologists", map[string]interface{}{"id": id}, &psy)
+		findErr = s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"id": id}, &psy)
 		if findErr != nil {
 			return findErr
 		}
@@ -45,7 +45,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 
 	preferences := []interface{}{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
+	cursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
 	if findErr != nil {
 		return findErr
 	}
@@ -80,12 +80,12 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("psi_db", "preferences", map[string]interface{}{"profileId": id})
+	deleteErr := s.DatabaseUtil.DeleteMany("preferences", map[string]interface{}{"profileId": id})
 	if deleteErr != nil {
 		return deleteErr
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("psi_db", "preferences", preferences)
+	writeErr := s.DatabaseUtil.InsertMany("preferences", preferences)
 	if writeErr != nil {
 		return writeErr
 	}

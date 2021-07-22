@@ -22,7 +22,7 @@ func (s GetUsersByRoleService) Execute(role string) ([]*models.User, error) {
 
 	users := []*models.User{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "users", map[string]interface{}{"role": role})
+	cursor, findErr := s.DatabaseUtil.FindMany("users", map[string]interface{}{"role": role})
 	if findErr != nil {
 		return nil, findErr
 	}

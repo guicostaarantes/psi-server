@@ -34,7 +34,7 @@ func (s GetTopAffinitiesForPatientService) Execute(patientID string) ([]*models.
 
 	topAffinities := []*models.Affinity{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "top_affinities", map[string]interface{}{"patientId": patientID})
+	cursor, findErr := s.DatabaseUtil.FindMany("top_affinities", map[string]interface{}{"patientId": patientID})
 	if findErr != nil {
 		return nil, findErr
 	}

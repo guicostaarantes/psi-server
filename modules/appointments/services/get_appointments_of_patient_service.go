@@ -17,7 +17,7 @@ func (s GetAppointmentsOfPatientService) Execute(patientID string) ([]*models.Ap
 
 	appointments := []*models.Appointment{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{"patientId": patientID})
+	cursor, findErr := s.DatabaseUtil.FindMany("appointments", map[string]interface{}{"patientId": patientID})
 	if findErr != nil {
 		return nil, findErr
 	}

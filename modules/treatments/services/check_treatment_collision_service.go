@@ -20,7 +20,7 @@ func (s CheckTreatmentCollisionService) Execute(psychologistID string, weeklySta
 
 	end := (weeklyStart + duration) % weekDuration
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "treatments", map[string]interface{}{"psychologistId": psychologistID})
+	cursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{"psychologistId": psychologistID})
 	if findErr != nil {
 		return findErr
 	}

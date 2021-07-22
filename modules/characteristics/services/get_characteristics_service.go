@@ -18,7 +18,7 @@ func (s GetCharacteristicsService) Execute(target models.CharacteristicTarget) (
 
 	characteristics := []*models.CharacteristicResponse{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "characteristics", map[string]interface{}{"target": string(target)})
+	cursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
 	if findErr != nil {
 		return nil, findErr
 	}

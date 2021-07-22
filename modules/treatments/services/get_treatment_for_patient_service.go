@@ -15,7 +15,7 @@ func (s GetTreatmentForPatientService) Execute(id string) (*models.GetPatientTre
 
 	treatment := &models.GetPatientTreatmentsResponse{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id}, &treatment)
+	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id}, &treatment)
 	if findErr != nil {
 		return nil, findErr
 	}

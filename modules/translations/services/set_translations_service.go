@@ -24,7 +24,7 @@ func (s SetTranslationsService) Execute(lang string, input []*models.Translation
 		translations = append(translations, newTranslation)
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("psi_db", "translations", translations)
+	writeErr := s.DatabaseUtil.InsertMany("translations", translations)
 	if writeErr != nil {
 		return writeErr
 	}

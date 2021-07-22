@@ -17,7 +17,7 @@ func (s DeleteTreatmentService) Execute(id string, psychologistID string) error 
 
 	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
+	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
@@ -30,7 +30,7 @@ func (s DeleteTreatmentService) Execute(id string, psychologistID string) error 
 		return errors.New("treatments can only be deleted if they their status is pending")
 	}
 
-	writeErr := s.DatabaseUtil.DeleteOne("psi_db", "treatments", map[string]interface{}{"id": id})
+	writeErr := s.DatabaseUtil.DeleteOne("treatments", map[string]interface{}{"id": id})
 	if writeErr != nil {
 		return writeErr
 	}

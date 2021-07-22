@@ -14,7 +14,7 @@ type GetCooldownService struct {
 }
 
 func (s GetCooldownService) Execute(profileID string, profileType models.CooldownProfileType, cooldownType models.CooldownType) (*models.Cooldown, error) {
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "cooldowns", map[string]interface{}{"profileId": profileID, "profileType": profileType, "cooldownType": cooldownType})
+	cursor, findErr := s.DatabaseUtil.FindMany("cooldowns", map[string]interface{}{"profileId": profileID, "profileType": profileType, "cooldownType": cooldownType})
 	if findErr != nil {
 		return nil, findErr
 	}

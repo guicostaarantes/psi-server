@@ -21,7 +21,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 
 	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("psi_db", "treatments", map[string]interface{}{"id": id, "patientId": patientID}, &treatment)
+	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id, "patientId": patientID}, &treatment)
 	if findErr != nil {
 		return findErr
 	}
@@ -34,7 +34,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 		return fmt.Errorf("treatments can only be interrupted if their current status is ACTIVE. current status is %s", string(treatment.Status))
 	}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("psi_db", "appointments", map[string]interface{}{"treatmentId": id})
+	cursor, findErr := s.DatabaseUtil.FindMany("appointments", map[string]interface{}{"treatmentId": id})
 	if findErr != nil {
 		return findErr
 	}
@@ -53,7 +53,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 			appointment.Status = appointments_models.TreatmentInterruptedByPatient
 			appointment.Reason = reason
 
-			writeErr := s.DatabaseUtil.UpdateOne("psi_db", "appointments", map[string]interface{}{"id": appointment.ID}, appointment)
+			writeErr := s.DatabaseUtil.UpdateOne("appointments", map[string]interface{}{"id": appointment.ID}, appointment)
 			if writeErr != nil {
 				return writeErr
 			}
@@ -64,7 +64,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 	treatment.Status = models.InterruptedByPatient
 	treatment.Reason = reason
 
-	writeErr := s.DatabaseUtil.UpdateOne("psi_db", "treatments", map[string]interface{}{"id": id}, treatment)
+	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {
 		return writeErr
 	}
