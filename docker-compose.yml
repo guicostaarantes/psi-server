@@ -1,17 +1,29 @@
 version: "3.8"
 services:
   mongo:
-    image: mongo:4.4.3
+    image: mongo:5.0.1
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: pass
     volumes:
       - ./.tmp/mongodb:/data/db
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 30s
   mongo-express:
     image: mongo-express:0.54.0
     restart: on-failure:3
     ports:
       - 7071:8081
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 30s
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
@@ -23,6 +35,12 @@ services:
     image: mailhog/mailhog:v1.0.1
     ports:
       - 7072:8025
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 30s
   app:
     build:
       context: .
@@ -43,6 +61,12 @@ services:
       PSI_SMTP_PASSWORD:
     depends_on:
       - mongo
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 30s
   jobs:
     build: ./jobs
     environment:
@@ -51,3 +75,9 @@ services:
       PSI_JOBRUNNER_PASSWORD: Xyz*()890
     depends_on:
       - app
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 30s

@@ -1,4 +1,4 @@
-FROM golang:1.16rc1-alpine3.12 AS build
+FROM golang:1.16.6-alpine3.14 AS build
 WORKDIR /app
 COPY go.mod .
 COPY go.sum .
@@ -11,6 +11,6 @@ COPY build.sh .
 RUN chmod +x ./build.sh
 RUN ./build.sh
 
-FROM alpine:3.12
+FROM alpine:3.14
 COPY --from=build /out /
 CMD ["/main"]
