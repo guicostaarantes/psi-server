@@ -25,7 +25,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	result := map[string]*models.AffinityScore{}
 
 	// Get available psychologist IDs from PENDING treatments
-	treatmentCursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{})
+	treatmentCursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{"status": string(treatments_models.Pending)})
 	if findErr != nil {
 		return findErr
 	}
@@ -41,11 +41,9 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 			return decodeErr
 		}
 
-		if treatment.Status == treatments_models.Pending {
-			_, ok := result[treatment.PsychologistID]
-			if !ok {
-				result[treatment.PsychologistID] = &models.AffinityScore{}
-			}
+		_, ok := result[treatment.PsychologistID]
+		if !ok {
+			result[treatment.PsychologistID] = &models.AffinityScore{}
 		}
 
 	}
