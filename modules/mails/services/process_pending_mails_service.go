@@ -2,6 +2,7 @@ package mails_services
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
@@ -29,6 +30,8 @@ func (p ProcessPendingMailsService) Execute() error {
 
 	defer cursor.Close(ctx)
 
+	var wg sync.WaitGroup
+
 	for cursor.Next(ctx) {
 
 		dbmsg := &mails_models.TransientMailMessage{}
@@ -38,28 +41,31 @@ func (p ProcessPendingMailsService) Execute() error {
 			return decodeErr
 		}
 
-		sendErr := p.MailUtil.Send(mail.Message{
-			FromAddress: dbmsg.FromAddress,
-			FromName:    dbmsg.FromName,
-			To:          dbmsg.To,
-			Cc:          dbmsg.Cc,
-			Cco:         dbmsg.Cco,
-			Subject:     dbmsg.Subject,
-			HTML:        dbmsg.Html,
-		})
-		if sendErr != nil {
-			return sendErr
-		}
+		wg.Add(1)
 
-		dbmsg.Processed = true
+		go func(msg *mails_models.TransientMailMessage) {
 
-		updateErr := p.DatabaseUtil.UpdateOne("mails", map[string]interface{}{"id": dbmsg.ID}, dbmsg)
-		if updateErr != nil {
-			return updateErr
-		}
+			sendErr := p.MailUtil.Send(mail.Message{
+				FromAddress: dbmsg.FromAddress,
+				FromName:    dbmsg.FromName,
+				To:          dbmsg.To,
+				Cc:          dbmsg.Cc,
+				Cco:         dbmsg.Cco,
+				Subject:     dbmsg.Subject,
+				HTML:        dbmsg.Html,
+			})
+
+			if sendErr == nil {
+				dbmsg.Processed = true
+				p.DatabaseUtil.UpdateOne("mails", map[string]interface{}{"id": dbmsg.ID}, dbmsg)
+			}
+
+			wg.Done()
+		}(dbmsg)
 
 	}
 
-	return nil
+	wg.Wait()
 
+	return nil
 }
