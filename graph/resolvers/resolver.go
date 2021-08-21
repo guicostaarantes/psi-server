@@ -32,6 +32,7 @@ type Resolver struct {
 	SerializingUtil                         serializing.ISerializingUtil
 	TokenUtil                               token.ITokenUtil
 	MaxAffinityNumber                       int64
+	ScheduleIntervalSeconds                 int64
 	SecondsToCooldownReset                  int64
 	SecondsToExpire                         int64
 	SecondsToExpireReset                    int64
@@ -168,8 +169,9 @@ func (r *Resolver) ConfirmAppointmentByPsychologistService() *appointments_servi
 func (r *Resolver) CreatePendingAppointmentsService() *appointments_services.CreatePendingAppointmentsService {
 	if r.createPendingAppointmentsService == nil {
 		r.createPendingAppointmentsService = &appointments_services.CreatePendingAppointmentsService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
+			DatabaseUtil:            r.DatabaseUtil,
+			IdentifierUtil:          r.IdentifierUtil,
+			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
 		}
 	}
 	return r.createPendingAppointmentsService
@@ -179,8 +181,9 @@ func (r *Resolver) CreatePendingAppointmentsService() *appointments_services.Cre
 func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatmentService {
 	if r.createTreatmentService == nil {
 		r.createTreatmentService = &treatments_services.CreateTreatmentService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
+			DatabaseUtil:            r.DatabaseUtil,
+			IdentifierUtil:          r.IdentifierUtil,
+			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
 		}
 	}
 	return r.createTreatmentService
@@ -559,7 +562,8 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
 	if r.updateTreatmentService == nil {
 		r.updateTreatmentService = &treatments_services.UpdateTreatmentService{
-			DatabaseUtil: r.DatabaseUtil,
+			DatabaseUtil:            r.DatabaseUtil,
+			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
 		}
 	}
 	return r.updateTreatmentService

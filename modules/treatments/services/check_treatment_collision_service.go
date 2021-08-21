@@ -10,15 +10,27 @@ import (
 
 // CheckTreatmentCollisionService is a service that checks if a treatment period collides with others from the same psychologist
 type CheckTreatmentCollisionService struct {
-	DatabaseUtil database.IDatabaseUtil
+	DatabaseUtil            database.IDatabaseUtil
+	ScheduleIntervalSeconds int64
+}
+
+func LCM(a, b int64) int64 {
+	c := a
+	d := b
+	for d != 0 {
+		t := d
+		d = c % d
+		c = t
+	}
+	return a * b / c
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CheckTreatmentCollisionService) Execute(psychologistID string, weeklyStart int64, duration int64, updatingID string) error {
+func (s CheckTreatmentCollisionService) Execute(psychologistID string, frequency int64, phase int64, duration int64, updatingID string) error {
 
-	weekDuration := int64(7 * 24 * 60 * 60)
-
-	end := (weeklyStart + duration) % weekDuration
+	if phase >= s.ScheduleIntervalSeconds*frequency {
+		return errors.New("phase cannot be bigger than the schedule interval")
+	}
 
 	cursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{"psychologistId": psychologistID})
 	if findErr != nil {
@@ -35,25 +47,45 @@ func (s CheckTreatmentCollisionService) Execute(psychologistID string, weeklySta
 			return decodeErr
 		}
 
-		treatmentEnd := (treatment.WeeklyStart + treatment.Duration) % weekDuration
+		lcm := LCM(frequency, treatment.Frequency)
 
-		// If 3 of the 4 conditions below are true, it means there is no clash between treatments
-		noClash := 0
-		if weeklyStart < end {
-			noClash++
-		}
-		if end <= treatment.WeeklyStart {
-			noClash++
-		}
-		if treatment.WeeklyStart < treatmentEnd {
-			noClash++
-		}
-		if treatmentEnd <= weeklyStart {
-			noClash++
+		candidateDates := [][]int64{}
+		treatmentDates := [][]int64{}
+
+		for counter := int64(0); counter < lcm; counter++ {
+			if counter%frequency == 0 {
+				candidateStart := counter*s.ScheduleIntervalSeconds + phase
+				candidateEnd := (candidateStart + duration) % (lcm * s.ScheduleIntervalSeconds)
+				candidateDates = append(candidateDates, []int64{candidateStart, candidateEnd})
+			}
+			if counter%treatment.Frequency == 0 {
+				treatmentStart := counter*s.ScheduleIntervalSeconds + treatment.Phase
+				treatmentEnd := (treatmentStart + treatment.Duration) % (lcm * s.ScheduleIntervalSeconds)
+				treatmentDates = append(treatmentDates, []int64{treatmentStart, treatmentEnd})
+			}
 		}
 
-		if noClash < 3 && treatment.ID != updatingID {
-			return errors.New("there is another treatment in the same period")
+		for _, candidateValues := range candidateDates {
+			for _, treatmentValues := range treatmentDates {
+				// If 3 of the 4 conditions below are true, it means there is no clash between treatments
+				noClash := 0
+				if candidateValues[0] < candidateValues[1] {
+					noClash++
+				}
+				if candidateValues[1] <= treatmentValues[0] {
+					noClash++
+				}
+				if treatmentValues[0] < treatmentValues[1] {
+					noClash++
+				}
+				if treatmentValues[1] <= candidateValues[0] {
+					noClash++
+				}
+
+				if noClash < 3 && treatment.ID != updatingID {
+					return errors.New("there is another treatment in the same period")
+				}
+			}
 		}
 	}
 
