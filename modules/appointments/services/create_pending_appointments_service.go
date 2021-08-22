@@ -70,7 +70,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 		currentInterval := currentTime / intervalDuration
 		nextAppointmentStart := intervalDuration*currentInterval + treatment.Phase
 		// if the start time of the current interval has already passed, send it to the next interval
-		if nextAppointmentStart >= currentTime {
+		if nextAppointmentStart <= currentTime {
 			nextAppointmentStart += intervalDuration
 		}
 
