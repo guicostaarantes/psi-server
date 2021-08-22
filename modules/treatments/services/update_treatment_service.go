@@ -9,7 +9,8 @@ import (
 
 // UpdateTreatmentService is a service that changes data from a treatment
 type UpdateTreatmentService struct {
-	DatabaseUtil database.IDatabaseUtil
+	DatabaseUtil            database.IDatabaseUtil
+	ScheduleIntervalSeconds int64
 }
 
 // Execute is the method that runs the business logic of the service
@@ -27,15 +28,17 @@ func (s UpdateTreatmentService) Execute(id string, psychologistID string, input 
 	}
 
 	checkTreatmentCollisionService := CheckTreatmentCollisionService{
-		DatabaseUtil: s.DatabaseUtil,
+		DatabaseUtil:            s.DatabaseUtil,
+		ScheduleIntervalSeconds: s.ScheduleIntervalSeconds,
 	}
 
-	checkErr := checkTreatmentCollisionService.Execute(psychologistID, input.WeeklyStart, input.Duration, id)
+	checkErr := checkTreatmentCollisionService.Execute(psychologistID, input.Frequency, input.Phase, input.Duration, id)
 	if checkErr != nil {
 		return checkErr
 	}
 
-	treatment.WeeklyStart = input.WeeklyStart
+	treatment.Frequency = input.Frequency
+	treatment.Phase = input.Phase
 	treatment.Duration = input.Duration
 	treatment.Price = input.Price
 

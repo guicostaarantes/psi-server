@@ -12,8 +12,9 @@ import (
 
 // CreatePendingAppointmentsService is a service that creates appointments for all active treatments that have no appointments scheduled to the future
 type CreatePendingAppointmentsService struct {
-	DatabaseUtil   database.IDatabaseUtil
-	IdentifierUtil identifier.IIdentifierUtil
+	DatabaseUtil            database.IDatabaseUtil
+	IdentifierUtil          identifier.IIdentifierUtil
+	ScheduleIntervalSeconds int64
 }
 
 // Execute is the method that runs the business logic of the service
@@ -64,16 +65,13 @@ func (s CreatePendingAppointmentsService) Execute() error {
 	appointmentsToCreate := []interface{}{}
 
 	for id, treatment := range activeTreatments {
-		// logic to determine next appointment's start based on treatment.WeeklyStart
 		currentTime := time.Now().Unix()
-		secondsInOneWeek := int64(7 * 24 * 60 * 60)
-		phaseAdjustment := int64(3 * 24 * 60 * 60) // unix time 0 is a Thursday, but out weekly calendar starts on a Sunday
-		startOfCurrentWeek := (currentTime-phaseAdjustment)/secondsInOneWeek*secondsInOneWeek + phaseAdjustment
-		start := startOfCurrentWeek + treatment.WeeklyStart
-
-		// if the start time of the current week has already passed, send it to the week after
-		if currentTime-startOfCurrentWeek >= treatment.WeeklyStart {
-			start += secondsInOneWeek
+		intervalDuration := s.ScheduleIntervalSeconds * treatment.Frequency
+		currentInterval := currentTime / intervalDuration
+		nextAppointmentStart := intervalDuration*currentInterval + treatment.Phase
+		// if the start time of the current interval has already passed, send it to the next interval
+		if nextAppointmentStart <= currentTime {
+			nextAppointmentStart += intervalDuration
 		}
 
 		_, appoID, appoIDErr := s.IdentifierUtil.GenerateIdentifier()
@@ -86,8 +84,8 @@ func (s CreatePendingAppointmentsService) Execute() error {
 			TreatmentID:    id,
 			PatientID:      treatment.PatientID,
 			PsychologistID: treatment.PsychologistID,
-			Start:          start,
-			End:            start + treatment.Duration,
+			Start:          nextAppointmentStart,
+			End:            nextAppointmentStart + treatment.Duration,
 			Price:          treatment.Price,
 			Status:         models.Created,
 		}

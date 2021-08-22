@@ -76,6 +76,7 @@ func main() {
 		SerializingUtil:              serializingUtil,
 		TokenUtil:                    tokenUtil,
 		MaxAffinityNumber:            int64(5),
+		ScheduleIntervalSeconds:      int64(604800),
 		SecondsToCooldownReset:       int64(86400),
 		SecondsToExpire:              int64(28800),
 		SecondsToExpireReset:         int64(86400),

@@ -8,18 +8,20 @@ import (
 
 // CreateTreatmentService is a service that creates a new treatment for a psychologist
 type CreateTreatmentService struct {
-	DatabaseUtil   database.IDatabaseUtil
-	IdentifierUtil identifier.IIdentifierUtil
+	DatabaseUtil            database.IDatabaseUtil
+	IdentifierUtil          identifier.IIdentifierUtil
+	ScheduleIntervalSeconds int64
 }
 
 // Execute is the method that runs the business logic of the service
 func (s CreateTreatmentService) Execute(psychologistID string, input models.CreateTreatmentInput) error {
 
 	checkTreatmentCollisionService := CheckTreatmentCollisionService{
-		DatabaseUtil: s.DatabaseUtil,
+		DatabaseUtil:            s.DatabaseUtil,
+		ScheduleIntervalSeconds: s.ScheduleIntervalSeconds,
 	}
 
-	checkErr := checkTreatmentCollisionService.Execute(psychologistID, input.WeeklyStart, input.Duration, "")
+	checkErr := checkTreatmentCollisionService.Execute(psychologistID, input.Frequency, input.Phase, input.Duration, "")
 	if checkErr != nil {
 		return checkErr
 	}
@@ -32,7 +34,8 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 	treatment := models.Treatment{
 		ID:             treatmentID,
 		PsychologistID: psychologistID,
-		WeeklyStart:    input.WeeklyStart,
+		Frequency:      input.Frequency,
+		Phase:          input.Phase,
 		Duration:       input.Duration,
 		Price:          input.Price,
 		Status:         models.Pending,

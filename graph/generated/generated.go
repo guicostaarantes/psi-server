@@ -135,11 +135,12 @@ type ComplexityRoot struct {
 
 	PatientTreatment struct {
 		Duration     func(childComplexity int) int
+		Frequency    func(childComplexity int) int
 		ID           func(childComplexity int) int
+		Phase        func(childComplexity int) int
 		Price        func(childComplexity int) int
 		Psychologist func(childComplexity int) int
 		Status       func(childComplexity int) int
-		WeeklyStart  func(childComplexity int) int
 	}
 
 	Preference struct {
@@ -172,12 +173,13 @@ type ComplexityRoot struct {
 	}
 
 	PsychologistTreatment struct {
-		Duration    func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Patient     func(childComplexity int) int
-		Price       func(childComplexity int) int
-		Status      func(childComplexity int) int
-		WeeklyStart func(childComplexity int) int
+		Duration  func(childComplexity int) int
+		Frequency func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Patient   func(childComplexity int) int
+		Phase     func(childComplexity int) int
+		Price     func(childComplexity int) int
+		Status    func(childComplexity int) int
 	}
 
 	PublicPatientProfile struct {
@@ -865,12 +867,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PatientTreatment.Duration(childComplexity), true
 
+	case "PatientTreatment.frequency":
+		if e.complexity.PatientTreatment.Frequency == nil {
+			break
+		}
+
+		return e.complexity.PatientTreatment.Frequency(childComplexity), true
+
 	case "PatientTreatment.id":
 		if e.complexity.PatientTreatment.ID == nil {
 			break
 		}
 
 		return e.complexity.PatientTreatment.ID(childComplexity), true
+
+	case "PatientTreatment.phase":
+		if e.complexity.PatientTreatment.Phase == nil {
+			break
+		}
+
+		return e.complexity.PatientTreatment.Phase(childComplexity), true
 
 	case "PatientTreatment.price":
 		if e.complexity.PatientTreatment.Price == nil {
@@ -892,13 +908,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PatientTreatment.Status(childComplexity), true
-
-	case "PatientTreatment.weeklyStart":
-		if e.complexity.PatientTreatment.WeeklyStart == nil {
-			break
-		}
-
-		return e.complexity.PatientTreatment.WeeklyStart(childComplexity), true
 
 	case "Preference.characteristicName":
 		if e.complexity.Preference.CharacteristicName == nil {
@@ -1047,6 +1056,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistTreatment.Duration(childComplexity), true
 
+	case "PsychologistTreatment.frequency":
+		if e.complexity.PsychologistTreatment.Frequency == nil {
+			break
+		}
+
+		return e.complexity.PsychologistTreatment.Frequency(childComplexity), true
+
 	case "PsychologistTreatment.id":
 		if e.complexity.PsychologistTreatment.ID == nil {
 			break
@@ -1061,6 +1077,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistTreatment.Patient(childComplexity), true
 
+	case "PsychologistTreatment.phase":
+		if e.complexity.PsychologistTreatment.Phase == nil {
+			break
+		}
+
+		return e.complexity.PsychologistTreatment.Phase(childComplexity), true
+
 	case "PsychologistTreatment.price":
 		if e.complexity.PsychologistTreatment.Price == nil {
 			break
@@ -1074,13 +1097,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PsychologistTreatment.Status(childComplexity), true
-
-	case "PsychologistTreatment.weeklyStart":
-		if e.complexity.PsychologistTreatment.WeeklyStart == nil {
-			break
-		}
-
-		return e.complexity.PsychologistTreatment.WeeklyStart(childComplexity), true
 
 	case "PublicPatientProfile.birthDate":
 		if e.complexity.PublicPatientProfile.BirthDate == nil {
@@ -1650,20 +1666,23 @@ extend type Mutation {
 }
 
 input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.CreateTreatmentInput") {
-    weeklyStart: Int!
+    frequency: Int!
+    phase: Int!
     duration: Int!
     price: Int!
 }
 
 input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
-    weeklyStart: Int!
+    frequency: Int!
+    phase: Int!
     duration: Int!
     price: Int!
 }
 
 type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientTreatmentsResponse") {
     id: ID!
-    weeklyStart: Int!
+    frequency: Int!
+    phase: Int!
     duration: Int!
     price: Int!
     status: TreatmentStatus!
@@ -1672,7 +1691,8 @@ type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/mod
 
 type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPsychologistTreatmentsResponse") {
     id: ID!
-    weeklyStart: Int!
+    frequency: Int!
+    phase: Int!
     duration: Int!
     price: Int!
     status: TreatmentStatus!
@@ -5208,7 +5228,7 @@ func (ec *executionContext) _PatientTreatment_id(ctx context.Context, field grap
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientTreatment_weeklyStart(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientTreatment_frequency(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5226,7 +5246,42 @@ func (ec *executionContext) _PatientTreatment_weeklyStart(ctx context.Context, f
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.WeeklyStart, nil
+		return obj.Frequency, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PatientTreatment_phase(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientTreatment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Phase, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6118,7 +6173,7 @@ func (ec *executionContext) _PsychologistTreatment_id(ctx context.Context, field
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistTreatment_weeklyStart(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistTreatment_frequency(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -6136,7 +6191,42 @@ func (ec *executionContext) _PsychologistTreatment_weeklyStart(ctx context.Conte
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.WeeklyStart, nil
+		return obj.Frequency, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistTreatment_phase(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistTreatment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Phase, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8837,11 +8927,19 @@ func (ec *executionContext) unmarshalInputCreateTreatmentInput(ctx context.Conte
 
 	for k, v := range asMap {
 		switch k {
-		case "weeklyStart":
+		case "frequency":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weeklyStart"))
-			it.WeeklyStart, err = ec.unmarshalNInt2int64(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("frequency"))
+			it.Frequency, err = ec.unmarshalNInt2int64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "phase":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phase"))
+			it.Phase, err = ec.unmarshalNInt2int64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9157,11 +9255,19 @@ func (ec *executionContext) unmarshalInputUpdateTreatmentInput(ctx context.Conte
 
 	for k, v := range asMap {
 		switch k {
-		case "weeklyStart":
+		case "frequency":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weeklyStart"))
-			it.WeeklyStart, err = ec.unmarshalNInt2int64(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("frequency"))
+			it.Frequency, err = ec.unmarshalNInt2int64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "phase":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phase"))
+			it.Phase, err = ec.unmarshalNInt2int64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9704,8 +9810,13 @@ func (ec *executionContext) _PatientTreatment(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "weeklyStart":
-			out.Values[i] = ec._PatientTreatment_weeklyStart(ctx, field, obj)
+		case "frequency":
+			out.Values[i] = ec._PatientTreatment_frequency(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "phase":
+			out.Values[i] = ec._PatientTreatment_phase(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -9976,8 +10087,13 @@ func (ec *executionContext) _PsychologistTreatment(ctx context.Context, sel ast.
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "weeklyStart":
-			out.Values[i] = ec._PsychologistTreatment_weeklyStart(ctx, field, obj)
+		case "frequency":
+			out.Values[i] = ec._PsychologistTreatment_frequency(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "phase":
+			out.Values[i] = ec._PsychologistTreatment_phase(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
