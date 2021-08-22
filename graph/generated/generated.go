@@ -1418,6 +1418,9 @@ var sources = []*ast.Source{
     EDITED_BY_PSYCHOLOGIST
     CANCELED_BY_PATIENT
     CANCELED_BY_PSYCHOLOGIST
+    TREATMENT_INTERRUPTED_BY_PATIENT
+    TREATMENT_INTERRUPTED_BY_PSYCHOLOGIST
+    TREATMENT_FINALIZED
 }
 
 input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPatientInput") {
