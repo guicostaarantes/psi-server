@@ -16,11 +16,17 @@ func (s SetTranslationsService) Execute(lang string, input []*models.Translation
 	translations := []interface{}{}
 
 	for _, msg := range input {
+		deleteErr := s.DatabaseUtil.DeleteMany("translations", map[string]interface{}{"key": msg.Key})
+		if deleteErr != nil {
+			return deleteErr
+		}
+
 		newTranslation := models.Translation{
 			Lang:  lang,
 			Key:   msg.Key,
 			Value: msg.Value,
 		}
+
 		translations = append(translations, newTranslation)
 	}
 
