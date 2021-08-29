@@ -89,6 +89,12 @@ func (r *mutationResolver) FinalizeTreatment(ctx context.Context, id string) (*b
 	return nil, serviceErr
 }
 
+func (r *mutationResolver) SetTreatmentPriceRanges(ctx context.Context, input []*models.TreatmentPriceRange) (*bool, error) {
+	serviceErr := r.SetTreatmentPriceRangesService().Execute(input)
+
+	return nil, serviceErr
+}
+
 func (r *mutationResolver) UpdateTreatment(ctx context.Context, id string, input models.UpdateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 

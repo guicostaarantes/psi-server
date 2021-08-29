@@ -20,6 +20,13 @@ input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-serve
     priceRange: String
 }
 
+input SetTreatmentPriceRangesInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange") {
+    name: String!
+    minimumPrice: Int!
+    maximumPrice: Int!
+    eligibleFor: String!
+}
+
 type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientTreatmentsResponse") {
     id: ID!
     frequency: Int!
@@ -40,6 +47,11 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
     patient: PublicPatientProfile @goField(forceResolver: true)
 }
 
+type TreatmentPriceRangeOffering @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRangeOffering") {
+    id: ID!
+    priceRange: String!
+}
+
 extend type Mutation {
     """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
     assignTreatment(id: ID!, priceRange: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
@@ -58,6 +70,9 @@ extend type Mutation {
 
     """The finalizeTreatment mutation allows a user to choose a treatment under their psychologist profile and finalize it."""
     finalizeTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+
+    """The setTreatmentPriceRanges mutation allows a user to change the possible treatment price ranges."""
+    setTreatmentPriceRanges(input: [SetTreatmentPriceRangesInput!]!): Boolean @hasRole(role: [COORDINATOR])
 
     """The updateTreatment mutation allows a user to update a treatment if it is owned by their psychologist profile."""
     updateTreatment(id: ID!, input: UpdateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])

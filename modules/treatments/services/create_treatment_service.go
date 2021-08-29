@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
@@ -24,6 +26,17 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 	checkErr := checkTreatmentCollisionService.Execute(psychologistID, input.Frequency, input.Phase, input.Duration, "")
 	if checkErr != nil {
 		return checkErr
+	}
+
+	priceRange := models.TreatmentPriceRange{}
+
+	findErr := s.DatabaseUtil.FindOne("treatment_price_ranges", map[string]interface{}{"name": input.PriceRange}, &priceRange)
+	if findErr != nil {
+		return findErr
+	}
+
+	if priceRange.Name == "" {
+		return errors.New("price range name not found")
 	}
 
 	_, treatmentID, treatmentIDErr := s.IdentifierUtil.GenerateIdentifier()
@@ -56,7 +69,7 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		PriceRange:     input.PriceRange,
 	}
 
-	writeErr = s.DatabaseUtil.InsertOne("treatment_price_offerings", treatmentPriceOffering)
+	writeErr = s.DatabaseUtil.InsertOne("treatment_price_range_offerings", treatmentPriceOffering)
 	if writeErr != nil {
 		return writeErr
 	}
