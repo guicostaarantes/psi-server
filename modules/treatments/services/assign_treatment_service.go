@@ -15,7 +15,7 @@ type AssignTreatmentService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s AssignTreatmentService) Execute(id string, patientID string) error {
+func (s AssignTreatmentService) Execute(id string, priceRange string, patientID string) error {
 
 	treatment := models.Treatment{}
 
@@ -43,13 +43,30 @@ func (s AssignTreatmentService) Execute(id string, patientID string) error {
 		return fmt.Errorf("treatments can only be assigned if their current status is PENDING. current status is %s", string(treatment.Status))
 	}
 
+	treatmentPriceRangeOffering := models.TreatmentPriceRangeOffering{}
+
+	findErr = s.DatabaseUtil.FindOne("treatment_price_offerings", map[string]interface{}{"psychologistId": treatment.PsychologistID, "priceRange": priceRange}, &treatmentPriceRangeOffering)
+	if findErr != nil {
+		return findErr
+	}
+
+	if treatmentPriceRangeOffering.ID == "" {
+		return errors.New("treatment price range offering not found")
+	}
+
 	treatment.PatientID = patientID
 	treatment.StartDate = time.Now().Unix()
 	treatment.Status = models.Active
+	treatment.PriceRange = priceRange
 
 	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {
 		return writeErr
+	}
+
+	deleteErr := s.DatabaseUtil.DeleteOne("treatment_price_offerings", map[string]interface{}{"id": treatmentPriceRangeOffering.ID})
+	if deleteErr != nil {
+		return deleteErr
 	}
 
 	return nil

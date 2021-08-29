@@ -37,11 +37,26 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		Frequency:      input.Frequency,
 		Phase:          input.Phase,
 		Duration:       input.Duration,
-		Price:          input.Price,
 		Status:         models.Pending,
 	}
 
 	writeErr := s.DatabaseUtil.InsertOne("treatments", treatment)
+	if writeErr != nil {
+		return writeErr
+	}
+
+	_, treatmentPriceOfferingID, treatmentPriceOfferingIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if treatmentPriceOfferingIDErr != nil {
+		return treatmentPriceOfferingIDErr
+	}
+
+	treatmentPriceOffering := models.TreatmentPriceRangeOffering{
+		ID:             treatmentPriceOfferingID,
+		PsychologistID: psychologistID,
+		PriceRange:     input.PriceRange,
+	}
+
+	writeErr = s.DatabaseUtil.InsertOne("treatment_price_offerings", treatmentPriceOffering)
 	if writeErr != nil {
 		return writeErr
 	}

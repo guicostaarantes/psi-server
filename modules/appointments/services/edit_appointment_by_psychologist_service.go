@@ -43,7 +43,7 @@ func (s EditAppointmentByPsychologistService) Execute(id string, psychologistID 
 	appointment.Status = models.EditedByPsychologist
 	appointment.Start = input.Start
 	appointment.End = input.End
-	appointment.Price = input.Price
+	appointment.PriceRange = input.PriceRange
 	appointment.Reason = input.Reason
 
 	writeErr := s.DatabaseUtil.UpdateOne("appointments", map[string]interface{}{"id": id}, appointment)

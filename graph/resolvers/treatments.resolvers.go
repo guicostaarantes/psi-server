@@ -11,7 +11,7 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
-func (r *mutationResolver) AssignTreatment(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) AssignTreatment(ctx context.Context, id string, priceRange string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -19,7 +19,7 @@ func (r *mutationResolver) AssignTreatment(ctx context.Context, id string) (*boo
 		return nil, servicePatientErr
 	}
 
-	serviceErr := r.AssignTreatmentService().Execute(id, servicePatient.ID)
+	serviceErr := r.AssignTreatmentService().Execute(id, priceRange, servicePatient.ID)
 
 	return nil, serviceErr
 }

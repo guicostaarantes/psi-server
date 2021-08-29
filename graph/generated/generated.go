@@ -79,7 +79,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AskResetPassword                       func(childComplexity int, email string) int
-		AssignTreatment                        func(childComplexity int, id string) int
+		AssignTreatment                        func(childComplexity int, id string, priceRange string) int
 		CancelAppointmentByPatient             func(childComplexity int, id string, reason string) int
 		CancelAppointmentByPsychologist        func(childComplexity int, id string, reason string) int
 		ConfirmAppointmentByPatient            func(childComplexity int, id string) int
@@ -111,14 +111,14 @@ type ComplexityRoot struct {
 	}
 
 	PatientAppointment struct {
-		End       func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Link      func(childComplexity int) int
-		Price     func(childComplexity int) int
-		Reason    func(childComplexity int) int
-		Start     func(childComplexity int) int
-		Status    func(childComplexity int) int
-		Treatment func(childComplexity int) int
+		End        func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Link       func(childComplexity int) int
+		PriceRange func(childComplexity int) int
+		Reason     func(childComplexity int) int
+		Start      func(childComplexity int) int
+		Status     func(childComplexity int) int
+		Treatment  func(childComplexity int) int
 	}
 
 	PatientProfile struct {
@@ -138,7 +138,7 @@ type ComplexityRoot struct {
 		Frequency    func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Phase        func(childComplexity int) int
-		Price        func(childComplexity int) int
+		PriceRange   func(childComplexity int) int
 		Psychologist func(childComplexity int) int
 		Status       func(childComplexity int) int
 	}
@@ -150,14 +150,14 @@ type ComplexityRoot struct {
 	}
 
 	PsychologistAppointment struct {
-		End       func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Link      func(childComplexity int) int
-		Price     func(childComplexity int) int
-		Reason    func(childComplexity int) int
-		Start     func(childComplexity int) int
-		Status    func(childComplexity int) int
-		Treatment func(childComplexity int) int
+		End        func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Link       func(childComplexity int) int
+		PriceRange func(childComplexity int) int
+		Reason     func(childComplexity int) int
+		Start      func(childComplexity int) int
+		Status     func(childComplexity int) int
+		Treatment  func(childComplexity int) int
 	}
 
 	PsychologistProfile struct {
@@ -173,13 +173,13 @@ type ComplexityRoot struct {
 	}
 
 	PsychologistTreatment struct {
-		Duration  func(childComplexity int) int
-		Frequency func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Patient   func(childComplexity int) int
-		Phase     func(childComplexity int) int
-		Price     func(childComplexity int) int
-		Status    func(childComplexity int) int
+		Duration   func(childComplexity int) int
+		Frequency  func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Patient    func(childComplexity int) int
+		Phase      func(childComplexity int) int
+		PriceRange func(childComplexity int) int
+		Status     func(childComplexity int) int
 	}
 
 	PublicPatientProfile struct {
@@ -259,7 +259,7 @@ type MutationResolver interface {
 	UpsertMyPatientProfile(ctx context.Context, input models5.UpsertPatientInput) (*bool, error)
 	UpsertMyPsychologistProfile(ctx context.Context, input models5.UpsertPsychologistInput) (*bool, error)
 	SetTranslations(ctx context.Context, lang string, input []*models4.TranslationInput) (*bool, error)
-	AssignTreatment(ctx context.Context, id string) (*bool, error)
+	AssignTreatment(ctx context.Context, id string, priceRange string) (*bool, error)
 	CreateTreatment(ctx context.Context, input models1.CreateTreatmentInput) (*bool, error)
 	DeleteTreatment(ctx context.Context, id string) (*bool, error)
 	InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
@@ -413,7 +413,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AssignTreatment(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.AssignTreatment(childComplexity, args["id"].(string), args["priceRange"].(string)), true
 
 	case "Mutation.cancelAppointmentByPatient":
 		if e.complexity.Mutation.CancelAppointmentByPatient == nil {
@@ -762,12 +762,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PatientAppointment.Link(childComplexity), true
 
-	case "PatientAppointment.price":
-		if e.complexity.PatientAppointment.Price == nil {
+	case "PatientAppointment.priceRange":
+		if e.complexity.PatientAppointment.PriceRange == nil {
 			break
 		}
 
-		return e.complexity.PatientAppointment.Price(childComplexity), true
+		return e.complexity.PatientAppointment.PriceRange(childComplexity), true
 
 	case "PatientAppointment.reason":
 		if e.complexity.PatientAppointment.Reason == nil {
@@ -888,12 +888,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PatientTreatment.Phase(childComplexity), true
 
-	case "PatientTreatment.price":
-		if e.complexity.PatientTreatment.Price == nil {
+	case "PatientTreatment.priceRange":
+		if e.complexity.PatientTreatment.PriceRange == nil {
 			break
 		}
 
-		return e.complexity.PatientTreatment.Price(childComplexity), true
+		return e.complexity.PatientTreatment.PriceRange(childComplexity), true
 
 	case "PatientTreatment.psychologist":
 		if e.complexity.PatientTreatment.Psychologist == nil {
@@ -951,12 +951,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistAppointment.Link(childComplexity), true
 
-	case "PsychologistAppointment.price":
-		if e.complexity.PsychologistAppointment.Price == nil {
+	case "PsychologistAppointment.priceRange":
+		if e.complexity.PsychologistAppointment.PriceRange == nil {
 			break
 		}
 
-		return e.complexity.PsychologistAppointment.Price(childComplexity), true
+		return e.complexity.PsychologistAppointment.PriceRange(childComplexity), true
 
 	case "PsychologistAppointment.reason":
 		if e.complexity.PsychologistAppointment.Reason == nil {
@@ -1084,12 +1084,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistTreatment.Phase(childComplexity), true
 
-	case "PsychologistTreatment.price":
-		if e.complexity.PsychologistTreatment.Price == nil {
+	case "PsychologistTreatment.priceRange":
+		if e.complexity.PsychologistTreatment.PriceRange == nil {
 			break
 		}
 
-		return e.complexity.PsychologistTreatment.Price(childComplexity), true
+		return e.complexity.PsychologistTreatment.PriceRange(childComplexity), true
 
 	case "PsychologistTreatment.status":
 		if e.complexity.PsychologistTreatment.Status == nil {
@@ -1431,7 +1431,7 @@ input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/
 input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
     start: Int!
     end: Int!
-    price: Int!
+    priceRange: String!
     reason: String!
 }
 
@@ -1439,7 +1439,7 @@ type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/m
     id: ID!
     start: Int!
     end: Int!
-    price: Int!
+    priceRange: String!
     status: AppointmentStatus!
     reason: String!
     link: String!
@@ -1450,7 +1450,7 @@ type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-ser
     id: ID!
     start: Int!
     end: Int!
-    price: Int!
+    priceRange: String!
     status: AppointmentStatus!
     reason: String!
     link: String!
@@ -1672,14 +1672,14 @@ input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-serve
     frequency: Int!
     phase: Int!
     duration: Int!
-    price: Int!
+    priceRange: String!
 }
 
 input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
     frequency: Int!
     phase: Int!
     duration: Int!
-    price: Int!
+    priceRange: String
 }
 
 type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.GetPatientTreatmentsResponse") {
@@ -1687,7 +1687,7 @@ type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/mod
     frequency: Int!
     phase: Int!
     duration: Int!
-    price: Int!
+    priceRange: String!
     status: TreatmentStatus!
     psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
@@ -1697,14 +1697,14 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
     frequency: Int!
     phase: Int!
     duration: Int!
-    price: Int!
+    priceRange: String!
     status: TreatmentStatus!
     patient: PublicPatientProfile @goField(forceResolver: true)
 }
 
 extend type Mutation {
     """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
-    assignTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    assignTreatment(id: ID!, priceRange: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
     """The createTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
     createTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
@@ -1859,6 +1859,15 @@ func (ec *executionContext) field_Mutation_assignTreatment_args(ctx context.Cont
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["priceRange"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["priceRange"] = arg1
 	return args, nil
 }
 
@@ -4186,7 +4195,7 @@ func (ec *executionContext) _Mutation_assignTreatment(ctx context.Context, field
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().AssignTreatment(rctx, args["id"].(string))
+			return ec.resolvers.Mutation().AssignTreatment(rctx, args["id"].(string), args["priceRange"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -4706,7 +4715,7 @@ func (ec *executionContext) _PatientAppointment_end(ctx context.Context, field g
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientAppointment_price(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientAppointment_priceRange(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4724,7 +4733,7 @@ func (ec *executionContext) _PatientAppointment_price(ctx context.Context, field
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Price, nil
+		return obj.PriceRange, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4736,9 +4745,9 @@ func (ec *executionContext) _PatientAppointment_price(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientAppointment_status(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
@@ -5336,7 +5345,7 @@ func (ec *executionContext) _PatientTreatment_duration(ctx context.Context, fiel
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PatientTreatment_price(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PatientTreatment_priceRange(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5354,7 +5363,7 @@ func (ec *executionContext) _PatientTreatment_price(ctx context.Context, field g
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Price, nil
+		return obj.PriceRange, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5366,9 +5375,9 @@ func (ec *executionContext) _PatientTreatment_price(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
@@ -5651,7 +5660,7 @@ func (ec *executionContext) _PsychologistAppointment_end(ctx context.Context, fi
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistAppointment_price(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistAppointment_priceRange(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5669,7 +5678,7 @@ func (ec *executionContext) _PsychologistAppointment_price(ctx context.Context, 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Price, nil
+		return obj.PriceRange, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5681,9 +5690,9 @@ func (ec *executionContext) _PsychologistAppointment_price(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistAppointment_status(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
@@ -6281,7 +6290,7 @@ func (ec *executionContext) _PsychologistTreatment_duration(ctx context.Context,
 	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _PsychologistTreatment_price(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _PsychologistTreatment_priceRange(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -6299,7 +6308,7 @@ func (ec *executionContext) _PsychologistTreatment_price(ctx context.Context, fi
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Price, nil
+		return obj.PriceRange, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6311,9 +6320,9 @@ func (ec *executionContext) _PsychologistTreatment_price(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
@@ -8954,11 +8963,11 @@ func (ec *executionContext) unmarshalInputCreateTreatmentInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "price":
+		case "priceRange":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("price"))
-			it.Price, err = ec.unmarshalNInt2int64(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
+			it.PriceRange, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9074,11 +9083,11 @@ func (ec *executionContext) unmarshalInputEditAppointmentByPsychologistInput(ctx
 			if err != nil {
 				return it, err
 			}
-		case "price":
+		case "priceRange":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("price"))
-			it.Price, err = ec.unmarshalNInt2int64(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
+			it.PriceRange, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9282,11 +9291,11 @@ func (ec *executionContext) unmarshalInputUpdateTreatmentInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "price":
+		case "priceRange":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("price"))
-			it.Price, err = ec.unmarshalNInt2int64(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
+			it.PriceRange, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9649,8 +9658,8 @@ func (ec *executionContext) _PatientAppointment(ctx context.Context, sel ast.Sel
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "price":
-			out.Values[i] = ec._PatientAppointment_price(ctx, field, obj)
+		case "priceRange":
+			out.Values[i] = ec._PatientAppointment_priceRange(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -9828,8 +9837,8 @@ func (ec *executionContext) _PatientTreatment(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "price":
-			out.Values[i] = ec._PatientTreatment_price(ctx, field, obj)
+		case "priceRange":
+			out.Values[i] = ec._PatientTreatment_priceRange(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -9926,8 +9935,8 @@ func (ec *executionContext) _PsychologistAppointment(ctx context.Context, sel as
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "price":
-			out.Values[i] = ec._PsychologistAppointment_price(ctx, field, obj)
+		case "priceRange":
+			out.Values[i] = ec._PsychologistAppointment_priceRange(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -10105,8 +10114,8 @@ func (ec *executionContext) _PsychologistTreatment(ctx context.Context, sel ast.
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "price":
-			out.Values[i] = ec._PsychologistTreatment_price(ctx, field, obj)
+		case "priceRange":
+			out.Values[i] = ec._PsychologistTreatment_priceRange(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}

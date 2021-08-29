@@ -20,7 +20,7 @@ input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/
 input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
     start: Int!
     end: Int!
-    price: Int!
+    priceRange: String!
     reason: String!
 }
 
@@ -28,7 +28,7 @@ type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/m
     id: ID!
     start: Int!
     end: Int!
-    price: Int!
+    priceRange: String!
     status: AppointmentStatus!
     reason: String!
     link: String!
@@ -39,7 +39,7 @@ type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-ser
     id: ID!
     start: Int!
     end: Int!
-    price: Int!
+    priceRange: String!
     status: AppointmentStatus!
     reason: String!
     link: String!
