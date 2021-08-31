@@ -52,6 +52,7 @@ type ResolverRoot interface {
 	PublicPatientProfile() PublicPatientProfileResolver
 	PublicPsychologistProfile() PublicPsychologistProfileResolver
 	Query() QueryResolver
+	TreatmentPriceRangeOffering() TreatmentPriceRangeOfferingResolver
 }
 
 type DirectiveRoot struct {
@@ -79,7 +80,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AskResetPassword                       func(childComplexity int, email string) int
-		AssignTreatment                        func(childComplexity int, id string, priceRange string) int
+		AssignTreatment                        func(childComplexity int, id string, priceRangeName string) int
 		CancelAppointmentByPatient             func(childComplexity int, id string, reason string) int
 		CancelAppointmentByPsychologist        func(childComplexity int, id string, reason string) int
 		ConfirmAppointmentByPatient            func(childComplexity int, id string) int
@@ -228,6 +229,13 @@ type ComplexityRoot struct {
 		Value func(childComplexity int) int
 	}
 
+	TreatmentPriceRange struct {
+		EligibleFor  func(childComplexity int) int
+		MaximumPrice func(childComplexity int) int
+		MinimumPrice func(childComplexity int) int
+		Name         func(childComplexity int) int
+	}
+
 	TreatmentPriceRangeOffering struct {
 		ID         func(childComplexity int) int
 		PriceRange func(childComplexity int) int
@@ -267,7 +275,7 @@ type MutationResolver interface {
 	UpsertMyPatientProfile(ctx context.Context, input models5.UpsertPatientInput) (*bool, error)
 	UpsertMyPsychologistProfile(ctx context.Context, input models5.UpsertPsychologistInput) (*bool, error)
 	SetTranslations(ctx context.Context, lang string, input []*models4.TranslationInput) (*bool, error)
-	AssignTreatment(ctx context.Context, id string, priceRange string) (*bool, error)
+	AssignTreatment(ctx context.Context, id string, priceRangeName string) (*bool, error)
 	CreateTreatment(ctx context.Context, input models1.CreateTreatmentInput) (*bool, error)
 	DeleteTreatment(ctx context.Context, id string) (*bool, error)
 	InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
@@ -277,6 +285,8 @@ type MutationResolver interface {
 	UpdateTreatment(ctx context.Context, id string, input models1.UpdateTreatmentInput) (*bool, error)
 }
 type PatientAppointmentResolver interface {
+	PriceRange(ctx context.Context, obj *models2.Appointment) (*models1.TreatmentPriceRange, error)
+
 	Treatment(ctx context.Context, obj *models2.Appointment) (*models1.GetPatientTreatmentsResponse, error)
 }
 type PatientProfileResolver interface {
@@ -286,9 +296,13 @@ type PatientProfileResolver interface {
 	Appointments(ctx context.Context, obj *models5.Patient) ([]*models2.Appointment, error)
 }
 type PatientTreatmentResolver interface {
+	PriceRange(ctx context.Context, obj *models1.GetPatientTreatmentsResponse) (*models1.TreatmentPriceRange, error)
+
 	Psychologist(ctx context.Context, obj *models1.GetPatientTreatmentsResponse) (*models5.Psychologist, error)
 }
 type PsychologistAppointmentResolver interface {
+	PriceRange(ctx context.Context, obj *models2.Appointment) (*models1.TreatmentPriceRange, error)
+
 	Treatment(ctx context.Context, obj *models2.Appointment) (*models1.GetPsychologistTreatmentsResponse, error)
 }
 type PsychologistProfileResolver interface {
@@ -299,6 +313,8 @@ type PsychologistProfileResolver interface {
 	Appointments(ctx context.Context, obj *models5.Psychologist) ([]*models2.Appointment, error)
 }
 type PsychologistTreatmentResolver interface {
+	PriceRange(ctx context.Context, obj *models1.GetPsychologistTreatmentsResponse) (*models1.TreatmentPriceRange, error)
+
 	Patient(ctx context.Context, obj *models1.GetPsychologistTreatmentsResponse) (*models5.Patient, error)
 }
 type PublicPatientProfileResolver interface {
@@ -322,6 +338,9 @@ type QueryResolver interface {
 	PsychologistProfile(ctx context.Context, id string) (*models5.Psychologist, error)
 	Time(ctx context.Context) (int64, error)
 	Translations(ctx context.Context, lang string, keys []string) ([]*models4.Translation, error)
+}
+type TreatmentPriceRangeOfferingResolver interface {
+	PriceRange(ctx context.Context, obj *models1.TreatmentPriceRangeOffering) (*models1.TreatmentPriceRange, error)
 }
 
 type executableSchema struct {
@@ -424,7 +443,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AssignTreatment(childComplexity, args["id"].(string), args["priceRange"].(string)), true
+		return e.complexity.Mutation.AssignTreatment(childComplexity, args["id"].(string), args["priceRangeName"].(string)), true
 
 	case "Mutation.cancelAppointmentByPatient":
 		if e.complexity.Mutation.CancelAppointmentByPatient == nil {
@@ -1361,6 +1380,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Translation.Value(childComplexity), true
 
+	case "TreatmentPriceRange.eligibleFor":
+		if e.complexity.TreatmentPriceRange.EligibleFor == nil {
+			break
+		}
+
+		return e.complexity.TreatmentPriceRange.EligibleFor(childComplexity), true
+
+	case "TreatmentPriceRange.maximumPrice":
+		if e.complexity.TreatmentPriceRange.MaximumPrice == nil {
+			break
+		}
+
+		return e.complexity.TreatmentPriceRange.MaximumPrice(childComplexity), true
+
+	case "TreatmentPriceRange.minimumPrice":
+		if e.complexity.TreatmentPriceRange.MinimumPrice == nil {
+			break
+		}
+
+		return e.complexity.TreatmentPriceRange.MinimumPrice(childComplexity), true
+
+	case "TreatmentPriceRange.name":
+		if e.complexity.TreatmentPriceRange.Name == nil {
+			break
+		}
+
+		return e.complexity.TreatmentPriceRange.Name(childComplexity), true
+
 	case "TreatmentPriceRangeOffering.id":
 		if e.complexity.TreatmentPriceRangeOffering.ID == nil {
 			break
@@ -1482,7 +1529,7 @@ input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/
 input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
     start: Int!
     end: Int!
-    priceRange: String!
+    priceRangeName: String!
     reason: String!
 }
 
@@ -1490,7 +1537,7 @@ type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/m
     id: ID!
     start: Int!
     end: Int!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: AppointmentStatus!
     reason: String!
     link: String!
@@ -1501,7 +1548,7 @@ type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-ser
     id: ID!
     start: Int!
     end: Int!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: AppointmentStatus!
     reason: String!
     link: String!
@@ -1725,14 +1772,14 @@ input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-serve
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String!
+    priceRangeName: String!
 }
 
 input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String
+    priceRangeName: String
 }
 
 input SetTreatmentPriceRangesInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange") {
@@ -1747,7 +1794,7 @@ type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/mod
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: TreatmentStatus!
     psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
@@ -1757,19 +1804,26 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: TreatmentStatus!
     patient: PublicPatientProfile @goField(forceResolver: true)
 }
 
+type TreatmentPriceRange @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange") {
+    name: String!
+    minimumPrice: Int!
+    maximumPrice: Int!
+    eligibleFor: String!
+}
+
 type TreatmentPriceRangeOffering @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRangeOffering") {
     id: ID!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
 }
 
 extend type Mutation {
     """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
-    assignTreatment(id: ID!, priceRange: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    assignTreatment(id: ID!, priceRangeName: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
     """The createTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
     createTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
@@ -1928,14 +1982,14 @@ func (ec *executionContext) field_Mutation_assignTreatment_args(ctx context.Cont
 	}
 	args["id"] = arg0
 	var arg1 string
-	if tmp, ok := rawArgs["priceRange"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
+	if tmp, ok := rawArgs["priceRangeName"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRangeName"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["priceRange"] = arg1
+	args["priceRangeName"] = arg1
 	return args, nil
 }
 
@@ -4278,7 +4332,7 @@ func (ec *executionContext) _Mutation_assignTreatment(ctx context.Context, field
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().AssignTreatment(rctx, args["id"].(string), args["priceRange"].(string))
+			return ec.resolvers.Mutation().AssignTreatment(rctx, args["id"].(string), args["priceRangeName"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
@@ -4872,28 +4926,25 @@ func (ec *executionContext) _PatientAppointment_priceRange(ctx context.Context, 
 		Object:     "PatientAppointment",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PriceRange, nil
+		return ec.resolvers.PatientAppointment().PriceRange(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*models1.TreatmentPriceRange)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientAppointment_status(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
@@ -5502,28 +5553,25 @@ func (ec *executionContext) _PatientTreatment_priceRange(ctx context.Context, fi
 		Object:     "PatientTreatment",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PriceRange, nil
+		return ec.resolvers.PatientTreatment().PriceRange(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*models1.TreatmentPriceRange)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models1.GetPatientTreatmentsResponse) (ret graphql.Marshaler) {
@@ -5817,28 +5865,25 @@ func (ec *executionContext) _PsychologistAppointment_priceRange(ctx context.Cont
 		Object:     "PsychologistAppointment",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PriceRange, nil
+		return ec.resolvers.PsychologistAppointment().PriceRange(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*models1.TreatmentPriceRange)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistAppointment_status(ctx context.Context, field graphql.CollectedField, obj *models2.Appointment) (ret graphql.Marshaler) {
@@ -6482,28 +6527,25 @@ func (ec *executionContext) _PsychologistTreatment_priceRange(ctx context.Contex
 		Object:     "PsychologistTreatment",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PriceRange, nil
+		return ec.resolvers.PsychologistTreatment().PriceRange(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*models1.TreatmentPriceRange)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistTreatment_status(ctx context.Context, field graphql.CollectedField, obj *models1.GetPsychologistTreatmentsResponse) (ret graphql.Marshaler) {
@@ -7929,6 +7971,146 @@ func (ec *executionContext) _Translation_value(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _TreatmentPriceRange_name(ctx context.Context, field graphql.CollectedField, obj *models1.TreatmentPriceRange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TreatmentPriceRange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TreatmentPriceRange_minimumPrice(ctx context.Context, field graphql.CollectedField, obj *models1.TreatmentPriceRange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TreatmentPriceRange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MinimumPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TreatmentPriceRange_maximumPrice(ctx context.Context, field graphql.CollectedField, obj *models1.TreatmentPriceRange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TreatmentPriceRange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MaximumPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TreatmentPriceRange_eligibleFor(ctx context.Context, field graphql.CollectedField, obj *models1.TreatmentPriceRange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TreatmentPriceRange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EligibleFor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _TreatmentPriceRangeOffering_id(ctx context.Context, field graphql.CollectedField, obj *models1.TreatmentPriceRangeOffering) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -7975,28 +8157,25 @@ func (ec *executionContext) _TreatmentPriceRangeOffering_priceRange(ctx context.
 		Object:     "TreatmentPriceRangeOffering",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PriceRange, nil
+		return ec.resolvers.TreatmentPriceRangeOffering().PriceRange(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*models1.TreatmentPriceRange)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
@@ -9249,11 +9428,11 @@ func (ec *executionContext) unmarshalInputCreateTreatmentInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "priceRange":
+		case "priceRangeName":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
-			it.PriceRange, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRangeName"))
+			it.PriceRangeName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9369,11 +9548,11 @@ func (ec *executionContext) unmarshalInputEditAppointmentByPsychologistInput(ctx
 			if err != nil {
 				return it, err
 			}
-		case "priceRange":
+		case "priceRangeName":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
-			it.PriceRange, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRangeName"))
+			it.PriceRangeName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9621,11 +9800,11 @@ func (ec *executionContext) unmarshalInputUpdateTreatmentInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "priceRange":
+		case "priceRangeName":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
-			it.PriceRange, err = ec.unmarshalOString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRangeName"))
+			it.PriceRangeName, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9991,10 +10170,16 @@ func (ec *executionContext) _PatientAppointment(ctx context.Context, sel ast.Sel
 				atomic.AddUint32(&invalids, 1)
 			}
 		case "priceRange":
-			out.Values[i] = ec._PatientAppointment_priceRange(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PatientAppointment_priceRange(ctx, field, obj)
+				return res
+			})
 		case "status":
 			out.Values[i] = ec._PatientAppointment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -10170,10 +10355,16 @@ func (ec *executionContext) _PatientTreatment(ctx context.Context, sel ast.Selec
 				atomic.AddUint32(&invalids, 1)
 			}
 		case "priceRange":
-			out.Values[i] = ec._PatientTreatment_priceRange(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PatientTreatment_priceRange(ctx, field, obj)
+				return res
+			})
 		case "status":
 			out.Values[i] = ec._PatientTreatment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -10268,10 +10459,16 @@ func (ec *executionContext) _PsychologistAppointment(ctx context.Context, sel as
 				atomic.AddUint32(&invalids, 1)
 			}
 		case "priceRange":
-			out.Values[i] = ec._PsychologistAppointment_priceRange(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PsychologistAppointment_priceRange(ctx, field, obj)
+				return res
+			})
 		case "status":
 			out.Values[i] = ec._PsychologistAppointment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -10461,10 +10658,16 @@ func (ec *executionContext) _PsychologistTreatment(ctx context.Context, sel ast.
 				atomic.AddUint32(&invalids, 1)
 			}
 		case "priceRange":
-			out.Values[i] = ec._PsychologistTreatment_priceRange(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PsychologistTreatment_priceRange(ctx, field, obj)
+				return res
+			})
 		case "status":
 			out.Values[i] = ec._PsychologistTreatment_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -10887,6 +11090,48 @@ func (ec *executionContext) _Translation(ctx context.Context, sel ast.SelectionS
 	return out
 }
 
+var treatmentPriceRangeImplementors = []string{"TreatmentPriceRange"}
+
+func (ec *executionContext) _TreatmentPriceRange(ctx context.Context, sel ast.SelectionSet, obj *models1.TreatmentPriceRange) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, treatmentPriceRangeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TreatmentPriceRange")
+		case "name":
+			out.Values[i] = ec._TreatmentPriceRange_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "minimumPrice":
+			out.Values[i] = ec._TreatmentPriceRange_minimumPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "maximumPrice":
+			out.Values[i] = ec._TreatmentPriceRange_maximumPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eligibleFor":
+			out.Values[i] = ec._TreatmentPriceRange_eligibleFor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var treatmentPriceRangeOfferingImplementors = []string{"TreatmentPriceRangeOffering"}
 
 func (ec *executionContext) _TreatmentPriceRangeOffering(ctx context.Context, sel ast.SelectionSet, obj *models1.TreatmentPriceRangeOffering) graphql.Marshaler {
@@ -10901,13 +11146,19 @@ func (ec *executionContext) _TreatmentPriceRangeOffering(ctx context.Context, se
 		case "id":
 			out.Values[i] = ec._TreatmentPriceRangeOffering_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "priceRange":
-			out.Values[i] = ec._TreatmentPriceRangeOffering_priceRange(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TreatmentPriceRangeOffering_priceRange(ctx, field, obj)
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -12494,6 +12745,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx context.Context, sel ast.SelectionSet, v *models1.TreatmentPriceRange) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TreatmentPriceRange(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

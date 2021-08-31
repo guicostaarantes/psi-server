@@ -70,6 +70,7 @@ type Resolver struct {
 	getTranslationsService                    *translations_services.GetTranslationsService
 	getTreatmentForPatientService             *treatments_services.GetTreatmentForPatientService
 	getTreatmentForPsychologistService        *treatments_services.GetTreatmentForPsychologistService
+	getTreatmentPriceRangeByNameService       *treatments_services.GetTreatmentPriceRangeByNameService
 	getUserByIDService                        *users_services.GetUserByIDService
 	getUsersByRoleService                     *users_services.GetUsersByRoleService
 	interruptTreatmentByPatientService        *treatments_services.InterruptTreatmentByPatientService
@@ -441,6 +442,16 @@ func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services
 		}
 	}
 	return r.getTopAffinitiesForPatientService
+}
+
+// GetTreatmentPriceRangeByNameService gets or sets the service with same name
+func (r *Resolver) GetTreatmentPriceRangeByNameService() *treatments_services.GetTreatmentPriceRangeByNameService {
+	if r.getTreatmentPriceRangeByNameService == nil {
+		r.getTreatmentPriceRangeByNameService = &treatments_services.GetTreatmentPriceRangeByNameService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getTreatmentPriceRangeByNameService
 }
 
 // GetUsersByRoleService gets or sets the service with same name

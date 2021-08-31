@@ -47,7 +47,7 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 
 	treatmentPriceRangeOffering := models.TreatmentPriceRangeOffering{}
 
-	findErr = s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"psychologistId": treatment.PsychologistID, "priceRange": priceRangeName}, &treatmentPriceRangeOffering)
+	findErr = s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"psychologistId": treatment.PsychologistID, "priceRangeName": priceRangeName}, &treatmentPriceRangeOffering)
 	if findErr != nil {
 		return findErr
 	}
@@ -94,7 +94,7 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 	treatment.PatientID = patientID
 	treatment.StartDate = time.Now().Unix()
 	treatment.Status = models.Active
-	treatment.PriceRange = priceRangeName
+	treatment.PriceRangeName = priceRangeName
 
 	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {

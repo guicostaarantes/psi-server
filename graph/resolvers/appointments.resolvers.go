@@ -95,8 +95,16 @@ func (r *mutationResolver) EditAppointmentByPsychologist(ctx context.Context, id
 	return nil, serviceErr
 }
 
+func (r *patientAppointmentResolver) PriceRange(ctx context.Context, obj *models.Appointment) (*models1.TreatmentPriceRange, error) {
+	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
+}
+
 func (r *patientAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPatientTreatmentsResponse, error) {
 	return r.GetTreatmentForPatientService().Execute(obj.TreatmentID)
+}
+
+func (r *psychologistAppointmentResolver) PriceRange(ctx context.Context, obj *models.Appointment) (*models1.TreatmentPriceRange, error) {
+	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }
 
 func (r *psychologistAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPsychologistTreatmentsResponse, error) {

@@ -8,8 +8,8 @@ type EditAppointmentByPatientInput struct {
 
 // EditAppointmentByPsychologistInput is the schema for information needed to edit an appointment by the psychologist
 type EditAppointmentByPsychologistInput struct {
-	Start      int64  `json:"start" bson:"start"`
-	End        int64  `json:"end" bson:"end"`
-	PriceRange string `json:"priceRange" bson:"priceRange"`
-	Reason     string `json:"reason" bson:"reason"`
+	Start          int64  `json:"start" bson:"start"`
+	End            int64  `json:"end" bson:"end"`
+	PriceRangeName string `json:"priceRangeName" bson:"priceRangeName"`
+	Reason         string `json:"reason" bson:"reason"`
 }

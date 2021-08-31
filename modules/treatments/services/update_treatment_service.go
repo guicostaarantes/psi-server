@@ -27,11 +27,11 @@ func (s UpdateTreatmentService) Execute(id string, psychologistID string, input 
 		return errors.New("resource not found")
 	}
 
-	if input.PriceRange != "" && treatment.Status == models.Pending {
+	if input.PriceRangeName != "" && treatment.Status == models.Pending {
 		return errors.New("pending treatments are not allowed to have a price range")
 	}
 
-	if input.PriceRange == "" && treatment.Status != models.Pending {
+	if input.PriceRangeName == "" && treatment.Status != models.Pending {
 		return errors.New("non-pending treatments must have a price range")
 	}
 
@@ -48,7 +48,7 @@ func (s UpdateTreatmentService) Execute(id string, psychologistID string, input 
 	treatment.Frequency = input.Frequency
 	treatment.Phase = input.Phase
 	treatment.Duration = input.Duration
-	treatment.PriceRange = input.PriceRange
+	treatment.PriceRangeName = input.PriceRangeName
 
 	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
 	if writeErr != nil {

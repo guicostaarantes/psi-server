@@ -30,7 +30,7 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 
 	priceRange := models.TreatmentPriceRange{}
 
-	findErr := s.DatabaseUtil.FindOne("treatment_price_ranges", map[string]interface{}{"name": input.PriceRange}, &priceRange)
+	findErr := s.DatabaseUtil.FindOne("treatment_price_ranges", map[string]interface{}{"name": input.PriceRangeName}, &priceRange)
 	if findErr != nil {
 		return findErr
 	}
@@ -66,7 +66,7 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 	treatmentPriceOffering := models.TreatmentPriceRangeOffering{
 		ID:             treatmentPriceOfferingID,
 		PsychologistID: psychologistID,
-		PriceRange:     input.PriceRange,
+		PriceRangeName: input.PriceRangeName,
 	}
 
 	writeErr = s.DatabaseUtil.InsertOne("treatment_price_range_offerings", treatmentPriceOffering)

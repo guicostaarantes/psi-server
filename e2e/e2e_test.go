@@ -1674,7 +1674,7 @@ func TestEnd2End(t *testing.T) {
 				frequency: %d,
 				phase: %d,
 				duration: 3600,
-				priceRange: %q
+				priceRangeName: %q
 			})
 		}`
 
@@ -1832,25 +1832,27 @@ func TestEnd2End(t *testing.T) {
 					frequency
 					phase
 					duration
-					priceRange
+					priceRange {
+						name
+					}
 				}
 			}
 		}`
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"frequency\":2,\"phase\":226800,\"duration\":2700,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":230400,\"duration\":3600,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":835200,\"duration\":3600,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":234000,\"duration\":3600,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":842400,\"duration\":3600,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":241200,\"duration\":3600,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":244800,\"duration\":3600,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":248400,\"duration\":3600,\"priceRange\":\"\"}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"frequency\":2,\"phase\":226800,\"duration\":2700,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":230400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":835200,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":234000,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":842400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":241200,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":244800,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":248400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"frequency\":2,\"phase\":226800,\"duration\":3000,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":230400,\"duration\":3600,\"priceRange\":\"\"},{\"frequency\":2,\"phase\":234000,\"duration\":3600,\"priceRange\":\"\"}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"frequency\":2,\"phase\":226800,\"duration\":3000,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":230400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":234000,\"duration\":3600,\"priceRange\":{\"name\":\"\"}}]}}}", response.Body.String())
 
 	})
 
 	t.Run("should not assign a treatment to a patient profile that is not eligible for that price range", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {
-			assignTreatment(id: %q, priceRange: "free")
+			assignTreatment(id: %q, priceRangeName: "free")
 		}`, storedVariables["psychologist_treatment_id"])
 
 		response := gql(router, query, storedVariables["patient_token"])
@@ -1861,7 +1863,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should assign a treatment to a patient profile", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {
-			assignTreatment(id: %q, priceRange: "low")
+			assignTreatment(id: %q, priceRangeName: "low")
 		}`, storedVariables["psychologist_treatment_id"])
 
 		response := gql(router, query, "")
@@ -1885,7 +1887,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should not assign a treatment to a patient profile if they already have an active treatment taken", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {
-			assignTreatment(id: %q, priceRange: "medium")
+			assignTreatment(id: %q, priceRangeName: "medium")
 		}`, storedVariables["coordinator_treatment_id"])
 
 		response := gql(router, query, storedVariables["patient_token"])
@@ -1925,7 +1927,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should not assign a treatment that was finalized", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {
-			assignTreatment(id: %q, priceRange: "low")
+			assignTreatment(id: %q, priceRangeName: "low")
 		}`, storedVariables["psychologist_treatment_id"])
 
 		response := gql(router, query, storedVariables["patient_token"])
@@ -1937,7 +1939,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should assign a treatment to the same patient profile now that the other was finalized", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {
-			assignTreatment(id: %q, priceRange: "low")
+			assignTreatment(id: %q, priceRangeName: "low")
 		}`, storedVariables["coordinator_treatment_id"])
 
 		response := gql(router, query, storedVariables["patient_token"])
@@ -1973,7 +1975,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should interrupt by psychologist if user owns the psychologist profile of the treatment", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {
-			assignTreatment(id: %q, priceRange: "low")
+			assignTreatment(id: %q, priceRangeName: "low")
 		}`, storedVariables["coordinator_treatment_2_id"])
 
 		response := gql(router, query, storedVariables["patient_token"])
@@ -2008,7 +2010,7 @@ func TestEnd2End(t *testing.T) {
 
 	t.Run("should create pending appointments based on active treatments only if user is jobrunner", func(t *testing.T) {
 		query := `mutation {
-			assignTreatment(id: %q, priceRange: %q)
+			assignTreatment(id: %q, priceRangeName: %q)
 		}`
 
 		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_5_id"], "high"), storedVariables["patient_token"])
@@ -2151,7 +2153,7 @@ func TestEnd2End(t *testing.T) {
 			editAppointmentByPsychologist(id: %q, input: {
 				start: %d
 				end: %d
-				priceRange: "medium"
+				priceRangeName: "medium"
 				reason: "I will be on vacations this day."
 			})
 		}`
@@ -2177,15 +2179,17 @@ func TestEnd2End(t *testing.T) {
 					status
 					start
 					end
-					priceRange
 					reason
+					priceRange {
+						name
+					}
 				}
 			}
 		}`
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"priceRange\":\"medium\",\"reason\":\"I will be on vacations this day.\"}]}}}", start, end), response.Body.String())
+		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
 	})
 
 	t.Run("should edit appointment by psychologist", func(t *testing.T) {
@@ -2193,7 +2197,7 @@ func TestEnd2End(t *testing.T) {
 			editAppointmentByPsychologist(id: %q, input: {
 				start: %d
 				end: %d
-				priceRange: "medium"
+				priceRangeName: "medium"
 				reason: "I will be on vacations this day."
 			})
 		}`
@@ -2219,15 +2223,17 @@ func TestEnd2End(t *testing.T) {
 					status
 					start
 					end
-					priceRange
 					reason
+					priceRange {
+						name
+					}
 				}
 			}
 		}`
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"priceRange\":\"medium\",\"reason\":\"I will be on vacations this day.\"}]}}}", start, end), response.Body.String())
+		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
 	})
 
 	t.Run("should cancel appointment by patient", func(t *testing.T) {
@@ -2266,7 +2272,7 @@ func TestEnd2End(t *testing.T) {
 			editAppointmentByPsychologist(id: %q, input: {
 				start: %d
 				end: %d
-				priceRange: "medium"
+				priceRangeName: "medium"
 				reason: "I will be on vacations this day."
 			})
 		}`
@@ -2328,15 +2334,17 @@ func TestEnd2End(t *testing.T) {
 					status
 					start
 					end
-					priceRange
 					reason
+					priceRange {
+						name
+					}
 				}
 			}
 		}`
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PATIENT\",\"start\":%d,\"end\":%d,\"priceRange\":\"medium\",\"reason\":\"I can only do it this time in that day.\"}]}}}", start, start+int64(3600)), response.Body.String())
+		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PATIENT\",\"start\":%d,\"end\":%d,\"reason\":\"I can only do it this time in that day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, start+int64(3600)), response.Body.String())
 	})
 
 	t.Run("should cancel appointment by psychologist", func(t *testing.T) {
@@ -2467,7 +2475,7 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should cancel future appointments when psychologist finalizes treatment", func(t *testing.T) {
 
 		query := `mutation {
-			assignTreatment(id: %q, priceRange: "medium")
+			assignTreatment(id: %q, priceRangeName: "medium")
 		}`
 
 		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_4_id"]), storedVariables["patient_token"])

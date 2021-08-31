@@ -10,14 +10,14 @@ input CreateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-serve
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String!
+    priceRangeName: String!
 }
 
 input UpdateTreatmentInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.UpdateTreatmentInput") {
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String
+    priceRangeName: String
 }
 
 input SetTreatmentPriceRangesInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange") {
@@ -32,7 +32,7 @@ type PatientTreatment @goModel(model: "github.com/guicostaarantes/psi-server/mod
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: TreatmentStatus!
     psychologist: PublicPsychologistProfile! @goField(forceResolver: true)
 }
@@ -42,19 +42,26 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
     frequency: Int!
     phase: Int!
     duration: Int!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: TreatmentStatus!
     patient: PublicPatientProfile @goField(forceResolver: true)
 }
 
+type TreatmentPriceRange @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange") {
+    name: String!
+    minimumPrice: Int!
+    maximumPrice: Int!
+    eligibleFor: String!
+}
+
 type TreatmentPriceRangeOffering @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRangeOffering") {
     id: ID!
-    priceRange: String!
+    priceRange: TreatmentPriceRange @goField(forceResolver: true)
 }
 
 extend type Mutation {
     """The assignTreatment mutation allows a user to choose a treatment and assign it to their patient profile."""
-    assignTreatment(id: ID!, priceRange: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
+    assignTreatment(id: ID!, priceRangeName: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
 
     """The createTreatment mutation allows a user to create a pending treatment and assign it to their psychologist profile."""
     createTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])

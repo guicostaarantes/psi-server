@@ -12,5 +12,5 @@ type TreatmentPriceRange struct {
 type TreatmentPriceRangeOffering struct {
 	ID             string `json:"id" bson:"id"`
 	PsychologistID string `json:"psychologistId" bson:"psychologistId"`
-	PriceRange     string `json:"priceRange" bson:"priceRange"`
+	PriceRangeName string `json:"priceRangeName" bson:"priceRangeName"`
 }

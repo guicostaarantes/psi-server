@@ -83,7 +83,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		}
 
 		for _, v := range possiblePriceRanges {
-			if v == priceRangeOffering.PriceRange {
+			if v == priceRangeOffering.PriceRangeName {
 				// If there is, add psychologist to list
 				_, ok := result[priceRangeOffering.PsychologistID]
 				if !ok {
