@@ -34,6 +34,14 @@ func (m *MongoDatabaseUtil) Connect(uri string) error {
 	return nil
 }
 
+func (m *MongoDatabaseUtil) GetMockedDatabases() ([]byte, error) {
+	return nil, errors.New("this is not a mock implementation")
+}
+
+func (m *MongoDatabaseUtil) SetMockedDatabases(data []byte) error {
+	return errors.New("this is not a mock implementation")
+}
+
 func (m *MongoDatabaseUtil) FindOne(table string, matches map[string]interface{}, receiver interface{}) error {
 	collection := m.Client.Database(m.DatabaseName).Collection(table)
 

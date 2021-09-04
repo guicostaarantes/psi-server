@@ -11,7 +11,7 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
-func (r *mutationResolver) AssignTreatment(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) AssignTreatment(ctx context.Context, id string, priceRangeName string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -19,7 +19,7 @@ func (r *mutationResolver) AssignTreatment(ctx context.Context, id string) (*boo
 		return nil, servicePatientErr
 	}
 
-	serviceErr := r.AssignTreatmentService().Execute(id, servicePatient.ID)
+	serviceErr := r.AssignTreatmentService().Execute(id, priceRangeName, servicePatient.ID)
 
 	return nil, serviceErr
 }
@@ -89,6 +89,12 @@ func (r *mutationResolver) FinalizeTreatment(ctx context.Context, id string) (*b
 	return nil, serviceErr
 }
 
+func (r *mutationResolver) SetTreatmentPriceRanges(ctx context.Context, input []*models.TreatmentPriceRange) (*bool, error) {
+	serviceErr := r.SetTreatmentPriceRangesService().Execute(input)
+
+	return nil, serviceErr
+}
+
 func (r *mutationResolver) UpdateTreatment(ctx context.Context, id string, input models.UpdateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
@@ -102,12 +108,24 @@ func (r *mutationResolver) UpdateTreatment(ctx context.Context, id string, input
 	return nil, serviceErr
 }
 
+func (r *patientTreatmentResolver) PriceRange(ctx context.Context, obj *models.GetPatientTreatmentsResponse) (*models.TreatmentPriceRange, error) {
+	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
+}
+
 func (r *patientTreatmentResolver) Psychologist(ctx context.Context, obj *models.GetPatientTreatmentsResponse) (*models1.Psychologist, error) {
 	return r.GetPsychologistService().Execute(obj.PsychologistID)
 }
 
+func (r *psychologistTreatmentResolver) PriceRange(ctx context.Context, obj *models.GetPsychologistTreatmentsResponse) (*models.TreatmentPriceRange, error) {
+	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
+}
+
 func (r *psychologistTreatmentResolver) Patient(ctx context.Context, obj *models.GetPsychologistTreatmentsResponse) (*models1.Patient, error) {
 	return r.GetPatientService().Execute(obj.PatientID)
+}
+
+func (r *treatmentPriceRangeOfferingResolver) PriceRange(ctx context.Context, obj *models.TreatmentPriceRangeOffering) (*models.TreatmentPriceRange, error) {
+	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }
 
 // PatientTreatment returns generated.PatientTreatmentResolver implementation.
@@ -120,5 +138,11 @@ func (r *Resolver) PsychologistTreatment() generated.PsychologistTreatmentResolv
 	return &psychologistTreatmentResolver{r}
 }
 
+// TreatmentPriceRangeOffering returns generated.TreatmentPriceRangeOfferingResolver implementation.
+func (r *Resolver) TreatmentPriceRangeOffering() generated.TreatmentPriceRangeOfferingResolver {
+	return &treatmentPriceRangeOfferingResolver{r}
+}
+
 type patientTreatmentResolver struct{ *Resolver }
 type psychologistTreatmentResolver struct{ *Resolver }
+type treatmentPriceRangeOfferingResolver struct{ *Resolver }

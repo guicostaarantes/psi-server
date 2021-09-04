@@ -5,6 +5,8 @@ import "context"
 // IDatabaseUtil is an abstraction for a utility that queries and mutates data in a database
 type IDatabaseUtil interface {
 	Connect(uri string) error
+	GetMockedDatabases() ([]byte, error)
+	SetMockedDatabases(data []byte) error
 	FindOne(table string, matches map[string]interface{}, receiver interface{}) error
 	FindMany(table string, matches map[string]interface{}) (ICursor, error)
 	InsertOne(table string, provider interface{}) error

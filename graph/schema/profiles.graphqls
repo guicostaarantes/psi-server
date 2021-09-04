@@ -33,6 +33,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
+    priceRangeOfferings: [TreatmentPriceRangeOffering!]! @goField(forceResolver: true)
     appointments: [PsychologistAppointment!]! @goField(forceResolver: true)
 }
 
@@ -51,6 +52,7 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
     fullName: String!
     likeName: String!
     pendingTreatments: [PsychologistTreatment!]! @goField(forceResolver: true)
+    priceRangeOfferings: [TreatmentPriceRangeOffering!]! @goField(forceResolver: true)
 }
 
 extend type Query {

@@ -24,68 +24,71 @@ import (
 
 // Resolver receives all utils and registers all services within the application
 type Resolver struct {
-	DatabaseUtil                            database.IDatabaseUtil
-	HashUtil                                hash.IHashUtil
-	IdentifierUtil                          identifier.IIdentifierUtil
-	MailUtil                                mail.IMailUtil
-	MatchUtil                               match.IMatchUtil
-	SerializingUtil                         serializing.ISerializingUtil
-	TokenUtil                               token.ITokenUtil
-	MaxAffinityNumber                       int64
-	ScheduleIntervalSeconds                 int64
-	SecondsToCooldownReset                  int64
-	SecondsToExpire                         int64
-	SecondsToExpireReset                    int64
-	TopAffinitiesCooldownSeconds            int64
-	askResetPasswordService                 *users_services.AskResetPasswordService
-	assignTreatmentService                  *treatments_services.AssignTreatmentService
-	authenticateUserService                 *users_services.AuthenticateUserService
-	cancelAppointmentByPatientService       *appointments_services.CancelAppointmentByPatientService
-	cancelAppointmentByPsychologistService  *appointments_services.CancelAppointmentByPsychologistService
-	confirmAppointmentByPatientService      *appointments_services.ConfirmAppointmentByPatientService
-	confirmAppointmentByPsychologistService *appointments_services.ConfirmAppointmentByPsychologistService
-	createPendingAppointmentsService        *appointments_services.CreatePendingAppointmentsService
-	createTreatmentService                  *treatments_services.CreateTreatmentService
-	createUserService                       *users_services.CreateUserService
-	createUserWithPasswordService           *users_services.CreateUserWithPasswordService
-	deleteTreatmentService                  *treatments_services.DeleteTreatmentService
-	editAppointmentByPatientService         *appointments_services.EditAppointmentByPatientService
-	editAppointmentByPsychologistService    *appointments_services.EditAppointmentByPsychologistService
-	finalizeTreatmentService                *treatments_services.FinalizeTreatmentService
-	getAppointmentsOfPatientService         *appointments_services.GetAppointmentsOfPatientService
-	getAppointmentsOfPsychologistService    *appointments_services.GetAppointmentsOfPsychologistService
-	getCharacteristicsByIDService           *characteristics_services.GetCharacteristicsByIDService
-	getCharacteristicsService               *characteristics_services.GetCharacteristicsService
-	getCooldownService                      *cooldowns_services.GetCooldownService
-	getPatientByUserIDService               *profiles_services.GetPatientByUserIDService
-	getPatientService                       *profiles_services.GetPatientService
-	getPatientTreatmentsService             *treatments_services.GetPatientTreatmentsService
-	getPreferencesByIDService               *characteristics_services.GetPreferencesByIDService
-	getPsychologistByUserIDService          *profiles_services.GetPsychologistByUserIDService
-	getPsychologistService                  *profiles_services.GetPsychologistService
-	getPsychologistPendingTreatmentsService *treatments_services.GetPsychologistPendingTreatmentsService
-	getPsychologistTreatmentsService        *treatments_services.GetPsychologistTreatmentsService
-	getTopAffinitiesForPatientService       *characteristics_services.GetTopAffinitiesForPatientService
-	getTranslationsService                  *translations_services.GetTranslationsService
-	getTreatmentForPatientService           *treatments_services.GetTreatmentForPatientService
-	getTreatmentForPsychologistService      *treatments_services.GetTreatmentForPsychologistService
-	getUserByIDService                      *users_services.GetUserByIDService
-	getUsersByRoleService                   *users_services.GetUsersByRoleService
-	interruptTreatmentByPatientService      *treatments_services.InterruptTreatmentByPatientService
-	interruptTreatmentByPsychologistService *treatments_services.InterruptTreatmentByPsychologistService
-	processPendingMailsService              *mails_services.ProcessPendingMailsService
-	resetPasswordService                    *users_services.ResetPasswordService
-	saveCooldownService                     *cooldowns_services.SaveCooldownService
-	setCharacteristicChoicesService         *characteristics_services.SetCharacteristicChoicesService
-	setCharacteristicsService               *characteristics_services.SetCharacteristicsService
-	setPreferencesService                   *characteristics_services.SetPreferencesService
-	setTopAffinitiesForPatientService       *characteristics_services.SetTopAffinitiesForPatientService
-	setTranslationsService                  *translations_services.SetTranslationsService
-	updateTreatmentService                  *treatments_services.UpdateTreatmentService
-	updateUserService                       *users_services.UpdateUserService
-	upsertPatientService                    *profiles_services.UpsertPatientService
-	upsertPsychologistService               *profiles_services.UpsertPsychologistService
-	validateUserTokenService                *users_services.ValidateUserTokenService
+	DatabaseUtil                              database.IDatabaseUtil
+	HashUtil                                  hash.IHashUtil
+	IdentifierUtil                            identifier.IIdentifierUtil
+	MailUtil                                  mail.IMailUtil
+	MatchUtil                                 match.IMatchUtil
+	SerializingUtil                           serializing.ISerializingUtil
+	TokenUtil                                 token.ITokenUtil
+	MaxAffinityNumber                         int64
+	ScheduleIntervalSeconds                   int64
+	SecondsToCooldownReset                    int64
+	SecondsToExpire                           int64
+	SecondsToExpireReset                      int64
+	TopAffinitiesCooldownSeconds              int64
+	askResetPasswordService                   *users_services.AskResetPasswordService
+	assignTreatmentService                    *treatments_services.AssignTreatmentService
+	authenticateUserService                   *users_services.AuthenticateUserService
+	cancelAppointmentByPatientService         *appointments_services.CancelAppointmentByPatientService
+	cancelAppointmentByPsychologistService    *appointments_services.CancelAppointmentByPsychologistService
+	confirmAppointmentByPatientService        *appointments_services.ConfirmAppointmentByPatientService
+	confirmAppointmentByPsychologistService   *appointments_services.ConfirmAppointmentByPsychologistService
+	createPendingAppointmentsService          *appointments_services.CreatePendingAppointmentsService
+	createTreatmentService                    *treatments_services.CreateTreatmentService
+	createUserService                         *users_services.CreateUserService
+	createUserWithPasswordService             *users_services.CreateUserWithPasswordService
+	deleteTreatmentService                    *treatments_services.DeleteTreatmentService
+	editAppointmentByPatientService           *appointments_services.EditAppointmentByPatientService
+	editAppointmentByPsychologistService      *appointments_services.EditAppointmentByPsychologistService
+	finalizeTreatmentService                  *treatments_services.FinalizeTreatmentService
+	getAppointmentsOfPatientService           *appointments_services.GetAppointmentsOfPatientService
+	getAppointmentsOfPsychologistService      *appointments_services.GetAppointmentsOfPsychologistService
+	getCharacteristicsByIDService             *characteristics_services.GetCharacteristicsByIDService
+	getCharacteristicsService                 *characteristics_services.GetCharacteristicsService
+	getCooldownService                        *cooldowns_services.GetCooldownService
+	getPatientByUserIDService                 *profiles_services.GetPatientByUserIDService
+	getPatientService                         *profiles_services.GetPatientService
+	getPatientTreatmentsService               *treatments_services.GetPatientTreatmentsService
+	getPreferencesByIDService                 *characteristics_services.GetPreferencesByIDService
+	getPsychologistByUserIDService            *profiles_services.GetPsychologistByUserIDService
+	getPsychologistService                    *profiles_services.GetPsychologistService
+	getPsychologistPendingTreatmentsService   *treatments_services.GetPsychologistPendingTreatmentsService
+	getPsychologistPriceRangeOfferingsService *treatments_services.GetPsychologistPriceRangeOfferingsService
+	getPsychologistTreatmentsService          *treatments_services.GetPsychologistTreatmentsService
+	getTopAffinitiesForPatientService         *characteristics_services.GetTopAffinitiesForPatientService
+	getTranslationsService                    *translations_services.GetTranslationsService
+	getTreatmentForPatientService             *treatments_services.GetTreatmentForPatientService
+	getTreatmentForPsychologistService        *treatments_services.GetTreatmentForPsychologistService
+	getTreatmentPriceRangeByNameService       *treatments_services.GetTreatmentPriceRangeByNameService
+	getUserByIDService                        *users_services.GetUserByIDService
+	getUsersByRoleService                     *users_services.GetUsersByRoleService
+	interruptTreatmentByPatientService        *treatments_services.InterruptTreatmentByPatientService
+	interruptTreatmentByPsychologistService   *treatments_services.InterruptTreatmentByPsychologistService
+	processPendingMailsService                *mails_services.ProcessPendingMailsService
+	resetPasswordService                      *users_services.ResetPasswordService
+	saveCooldownService                       *cooldowns_services.SaveCooldownService
+	setCharacteristicChoicesService           *characteristics_services.SetCharacteristicChoicesService
+	setCharacteristicsService                 *characteristics_services.SetCharacteristicsService
+	setPreferencesService                     *characteristics_services.SetPreferencesService
+	setTopAffinitiesForPatientService         *characteristics_services.SetTopAffinitiesForPatientService
+	setTranslationsService                    *translations_services.SetTranslationsService
+	setTreatmentPriceRangesService            *treatments_services.SetTreatmentPriceRangesService
+	updateTreatmentService                    *treatments_services.UpdateTreatmentService
+	updateUserService                         *users_services.UpdateUserService
+	upsertPatientService                      *profiles_services.UpsertPatientService
+	upsertPsychologistService                 *profiles_services.UpsertPsychologistService
+	validateUserTokenService                  *users_services.ValidateUserTokenService
 }
 
 // AskResetPasswordService gets or sets the service with same name
@@ -408,6 +411,16 @@ func (r *Resolver) GetPsychologistPendingTreatmentsService() *treatments_service
 	return r.getPsychologistPendingTreatmentsService
 }
 
+// GetPsychologistPriceRangeOfferingsService gets or sets the service with same name
+func (r *Resolver) GetPsychologistPriceRangeOfferingsService() *treatments_services.GetPsychologistPriceRangeOfferingsService {
+	if r.getPsychologistPriceRangeOfferingsService == nil {
+		r.getPsychologistPriceRangeOfferingsService = &treatments_services.GetPsychologistPriceRangeOfferingsService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getPsychologistPriceRangeOfferingsService
+}
+
 // GetPsychologistTreatmentsService gets or sets the service with same name
 func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPsychologistTreatmentsService {
 	if r.getPsychologistTreatmentsService == nil {
@@ -429,6 +442,16 @@ func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services
 		}
 	}
 	return r.getTopAffinitiesForPatientService
+}
+
+// GetTreatmentPriceRangeByNameService gets or sets the service with same name
+func (r *Resolver) GetTreatmentPriceRangeByNameService() *treatments_services.GetTreatmentPriceRangeByNameService {
+	if r.getTreatmentPriceRangeByNameService == nil {
+		r.getTreatmentPriceRangeByNameService = &treatments_services.GetTreatmentPriceRangeByNameService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getTreatmentPriceRangeByNameService
 }
 
 // GetUsersByRoleService gets or sets the service with same name
@@ -544,6 +567,16 @@ func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services
 		}
 	}
 	return r.setTopAffinitiesForPatientService
+}
+
+// SetTreatmentPriceRangesService gets or sets the service with same name
+func (r *Resolver) SetTreatmentPriceRangesService() *treatments_services.SetTreatmentPriceRangesService {
+	if r.setTreatmentPriceRangesService == nil {
+		r.setTreatmentPriceRangesService = &treatments_services.SetTreatmentPriceRangesService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.setTreatmentPriceRangesService
 }
 
 // ResetPasswordService gets or sets the service with same name

@@ -36,7 +36,7 @@ type Appointment struct {
 	PsychologistID string            `json:"psychologistId" bson:"psychologistId"`
 	Start          int64             `json:"start" bson:"start"`
 	End            int64             `json:"end" bson:"end"`
-	Price          int64             `json:"price" bson:"price"`
+	PriceRangeName string            `json:"priceRangeName" bson:"priceRangeName"`
 	Status         AppointmentStatus `json:"status" bson:"status"`
 	Reason         string            `json:"reason" bson:"reason"`
 	Link           string            `json:"link" bson:"link"`

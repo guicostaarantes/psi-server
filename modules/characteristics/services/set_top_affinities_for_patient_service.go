@@ -2,10 +2,13 @@ package services
 
 import (
 	"context"
+	"errors"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	characteristic_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
@@ -24,26 +27,69 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 
 	result := map[string]*models.AffinityScore{}
 
-	// Get available psychologist IDs from PENDING treatments
-	treatmentCursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{"status": string(treatments_models.Pending)})
+	// Get possible price ranges
+	incomeChar := characteristic_models.CharacteristicChoice{}
+
+	findErr := s.DatabaseUtil.FindOne("characteristic_choices", map[string]interface{}{"profileId": patientID, "characteristicName": "income"}, &incomeChar)
 	if findErr != nil {
 		return findErr
 	}
 
-	defer treatmentCursor.Close(context.Background())
+	if incomeChar.SelectedValue == "" {
+		return errors.New("missing income for patient")
+	}
 
-	for treatmentCursor.Next(context.Background()) {
+	possiblePriceRanges := []string{}
 
-		treatment := treatments_models.Treatment{}
+	priceRangesCursor, findErr := s.DatabaseUtil.FindMany("treatment_price_ranges", map[string]interface{}{})
+	if findErr != nil {
+		return findErr
+	}
 
-		decodeErr := treatmentCursor.Decode(&treatment)
+	defer priceRangesCursor.Close(context.Background())
+
+	for priceRangesCursor.Next(context.Background()) {
+
+		priceRange := treatments_models.TreatmentPriceRange{}
+
+		decodeErr := priceRangesCursor.Decode(&priceRange)
 		if decodeErr != nil {
 			return decodeErr
 		}
 
-		_, ok := result[treatment.PsychologistID]
-		if !ok {
-			result[treatment.PsychologistID] = &models.AffinityScore{}
+		for _, v := range strings.Split(priceRange.EligibleFor, ",") {
+			if v == incomeChar.SelectedValue {
+				possiblePriceRanges = append(possiblePriceRanges, priceRange.Name)
+			}
+		}
+
+	}
+
+	// Check if psychologist has at least one treatment price range offering with a possible price range
+	priceRangeOfferingsCursor, findErr := s.DatabaseUtil.FindMany("treatment_price_range_offerings", map[string]interface{}{})
+	if findErr != nil {
+		return findErr
+	}
+
+	defer priceRangeOfferingsCursor.Close(context.Background())
+
+	for priceRangeOfferingsCursor.Next(context.Background()) {
+
+		priceRangeOffering := treatments_models.TreatmentPriceRangeOffering{}
+
+		decodeErr := priceRangeOfferingsCursor.Decode(&priceRangeOffering)
+		if decodeErr != nil {
+			return decodeErr
+		}
+
+		for _, v := range possiblePriceRanges {
+			if v == priceRangeOffering.PriceRangeName {
+				// If there is, add psychologist to list
+				_, ok := result[priceRangeOffering.PsychologistID]
+				if !ok {
+					result[priceRangeOffering.PsychologistID] = &models.AffinityScore{}
+				}
+			}
 		}
 
 	}

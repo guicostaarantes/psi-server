@@ -86,7 +86,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 			PsychologistID: treatment.PsychologistID,
 			Start:          nextAppointmentStart,
 			End:            nextAppointmentStart + treatment.Duration,
-			Price:          treatment.Price,
+			PriceRangeName: treatment.PriceRangeName,
 			Status:         models.Created,
 		}
 

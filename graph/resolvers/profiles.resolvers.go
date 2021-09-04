@@ -143,6 +143,10 @@ func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profi
 	return r.GetPsychologistTreatmentsService().Execute(obj.ID)
 }
 
+func (r *psychologistProfileResolver) PriceRangeOfferings(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.TreatmentPriceRangeOffering, error) {
+	return r.GetPsychologistPriceRangeOfferingsService().Execute(obj.ID)
+}
+
 func (r *psychologistProfileResolver) Appointments(ctx context.Context, obj *profiles_models.Psychologist) ([]*appointments_models.Appointment, error) {
 	return r.GetAppointmentsOfPsychologistService().Execute(obj.ID)
 }
@@ -153,6 +157,10 @@ func (r *publicPatientProfileResolver) Characteristics(ctx context.Context, obj 
 
 func (r *publicPsychologistProfileResolver) PendingTreatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
 	return r.GetPsychologistPendingTreatmentsService().Execute(obj.ID)
+}
+
+func (r *publicPsychologistProfileResolver) PriceRangeOfferings(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.TreatmentPriceRangeOffering, error) {
+	return r.GetPsychologistPriceRangeOfferingsService().Execute(obj.ID)
 }
 
 func (r *queryResolver) MyPatientProfile(ctx context.Context) (*profiles_models.Patient, error) {

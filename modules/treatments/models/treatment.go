@@ -25,7 +25,7 @@ type Treatment struct {
 	Frequency      int64           `json:"frequency" bson:"frequency"`
 	Phase          int64           `json:"phase" bson:"phase"`
 	Duration       int64           `json:"duration" bson:"duration"`
-	Price          int64           `json:"price" bson:"price"`
+	PriceRangeName string          `json:"priceRangeName" bson:"priceRangeName"`
 	Status         TreatmentStatus `json:"status" bson:"status"`
 	StartDate      int64           `json:"startDate" bson:"startDate"`
 	EndDate        int64           `json:"endDate" bson:"endDate"`
