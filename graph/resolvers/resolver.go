@@ -71,6 +71,7 @@ type Resolver struct {
 	getTreatmentForPatientService             *treatments_services.GetTreatmentForPatientService
 	getTreatmentForPsychologistService        *treatments_services.GetTreatmentForPsychologistService
 	getTreatmentPriceRangeByNameService       *treatments_services.GetTreatmentPriceRangeByNameService
+	getTreatmentPriceRangesService            *treatments_services.GetTreatmentPriceRangesService
 	getUserByIDService                        *users_services.GetUserByIDService
 	getUsersByRoleService                     *users_services.GetUsersByRoleService
 	interruptTreatmentByPatientService        *treatments_services.InterruptTreatmentByPatientService
@@ -452,6 +453,16 @@ func (r *Resolver) GetTreatmentPriceRangeByNameService() *treatments_services.Ge
 		}
 	}
 	return r.getTreatmentPriceRangeByNameService
+}
+
+// GetTreatmentPriceRangesService gets or sets the service with same name
+func (r *Resolver) GetTreatmentPriceRangesService() *treatments_services.GetTreatmentPriceRangesService {
+	if r.getTreatmentPriceRangesService == nil {
+		r.getTreatmentPriceRangesService = &treatments_services.GetTreatmentPriceRangesService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getTreatmentPriceRangesService
 }
 
 // GetUsersByRoleService gets or sets the service with same name

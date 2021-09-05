@@ -124,6 +124,10 @@ func (r *psychologistTreatmentResolver) Patient(ctx context.Context, obj *models
 	return r.GetPatientService().Execute(obj.PatientID)
 }
 
+func (r *queryResolver) TreatmentPriceRanges(ctx context.Context) ([]*models.TreatmentPriceRange, error) {
+	return r.GetTreatmentPriceRangesService().Execute()
+}
+
 func (r *treatmentPriceRangeOfferingResolver) PriceRange(ctx context.Context, obj *models.TreatmentPriceRangeOffering) (*models.TreatmentPriceRange, error) {
 	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }

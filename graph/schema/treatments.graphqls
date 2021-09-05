@@ -48,7 +48,7 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
 }
 
 type TreatmentPriceRange @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange") {
-    name: String!
+    name: ID!
     minimumPrice: Int!
     maximumPrice: Int!
     eligibleFor: String!
@@ -57,6 +57,11 @@ type TreatmentPriceRange @goModel(model: "github.com/guicostaarantes/psi-server/
 type TreatmentPriceRangeOffering @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRangeOffering") {
     id: ID!
     priceRange: TreatmentPriceRange @goField(forceResolver: true)
+}
+
+extend type Query {
+    """The treatmentPriceRanges query allows a user to retrieve the possible treatment price ranges."""
+    treatmentPriceRanges: [TreatmentPriceRange!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 extend type Mutation {

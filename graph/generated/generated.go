@@ -214,6 +214,7 @@ type ComplexityRoot struct {
 		PsychologistProfile         func(childComplexity int, id string) int
 		Time                        func(childComplexity int) int
 		Translations                func(childComplexity int, lang string, keys []string) int
+		TreatmentPriceRanges        func(childComplexity int) int
 		User                        func(childComplexity int, id string) int
 		UsersByRole                 func(childComplexity int, role models.Role) int
 	}
@@ -338,6 +339,7 @@ type QueryResolver interface {
 	PsychologistProfile(ctx context.Context, id string) (*models5.Psychologist, error)
 	Time(ctx context.Context) (int64, error)
 	Translations(ctx context.Context, lang string, keys []string) ([]*models4.Translation, error)
+	TreatmentPriceRanges(ctx context.Context) ([]*models1.TreatmentPriceRange, error)
 }
 type TreatmentPriceRangeOfferingResolver interface {
 	PriceRange(ctx context.Context, obj *models1.TreatmentPriceRangeOffering) (*models1.TreatmentPriceRange, error)
@@ -1321,6 +1323,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Translations(childComplexity, args["lang"].(string), args["keys"].([]string)), true
 
+	case "Query.treatmentPriceRanges":
+		if e.complexity.Query.TreatmentPriceRanges == nil {
+			break
+		}
+
+		return e.complexity.Query.TreatmentPriceRanges(childComplexity), true
+
 	case "Query.user":
 		if e.complexity.Query.User == nil {
 			break
@@ -1810,7 +1819,7 @@ type PsychologistTreatment @goModel(model: "github.com/guicostaarantes/psi-serve
 }
 
 type TreatmentPriceRange @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange") {
-    name: String!
+    name: ID!
     minimumPrice: Int!
     maximumPrice: Int!
     eligibleFor: String!
@@ -1819,6 +1828,11 @@ type TreatmentPriceRange @goModel(model: "github.com/guicostaarantes/psi-server/
 type TreatmentPriceRangeOffering @goModel(model: "github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRangeOffering") {
     id: ID!
     priceRange: TreatmentPriceRange @goField(forceResolver: true)
+}
+
+extend type Query {
+    """The treatmentPriceRanges query allows a user to retrieve the possible treatment price ranges."""
+    treatmentPriceRanges: [TreatmentPriceRange!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 extend type Mutation {
@@ -7725,6 +7739,65 @@ func (ec *executionContext) _Query_translations(ctx context.Context, field graph
 	return ec.marshalNTranslation2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtranslationsᚋmodelsᚐTranslationᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_treatmentPriceRanges(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().TreatmentPriceRanges(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*models1.TreatmentPriceRange); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/treatments/models.TreatmentPriceRange`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models1.TreatmentPriceRange)
+	fc.Result = res
+	return ec.marshalNTreatmentPriceRange2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRangeᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -8003,7 +8076,7 @@ func (ec *executionContext) _TreatmentPriceRange_name(ctx context.Context, field
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TreatmentPriceRange_minimumPrice(ctx context.Context, field graphql.CollectedField, obj *models1.TreatmentPriceRange) (ret graphql.Marshaler) {
@@ -11006,6 +11079,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "treatmentPriceRanges":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_treatmentPriceRanges(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -12270,6 +12357,53 @@ func (ec *executionContext) unmarshalNTranslationInput2ᚕᚖgithubᚗcomᚋguic
 func (ec *executionContext) unmarshalNTranslationInput2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtranslationsᚋmodelsᚐTranslationInput(ctx context.Context, v interface{}) (*models4.TranslationInput, error) {
 	res, err := ec.unmarshalInputTranslationInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTreatmentPriceRange2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRangeᚄ(ctx context.Context, sel ast.SelectionSet, v []*models1.TreatmentPriceRange) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNTreatmentPriceRange2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRange(ctx context.Context, sel ast.SelectionSet, v *models1.TreatmentPriceRange) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._TreatmentPriceRange(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNTreatmentPriceRangeOffering2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋtreatmentsᚋmodelsᚐTreatmentPriceRangeOfferingᚄ(ctx context.Context, sel ast.SelectionSet, v []*models1.TreatmentPriceRangeOffering) graphql.Marshaler {
