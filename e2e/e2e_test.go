@@ -1734,7 +1734,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, 2, 248400, "low"), storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 2, 248400, "free"), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
@@ -1778,6 +1778,10 @@ func TestEnd2End(t *testing.T) {
 		storedVariables["psychologist_treatment_5_id"] = treatmentID
 		treatmentID = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "treatments", "5", "id")
 		storedVariables["psychologist_treatment_6_id"] = treatmentID
+		treatmentID = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "treatments", "6", "id")
+		storedVariables["psychologist_treatment_7_id"] = treatmentID
+		treatmentID = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "treatments", "7", "id")
+		storedVariables["psychologist_treatment_8_id"] = treatmentID
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
@@ -1788,6 +1792,26 @@ func TestEnd2End(t *testing.T) {
 
 		treatmentID = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "treatments", "1", "id")
 		storedVariables["coordinator_treatment_2_id"] = treatmentID
+	})
+
+	t.Run("should delete treatment if price range offering exists", func(t *testing.T) {
+
+		query := `mutation {
+			deleteTreatment(id: %q, priceRangeName: %q)
+		}`
+
+		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_8_id"], "high"), storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"deleteTreatment\"]}],\"data\":{\"deleteTreatment\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_8_id"], "high"), storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"price range offering not found\",\"path\":[\"deleteTreatment\"]}],\"data\":{\"deleteTreatment\":null}}", response.Body.String())
+
+		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_8_id"], "free"), storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"deleteTreatment\":null}}", response.Body.String())
+
 	})
 
 	t.Run("should update treatment only if coordinator or psychologist and also owner", func(t *testing.T) {
@@ -1841,7 +1865,7 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"frequency\":2,\"phase\":226800,\"duration\":2700,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":230400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":835200,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":234000,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":842400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":241200,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":244800,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":248400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"treatments\":[{\"frequency\":2,\"phase\":226800,\"duration\":2700,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":230400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":835200,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":234000,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":842400,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":241200,\"duration\":3600,\"priceRange\":{\"name\":\"\"}},{\"frequency\":2,\"phase\":244800,\"duration\":3600,\"priceRange\":{\"name\":\"\"}}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 

@@ -90,7 +90,7 @@ type ComplexityRoot struct {
 		CreatePsychologistUser                 func(childComplexity int, input models.CreateUserInput) int
 		CreateTreatment                        func(childComplexity int, input models1.CreateTreatmentInput) int
 		CreateUserWithPassword                 func(childComplexity int, input models.CreateUserWithPasswordInput) int
-		DeleteTreatment                        func(childComplexity int, id string) int
+		DeleteTreatment                        func(childComplexity int, id string, priceRangeName string) int
 		EditAppointmentByPatient               func(childComplexity int, id string, input models2.EditAppointmentByPatientInput) int
 		EditAppointmentByPsychologist          func(childComplexity int, id string, input models2.EditAppointmentByPsychologistInput) int
 		FinalizeTreatment                      func(childComplexity int, id string) int
@@ -278,7 +278,7 @@ type MutationResolver interface {
 	SetTranslations(ctx context.Context, lang string, input []*models4.TranslationInput) (*bool, error)
 	AssignTreatment(ctx context.Context, id string, priceRangeName string) (*bool, error)
 	CreateTreatment(ctx context.Context, input models1.CreateTreatmentInput) (*bool, error)
-	DeleteTreatment(ctx context.Context, id string) (*bool, error)
+	DeleteTreatment(ctx context.Context, id string, priceRangeName string) (*bool, error)
 	InterruptTreatmentByPatient(ctx context.Context, id string, reason string) (*bool, error)
 	InterruptTreatmentByPsychologist(ctx context.Context, id string, reason string) (*bool, error)
 	FinalizeTreatment(ctx context.Context, id string) (*bool, error)
@@ -560,7 +560,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteTreatment(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.DeleteTreatment(childComplexity, args["id"].(string), args["priceRangeName"].(string)), true
 
 	case "Mutation.editAppointmentByPatient":
 		if e.complexity.Mutation.EditAppointmentByPatient == nil {
@@ -1843,7 +1843,7 @@ extend type Mutation {
     createTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The deleteTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
-    deleteTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    deleteTreatment(id: ID!, priceRangeName: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The interruptTreatmentByPatient mutation allows a user to choose a treatment under their patient profile and interrupt it."""
     interruptTreatmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])
@@ -2157,6 +2157,15 @@ func (ec *executionContext) field_Mutation_deleteTreatment_args(ctx context.Cont
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["priceRangeName"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRangeName"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["priceRangeName"] = arg1
 	return args, nil
 }
 
@@ -4472,7 +4481,7 @@ func (ec *executionContext) _Mutation_deleteTreatment(ctx context.Context, field
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().DeleteTreatment(rctx, args["id"].(string))
+			return ec.resolvers.Mutation().DeleteTreatment(rctx, args["id"].(string), args["priceRangeName"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})

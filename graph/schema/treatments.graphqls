@@ -72,7 +72,7 @@ extend type Mutation {
     createTreatment(input: CreateTreatmentInput!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The deleteTreatment mutation allows a user to delete a pending treatment if it is owned by their psychologist profile."""
-    deleteTreatment(id: ID!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
+    deleteTreatment(id: ID!, priceRangeName: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST])
 
     """The interruptTreatmentByPatient mutation allows a user to choose a treatment under their patient profile and interrupt it."""
     interruptTreatmentByPatient(id: ID!, reason: String!): Boolean @hasRole(role:[COORDINATOR,PSYCHOLOGIST,PATIENT])

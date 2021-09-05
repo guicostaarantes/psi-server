@@ -13,7 +13,7 @@ type DeleteTreatmentService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s DeleteTreatmentService) Execute(id string, psychologistID string) error {
+func (s DeleteTreatmentService) Execute(id string, psychologistID string, priceRangeName string) error {
 
 	treatment := models.Treatment{}
 
@@ -27,10 +27,26 @@ func (s DeleteTreatmentService) Execute(id string, psychologistID string) error 
 	}
 
 	if treatment.Status != models.Pending {
-		return errors.New("treatments can only be deleted if they their status is pending")
+		return errors.New("treatments can only be deleted if their status is pending")
+	}
+
+	priceRangeOffering := models.TreatmentPriceRangeOffering{}
+
+	findErr = s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"priceRangeName": priceRangeName, "psychologistId": psychologistID}, &priceRangeOffering)
+	if findErr != nil {
+		return findErr
+	}
+
+	if priceRangeOffering.ID == "" {
+		return errors.New("price range offering not found")
 	}
 
 	writeErr := s.DatabaseUtil.DeleteOne("treatments", map[string]interface{}{"id": id})
+	if writeErr != nil {
+		return writeErr
+	}
+
+	writeErr = s.DatabaseUtil.DeleteOne("treatment_price_range_offerings", map[string]interface{}{"id": priceRangeOffering.ID})
 	if writeErr != nil {
 		return writeErr
 	}

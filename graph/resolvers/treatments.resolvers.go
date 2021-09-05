@@ -37,7 +37,7 @@ func (r *mutationResolver) CreateTreatment(ctx context.Context, input models.Cre
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) DeleteTreatment(ctx context.Context, id string) (*bool, error) {
+func (r *mutationResolver) DeleteTreatment(ctx context.Context, id string, priceRangeName string) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -45,7 +45,7 @@ func (r *mutationResolver) DeleteTreatment(ctx context.Context, id string) (*boo
 		return nil, servicePsyErr
 	}
 
-	serviceErr := r.DeleteTreatmentService().Execute(id, servicePsy.ID)
+	serviceErr := r.DeleteTreatmentService().Execute(id, servicePsy.ID, priceRangeName)
 
 	return nil, serviceErr
 }
