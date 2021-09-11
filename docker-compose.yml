@@ -71,6 +71,9 @@ services:
       PSI_BACKEND_URL: http://app:8080/gql
       PSI_JOBRUNNER_USERNAME: jobrunner@psi.com.br
       PSI_JOBRUNNER_PASSWORD: Xyz*()890
+      PSI_GET_NEW_TOKEN_FREQUENCY: 10s
+      PSI_PROCESS_PENDING_MAIL_FREQUENCY: 10s
+      PSI_CREATE_PENDING_APPOINTMENTS_FREQUENCY: 60s
     depends_on:
       - app
     deploy:
