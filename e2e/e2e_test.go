@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -675,7 +676,8 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
 				birthDate: 239414400,
-				city: "Boston - MA"
+				city: "Boston - MA",
+				bio: "Hey there, my name is Tom"
 			})
 		}`
 
@@ -696,13 +698,17 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
-				city: "Indianapolis - IN"
+				city: "Indianapolis - IN",
+				bio: "Hey there, my name is Peyton"
 			})
 		}`
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
+
+		db, _ := res.DatabaseUtil.GetMockedDatabases()
+		ioutil.WriteFile("./db.json", db, 0644)
 
 		query = `{
 			myPsychologistProfile {
@@ -752,7 +758,8 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
 				birthDate: 239414400,
-				city: "Tampa - FL"
+				city: "Tampa - FL",
+				bio: "Hey there, my name is Tom"
 			})
 		}`
 
@@ -773,7 +780,8 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
-				city: "Denver - CO"
+				city: "Denver - CO",
+				bio: "Hey there, my name is Peyton"
 			})
 		}`
 

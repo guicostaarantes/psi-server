@@ -10,6 +10,7 @@ import (
 	"github.com/guicostaarantes/psi-server/graph"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
 	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/file_storage"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/logging"
@@ -26,6 +27,7 @@ func main() {
 	smtpPort, _ := strconv.Atoi(os.Getenv("PSI_SMTP_PORT"))
 	smtpUser := os.Getenv("PSI_SMTP_USERNAME")
 	smtpPass := os.Getenv("PSI_SMTP_PASSWORD")
+	filesBaseFolder := os.Getenv("PSI_FILES_BASE_FOLDER")
 
 	loggingUtil := logging.PrintLoggingUtil{}
 
@@ -36,6 +38,11 @@ func main() {
 	}
 
 	databaseUtil.Connect(mongoUri)
+
+	fileStorageUtil := file_storage.DiskFileStorageUtil{
+		BaseFolder:  filesBaseFolder,
+		LoggingUtil: loggingUtil,
+	}
 
 	hashUtil := hash.BcryptHashUtil{
 		Cost:        8,
@@ -69,6 +76,7 @@ func main() {
 
 	res := &resolvers.Resolver{
 		DatabaseUtil:                 &databaseUtil,
+		FileStorageUtil:              fileStorageUtil,
 		HashUtil:                     hashUtil,
 		IdentifierUtil:               identifierUtil,
 		MailUtil:                     mailUtil,

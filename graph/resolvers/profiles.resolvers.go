@@ -80,15 +80,7 @@ func (r *mutationResolver) SetMyPsychologistPreferences(ctx context.Context, inp
 func (r *mutationResolver) UpsertMyPatientProfile(ctx context.Context, input profiles_models.UpsertPatientInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
-	serviceInput := &profiles_models.UpsertPatientInput{
-		UserID:    userID,
-		FullName:  input.FullName,
-		LikeName:  input.LikeName,
-		BirthDate: input.BirthDate,
-		City:      input.City,
-	}
-
-	serviceErr := r.UpsertPatientService().Execute(serviceInput)
+	serviceErr := r.UpsertPatientService().Execute(userID, &input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}
@@ -99,15 +91,7 @@ func (r *mutationResolver) UpsertMyPatientProfile(ctx context.Context, input pro
 func (r *mutationResolver) UpsertMyPsychologistProfile(ctx context.Context, input profiles_models.UpsertPsychologistInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
-	serviceInput := &profiles_models.UpsertPsychologistInput{
-		UserID:    userID,
-		FullName:  input.FullName,
-		LikeName:  input.LikeName,
-		BirthDate: input.BirthDate,
-		City:      input.City,
-	}
-
-	serviceErr := r.UpsertPsychologistService().Execute(serviceInput)
+	serviceErr := r.UpsertPsychologistService().Execute(userID, &input)
 	if serviceErr != nil {
 		return nil, serviceErr
 	}

@@ -8,4 +8,5 @@ type Patient struct {
 	LikeName  string `json:"likeName" bson:"likeName"`
 	BirthDate int64  `json:"birthDate" bson:"birthDate"`
 	City      string `json:"city" bson:"city"`
+	Avatar    string `json:"avatar" bson:"avatar"`
 }

@@ -125,6 +125,7 @@ type ComplexityRoot struct {
 
 	PatientProfile struct {
 		Appointments    func(childComplexity int) int
+		Avatar          func(childComplexity int) int
 		BirthDate       func(childComplexity int) int
 		Characteristics func(childComplexity int) int
 		City            func(childComplexity int) int
@@ -164,6 +165,8 @@ type ComplexityRoot struct {
 
 	PsychologistProfile struct {
 		Appointments        func(childComplexity int) int
+		Avatar              func(childComplexity int) int
+		Bio                 func(childComplexity int) int
 		BirthDate           func(childComplexity int) int
 		Characteristics     func(childComplexity int) int
 		City                func(childComplexity int) int
@@ -186,6 +189,7 @@ type ComplexityRoot struct {
 	}
 
 	PublicPatientProfile struct {
+		Avatar          func(childComplexity int) int
 		BirthDate       func(childComplexity int) int
 		Characteristics func(childComplexity int) int
 		City            func(childComplexity int) int
@@ -195,6 +199,9 @@ type ComplexityRoot struct {
 	}
 
 	PublicPsychologistProfile struct {
+		Avatar              func(childComplexity int) int
+		Bio                 func(childComplexity int) int
+		City                func(childComplexity int) int
 		FullName            func(childComplexity int) int
 		ID                  func(childComplexity int) int
 		LikeName            func(childComplexity int) int
@@ -848,6 +855,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PatientProfile.Appointments(childComplexity), true
 
+	case "PatientProfile.avatar":
+		if e.complexity.PatientProfile.Avatar == nil {
+			break
+		}
+
+		return e.complexity.PatientProfile.Avatar(childComplexity), true
+
 	case "PatientProfile.birthDate":
 		if e.complexity.PatientProfile.BirthDate == nil {
 			break
@@ -1037,6 +1051,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistProfile.Appointments(childComplexity), true
 
+	case "PsychologistProfile.avatar":
+		if e.complexity.PsychologistProfile.Avatar == nil {
+			break
+		}
+
+		return e.complexity.PsychologistProfile.Avatar(childComplexity), true
+
+	case "PsychologistProfile.bio":
+		if e.complexity.PsychologistProfile.Bio == nil {
+			break
+		}
+
+		return e.complexity.PsychologistProfile.Bio(childComplexity), true
+
 	case "PsychologistProfile.birthDate":
 		if e.complexity.PsychologistProfile.BirthDate == nil {
 			break
@@ -1149,6 +1177,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistTreatment.Status(childComplexity), true
 
+	case "PublicPatientProfile.avatar":
+		if e.complexity.PublicPatientProfile.Avatar == nil {
+			break
+		}
+
+		return e.complexity.PublicPatientProfile.Avatar(childComplexity), true
+
 	case "PublicPatientProfile.birthDate":
 		if e.complexity.PublicPatientProfile.BirthDate == nil {
 			break
@@ -1190,6 +1225,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PublicPatientProfile.LikeName(childComplexity), true
+
+	case "PublicPsychologistProfile.avatar":
+		if e.complexity.PublicPsychologistProfile.Avatar == nil {
+			break
+		}
+
+		return e.complexity.PublicPsychologistProfile.Avatar(childComplexity), true
+
+	case "PublicPsychologistProfile.bio":
+		if e.complexity.PublicPsychologistProfile.Bio == nil {
+			break
+		}
+
+		return e.complexity.PublicPsychologistProfile.Bio(childComplexity), true
+
+	case "PublicPsychologistProfile.city":
+		if e.complexity.PublicPsychologistProfile.City == nil {
+			break
+		}
+
+		return e.complexity.PublicPsychologistProfile.City(childComplexity), true
 
 	case "PublicPsychologistProfile.fullName":
 		if e.complexity.PublicPsychologistProfile.FullName == nil {
@@ -1655,11 +1711,14 @@ extend type Mutation {
     """The processPendingMail mutation allows a user to send emails that are waiting in the queue."""
     processPendingMail: Boolean @hasRole(role: [JOBRUNNER])
 }`, BuiltIn: false},
-	{Name: "graph/schema/profiles.graphqls", Input: `input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPatientInput") {
+	{Name: "graph/schema/profiles.graphqls", Input: `scalar Upload
+
+input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPatientInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
     city: String!
+    avatar: Upload
 }
 
 input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPsychologistInput") {
@@ -1667,6 +1726,8 @@ input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarant
     likeName: String!
     birthDate: Int!
     city: String!
+    bio: String!
+    avatar: Upload
 }
 
 type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
@@ -1675,6 +1736,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     likeName: String!
     birthDate: Int!
     city: String!
+    avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PatientTreatment!]! @goField(forceResolver: true)
@@ -1687,6 +1749,8 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     likeName: String!
     birthDate: Int!
     city: String!
+    bio: String!
+    avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
@@ -1700,6 +1764,7 @@ type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server
     likeName: String!
     birthDate: Int!
     city: String!
+    avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
 }
 
@@ -1708,6 +1773,9 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
     id: ID!
     fullName: String!
     likeName: String!
+    city: String!
+    bio: String!
+    avatar: String!
     pendingTreatments: [PsychologistTreatment!]! @goField(forceResolver: true)
     priceRangeOfferings: [TreatmentPriceRangeOffering!]! @goField(forceResolver: true)
 }
@@ -5285,6 +5353,41 @@ func (ec *executionContext) _PatientProfile_city(ctx context.Context, field grap
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PatientProfile_avatar(ctx context.Context, field graphql.CollectedField, obj *models5.Patient) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PatientProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Avatar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PatientProfile_characteristics(ctx context.Context, field graphql.CollectedField, obj *models5.Patient) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6224,6 +6327,76 @@ func (ec *executionContext) _PsychologistProfile_city(ctx context.Context, field
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PsychologistProfile_bio(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Bio, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistProfile_avatar(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Avatar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PsychologistProfile_characteristics(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6813,6 +6986,41 @@ func (ec *executionContext) _PublicPatientProfile_city(ctx context.Context, fiel
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PublicPatientProfile_avatar(ctx context.Context, field graphql.CollectedField, obj *models5.Patient) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPatientProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Avatar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PublicPatientProfile_characteristics(ctx context.Context, field graphql.CollectedField, obj *models5.Patient) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6937,6 +7145,111 @@ func (ec *executionContext) _PublicPsychologistProfile_likeName(ctx context.Cont
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.LikeName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PublicPsychologistProfile_city(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.City, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PublicPsychologistProfile_bio(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Bio, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PublicPsychologistProfile_avatar(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Avatar, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9962,6 +10275,14 @@ func (ec *executionContext) unmarshalInputUpsertMyPatientProfileInput(ctx contex
 			if err != nil {
 				return it, err
 			}
+		case "avatar":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("avatar"))
+			it.Avatar, err = ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -10003,6 +10324,22 @@ func (ec *executionContext) unmarshalInputUpsertMyPsychologistProfileInput(ctx c
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
 			it.City, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "bio":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bio"))
+			it.Bio, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "avatar":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("avatar"))
+			it.Avatar, err = ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -10338,6 +10675,11 @@ func (ec *executionContext) _PatientProfile(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "avatar":
+			out.Values[i] = ec._PatientProfile_avatar(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "characteristics":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -10627,6 +10969,16 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "bio":
+			out.Values[i] = ec._PsychologistProfile_bio(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "avatar":
+			out.Values[i] = ec._PsychologistProfile_avatar(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "characteristics":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -10813,6 +11165,11 @@ func (ec *executionContext) _PublicPatientProfile(ctx context.Context, sel ast.S
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "avatar":
+			out.Values[i] = ec._PublicPatientProfile_avatar(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "characteristics":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -10861,6 +11218,21 @@ func (ec *executionContext) _PublicPsychologistProfile(ctx context.Context, sel 
 			}
 		case "likeName":
 			out.Values[i] = ec._PublicPsychologistProfile_likeName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "city":
+			out.Values[i] = ec._PublicPsychologistProfile_city(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "bio":
+			out.Values[i] = ec._PublicPsychologistProfile_bio(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "avatar":
+			out.Values[i] = ec._PublicPsychologistProfile_avatar(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -12895,6 +13267,21 @@ func (ec *executionContext) marshalOTreatmentPriceRange2ᚖgithubᚗcomᚋguicos
 		return graphql.Null
 	}
 	return ec._TreatmentPriceRange(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (*graphql.Upload, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalUpload(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v *graphql.Upload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalUpload(*v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

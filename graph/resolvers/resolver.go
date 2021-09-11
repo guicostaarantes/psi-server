@@ -4,12 +4,14 @@ import (
 	appointments_services "github.com/guicostaarantes/psi-server/modules/appointments/services"
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
+	files_services "github.com/guicostaarantes/psi-server/modules/files/services"
 	mails_services "github.com/guicostaarantes/psi-server/modules/mails/services"
 	profiles_services "github.com/guicostaarantes/psi-server/modules/profiles/services"
 	translations_services "github.com/guicostaarantes/psi-server/modules/translations/services"
 	treatments_services "github.com/guicostaarantes/psi-server/modules/treatments/services"
 	users_services "github.com/guicostaarantes/psi-server/modules/users/services"
 	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/file_storage"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/mail"
@@ -25,6 +27,7 @@ import (
 // Resolver receives all utils and registers all services within the application
 type Resolver struct {
 	DatabaseUtil                              database.IDatabaseUtil
+	FileStorageUtil                           file_storage.IFileStorageUtil
 	HashUtil                                  hash.IHashUtil
 	IdentifierUtil                            identifier.IIdentifierUtil
 	MailUtil                                  mail.IMailUtil
@@ -78,6 +81,7 @@ type Resolver struct {
 	interruptTreatmentByPsychologistService   *treatments_services.InterruptTreatmentByPsychologistService
 	processPendingMailsService                *mails_services.ProcessPendingMailsService
 	resetPasswordService                      *users_services.ResetPasswordService
+	readFileService                           *files_services.ReadFileService
 	saveCooldownService                       *cooldowns_services.SaveCooldownService
 	setCharacteristicChoicesService           *characteristics_services.SetCharacteristicChoicesService
 	setCharacteristicsService                 *characteristics_services.SetCharacteristicsService
@@ -87,6 +91,7 @@ type Resolver struct {
 	setTreatmentPriceRangesService            *treatments_services.SetTreatmentPriceRangesService
 	updateTreatmentService                    *treatments_services.UpdateTreatmentService
 	updateUserService                         *users_services.UpdateUserService
+	uploadAvatarFileService                   *files_services.UploadAvatarFileService
 	upsertPatientService                      *profiles_services.UpsertPatientService
 	upsertPsychologistService                 *profiles_services.UpsertPsychologistService
 	validateUserTokenService                  *users_services.ValidateUserTokenService
@@ -516,6 +521,16 @@ func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMa
 	return r.processPendingMailsService
 }
 
+// ReadFileService gets or sets the service with same name
+func (r *Resolver) ReadFileService() *files_services.ReadFileService {
+	if r.readFileService == nil {
+		r.readFileService = &files_services.ReadFileService{
+			FileStorageUtil: r.FileStorageUtil,
+		}
+	}
+	return r.readFileService
+}
+
 // SaveCooldownService gets or sets the service with same name
 func (r *Resolver) SaveCooldownService() *cooldowns_services.SaveCooldownService {
 	if r.saveCooldownService == nil {
@@ -623,12 +638,24 @@ func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
 	return r.updateUserService
 }
 
+// UploadAvatarFileService gets or sets the service with same name
+func (r *Resolver) UploadAvatarFileService() *files_services.UploadAvatarFileService {
+	if r.uploadAvatarFileService == nil {
+		r.uploadAvatarFileService = &files_services.UploadAvatarFileService{
+			DatabaseUtil:    r.DatabaseUtil,
+			FileStorageUtil: r.FileStorageUtil,
+		}
+	}
+	return r.uploadAvatarFileService
+}
+
 // UpsertPatientService gets or sets the service with same name
 func (r *Resolver) UpsertPatientService() *profiles_services.UpsertPatientService {
 	if r.upsertPatientService == nil {
 		r.upsertPatientService = &profiles_services.UpsertPatientService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
+			DatabaseUtil:            r.DatabaseUtil,
+			IdentifierUtil:          r.IdentifierUtil,
+			UploadAvatarFileService: r.UploadAvatarFileService(),
 		}
 	}
 	return r.upsertPatientService
@@ -638,8 +665,9 @@ func (r *Resolver) UpsertPatientService() *profiles_services.UpsertPatientServic
 func (r *Resolver) UpsertPsychologistService() *profiles_services.UpsertPsychologistService {
 	if r.upsertPsychologistService == nil {
 		r.upsertPsychologistService = &profiles_services.UpsertPsychologistService{
-			DatabaseUtil:   r.DatabaseUtil,
-			IdentifierUtil: r.IdentifierUtil,
+			DatabaseUtil:            r.DatabaseUtil,
+			IdentifierUtil:          r.IdentifierUtil,
+			UploadAvatarFileService: r.UploadAvatarFileService(),
 		}
 	}
 	return r.upsertPsychologistService
