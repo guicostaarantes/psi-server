@@ -8,4 +8,6 @@ type Psychologist struct {
 	LikeName  string `json:"likeName" bson:"likeName"`
 	BirthDate int64  `json:"birthDate" bson:"birthDate"`
 	City      string `json:"city" bson:"city"`
+	Bio       string `json:"bio" bson:"bio"`
+	Avatar    string `json:"avatar" bson:"avatar"`
 }

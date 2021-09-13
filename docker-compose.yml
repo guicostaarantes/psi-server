@@ -57,6 +57,9 @@ services:
       PSI_SMTP_PORT: 1025
       PSI_SMTP_USERNAME:
       PSI_SMTP_PASSWORD:
+      PSI_FILES_BASE_FOLDER: /data/files
+    volumes:
+      - ./.tmp/files:/data/files
     depends_on:
       - mongo
     deploy:

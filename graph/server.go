@@ -14,6 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
+	"github.com/guicostaarantes/psi-server/graph/files"
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
@@ -35,6 +36,8 @@ func CreateServer(res *resolvers.Resolver) *chi.Mux {
 	}
 
 	c := generated.Config{Resolvers: res}
+
+	fileHandler := files.FileHandler{Resolvers: res}
 
 	c.Directives.HasRole = func(ctx context.Context, obj interface{}, next graphql.Resolver, role []users_models.Role) (interface{}, error) {
 		userID := ctx.Value("userID").(string)
@@ -105,6 +108,7 @@ func CreateServer(res *resolvers.Resolver) *chi.Mux {
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/gql"))
 	router.Handle("/gql", srv)
+	router.Handle("/static/{name}", fileHandler)
 
 	return router
 

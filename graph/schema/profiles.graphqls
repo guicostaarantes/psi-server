@@ -1,8 +1,11 @@
+scalar Upload
+
 input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPatientInput") {
     fullName: String!
     likeName: String!
     birthDate: Int!
     city: String!
+    avatar: Upload
 }
 
 input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPsychologistInput") {
@@ -10,6 +13,8 @@ input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarant
     likeName: String!
     birthDate: Int!
     city: String!
+    bio: String!
+    avatar: Upload
 }
 
 type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.Patient") {
@@ -18,6 +23,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     likeName: String!
     birthDate: Int!
     city: String!
+    avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PatientTreatment!]! @goField(forceResolver: true)
@@ -30,6 +36,8 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     likeName: String!
     birthDate: Int!
     city: String!
+    bio: String!
+    avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
     treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
@@ -43,6 +51,7 @@ type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server
     likeName: String!
     birthDate: Int!
     city: String!
+    avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
 }
 
@@ -51,6 +60,9 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
     id: ID!
     fullName: String!
     likeName: String!
+    city: String!
+    bio: String!
+    avatar: String!
     pendingTreatments: [PsychologistTreatment!]! @goField(forceResolver: true)
     priceRangeOfferings: [TreatmentPriceRangeOffering!]! @goField(forceResolver: true)
 }
