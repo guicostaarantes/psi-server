@@ -182,6 +182,16 @@ func TestEnd2End(t *testing.T) {
 						"hearing",
 						"locomotion",
 					]
+				},
+				{
+					name: "income",
+					type: SINGLE,
+					possibleValues: [
+						"D",
+						"C",
+						"B",
+						"A",
+					]
 				}
 			])
 		}`
@@ -242,6 +252,38 @@ func TestEnd2End(t *testing.T) {
 		assert.Equal(t, "{\"data\":{\"setPsychologistCharacteristics\":null}}", response.Body.String())
 
 		query = `mutation {
+			setTreatmentPriceRanges(input: [
+				{
+					name: "free",
+					minimumPrice: 0,
+					maximumPrice: 0,
+					eligibleFor: "D"
+				},
+				{
+					name: "low",
+					minimumPrice: 25,
+					maximumPrice: 50,
+					eligibleFor: "D,C"
+				},
+				{
+					name: "medium",
+					minimumPrice: 50,
+					maximumPrice: 100,
+					eligibleFor: "D,C,B"
+				},
+				{
+					name: "high",
+					minimumPrice: 100,
+					maximumPrice: 150,
+					eligibleFor: "D,C,B,A"
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+		assert.Equal(t, "{\"data\":{\"setTreatmentPriceRanges\":null}}", response.Body.String())
+
+		query = `mutation {
 			setTranslations(
 				lang: "pt-BR"
 				input: [
@@ -288,6 +330,11 @@ func TestEnd2End(t *testing.T) {
 					{ key: "pat-char:disabilities:vision", value: "Visual" }
 					{ key: "pat-char:disabilities:hearing", value: "Auditiva" }
 					{ key: "pat-char:disabilities:locomotion", value: "Locomotiva" }
+					{ key: "pat-char:income", value: "Qual é a renda mensal da sua família por cada membro?" }
+					{ key: "pat-char:income:D", value: "De 0 a 1000 reais" }
+					{ key: "pat-char:income:C", value: "De 1000 a 2000 reais" }
+					{ key: "pat-char:income:B", value: "De 2000 a 5000 reais" }
+					{ key: "pat-char:income:A", value: "Acima de 5000 reais" }
 					{
 						key: "pat-pref:has-consulted-before:true"
 						value: "Quão interessado você está em atender pacientes que já fizeram tratamento psicológico anteriormente?"
@@ -501,7 +548,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 			  input: {
-				email: "ana.duarte@psi.com.br"
+				email: "psi001@gmail.com"
 				password: "Abc123!@#"
 				role: PSYCHOLOGIST
 			  }
@@ -513,7 +560,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "ana.duarte@psi.com.br"
+				email: "psi001@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -532,7 +579,8 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Ana Duarte"
 				likeName: "Dra. Ana",
 				birthDate: 239414400,
-				city: "Belo Horizonte - MG"
+				city: "Belo Horizonte - MG",
+				bio: "Oi, meu nome é Ana.\n\nTenho 44 anos e sou de Belo Horizonte."
 			})
 		}`
 
@@ -677,7 +725,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "lucio.fonseca@psi.com.br"
+				email: "psi002@gmail.com"
 				password: "Abc123!@#"
 				role: PSYCHOLOGIST
 				}
@@ -689,7 +737,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "lucio.fonseca@psi.com.br"
+				email: "psi002@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -708,7 +756,8 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Lúcio Fonseca"
 				likeName: "Dr. Lúcio",
 				birthDate: -199918800,
-				city: "Curitiba - PR"
+				city: "Curitiba - PR",
+				bio: "Oi, meu nome é Lúcio.\n\nTenho 58 anos e sou de Curitiba."
 			})
 		}`
 
@@ -853,7 +902,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 				createUserWithPassword(
 					input: {
-					email: "laura.carvalho@psi.com.br"
+					email: "psi003@gmail.com"
 					password: "Abc123!@#"
 					role: PSYCHOLOGIST
 					}
@@ -865,7 +914,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 				authenticateUser(input: {
-					email: "laura.carvalho@psi.com.br"
+					email: "psi003@gmail.com"
 					password: "Abc123!@#"
 				}) {
 					token
@@ -884,7 +933,8 @@ func TestEnd2End(t *testing.T) {
 					fullName: "Laura Carvalho"
 					likeName: "Dra. Laura",
 					birthDate: 519966000,
-					city: "Campo Grande - MS"
+					city: "Campo Grande - MS",
+					bio: "Oi, meu nome é Laura.\n\nTenho 35 anos e sou de Campo Grande."
 				})
 			}`
 
@@ -1029,7 +1079,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "marcos.greco@psi.com.br"
+				email: "psi004@gmail.com"
 				password: "Abc123!@#"
 				role: PSYCHOLOGIST
 				}
@@ -1041,7 +1091,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "marcos.greco@psi.com.br"
+				email: "psi004@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -1060,7 +1110,8 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Marcos Greco"
 				likeName: "Dr. Marcos",
 				birthDate: 822708000,
-				city: "Manaus - AM"
+				city: "Manaus - AM",
+				bio: "Oi, meu nome é Marcos.\n\nTenho 26 anos e sou de Manaus."
 			})
 		}`
 
@@ -1205,7 +1256,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "tassia.lopes@psi.com.br"
+				email: "psi005@gmail.com"
 				password: "Abc123!@#"
 				role: PSYCHOLOGIST
 				}
@@ -1217,7 +1268,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "tassia.lopes@psi.com.br"
+				email: "psi005@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -1236,7 +1287,8 @@ func TestEnd2End(t *testing.T) {
 				fullName: "Tássia Lopes"
 				likeName: "Dra. Tássia",
 				birthDate: 772513200,
-				city: "Vitória - ES"
+				city: "Vitória - ES",
+				bio: "Oi, meu nome é Ana.\n\nTenho 27 anos e sou de Vitória."
 			})
 		}`
 
@@ -1381,7 +1433,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "melissa.duarte@gmail.com"
+				email: "pac001@gmail.com"
 				password: "Abc123!@#"
 				role: PATIENT
 				}
@@ -1393,7 +1445,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "melissa.duarte@gmail.com"
+				email: "pac001@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -1445,6 +1497,10 @@ func TestEnd2End(t *testing.T) {
 					characteristicName: "disabilities",
 					selectedValues: ["hearing"]
 				},
+				{
+					characteristicName: "income",
+					selectedValues: ["D"]
+				}
 			])
 		}`
 
@@ -1536,7 +1592,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "sandra.horta@gmail.com"
+				email: "pac002@gmail.com"
 				password: "Abc123!@#"
 				role: PATIENT
 				}
@@ -1548,7 +1604,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "sandra.horta@gmail.com"
+				email: "pac002@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -1600,6 +1656,10 @@ func TestEnd2End(t *testing.T) {
 					characteristicName: "disabilities",
 					selectedValues: []
 				},
+				{
+					characteristicName: "income",
+					selectedValues: ["C"]
+				}
 			])
 		}`
 
@@ -1691,7 +1751,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "joao.melo@gmail.com"
+				email: "pac003@gmail.com"
 				password: "Abc123!@#"
 				role: PATIENT
 				}
@@ -1703,7 +1763,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "joao.melo@gmail.com"
+				email: "pac003@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -1755,6 +1815,10 @@ func TestEnd2End(t *testing.T) {
 					characteristicName: "disabilities",
 					selectedValues: []
 				},
+				{
+					characteristicName: "income",
+					selectedValues: ["B"]
+				}
 			])
 		}`
 
@@ -1846,7 +1910,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "paula.santos@gmail.com"
+				email: "pac004@gmail.com"
 				password: "Abc123!@#"
 				role: PATIENT
 				}
@@ -1858,7 +1922,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "paula.santos@gmail.com"
+				email: "pac004@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -1910,6 +1974,10 @@ func TestEnd2End(t *testing.T) {
 					characteristicName: "disabilities",
 					selectedValues: ["vision"]
 				},
+				{
+					characteristicName: "income",
+					selectedValues: ["A"]
+				}
 			])
 		}`
 
@@ -2001,7 +2069,7 @@ func TestEnd2End(t *testing.T) {
 		query := `mutation {
 			createUserWithPassword(
 				input: {
-				email: "jorge.martins@gmail.com"
+				email: "pac005@gmail.com"
 				password: "Abc123!@#"
 				role: PATIENT
 				}
@@ -2013,7 +2081,7 @@ func TestEnd2End(t *testing.T) {
 
 		query = `{
 			authenticateUser(input: {
-				email: "jorge.martins@gmail.com"
+				email: "pac005@gmail.com"
 				password: "Abc123!@#"
 			}) {
 				token
@@ -2065,6 +2133,10 @@ func TestEnd2End(t *testing.T) {
 					characteristicName: "disabilities",
 					selectedValues: []
 				},
+				{
+					characteristicName: "income",
+					selectedValues: ["D"]
+				}
 			])
 		}`
 
