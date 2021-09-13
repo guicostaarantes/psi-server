@@ -47,6 +47,10 @@ func (s CheckTreatmentCollisionService) Execute(psychologistID string, frequency
 			return decodeErr
 		}
 
+		if treatment.Status != models.Pending && treatment.Status != models.Active {
+			continue
+		}
+
 		lcm := LCM(frequency, treatment.Frequency)
 
 		candidateDates := [][]int64{}
