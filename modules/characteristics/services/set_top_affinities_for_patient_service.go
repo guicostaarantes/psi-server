@@ -19,7 +19,7 @@ import (
 type SetTopAffinitiesForPatientService struct {
 	DatabaseUtil        database.IDatabaseUtil
 	MaxAffinityNumber   int64
-	SaveCooldownService cooldowns_services.SaveCooldownService
+	SaveCooldownService *cooldowns_services.SaveCooldownService
 }
 
 // Execute is the method that runs the business logic of the service

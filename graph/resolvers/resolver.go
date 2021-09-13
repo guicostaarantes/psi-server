@@ -45,6 +45,7 @@ type Resolver struct {
 	authenticateUserService                   *users_services.AuthenticateUserService
 	cancelAppointmentByPatientService         *appointments_services.CancelAppointmentByPatientService
 	cancelAppointmentByPsychologistService    *appointments_services.CancelAppointmentByPsychologistService
+	checkTreatmentCollisionService            *treatments_services.CheckTreatmentCollisionService
 	confirmAppointmentByPatientService        *appointments_services.ConfirmAppointmentByPatientService
 	confirmAppointmentByPsychologistService   *appointments_services.ConfirmAppointmentByPsychologistService
 	createPendingAppointmentsService          *appointments_services.CreatePendingAppointmentsService
@@ -154,6 +155,17 @@ func (r *Resolver) CancelAppointmentByPsychologistService() *appointments_servic
 	return r.cancelAppointmentByPsychologistService
 }
 
+// CheckTreatmentCollisionService gets or sets the service with same name
+func (r *Resolver) CheckTreatmentCollisionService() *treatments_services.CheckTreatmentCollisionService {
+	if r.checkTreatmentCollisionService == nil {
+		r.checkTreatmentCollisionService = &treatments_services.CheckTreatmentCollisionService{
+			DatabaseUtil:            r.DatabaseUtil,
+			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
+		}
+	}
+	return r.checkTreatmentCollisionService
+}
+
 // ConfirmAppointmentByPatientService gets or sets the service with same name
 func (r *Resolver) ConfirmAppointmentByPatientService() *appointments_services.ConfirmAppointmentByPatientService {
 	if r.confirmAppointmentByPatientService == nil {
@@ -190,9 +202,9 @@ func (r *Resolver) CreatePendingAppointmentsService() *appointments_services.Cre
 func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatmentService {
 	if r.createTreatmentService == nil {
 		r.createTreatmentService = &treatments_services.CreateTreatmentService{
-			DatabaseUtil:            r.DatabaseUtil,
-			IdentifierUtil:          r.IdentifierUtil,
-			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
+			DatabaseUtil:                   r.DatabaseUtil,
+			IdentifierUtil:                 r.IdentifierUtil,
+			CheckTreatmentCollisionService: r.CheckTreatmentCollisionService(),
 		}
 	}
 	return r.createTreatmentService
@@ -443,8 +455,8 @@ func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services
 		r.getTopAffinitiesForPatientService = &characteristics_services.GetTopAffinitiesForPatientService{
 			DatabaseUtil:                      r.DatabaseUtil,
 			TopAffinitiesCooldownSeconds:      r.TopAffinitiesCooldownSeconds,
-			GetCooldownService:                *r.GetCooldownService(),
-			SetTopAffinitiesForPatientService: *r.SetTopAffinitiesForPatientService(),
+			GetCooldownService:                r.GetCooldownService(),
+			SetTopAffinitiesForPatientService: r.SetTopAffinitiesForPatientService(),
 		}
 	}
 	return r.getTopAffinitiesForPatientService
@@ -589,7 +601,7 @@ func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services
 		r.setTopAffinitiesForPatientService = &characteristics_services.SetTopAffinitiesForPatientService{
 			DatabaseUtil:        r.DatabaseUtil,
 			MaxAffinityNumber:   r.MaxAffinityNumber,
-			SaveCooldownService: *r.SaveCooldownService(),
+			SaveCooldownService: r.SaveCooldownService(),
 		}
 	}
 	return r.setTopAffinitiesForPatientService
@@ -621,8 +633,8 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
 	if r.updateTreatmentService == nil {
 		r.updateTreatmentService = &treatments_services.UpdateTreatmentService{
-			DatabaseUtil:            r.DatabaseUtil,
-			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
+			DatabaseUtil:                   r.DatabaseUtil,
+			CheckTreatmentCollisionService: r.CheckTreatmentCollisionService(),
 		}
 	}
 	return r.updateTreatmentService

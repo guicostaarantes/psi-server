@@ -14,8 +14,8 @@ import (
 type GetTopAffinitiesForPatientService struct {
 	DatabaseUtil                      database.IDatabaseUtil
 	TopAffinitiesCooldownSeconds      int64
-	GetCooldownService                cooldowns_services.GetCooldownService
-	SetTopAffinitiesForPatientService SetTopAffinitiesForPatientService
+	GetCooldownService                *cooldowns_services.GetCooldownService
+	SetTopAffinitiesForPatientService *SetTopAffinitiesForPatientService
 }
 
 // Execute is the method that runs the business logic of the service
