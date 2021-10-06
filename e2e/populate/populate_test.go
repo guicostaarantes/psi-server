@@ -1,41 +1,41 @@
 package populate
 
 import (
-	"context"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
-	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
+	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/guicostaarantes/psi-server/graph"
-	"github.com/guicostaarantes/psi-server/graph/resolvers"
-	"github.com/guicostaarantes/psi-server/utils/database"
-	"github.com/guicostaarantes/psi-server/utils/hash"
-	"github.com/guicostaarantes/psi-server/utils/identifier"
-	"github.com/guicostaarantes/psi-server/utils/logging"
-	"github.com/guicostaarantes/psi-server/utils/mail"
-	"github.com/guicostaarantes/psi-server/utils/match"
-	"github.com/guicostaarantes/psi-server/utils/serializing"
-	"github.com/guicostaarantes/psi-server/utils/token"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fastjson"
 )
 
-func gql(router *chi.Mux, query string, token string) *httptest.ResponseRecorder {
+// WARNING: Running this test will make changes to your database state
+// Proceed with caution and avoid running this in production environments
+
+var API_URL = "http://localhost:7070/gql"
+var COORDINATOR_USER = "coordinator@psi.com.br"
+var COORDINATOR_PASSWORD = "Abc123!@#"
+
+func gql(client *http.Client, query string, token string) *http.Response {
 
 	body := fmt.Sprintf(`{"query": %q}`, query)
 
-	request := httptest.NewRequest(http.MethodPost, "/gql", strings.NewReader(body))
+	request, err := http.NewRequest(http.MethodPost, API_URL, strings.NewReader(body))
+	if err != nil {
+		log.Fatalln("Error creating request")
+	}
 
 	request.Header["Authorization"] = []string{token}
 	request.Header["Content-Type"] = []string{"application/json"}
 
-	response := httptest.NewRecorder()
-
-	router.ServeHTTP(response, request)
+	response, err := client.Do(request)
+	if err != nil {
+		log.Fatalln("Error in response")
+	}
 
 	return response
 
@@ -45,79 +45,25 @@ func TestEnd2End(t *testing.T) {
 
 	storedVariables := map[string]string{}
 
-	loggingUtil := logging.PrintLoggingUtil{}
-
-	databaseUtil := database.MongoDatabaseUtil{
-		Context:      context.Background(),
-		DatabaseName: "psi_db",
-		LoggingUtil:  loggingUtil,
+	client := &http.Client{
+		Timeout: time.Second * 5,
 	}
-
-	databaseUtil.Connect("mongodb://root:pass@localhost:27017")
-
-	hashUtil := hash.BcryptHashUtil{
-		Cost:        8,
-		LoggingUtil: loggingUtil,
-	}
-
-	identifierUtil := identifier.UuidIdentifierUtil{
-		LoggingUtil: loggingUtil,
-	}
-
-	mailUtil := mail.FakeMailUtil{
-		MockedMessages: &[]map[string]interface{}{},
-	}
-
-	matchUtil := match.RegexpMatchUtil{
-		LoggingUtil: loggingUtil,
-	}
-
-	serializingUtil := serializing.JsonSerializingUtil{
-		LoggingUtil: loggingUtil,
-	}
-
-	tokenUtil := token.RngTokenUtil{
-		Runes: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-		Size:  64,
-	}
-
-	res := &resolvers.Resolver{
-		DatabaseUtil:                 &databaseUtil,
-		HashUtil:                     hashUtil,
-		IdentifierUtil:               identifierUtil,
-		MailUtil:                     mailUtil,
-		MatchUtil:                    matchUtil,
-		SerializingUtil:              serializingUtil,
-		TokenUtil:                    tokenUtil,
-		MaxAffinityNumber:            int64(5),
-		SecondsToCooldownReset:       int64(86400),
-		SecondsToExpire:              int64(1800),
-		SecondsToExpireReset:         int64(86400),
-		TopAffinitiesCooldownSeconds: int64(86400),
-	}
-
-	// If you need to debug the contents of the database at a specific point, insert this code:
-	// db, _ := res.DatabaseUtil.GetMockedDatabases()
-	// ioutil.WriteFile("./db.json", db, 0644);
-
-	os.Setenv("PSI_BOOTSTRAP_USER", "coordinator@psi.com.br|Abc123!@#")
-
-	router := graph.CreateServer(res)
 
 	t.Run("should log in as bootstrap coordinator", func(t *testing.T) {
 
-		query := `{
+		query := fmt.Sprintf(`{
 			authenticateUser(input: {
-				email: "coordinator@psi.com.br",
-				password: "Abc123!@#"
+				email: %q,
+				password: %q
 			}) {
 				token
 			}
-		}`
+		}`, COORDINATOR_USER, COORDINATOR_PASSWORD)
 
-		response := gql(router, query, "")
+		response := gql(client, query, "")
+		body, _ := ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
 		storedVariables["coordinator_token"] = token
@@ -196,8 +142,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"setPatientCharacteristics\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setPatientCharacteristics\":null}}", string(body))
 
 		query = `mutation {
 			setPsychologistCharacteristics(input: [
@@ -248,8 +196,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"setPsychologistCharacteristics\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setPsychologistCharacteristics\":null}}", string(body))
 
 		query = `mutation {
 			setTreatmentPriceRanges(input: [
@@ -280,8 +230,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"setTreatmentPriceRanges\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setTreatmentPriceRanges\":null}}", string(body))
 
 		query = `mutation {
 			setTranslations(
@@ -375,11 +327,11 @@ func TestEnd2End(t *testing.T) {
 						key: "pat-pref:age:elderly"
 						value: "Quão interessado você está em atender pacientes com mais de 50 anos?"
 					}
-					{ 
+					{
 						key: "pat-pref:lgbtqiaplus:true"
 						value: "Quão interessado você está em atender pacientes LGBTQIA+?"
 					}
-					{ 
+					{
 						key: "pat-pref:lgbtqiaplus:false"
 						value: "Quão interessado você está em atender pacientes não LGBTQIA+?"
 					}
@@ -457,11 +409,11 @@ func TestEnd2End(t *testing.T) {
 						key: "psy-pref:gender:non-binary"
 						value: "Quão confortável você se sente sendo atendido por um psicólogo de gênero não binário?"
 					}
-					{ 
+					{
 						key: "psy-pref:lgbtqiaplus:true"
 						value: "Quão confortável você se sente sendo atendido por um psicólogo LGBTQIA+?"
 					}
-					{ 
+					{
 						key: "psy-pref:lgbtqiaplus:false"
 						value: "Quão confortável você se sente sendo atendido por um psicólogo que não é LGBTQIA+?"
 					}
@@ -505,8 +457,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response = gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"setTranslations\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setTranslations\":null}}", string(body))
 
 	})
 
@@ -522,21 +476,24 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
-			authenticateUser(input: { 
-				email: "jobrunner@psi.com.br", 
+			authenticateUser(input: {
+				email: "jobrunner@psi.com.br",
 				password: "Xyz*()890"
-			}) { 
+			}) {
 				token
-			} 
+			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
 		storedVariables["jobrunner_token"] = token
@@ -555,8 +512,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -567,12 +526,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["psychologist_1_token"] = token
+		storedVariables["psy_1_token"] = token
 
 		query = `mutation {
 			upsertMyPsychologistProfile(input: {
@@ -584,8 +544,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_1_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_1_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistCharacteristicChoices(input: [
@@ -612,8 +574,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_1_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_1_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistPreferences(input: [
@@ -665,7 +629,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "age",
 					selectedValue: "elderly",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "lgbtqiaplus",
@@ -705,7 +669,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "disabilities",
 					selectedValue: "hearing",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "disabilities",
@@ -715,8 +679,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_1_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_1_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
 	})
 
@@ -732,8 +698,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -744,12 +712,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["psychologist_2_token"] = token
+		storedVariables["psy_2_token"] = token
 
 		query = `mutation {
 			upsertMyPsychologistProfile(input: {
@@ -761,8 +730,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_2_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_2_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistCharacteristicChoices(input: [
@@ -789,8 +760,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_2_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_2_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistPreferences(input: [
@@ -802,12 +775,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "has-consulted-before",
 					selectedValue: "false",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "gender",
 					selectedValue: "female",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "gender",
@@ -822,12 +795,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "age",
 					selectedValue: "child",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "age",
 					selectedValue: "teen",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "age",
@@ -847,7 +820,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "lgbtqiaplus",
 					selectedValue: "true",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "lgbtqiaplus",
@@ -862,7 +835,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "skin-tone",
 					selectedValue: "red",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "skin-tone",
@@ -892,8 +865,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_2_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_2_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
 	})
 
@@ -909,8 +884,10 @@ func TestEnd2End(t *testing.T) {
 				)
 			}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 				authenticateUser(input: {
@@ -921,12 +898,13 @@ func TestEnd2End(t *testing.T) {
 				}
 			}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["psychologist_3_token"] = token
+		storedVariables["psy_3_token"] = token
 
 		query = `mutation {
 				upsertMyPsychologistProfile(input: {
@@ -938,8 +916,10 @@ func TestEnd2End(t *testing.T) {
 				})
 			}`
 
-		response = gql(router, query, storedVariables["psychologist_3_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_3_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
 
 		query = `mutation {
 				setMyPsychologistCharacteristicChoices(input: [
@@ -966,8 +946,10 @@ func TestEnd2End(t *testing.T) {
 				])
 			}`
 
-		response = gql(router, query, storedVariables["psychologist_3_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_3_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 				setMyPsychologistPreferences(input: [
@@ -994,7 +976,7 @@ func TestEnd2End(t *testing.T) {
 					{
 						characteristicName: "gender",
 						selectedValue: "non-binary",
-						weight: -3
+						weight: -1
 					}
 					{
 						characteristicName: "age",
@@ -1054,12 +1036,12 @@ func TestEnd2End(t *testing.T) {
 					{
 						characteristicName: "disabilities",
 						selectedValue: "vision",
-						weight: -3
+						weight: -1
 					}
 					{
 						characteristicName: "disabilities",
 						selectedValue: "hearing",
-						weight: -3
+						weight: -1
 					}
 					{
 						characteristicName: "disabilities",
@@ -1069,8 +1051,10 @@ func TestEnd2End(t *testing.T) {
 				])
 			}`
 
-		response = gql(router, query, storedVariables["psychologist_3_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_3_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
 	})
 
@@ -1086,8 +1070,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -1098,12 +1084,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["psychologist_4_token"] = token
+		storedVariables["psy_4_token"] = token
 
 		query = `mutation {
 			upsertMyPsychologistProfile(input: {
@@ -1115,8 +1102,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_4_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_4_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistCharacteristicChoices(input: [
@@ -1143,8 +1132,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_4_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_4_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistPreferences(input: [
@@ -1196,7 +1187,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "age",
 					selectedValue: "elderly",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "lgbtqiaplus",
@@ -1236,7 +1227,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "disabilities",
 					selectedValue: "hearing",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "disabilities",
@@ -1246,8 +1237,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_4_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_4_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
 	})
 
@@ -1263,8 +1256,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -1275,12 +1270,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["psychologist_5_token"] = token
+		storedVariables["psy_5_token"] = token
 
 		query = `mutation {
 			upsertMyPsychologistProfile(input: {
@@ -1292,8 +1288,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_5_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_5_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistCharacteristicChoices(input: [
@@ -1320,15 +1318,17 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_5_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_5_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPsychologistPreferences(input: [
 				{
 					characteristicName: "has-consulted-before",
 					selectedValue: "true",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "has-consulted-before",
@@ -1353,12 +1353,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "age",
 					selectedValue: "child",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "age",
 					selectedValue: "teen",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "age",
@@ -1423,8 +1423,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["psychologist_5_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["psy_5_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
 	})
 
@@ -1440,8 +1442,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -1452,12 +1456,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["patient_1_token"] = token
+		storedVariables["pat_1_token"] = token
 
 		query = `mutation {
 			upsertMyPatientProfile(input: {
@@ -1468,8 +1473,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["patient_1_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_1_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientCharacteristicChoices(input: [
@@ -1504,8 +1511,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_1_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_1_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientPreferences(input: [
@@ -1562,7 +1571,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "sign-language",
 					selectedValue: "false",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "disabilities",
@@ -1582,8 +1591,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_1_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_1_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
 
 	})
 
@@ -1599,8 +1610,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -1611,12 +1624,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["patient_2_token"] = token
+		storedVariables["pat_2_token"] = token
 
 		query = `mutation {
 			upsertMyPatientProfile(input: {
@@ -1627,8 +1641,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["patient_2_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_2_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientCharacteristicChoices(input: [
@@ -1663,8 +1679,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_2_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_2_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientPreferences(input: [
@@ -1681,7 +1699,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "gender",
 					selectedValue: "non-binary",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "lgbtqiaplus",
@@ -1706,7 +1724,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "skin-tone",
 					selectedValue: "yellow",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "skin-tone",
@@ -1716,7 +1734,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "sign-language",
 					selectedValue: "true",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "sign-language",
@@ -1731,7 +1749,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "disabilities",
 					selectedValue: "hearing",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "disabilities",
@@ -1741,8 +1759,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_2_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_2_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
 
 	})
 
@@ -1758,8 +1778,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -1770,12 +1792,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["patient_3_token"] = token
+		storedVariables["pat_3_token"] = token
 
 		query = `mutation {
 			upsertMyPatientProfile(input: {
@@ -1786,8 +1809,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["patient_3_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_3_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientCharacteristicChoices(input: [
@@ -1822,8 +1847,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_3_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_3_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientPreferences(input: [
@@ -1875,7 +1902,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "sign-language",
 					selectedValue: "true",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "sign-language",
@@ -1890,18 +1917,20 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "disabilities",
 					selectedValue: "hearing",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "disabilities",
 					selectedValue: "locomotion",
-					weight: -3
+					weight: -1
 				}
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_3_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_3_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
 
 	})
 
@@ -1917,8 +1946,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -1929,12 +1960,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["patient_4_token"] = token
+		storedVariables["pat_4_token"] = token
 
 		query = `mutation {
 			upsertMyPatientProfile(input: {
@@ -1945,8 +1977,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["patient_4_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_4_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientCharacteristicChoices(input: [
@@ -1981,8 +2015,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_4_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_4_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientPreferences(input: [
@@ -1999,12 +2035,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "gender",
 					selectedValue: "non-binary",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "lgbtqiaplus",
 					selectedValue: "true",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "lgbtqiaplus",
@@ -2014,12 +2050,12 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "skin-tone",
 					selectedValue: "black",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "skin-tone",
 					selectedValue: "red",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "skin-tone",
@@ -2034,7 +2070,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "sign-language",
 					selectedValue: "true",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "sign-language",
@@ -2049,7 +2085,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "disabilities",
 					selectedValue: "hearing",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "disabilities",
@@ -2059,8 +2095,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_4_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_4_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
 
 	})
 
@@ -2076,8 +2114,10 @@ func TestEnd2End(t *testing.T) {
 			)
 		}`
 
-		response := gql(router, query, storedVariables["coordinator_token"])
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
 		query = `{
 			authenticateUser(input: {
@@ -2088,12 +2128,13 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, "")
+		response = gql(client, query, "")
+		body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		token := fastjson.GetString(body, "data", "authenticateUser", "token")
 		assert.NotEqual(t, "", token)
 
-		storedVariables["patient_5_token"] = token
+		storedVariables["pat_5_token"] = token
 
 		query = `mutation {
 			upsertMyPatientProfile(input: {
@@ -2104,8 +2145,10 @@ func TestEnd2End(t *testing.T) {
 			})
 		}`
 
-		response = gql(router, query, storedVariables["patient_5_token"])
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_5_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientCharacteristicChoices(input: [
@@ -2140,8 +2183,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_5_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_5_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
 
 		query = `mutation {
 			setMyPatientPreferences(input: [
@@ -2193,7 +2238,7 @@ func TestEnd2End(t *testing.T) {
 				{
 					characteristicName: "sign-language",
 					selectedValue: "true",
-					weight: -3
+					weight: -1
 				}
 				{
 					characteristicName: "sign-language",
@@ -2218,8 +2263,10 @@ func TestEnd2End(t *testing.T) {
 			])
 		}`
 
-		response = gql(router, query, storedVariables["patient_5_token"])
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+		response = gql(client, query, storedVariables["pat_5_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
 
 	})
 
