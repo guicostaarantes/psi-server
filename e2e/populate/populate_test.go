@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -16,9 +18,17 @@ import (
 // WARNING: Running this test will make changes to your database state
 // Proceed with caution and avoid running this in production environments
 
+// Edit the parameters below. Since this a public repository, ALWAYS change the passwords
+// before running this in a production environment
 var API_URL = "http://localhost:7070/gql"
-var COORDINATOR_USER = "coordinator@psi.com.br"
+var COORDINATOR_USERNAME = "coordinator@psi.com.br"
 var COORDINATOR_PASSWORD = "Abc123!@#"
+var NEW_JOBRUNNER_USERNAME = "jobrunner@psi.com.br"
+var NEW_JOBRUNNER_PASSWORD = "Abc123!@#"
+var PSYCOLOGIST_QUANTITY = 50
+var PATIENT_QUANTITY = 50
+var NEW_PSYCHOLOGISTS_PASSWORD = "Abc123!@#"
+var NEW_PATIENTS_PASSWORD = "Abc123!@#"
 
 func gql(client *http.Client, query string, token string) *http.Response {
 
@@ -43,6 +53,8 @@ func gql(client *http.Client, query string, token string) *http.Response {
 
 func TestEnd2End(t *testing.T) {
 
+	rand.Seed(time.Now().UnixMicro())
+
 	storedVariables := map[string]string{}
 
 	client := &http.Client{
@@ -58,7 +70,7 @@ func TestEnd2End(t *testing.T) {
 			}) {
 				token
 			}
-		}`, COORDINATOR_USER, COORDINATOR_PASSWORD)
+		}`, COORDINATOR_USERNAME, COORDINATOR_PASSWORD)
 
 		response := gql(client, query, "")
 		body, _ := ioutil.ReadAll(response.Body)
@@ -386,7 +398,7 @@ func TestEnd2End(t *testing.T) {
 					{ key: "psy-char:skin-tone:white", value: "Pele branca" }
 					{
 						key: "psy-char:sign-language"
-						value: "Você é capaz de atender a paciente utilizando LIBRAS (Linguagem Brasileira de Sinais)?"
+						value: "Você é capaz de atender pacientes utilizando LIBRAS (Linguagem Brasileira de Sinais)?"
 					}
 					{ key: "psy-char:sign-language:true", value: "Sim" }
 					{ key: "psy-char:sign-language:false", value: "Não" }
@@ -466,1807 +478,466 @@ func TestEnd2End(t *testing.T) {
 
 	t.Run("should create jobrunner", func(t *testing.T) {
 
-		query := `mutation {
+		query := fmt.Sprintf(`mutation {
 			createUserWithPassword(
 			  input: {
-				email: "jobrunner@psi.com.br"
-				password: "Xyz*()890"
+				email: %q
+				password: %q
 				role: JOBRUNNER
 			  }
 			)
-		}`
+		}`, NEW_JOBRUNNER_USERNAME, NEW_JOBRUNNER_PASSWORD)
 
 		response := gql(client, query, storedVariables["coordinator_token"])
 		body, _ := ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
-		query = `{
-			authenticateUser(input: {
-				email: "jobrunner@psi.com.br",
-				password: "Xyz*()890"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["jobrunner_token"] = token
-
 	})
 
-	t.Run("should create psychologist 1", func(t *testing.T) {
+	t.Run("should create psychologists", func(t *testing.T) {
 
-		query := `mutation {
-			createUserWithPassword(
-			  input: {
-				email: "psi001@gmail.com"
-				password: "Abc123!@#"
-				role: PSYCHOLOGIST
-			  }
-			)
-		}`
+		var wg sync.WaitGroup
 
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
+		for i := 1; i <= PSYCOLOGIST_QUANTITY; i++ {
+			wg.Add(1)
+			go func(i int) {
+				email := fmt.Sprintf("psi%03d@exemplo.com", i)
+				gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
+				lastName := LastNames[rand.Intn(40)]
+				firstName := ""
+				switch gender {
+				case "female":
+					firstName = FemaleNames[rand.Intn(40)]
+				case "male":
+					firstName = MaleNames[rand.Intn(40)]
+				case "non-binary":
+					firstName = []string{FemaleNames[rand.Intn(40)], MaleNames[rand.Intn(40)]}[rand.Intn(2)]
+				}
 
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
+				query := fmt.Sprintf(`mutation {
+					createUserWithPassword(
+						input: {
+						email: %q
+						password: %q
+						role: PSYCHOLOGIST
+						}
+					)
+				}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
 
-		query = `{
-			authenticateUser(input: {
-				email: "psi001@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
+				response := gql(client, query, storedVariables["coordinator_token"])
+				body, _ := ioutil.ReadAll(response.Body)
 
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
+				assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["psy_1_token"] = token
-
-		query = `mutation {
-			upsertMyPsychologistProfile(input: {
-				fullName: "Ana Duarte"
-				likeName: "Dra. Ana",
-				birthDate: 239414400,
-				city: "Belo Horizonte - MG",
-				bio: "Oi, meu nome é Ana.\n\nTenho 44 anos e sou de Belo Horizonte."
-			})
-		}`
-
-		response = gql(client, query, storedVariables["psy_1_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistCharacteristicChoices(input: [
-				{
-					characteristicName: "gender",
-					selectedValues: ["female"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["white"]
-				},
-				{
-					characteristicName: "sign-language",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: []
-				},
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_1_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistPreferences(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: 1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "child",
-					weight: 1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "teen",
-					weight: 3
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "young-adult",
-					weight: 0
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "adult",
-					weight: 0
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "elderly",
-					weight: -1
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: 1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: 0
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_1_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create psychologist 2", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "psi002@gmail.com"
-				password: "Abc123!@#"
-				role: PSYCHOLOGIST
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "psi002@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["psy_2_token"] = token
-
-		query = `mutation {
-			upsertMyPsychologistProfile(input: {
-				fullName: "Lúcio Fonseca"
-				likeName: "Dr. Lúcio",
-				birthDate: -199918800,
-				city: "Curitiba - PR",
-				bio: "Oi, meu nome é Lúcio.\n\nTenho 58 anos e sou de Curitiba."
-			})
-		}`
-
-		response = gql(client, query, storedVariables["psy_2_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistCharacteristicChoices(input: [
-				{
-					characteristicName: "gender",
-					selectedValues: ["male"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["yellow"]
-				},
-				{
-					characteristicName: "sign-language",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: ["hearing"]
-				},
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_2_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistPreferences(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "true",
-					weight: 0
-				}
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "false",
-					weight: -1
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: -1
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 1
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: 3
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "child",
-					weight: -1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "teen",
-					weight: -1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "young-adult",
-					weight: 1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "adult",
-					weight: 0
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "elderly",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: -1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: -1
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_2_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create psychologist 3", func(t *testing.T) {
-
-		query := `mutation {
-				createUserWithPassword(
-					input: {
-					email: "psi003@gmail.com"
-					password: "Abc123!@#"
-					role: PSYCHOLOGIST
+				query = fmt.Sprintf(`{
+					authenticateUser(input: {
+						email: %q
+						password: %q
+					}) {
+						token
 					}
+				}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
+
+				response = gql(client, query, "")
+				body, _ = ioutil.ReadAll(response.Body)
+
+				token := fastjson.GetString(body, "data", "authenticateUser", "token")
+				assert.NotEqual(t, "", token)
+
+				query = fmt.Sprintf(`mutation {
+					upsertMyPsychologistProfile(input: {
+						fullName: "%s %s"
+						likeName: %q,
+						birthDate: %d,
+						city: "Belo Horizonte - MG",
+						bio: "Oi, meu nome é %s %s."
+					})
+				}`, firstName, lastName, firstName, 86400*rand.Intn(10000), firstName, lastName)
+
+				response = gql(client, query, token)
+				body, _ = ioutil.ReadAll(response.Body)
+
+				assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
+
+				query = fmt.Sprintf(`mutation {
+					setMyPsychologistCharacteristicChoices(input: [
+						{
+							characteristicName: "gender",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "lgbtqiaplus",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "skin-tone",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "sign-language",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "disabilities",
+							selectedValues: [%q]
+						},
+					])
+				}`,
+					gender,
+					[]string{"true", "false"}[rand.Intn(2)],
+					[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
+					[]string{"true", "false"}[rand.Intn(2)],
+					[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
 				)
-			}`
 
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
+				response = gql(client, query, token)
+				body, _ = ioutil.ReadAll(response.Body)
 
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
+				assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
 
-		query = `{
-				authenticateUser(input: {
-					email: "psi003@gmail.com"
-					password: "Abc123!@#"
-				}) {
-					token
-				}
-			}`
+				query = fmt.Sprintf(`mutation {
+					setMyPsychologistPreferences(input: [
+						{
+							characteristicName: "has-consulted-before",
+							selectedValue: "true",
+							weight: %d
+						}
+						{
+							characteristicName: "has-consulted-before",
+							selectedValue: "false",
+							weight: %d
+						}
+						{
+							characteristicName: "gender",
+							selectedValue: "female",
+							weight: %d
+						}
+						{
+							characteristicName: "gender",
+							selectedValue: "male",
+							weight: %d
+						}
+						{
+							characteristicName: "gender",
+							selectedValue: "non-binary",
+							weight: %d
+						}
+						{
+							characteristicName: "age",
+							selectedValue: "child",
+							weight: %d
+						}
+						{
+							characteristicName: "age",
+							selectedValue: "teen",
+							weight: %d
+						}
+						{
+							characteristicName: "age",
+							selectedValue: "young-adult",
+							weight: %d
+						}
+						{
+							characteristicName: "age",
+							selectedValue: "adult",
+							weight: %d
+						}
+						{
+							characteristicName: "age",
+							selectedValue: "elderly",
+							weight: %d
+						}
+						{
+							characteristicName: "lgbtqiaplus",
+							selectedValue: "true",
+							weight: %d
+						}
+						{
+							characteristicName: "lgbtqiaplus",
+							selectedValue: "false",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "black",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "red",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "yellow",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "white",
+							weight: %d
+						}
+						{
+							characteristicName: "disabilities",
+							selectedValue: "vision",
+							weight: %d
+						}
+						{
+							characteristicName: "disabilities",
+							selectedValue: "hearing",
+							weight: %d
+						}
+						{
+							characteristicName: "disabilities",
+							selectedValue: "locomotion",
+							weight: %d
+						}
+					])
+				}`,
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+				)
 
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
+				response = gql(client, query, token)
+				body, _ = ioutil.ReadAll(response.Body)
 
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
+				assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
-		storedVariables["psy_3_token"] = token
-
-		query = `mutation {
-				upsertMyPsychologistProfile(input: {
-					fullName: "Laura Carvalho"
-					likeName: "Dra. Laura",
-					birthDate: 519966000,
-					city: "Campo Grande - MS",
-					bio: "Oi, meu nome é Laura.\n\nTenho 35 anos e sou de Campo Grande."
-				})
-			}`
-
-		response = gql(client, query, storedVariables["psy_3_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
-
-		query = `mutation {
-				setMyPsychologistCharacteristicChoices(input: [
-					{
-						characteristicName: "gender",
-						selectedValues: ["non-binary"]
-					},
-					{
-						characteristicName: "lgbtqiaplus",
-						selectedValues: ["true"]
-					},
-					{
-						characteristicName: "skin-tone",
-						selectedValues: ["black"]
-					},
-					{
-						characteristicName: "sign-language",
-						selectedValues: ["false"]
-					},
-					{
-						characteristicName: "disabilities",
-						selectedValues: ["locomotion"]
-					},
-				])
-			}`
-
-		response = gql(client, query, storedVariables["psy_3_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-				setMyPsychologistPreferences(input: [
-					{
-						characteristicName: "has-consulted-before",
-						selectedValue: "true",
-						weight: 1
-					}
-					{
-						characteristicName: "has-consulted-before",
-						selectedValue: "false",
-						weight: -1
-					}
-					{
-						characteristicName: "gender",
-						selectedValue: "female",
-						weight: 3
-					}
-					{
-						characteristicName: "gender",
-						selectedValue: "male",
-						weight: 1
-					}
-					{
-						characteristicName: "gender",
-						selectedValue: "non-binary",
-						weight: -1
-					}
-					{
-						characteristicName: "age",
-						selectedValue: "child",
-						weight: 3
-					}
-					{
-						characteristicName: "age",
-						selectedValue: "teen",
-						weight: 3
-					}
-					{
-						characteristicName: "age",
-						selectedValue: "young-adult",
-						weight: 0
-					}
-					{
-						characteristicName: "age",
-						selectedValue: "adult",
-						weight: 0
-					}
-					{
-						characteristicName: "age",
-						selectedValue: "elderly",
-						weight: 3
-					}
-					{
-						characteristicName: "lgbtqiaplus",
-						selectedValue: "true",
-						weight: 3
-					}
-					{
-						characteristicName: "lgbtqiaplus",
-						selectedValue: "false",
-						weight: 0
-					}
-					{
-						characteristicName: "skin-tone",
-						selectedValue: "black",
-						weight: 3
-					}
-					{
-						characteristicName: "skin-tone",
-						selectedValue: "red",
-						weight: 3
-					}
-					{
-						characteristicName: "skin-tone",
-						selectedValue: "yellow",
-						weight: 3
-					}
-					{
-						characteristicName: "skin-tone",
-						selectedValue: "white",
-						weight: 1
-					}
-					{
-						characteristicName: "disabilities",
-						selectedValue: "vision",
-						weight: -1
-					}
-					{
-						characteristicName: "disabilities",
-						selectedValue: "hearing",
-						weight: -1
-					}
-					{
-						characteristicName: "disabilities",
-						selectedValue: "locomotion",
-						weight: 3
-					}
-				])
-			}`
-
-		response = gql(client, query, storedVariables["psy_3_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
+				wg.Done()
+			}(i)
+		}
+		wg.Wait()
 
 	})
 
-	t.Run("should create psychologist 4", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "psi004@gmail.com"
-				password: "Abc123!@#"
-				role: PSYCHOLOGIST
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "psi004@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["psy_4_token"] = token
-
-		query = `mutation {
-			upsertMyPsychologistProfile(input: {
-				fullName: "Marcos Greco"
-				likeName: "Dr. Marcos",
-				birthDate: 822708000,
-				city: "Manaus - AM",
-				bio: "Oi, meu nome é Marcos.\n\nTenho 26 anos e sou de Manaus."
-			})
-		}`
-
-		response = gql(client, query, storedVariables["psy_4_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistCharacteristicChoices(input: [
-				{
-					characteristicName: "gender",
-					selectedValues: ["male"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["white"]
-				},
-				{
-					characteristicName: "sign-language",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: []
-				},
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_4_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistPreferences(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "false",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: 0
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "child",
-					weight: 3
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "teen",
-					weight: 1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "young-adult",
-					weight: 1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "adult",
-					weight: -1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "elderly",
-					weight: -1
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: 0
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 0
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: 0
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_4_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create psychologist 5", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "psi005@gmail.com"
-				password: "Abc123!@#"
-				role: PSYCHOLOGIST
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "psi005@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["psy_5_token"] = token
-
-		query = `mutation {
-			upsertMyPsychologistProfile(input: {
-				fullName: "Tássia Lopes"
-				likeName: "Dra. Tássia",
-				birthDate: 772513200,
-				city: "Vitória - ES",
-				bio: "Oi, meu nome é Ana.\n\nTenho 27 anos e sou de Vitória."
-			})
-		}`
-
-		response = gql(client, query, storedVariables["psy_5_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistCharacteristicChoices(input: [
-				{
-					characteristicName: "gender",
-					selectedValues: ["female"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["black"]
-				},
-				{
-					characteristicName: "sign-language",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: []
-				},
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_5_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPsychologistPreferences(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "has-consulted-before",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: 3
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "child",
-					weight: -1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "teen",
-					weight: -1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "young-adult",
-					weight: 3
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "adult",
-					weight: 1
-				}
-				{
-					characteristicName: "age",
-					selectedValue: "elderly",
-					weight: 0
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: 1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: 1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: 1
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["psy_5_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create patient 1", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "pac001@gmail.com"
-				password: "Abc123!@#"
-				role: PATIENT
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "pac001@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["pat_1_token"] = token
-
-		query = `mutation {
-			upsertMyPatientProfile(input: {
-				fullName: "Melissa Duarte"
-				likeName: "Melissa",
-				birthDate: 904618800,
-				city: "Cuiabá - MT"
-			})
-		}`
-
-		response = gql(client, query, storedVariables["pat_1_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientCharacteristicChoices(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "gender",
-					selectedValues: ["female"]
-				},
-				{
-					characteristicName: "age",
-					selectedValues: ["young-adult"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["yellow"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: ["hearing"]
-				},
-				{
-					characteristicName: "income",
-					selectedValues: ["D"]
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_1_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientPreferences(input: [
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: 0
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "false",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 0
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: 0
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_1_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create patient 2", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "pac002@gmail.com"
-				password: "Abc123!@#"
-				role: PATIENT
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "pac002@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["pat_2_token"] = token
-
-		query = `mutation {
-			upsertMyPatientProfile(input: {
-				fullName: "Sandra Horta"
-				likeName: "Sandra",
-				birthDate: -237589200,
-				city: "Rio Branco - AC"
-			})
-		}`
-
-		response = gql(client, query, storedVariables["pat_2_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientCharacteristicChoices(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "gender",
-					selectedValues: ["female"]
-				},
-				{
-					characteristicName: "age",
-					selectedValues: ["elderly"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["red"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: []
-				},
-				{
-					characteristicName: "income",
-					selectedValues: ["C"]
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_2_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientPreferences(input: [
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 1
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: -1
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: 0
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: -1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: -1
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 0
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: 0
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_2_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create patient 3", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "pac003@gmail.com"
-				password: "Abc123!@#"
-				role: PATIENT
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "pac003@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["pat_3_token"] = token
-
-		query = `mutation {
-			upsertMyPatientProfile(input: {
-				fullName: "João Melo"
-				likeName: "João",
-				birthDate: 775191600,
-				city: "Belém - PA"
-			})
-		}`
-
-		response = gql(client, query, storedVariables["pat_3_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientCharacteristicChoices(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "gender",
-					selectedValues: ["non-binary"]
-				},
-				{
-					characteristicName: "age",
-					selectedValues: ["teen"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["white"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: []
-				},
-				{
-					characteristicName: "income",
-					selectedValues: ["B"]
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_3_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientPreferences(input: [
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: 1
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 0
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: -1
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_3_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create patient 4", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "pac004@gmail.com"
-				password: "Abc123!@#"
-				role: PATIENT
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "pac004@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["pat_4_token"] = token
-
-		query = `mutation {
-			upsertMyPatientProfile(input: {
-				fullName: "Paula Santos"
-				likeName: "Paula",
-				birthDate: 800074800,
-				city: "Blumenau - SC"
-			})
-		}`
-
-		response = gql(client, query, storedVariables["pat_4_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientCharacteristicChoices(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "gender",
-					selectedValues: ["female"]
-				},
-				{
-					characteristicName: "age",
-					selectedValues: ["elderly"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["false"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["white"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: ["vision"]
-				},
-				{
-					characteristicName: "income",
-					selectedValues: ["A"]
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_4_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientPreferences(input: [
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: -1
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: -1
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: -1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: -1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 0
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: 3
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: -1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: -1
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_4_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
-
-	})
-
-	t.Run("should create patient 5", func(t *testing.T) {
-
-		query := `mutation {
-			createUserWithPassword(
-				input: {
-				email: "pac005@gmail.com"
-				password: "Abc123!@#"
-				role: PATIENT
-				}
-			)
-		}`
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-		query = `{
-			authenticateUser(input: {
-				email: "pac005@gmail.com"
-				password: "Abc123!@#"
-			}) {
-				token
-			}
-		}`
-
-		response = gql(client, query, "")
-		body, _ = ioutil.ReadAll(response.Body)
-
-		token := fastjson.GetString(body, "data", "authenticateUser", "token")
-		assert.NotEqual(t, "", token)
-
-		storedVariables["pat_5_token"] = token
-
-		query = `mutation {
-			upsertMyPatientProfile(input: {
-				fullName: "Jorge Martins"
-				likeName: "Jorge",
-				birthDate: 826858800,
-				city: "Fortaleza - CE"
-			})
-		}`
-
-		response = gql(client, query, storedVariables["pat_5_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientCharacteristicChoices(input: [
-				{
-					characteristicName: "has-consulted-before",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "gender",
-					selectedValues: ["male"]
-				},
-				{
-					characteristicName: "age",
-					selectedValues: ["young-adult"]
-				},
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValues: ["true"]
-				},
-				{
-					characteristicName: "skin-tone",
-					selectedValues: ["black"]
-				},
-				{
-					characteristicName: "disabilities",
-					selectedValues: []
-				},
-				{
-					characteristicName: "income",
-					selectedValues: ["D"]
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_5_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
-
-		query = `mutation {
-			setMyPatientPreferences(input: [
-				{
-					characteristicName: "gender",
-					selectedValue: "female",
-					weight: 3
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "male",
-					weight: 0
-				}
-				{
-					characteristicName: "gender",
-					selectedValue: "non-binary",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "true",
-					weight: 3
-				}
-				{
-					characteristicName: "lgbtqiaplus",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "black",
-					weight: 3
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "red",
-					weight: 1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "yellow",
-					weight: 1
-				}
-				{
-					characteristicName: "skin-tone",
-					selectedValue: "white",
-					weight: 1
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "true",
-					weight: -1
-				}
-				{
-					characteristicName: "sign-language",
-					selectedValue: "false",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "vision",
-					weight: 1
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "hearing",
-					weight: 3
-				}
-				{
-					characteristicName: "disabilities",
-					selectedValue: "locomotion",
-					weight: 1
-				}
-			])
-		}`
-
-		response = gql(client, query, storedVariables["pat_5_token"])
-		body, _ = ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
+	t.Run("should create patients", func(t *testing.T) {
+
+		var wg sync.WaitGroup
+
+		for i := 1; i <= PATIENT_QUANTITY; i++ {
+			wg.Add(1)
+			go func(i int) {
+				email := fmt.Sprintf("pac%03d@exemplo.com", i)
+				gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
+				birthDate := 86400 * rand.Intn(10000)
+				lastName := LastNames[rand.Intn(40)]
+				firstName := ""
+				switch gender {
+				case "female":
+					firstName = FemaleNames[rand.Intn(40)]
+				case "male":
+					firstName = MaleNames[rand.Intn(40)]
+				case "non-binary":
+					firstName = []string{FemaleNames[rand.Intn(40)], MaleNames[rand.Intn(40)]}[rand.Intn(2)]
+				}
+
+				query := fmt.Sprintf(`mutation {
+					createUserWithPassword(
+						input: {
+						email: %q
+						password: %q
+						role: PATIENT
+						}
+					)
+				}`, email, NEW_PATIENTS_PASSWORD)
+
+				response := gql(client, query, storedVariables["coordinator_token"])
+				body, _ := ioutil.ReadAll(response.Body)
+
+				assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
+
+				query = fmt.Sprintf(`{
+					authenticateUser(input: {
+						email: %q
+						password: %q
+					}) {
+						token
+					}
+				}`, email, NEW_PATIENTS_PASSWORD)
+
+				response = gql(client, query, "")
+				body, _ = ioutil.ReadAll(response.Body)
+
+				token := fastjson.GetString(body, "data", "authenticateUser", "token")
+				assert.NotEqual(t, "", token)
+
+				query = fmt.Sprintf(`mutation {
+					upsertMyPatientProfile(input: {
+						fullName: "%s %s"
+						likeName: %q,
+						birthDate: %d,
+						city: "Belo Horizonte - MG"
+					})
+				}`, firstName, lastName, firstName, birthDate)
+
+				response = gql(client, query, token)
+				body, _ = ioutil.ReadAll(response.Body)
+
+				assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
+
+				query = fmt.Sprintf(`mutation {
+					setMyPatientCharacteristicChoices(input: [
+						{
+							characteristicName: "has-consulted-before",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "gender",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "age",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "lgbtqiaplus",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "skin-tone",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "disabilities",
+							selectedValues: [%q]
+						},
+						{
+							characteristicName: "income",
+							selectedValues: [%q]
+						}
+					])
+				}`,
+					[]string{"true", "false"}[rand.Intn(2)],
+					gender,
+					[]string{"child", "teen", "young-adult", "adult", "elderly"}[rand.Intn(5)],
+					[]string{"true", "false"}[rand.Intn(2)],
+					[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
+					[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
+					[]string{"D", "C", "B", "A"}[rand.Intn(4)],
+				)
+
+				response = gql(client, query, token)
+				body, _ = ioutil.ReadAll(response.Body)
+
+				assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
+
+				query = fmt.Sprintf(`mutation {
+					setMyPatientPreferences(input: [
+						{
+							characteristicName: "gender",
+							selectedValue: "female",
+							weight: %d
+						}
+						{
+							characteristicName: "gender",
+							selectedValue: "male",
+							weight: %d
+						}
+						{
+							characteristicName: "gender",
+							selectedValue: "non-binary",
+							weight: %d
+						}
+						{
+							characteristicName: "lgbtqiaplus",
+							selectedValue: "true",
+							weight: %d
+						}
+						{
+							characteristicName: "lgbtqiaplus",
+							selectedValue: "false",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "black",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "red",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "yellow",
+							weight: %d
+						}
+						{
+							characteristicName: "skin-tone",
+							selectedValue: "white",
+							weight: %d
+						}
+						{
+							characteristicName: "sign-language",
+							selectedValue: "true",
+							weight: %d
+						}
+						{
+							characteristicName: "sign-language",
+							selectedValue: "false",
+							weight: %d
+						}
+						{
+							characteristicName: "disabilities",
+							selectedValue: "vision",
+							weight: %d
+						}
+						{
+							characteristicName: "disabilities",
+							selectedValue: "hearing",
+							weight: %d
+						}
+						{
+							characteristicName: "disabilities",
+							selectedValue: "locomotion",
+							weight: %d
+						}
+					])
+				}`,
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+				)
+
+				response = gql(client, query, token)
+				body, _ = ioutil.ReadAll(response.Body)
+
+				assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
+
+				wg.Done()
+			}(i)
+		}
+		wg.Wait()
 
 	})
 
