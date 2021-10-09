@@ -25,10 +25,13 @@ var COORDINATOR_USERNAME = "coordinator@psi.com.br"
 var COORDINATOR_PASSWORD = "Abc123!@#"
 var NEW_JOBRUNNER_USERNAME = "jobrunner@psi.com.br"
 var NEW_JOBRUNNER_PASSWORD = "Abc123!@#"
-var PSYCOLOGIST_QUANTITY = 50
-var PATIENT_QUANTITY = 50
+var PSYCOLOGIST_START = 1
+var PSYCOLOGIST_END = 100
+var PATIENT_START = 1
+var PATIENT_END = 100
 var NEW_PSYCHOLOGISTS_PASSWORD = "Abc123!@#"
 var NEW_PATIENTS_PASSWORD = "Abc123!@#"
+var TREATMENTS_PER_PSYCHOLOGIST = 2
 
 func gql(client *http.Client, query string, token string) *http.Response {
 
@@ -36,7 +39,7 @@ func gql(client *http.Client, query string, token string) *http.Response {
 
 	request, err := http.NewRequest(http.MethodPost, API_URL, strings.NewReader(body))
 	if err != nil {
-		log.Fatalln("Error creating request")
+		log.Fatalln(err)
 	}
 
 	request.Header["Authorization"] = []string{token}
@@ -44,7 +47,7 @@ func gql(client *http.Client, query string, token string) *http.Response {
 
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatalln("Error in response")
+		log.Fatalln(err)
 	}
 
 	return response
@@ -648,7 +651,7 @@ func TestEnd2End(t *testing.T) {
 
 		var wg sync.WaitGroup
 
-		for i := 1; i <= PSYCOLOGIST_QUANTITY; i++ {
+		for i := PSYCOLOGIST_START; i <= PSYCOLOGIST_END; i++ {
 			wg.Add(1)
 			go func(i int) {
 				email := fmt.Sprintf("psi%04d@exemplo.com", i)
@@ -1112,6 +1115,26 @@ func TestEnd2End(t *testing.T) {
 
 				assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
+				for j := 0; j < TREATMENTS_PER_PSYCHOLOGIST; j++ {
+					query = fmt.Sprintf(`mutation {
+						createTreatment(
+							input: {
+								frequency: 1,
+								phase: %d,
+								duration: 3000,
+								priceRangeName: %q
+							}
+						)
+					}`, 3600*rand.Intn(168), []string{"free", "low", "medium", "high"}[rand.Intn(4)])
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					if string(body) != "{\"data\":{\"createTreatment\":null}}" {
+						j--
+					}
+				}
+
 				wg.Done()
 			}(i)
 		}
@@ -1123,7 +1146,7 @@ func TestEnd2End(t *testing.T) {
 
 		var wg sync.WaitGroup
 
-		for i := 1; i <= PATIENT_QUANTITY; i++ {
+		for i := PATIENT_START; i <= PATIENT_END; i++ {
 			wg.Add(1)
 			go func(i int) {
 				email := fmt.Sprintf("pac%04d@exemplo.com", i)
@@ -1143,9 +1166,9 @@ func TestEnd2End(t *testing.T) {
 				query := fmt.Sprintf(`mutation {
 					createUserWithPassword(
 						input: {
-						email: %q
-						password: %q
-						role: PATIENT
+							email: %q
+							password: %q
+							role: PATIENT
 						}
 					)
 				}`, email, NEW_PATIENTS_PASSWORD)
@@ -1353,6 +1376,33 @@ func TestEnd2End(t *testing.T) {
 				body, _ = ioutil.ReadAll(response.Body)
 
 				assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
+
+				query = `{
+					myPatientTopAffinities {
+						psychologist {
+							pendingTreatments {
+								id
+							}
+							priceRangeOfferings {
+								priceRange {
+									name
+								}
+							}
+						}
+					}
+				}`
+
+				response = gql(client, query, token)
+				body, _ = ioutil.ReadAll(response.Body)
+
+				treatmentId := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "pendingTreatments", "0", "id")
+				priceRangeName := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "priceRangeOfferings", "0", "priceRange", "name")
+
+				query = fmt.Sprintf(`mutation {
+					assignTreatment(id: %q, priceRangeName: %q)
+				}`, treatmentId, priceRangeName)
+
+				gql(client, query, token)
 
 				wg.Done()
 			}(i)
