@@ -54,7 +54,7 @@ func gql(client *http.Client, query string, token string) *http.Response {
 
 }
 
-func TestEnd2End(t *testing.T) {
+func PopulateScript(t *testing.T) {
 
 	rand.Seed(time.Now().UnixMicro())
 
