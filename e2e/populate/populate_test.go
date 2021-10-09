@@ -25,10 +25,11 @@ var COORDINATOR_USERNAME = "coordinator@psi.com.br"
 var COORDINATOR_PASSWORD = "Abc123!@#"
 var NEW_JOBRUNNER_USERNAME = "jobrunner@psi.com.br"
 var NEW_JOBRUNNER_PASSWORD = "Abc123!@#"
+var BATCH_SIZE = 20
 var PSYCOLOGIST_START = 1
-var PSYCOLOGIST_END = 100
+var PSYCOLOGIST_BATCHES = 50
 var PATIENT_START = 1
-var PATIENT_END = 100
+var PATIENT_BATCHES = 50
 var NEW_PSYCHOLOGISTS_PASSWORD = "Abc123!@#"
 var NEW_PATIENTS_PASSWORD = "Abc123!@#"
 var TREATMENTS_PER_PSYCHOLOGIST = 2
@@ -54,7 +55,7 @@ func gql(client *http.Client, query string, token string) *http.Response {
 
 }
 
-func PopulateScript(t *testing.T) {
+func TestPopulateScript(t *testing.T) {
 
 	rand.Seed(time.Now().UnixMicro())
 
@@ -82,6 +83,22 @@ func PopulateScript(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		storedVariables["coordinator_token"] = token
+
+	})
+
+	t.Run("should create jobrunner if not existant", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			createUserWithPassword(
+			  input: {
+					email: %q
+					password: %q
+					role: JOBRUNNER
+			  }
+			)
+		}`, NEW_JOBRUNNER_USERNAME, NEW_JOBRUNNER_PASSWORD)
+
+		gql(client, query, storedVariables["coordinator_token"])
 
 	})
 
@@ -628,517 +645,500 @@ func PopulateScript(t *testing.T) {
 
 	})
 
-	t.Run("should create jobrunner", func(t *testing.T) {
-
-		query := fmt.Sprintf(`mutation {
-			createUserWithPassword(
-			  input: {
-				email: %q
-				password: %q
-				role: JOBRUNNER
-			  }
-			)
-		}`, NEW_JOBRUNNER_USERNAME, NEW_JOBRUNNER_PASSWORD)
-
-		response := gql(client, query, storedVariables["coordinator_token"])
-		body, _ := ioutil.ReadAll(response.Body)
-
-		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-	})
-
 	t.Run("should create psychologists", func(t *testing.T) {
 
 		var wg sync.WaitGroup
 
-		for i := PSYCOLOGIST_START; i <= PSYCOLOGIST_END; i++ {
-			wg.Add(1)
-			go func(i int) {
-				email := fmt.Sprintf("psi%04d@exemplo.com", i)
-				gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
-				lastName := LastNames[rand.Intn(40)]
-				firstName := ""
-				switch gender {
-				case "female":
-					firstName = FemaleNames[rand.Intn(40)]
-				case "male":
-					firstName = MaleNames[rand.Intn(40)]
-				case "non-binary":
-					firstName = []string{FemaleNames[rand.Intn(40)], MaleNames[rand.Intn(40)]}[rand.Intn(2)]
-				}
-
-				query := fmt.Sprintf(`mutation {
-					createUserWithPassword(
-						input: {
-						email: %q
-						password: %q
-						role: PSYCHOLOGIST
-						}
-					)
-				}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
-
-				response := gql(client, query, storedVariables["coordinator_token"])
-				body, _ := ioutil.ReadAll(response.Body)
-
-				assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
-
-				query = fmt.Sprintf(`{
-					authenticateUser(input: {
-						email: %q
-						password: %q
-					}) {
-						token
+		for b := 0; b < PSYCOLOGIST_BATCHES; b++ {
+			for i := PSYCOLOGIST_START + b*BATCH_SIZE; i < PSYCOLOGIST_START+(b+1)*BATCH_SIZE; i++ {
+				wg.Add(1)
+				go func(i int) {
+					email := fmt.Sprintf("psi%04d@exemplo.com", i)
+					gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
+					lastName := LastNames[rand.Intn(40)]
+					firstName := ""
+					switch gender {
+					case "female":
+						firstName = FemaleNames[rand.Intn(40)]
+					case "male":
+						firstName = MaleNames[rand.Intn(40)]
+					case "non-binary":
+						firstName = []string{FemaleNames[rand.Intn(40)], MaleNames[rand.Intn(40)]}[rand.Intn(2)]
 					}
-				}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
 
-				response = gql(client, query, "")
-				body, _ = ioutil.ReadAll(response.Body)
-
-				token := fastjson.GetString(body, "data", "authenticateUser", "token")
-				assert.NotEqual(t, "", token)
-
-				query = fmt.Sprintf(`mutation {
-					upsertMyPsychologistProfile(input: {
-						fullName: "%s %s"
-						likeName: %q,
-						birthDate: %d,
-						city: "Belo Horizonte - MG",
-						crp: "01/23%04d",
-						whatsapp: "(11) 98765-%04d",
-						instagram: "@psi.%s.%s",
-						bio: "Oi, meu nome é %s %s."
-					})
-				}`, firstName, lastName, firstName, 86400*rand.Intn(10000), i, i, strings.ToLower(firstName), strings.ToLower(lastName), firstName, lastName)
-
-				response = gql(client, query, token)
-				body, _ = ioutil.ReadAll(response.Body)
-
-				assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
-
-				query = fmt.Sprintf(`mutation {
-					setMyPsychologistCharacteristicChoices(input: [
-						{
-							characteristicName: "gender",
-							selectedValues: [%q]
-						},
-						{
-							characteristicName: "lgbtqiaplus",
-							selectedValues: [%q]
-						},
-						{
-							characteristicName: "skin-tone",
-							selectedValues: [%q]
-						},
-						{
-							characteristicName: "sign-language",
-							selectedValues: [%q]
-						},
-						{
-							characteristicName: "disabilities",
-							selectedValues: [%q]
-						},
-						{
-							characteristicName: "methods",
-							selectedValues: [%q]
-						},
-					])
-				}`,
-					gender,
-					[]string{"true", "false"}[rand.Intn(2)],
-					[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
-					[]string{"true", "false"}[rand.Intn(2)],
-					[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
-					[]string{"psychoanalysis", "behaviorism", "cognitive", "humanistic"}[rand.Intn(4)],
-				)
-
-				response = gql(client, query, token)
-				body, _ = ioutil.ReadAll(response.Body)
-
-				assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
-
-				query = fmt.Sprintf(`mutation {
-					setMyPsychologistPreferences(input: [
-						{
-							characteristicName: "has-consulted-before",
-							selectedValue: "true",
-							weight: %d
-						}
-						{
-							characteristicName: "has-consulted-before",
-							selectedValue: "false",
-							weight: %d
-						}
-						{
-							characteristicName: "gender",
-							selectedValue: "female",
-							weight: %d
-						}
-						{
-							characteristicName: "gender",
-							selectedValue: "male",
-							weight: %d
-						}
-						{
-							characteristicName: "gender",
-							selectedValue: "non-binary",
-							weight: %d
-						}
-						{
-							characteristicName: "age",
-							selectedValue: "child",
-							weight: %d
-						}
-						{
-							characteristicName: "age",
-							selectedValue: "teen",
-							weight: %d
-						}
-						{
-							characteristicName: "age",
-							selectedValue: "young-adult",
-							weight: %d
-						}
-						{
-							characteristicName: "age",
-							selectedValue: "adult",
-							weight: %d
-						}
-						{
-							characteristicName: "age",
-							selectedValue: "elderly",
-							weight: %d
-						}
-						{
-							characteristicName: "lgbtqiaplus",
-							selectedValue: "true",
-							weight: %d
-						}
-						{
-							characteristicName: "lgbtqiaplus",
-							selectedValue: "false",
-							weight: %d
-						}
-						{
-							characteristicName: "skin-tone",
-							selectedValue: "black",
-							weight: %d
-						}
-						{
-							characteristicName: "skin-tone",
-							selectedValue: "red",
-							weight: %d
-						}
-						{
-							characteristicName: "skin-tone",
-							selectedValue: "yellow",
-							weight: %d
-						}
-						{
-							characteristicName: "skin-tone",
-							selectedValue: "white",
-							weight: %d
-						}
-						{
-							characteristicName: "disabilities",
-							selectedValue: "vision",
-							weight: %d
-						}
-						{
-							characteristicName: "disabilities",
-							selectedValue: "hearing",
-							weight: %d
-						}
-						{
-							characteristicName: "disabilities",
-							selectedValue: "locomotion",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "aging",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "anxiety",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "autism",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "body",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "career",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "career-choice",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "compulsion",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "death-of-keen",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "depression",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "desease-in-keen",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "desease-in-self",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "discrimination",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "drug-abuse-keen",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "drug-abuse-self",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "existential-crisis",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "family-conflicts",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "financial",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "food-disorder",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "learning-challenges",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "memory-loss",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "mood-control",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "panic",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "parenting",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "partner-abuse",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "partner-conflicts",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "physical-pain",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "post-traumatic-stress",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "pre-pregnancy",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "pregnancy",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "schizophrenia",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "self-development",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "self-harm",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "sexual",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "sexuality",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "sleep",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "social-interactions",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "stammering",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "stress",
-							weight: %d
-						}
-						{
-							characteristicName: "issues",
-							selectedValue: "unknown",
-							weight: %d
-						}
-					])
-				}`,
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-				)
-
-				response = gql(client, query, token)
-				body, _ = ioutil.ReadAll(response.Body)
-
-				assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
-
-				for j := 0; j < TREATMENTS_PER_PSYCHOLOGIST; j++ {
-					query = fmt.Sprintf(`mutation {
-						createTreatment(
+					query := fmt.Sprintf(`mutation {
+						createUserWithPassword(
 							input: {
-								frequency: 1,
-								phase: %d,
-								duration: 3000,
-								priceRangeName: %q
+							email: %q
+							password: %q
+							role: PSYCHOLOGIST
 							}
 						)
-					}`, 3600*rand.Intn(168), []string{"free", "low", "medium", "high"}[rand.Intn(4)])
+					}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
+
+					response := gql(client, query, storedVariables["coordinator_token"])
+					body, _ := ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
+
+					query = fmt.Sprintf(`{
+						authenticateUser(input: {
+							email: %q
+							password: %q
+						}) {
+							token
+						}
+					}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
+
+					response = gql(client, query, "")
+					body, _ = ioutil.ReadAll(response.Body)
+
+					token := fastjson.GetString(body, "data", "authenticateUser", "token")
+					assert.NotEqual(t, "", token)
+
+					query = fmt.Sprintf(`mutation {
+						upsertMyPsychologistProfile(input: {
+							fullName: "%s %s"
+							likeName: %q,
+							birthDate: %d,
+							city: "Belo Horizonte - MG",
+							crp: "01/23%04d",
+							whatsapp: "(11) 98765-%04d",
+							instagram: "@psi.%s.%s",
+							bio: "Oi, meu nome é %s %s."
+						})
+					}`, firstName, lastName, firstName, 86400*rand.Intn(10000), i, i, strings.ToLower(firstName), strings.ToLower(lastName), firstName, lastName)
 
 					response = gql(client, query, token)
 					body, _ = ioutil.ReadAll(response.Body)
 
-					if string(body) != "{\"data\":{\"createTreatment\":null}}" {
-						j--
-					}
-				}
+					assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
 
-				wg.Done()
-			}(i)
+					query = fmt.Sprintf(`mutation {
+						setMyPsychologistCharacteristicChoices(input: [
+							{
+								characteristicName: "gender",
+								selectedValues: [%q]
+							},
+							{
+								characteristicName: "lgbtqiaplus",
+								selectedValues: [%q]
+							},
+							{
+								characteristicName: "skin-tone",
+								selectedValues: [%q]
+							},
+							{
+								characteristicName: "sign-language",
+								selectedValues: [%q]
+							},
+							{
+								characteristicName: "disabilities",
+								selectedValues: [%q]
+							},
+							{
+								characteristicName: "methods",
+								selectedValues: [%q]
+							},
+						])
+					}`,
+						gender,
+						[]string{"true", "false"}[rand.Intn(2)],
+						[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
+						[]string{"true", "false"}[rand.Intn(2)],
+						[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
+						[]string{"psychoanalysis", "behaviorism", "cognitive", "humanistic"}[rand.Intn(4)],
+					)
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
+
+					query = fmt.Sprintf(`mutation {
+						setMyPsychologistPreferences(input: [
+							{
+								characteristicName: "has-consulted-before",
+								selectedValue: "true",
+								weight: %d
+							}
+							{
+								characteristicName: "has-consulted-before",
+								selectedValue: "false",
+								weight: %d
+							}
+							{
+								characteristicName: "gender",
+								selectedValue: "female",
+								weight: %d
+							}
+							{
+								characteristicName: "gender",
+								selectedValue: "male",
+								weight: %d
+							}
+							{
+								characteristicName: "gender",
+								selectedValue: "non-binary",
+								weight: %d
+							}
+							{
+								characteristicName: "age",
+								selectedValue: "child",
+								weight: %d
+							}
+							{
+								characteristicName: "age",
+								selectedValue: "teen",
+								weight: %d
+							}
+							{
+								characteristicName: "age",
+								selectedValue: "young-adult",
+								weight: %d
+							}
+							{
+								characteristicName: "age",
+								selectedValue: "adult",
+								weight: %d
+							}
+							{
+								characteristicName: "age",
+								selectedValue: "elderly",
+								weight: %d
+							}
+							{
+								characteristicName: "lgbtqiaplus",
+								selectedValue: "true",
+								weight: %d
+							}
+							{
+								characteristicName: "lgbtqiaplus",
+								selectedValue: "false",
+								weight: %d
+							}
+							{
+								characteristicName: "skin-tone",
+								selectedValue: "black",
+								weight: %d
+							}
+							{
+								characteristicName: "skin-tone",
+								selectedValue: "red",
+								weight: %d
+							}
+							{
+								characteristicName: "skin-tone",
+								selectedValue: "yellow",
+								weight: %d
+							}
+							{
+								characteristicName: "skin-tone",
+								selectedValue: "white",
+								weight: %d
+							}
+							{
+								characteristicName: "disabilities",
+								selectedValue: "vision",
+								weight: %d
+							}
+							{
+								characteristicName: "disabilities",
+								selectedValue: "hearing",
+								weight: %d
+							}
+							{
+								characteristicName: "disabilities",
+								selectedValue: "locomotion",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "aging",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "anxiety",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "autism",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "body",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "career",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "career-choice",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "compulsion",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "death-of-keen",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "depression",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "desease-in-keen",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "desease-in-self",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "discrimination",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "drug-abuse-keen",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "drug-abuse-self",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "existential-crisis",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "family-conflicts",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "financial",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "food-disorder",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "learning-challenges",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "memory-loss",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "mood-control",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "panic",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "parenting",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "partner-abuse",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "partner-conflicts",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "physical-pain",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "post-traumatic-stress",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "pre-pregnancy",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "pregnancy",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "schizophrenia",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "self-development",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "self-harm",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "sexual",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "sexuality",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "sleep",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "social-interactions",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "stammering",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "stress",
+								weight: %d
+							}
+							{
+								characteristicName: "issues",
+								selectedValue: "unknown",
+								weight: %d
+							}
+						])
+					}`,
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					)
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
+
+					for j := 0; j < TREATMENTS_PER_PSYCHOLOGIST; j++ {
+						query = fmt.Sprintf(`mutation {
+							createTreatment(
+								input: {
+									frequency: 1,
+									phase: %d,
+									duration: 3000,
+									priceRangeName: %q
+								}
+							)
+						}`, 3600*rand.Intn(168), []string{"free", "low", "medium", "high"}[rand.Intn(4)])
+
+						response = gql(client, query, token)
+						body, _ = ioutil.ReadAll(response.Body)
+
+						if string(body) != "{\"data\":{\"createTreatment\":null}}" {
+							j--
+						}
+					}
+
+					wg.Done()
+				}(i)
+			}
+			wg.Wait()
 		}
-		wg.Wait()
 
 	})
 
@@ -1146,24 +1146,25 @@ func PopulateScript(t *testing.T) {
 
 		var wg sync.WaitGroup
 
-		for i := PATIENT_START; i <= PATIENT_END; i++ {
-			wg.Add(1)
-			go func(i int) {
-				email := fmt.Sprintf("pac%04d@exemplo.com", i)
-				gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
-				birthDate := 86400 * rand.Intn(10000)
-				lastName := LastNames[rand.Intn(40)]
-				firstName := ""
-				switch gender {
-				case "female":
-					firstName = FemaleNames[rand.Intn(40)]
-				case "male":
-					firstName = MaleNames[rand.Intn(40)]
-				case "non-binary":
-					firstName = []string{FemaleNames[rand.Intn(40)], MaleNames[rand.Intn(40)]}[rand.Intn(2)]
-				}
+		for b := 0; b < PSYCOLOGIST_BATCHES; b++ {
+			for i := PATIENT_START + b*BATCH_SIZE; i < PATIENT_START+(b+1)*BATCH_SIZE; i++ {
+				wg.Add(1)
+				go func(i int) {
+					email := fmt.Sprintf("pac%04d@exemplo.com", i)
+					gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
+					birthDate := 86400 * rand.Intn(10000)
+					lastName := LastNames[rand.Intn(40)]
+					firstName := ""
+					switch gender {
+					case "female":
+						firstName = FemaleNames[rand.Intn(40)]
+					case "male":
+						firstName = MaleNames[rand.Intn(40)]
+					case "non-binary":
+						firstName = []string{FemaleNames[rand.Intn(40)], MaleNames[rand.Intn(40)]}[rand.Intn(2)]
+					}
 
-				query := fmt.Sprintf(`mutation {
+					query := fmt.Sprintf(`mutation {
 					createUserWithPassword(
 						input: {
 							email: %q
@@ -1173,12 +1174,12 @@ func PopulateScript(t *testing.T) {
 					)
 				}`, email, NEW_PATIENTS_PASSWORD)
 
-				response := gql(client, query, storedVariables["coordinator_token"])
-				body, _ := ioutil.ReadAll(response.Body)
+					response := gql(client, query, storedVariables["coordinator_token"])
+					body, _ := ioutil.ReadAll(response.Body)
 
-				assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
+					assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
 
-				query = fmt.Sprintf(`{
+					query = fmt.Sprintf(`{
 					authenticateUser(input: {
 						email: %q
 						password: %q
@@ -1187,13 +1188,13 @@ func PopulateScript(t *testing.T) {
 					}
 				}`, email, NEW_PATIENTS_PASSWORD)
 
-				response = gql(client, query, "")
-				body, _ = ioutil.ReadAll(response.Body)
+					response = gql(client, query, "")
+					body, _ = ioutil.ReadAll(response.Body)
 
-				token := fastjson.GetString(body, "data", "authenticateUser", "token")
-				assert.NotEqual(t, "", token)
+					token := fastjson.GetString(body, "data", "authenticateUser", "token")
+					assert.NotEqual(t, "", token)
 
-				query = fmt.Sprintf(`mutation {
+					query = fmt.Sprintf(`mutation {
 					upsertMyPatientProfile(input: {
 						fullName: "%s %s"
 						likeName: %q,
@@ -1202,12 +1203,12 @@ func PopulateScript(t *testing.T) {
 					})
 				}`, firstName, lastName, firstName, birthDate)
 
-				response = gql(client, query, token)
-				body, _ = ioutil.ReadAll(response.Body)
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
 
-				assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
+					assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
 
-				query = fmt.Sprintf(`mutation {
+					query = fmt.Sprintf(`mutation {
 					setMyPatientCharacteristicChoices(input: [
 						{
 							characteristicName: "has-consulted-before",
@@ -1243,22 +1244,22 @@ func PopulateScript(t *testing.T) {
 						}
 					])
 				}`,
-					[]string{"true", "false"}[rand.Intn(2)],
-					gender,
-					[]string{"child", "teen", "young-adult", "adult", "elderly"}[rand.Intn(5)],
-					[]string{"true", "false"}[rand.Intn(2)],
-					[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
-					[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
-					[]string{"aging", "anxiety", "autism", "body", "career", "career-choice", "compulsion", "death-of-keen", "depression", "desease-in-keen", "desease-in-self", "discrimination", "drug-abuse-keen", "drug-abuse-self", "existential-crisis", "family-conflicts", "financial", "food-disorder", "learning-challenges", "memory-loss", "mood-control", "panic", "parenting", "partner-abuse", "partner-conflicts", "physical-pain", "post-traumatic-stress", "pre-pregnancy", "pregnancy", "schizophrenia", "self-development", "self-harm", "sexual", "sexuality", "sleep", "social-interactions", "stammering", "stress", "unknown"}[rand.Intn(39)],
-					[]string{"D", "C", "B", "A"}[rand.Intn(4)],
-				)
+						[]string{"true", "false"}[rand.Intn(2)],
+						gender,
+						[]string{"child", "teen", "young-adult", "adult", "elderly"}[rand.Intn(5)],
+						[]string{"true", "false"}[rand.Intn(2)],
+						[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
+						[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
+						[]string{"aging", "anxiety", "autism", "body", "career", "career-choice", "compulsion", "death-of-keen", "depression", "desease-in-keen", "desease-in-self", "discrimination", "drug-abuse-keen", "drug-abuse-self", "existential-crisis", "family-conflicts", "financial", "food-disorder", "learning-challenges", "memory-loss", "mood-control", "panic", "parenting", "partner-abuse", "partner-conflicts", "physical-pain", "post-traumatic-stress", "pre-pregnancy", "pregnancy", "schizophrenia", "self-development", "self-harm", "sexual", "sexuality", "sleep", "social-interactions", "stammering", "stress", "unknown"}[rand.Intn(39)],
+						[]string{"D", "C", "B", "A"}[rand.Intn(4)],
+					)
 
-				response = gql(client, query, token)
-				body, _ = ioutil.ReadAll(response.Body)
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
 
-				assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
+					assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
 
-				query = fmt.Sprintf(`mutation {
+					query = fmt.Sprintf(`mutation {
 					setMyPatientPreferences(input: [
 						{
 							characteristicName: "gender",
@@ -1352,32 +1353,32 @@ func PopulateScript(t *testing.T) {
 						}
 					])
 				}`,
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-					[]int{-1, 0, 1, 3}[rand.Intn(4)],
-				)
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+						[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					)
 
-				response = gql(client, query, token)
-				body, _ = ioutil.ReadAll(response.Body)
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
 
-				assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
+					assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
 
-				query = `{
+					query = `{
 					myPatientTopAffinities {
 						psychologist {
 							pendingTreatments {
@@ -1392,22 +1393,23 @@ func PopulateScript(t *testing.T) {
 					}
 				}`
 
-				response = gql(client, query, token)
-				body, _ = ioutil.ReadAll(response.Body)
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
 
-				treatmentId := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "pendingTreatments", "0", "id")
-				priceRangeName := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "priceRangeOfferings", "0", "priceRange", "name")
+					treatmentId := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "pendingTreatments", "0", "id")
+					priceRangeName := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "priceRangeOfferings", "0", "priceRange", "name")
 
-				query = fmt.Sprintf(`mutation {
+					query = fmt.Sprintf(`mutation {
 					assignTreatment(id: %q, priceRangeName: %q)
 				}`, treatmentId, priceRangeName)
 
-				gql(client, query, token)
+					gql(client, query, token)
 
-				wg.Done()
-			}(i)
+					wg.Done()
+				}(i)
+			}
+			wg.Wait()
 		}
-		wg.Wait()
 
 	})
 
