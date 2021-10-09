@@ -84,6 +84,9 @@ func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPs
 		LikeName:  input.LikeName,
 		BirthDate: input.BirthDate,
 		City:      input.City,
+		Crp:       input.Crp,
+		Whatsapp:  input.Whatsapp,
+		Instagram: input.Instagram,
 		Bio:       input.Bio,
 		Avatar:    avatar,
 	}

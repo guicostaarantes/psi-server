@@ -9,7 +9,7 @@ type Psychologist struct {
 	BirthDate int64  `json:"birthDate" bson:"birthDate"`
 	City      string `json:"city" bson:"city"`
 	Crp       string `json:"crp" bson:"crp"`
-	Whatsapp  string `json:"whataspp" bson:"whataspp"`
+	Whatsapp  string `json:"whatsapp" bson:"whatsapp"`
 	Instagram string `json:"instagram" bson:"instagram"`
 	Bio       string `json:"bio" bson:"bio"`
 	Avatar    string `json:"avatar" bson:"avatar"`
