@@ -170,12 +170,15 @@ type ComplexityRoot struct {
 		BirthDate           func(childComplexity int) int
 		Characteristics     func(childComplexity int) int
 		City                func(childComplexity int) int
+		Crp                 func(childComplexity int) int
 		FullName            func(childComplexity int) int
 		ID                  func(childComplexity int) int
+		Instagram           func(childComplexity int) int
 		LikeName            func(childComplexity int) int
 		Preferences         func(childComplexity int) int
 		PriceRangeOfferings func(childComplexity int) int
 		Treatments          func(childComplexity int) int
+		Whatsapp            func(childComplexity int) int
 	}
 
 	PsychologistTreatment struct {
@@ -202,11 +205,14 @@ type ComplexityRoot struct {
 		Avatar              func(childComplexity int) int
 		Bio                 func(childComplexity int) int
 		City                func(childComplexity int) int
+		Crp                 func(childComplexity int) int
 		FullName            func(childComplexity int) int
 		ID                  func(childComplexity int) int
+		Instagram           func(childComplexity int) int
 		LikeName            func(childComplexity int) int
 		PendingTreatments   func(childComplexity int) int
 		PriceRangeOfferings func(childComplexity int) int
+		Whatsapp            func(childComplexity int) int
 	}
 
 	Query struct {
@@ -1086,6 +1092,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PsychologistProfile.City(childComplexity), true
 
+	case "PsychologistProfile.crp":
+		if e.complexity.PsychologistProfile.Crp == nil {
+			break
+		}
+
+		return e.complexity.PsychologistProfile.Crp(childComplexity), true
+
 	case "PsychologistProfile.fullName":
 		if e.complexity.PsychologistProfile.FullName == nil {
 			break
@@ -1099,6 +1112,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PsychologistProfile.ID(childComplexity), true
+
+	case "PsychologistProfile.instagram":
+		if e.complexity.PsychologistProfile.Instagram == nil {
+			break
+		}
+
+		return e.complexity.PsychologistProfile.Instagram(childComplexity), true
 
 	case "PsychologistProfile.likeName":
 		if e.complexity.PsychologistProfile.LikeName == nil {
@@ -1127,6 +1147,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PsychologistProfile.Treatments(childComplexity), true
+
+	case "PsychologistProfile.whatsapp":
+		if e.complexity.PsychologistProfile.Whatsapp == nil {
+			break
+		}
+
+		return e.complexity.PsychologistProfile.Whatsapp(childComplexity), true
 
 	case "PsychologistTreatment.duration":
 		if e.complexity.PsychologistTreatment.Duration == nil {
@@ -1247,6 +1274,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PublicPsychologistProfile.City(childComplexity), true
 
+	case "PublicPsychologistProfile.crp":
+		if e.complexity.PublicPsychologistProfile.Crp == nil {
+			break
+		}
+
+		return e.complexity.PublicPsychologistProfile.Crp(childComplexity), true
+
 	case "PublicPsychologistProfile.fullName":
 		if e.complexity.PublicPsychologistProfile.FullName == nil {
 			break
@@ -1260,6 +1294,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PublicPsychologistProfile.ID(childComplexity), true
+
+	case "PublicPsychologistProfile.instagram":
+		if e.complexity.PublicPsychologistProfile.Instagram == nil {
+			break
+		}
+
+		return e.complexity.PublicPsychologistProfile.Instagram(childComplexity), true
 
 	case "PublicPsychologistProfile.likeName":
 		if e.complexity.PublicPsychologistProfile.LikeName == nil {
@@ -1281,6 +1322,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PublicPsychologistProfile.PriceRangeOfferings(childComplexity), true
+
+	case "PublicPsychologistProfile.whatsapp":
+		if e.complexity.PublicPsychologistProfile.Whatsapp == nil {
+			break
+		}
+
+		return e.complexity.PublicPsychologistProfile.Whatsapp(childComplexity), true
 
 	case "Query.authenticateUser":
 		if e.complexity.Query.AuthenticateUser == nil {
@@ -1726,6 +1774,9 @@ input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarant
     likeName: String!
     birthDate: Int!
     city: String!
+    crp: String!
+    whatsapp: String!
+    instagram: String!
     bio: String!
     avatar: Upload
 }
@@ -1749,6 +1800,9 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     likeName: String!
     birthDate: Int!
     city: String!
+    crp: String!
+    whatsapp: String!
+    instagram: String!
     bio: String!
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
@@ -1774,6 +1828,9 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
     fullName: String!
     likeName: String!
     city: String!
+    crp: String!
+    whatsapp: String!
+    instagram: String!
     bio: String!
     avatar: String!
     pendingTreatments: [PsychologistTreatment!]! @goField(forceResolver: true)
@@ -6327,6 +6384,111 @@ func (ec *executionContext) _PsychologistProfile_city(ctx context.Context, field
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PsychologistProfile_crp(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Crp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistProfile_whatsapp(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Whatsapp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PsychologistProfile_instagram(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Instagram, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PsychologistProfile_bio(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -7180,6 +7342,111 @@ func (ec *executionContext) _PublicPsychologistProfile_city(ctx context.Context,
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.City, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PublicPsychologistProfile_crp(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Crp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PublicPsychologistProfile_whatsapp(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Whatsapp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PublicPsychologistProfile_instagram(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PublicPsychologistProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Instagram, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10327,6 +10594,30 @@ func (ec *executionContext) unmarshalInputUpsertMyPsychologistProfileInput(ctx c
 			if err != nil {
 				return it, err
 			}
+		case "crp":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("crp"))
+			it.Crp, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "whatsapp":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("whatsapp"))
+			it.Whatsapp, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "instagram":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instagram"))
+			it.Instagram, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "bio":
 			var err error
 
@@ -10969,6 +11260,21 @@ func (ec *executionContext) _PsychologistProfile(ctx context.Context, sel ast.Se
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "crp":
+			out.Values[i] = ec._PsychologistProfile_crp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "whatsapp":
+			out.Values[i] = ec._PsychologistProfile_whatsapp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "instagram":
+			out.Values[i] = ec._PsychologistProfile_instagram(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "bio":
 			out.Values[i] = ec._PsychologistProfile_bio(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -11223,6 +11529,21 @@ func (ec *executionContext) _PublicPsychologistProfile(ctx context.Context, sel 
 			}
 		case "city":
 			out.Values[i] = ec._PublicPsychologistProfile_city(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "crp":
+			out.Values[i] = ec._PublicPsychologistProfile_crp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "whatsapp":
+			out.Values[i] = ec._PublicPsychologistProfile_whatsapp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "instagram":
+			out.Values[i] = ec._PublicPsychologistProfile_instagram(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
