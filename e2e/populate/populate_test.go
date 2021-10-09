@@ -204,6 +204,16 @@ func TestEnd2End(t *testing.T) {
 						"hearing",
 						"locomotion",
 					]
+				},
+				{
+					name: "methods",
+					type: MULTIPLE,
+					possibleValues: [
+						"psychoanalysis",
+						"behaviorism",
+						"cognitive",
+						"humanistic",
+					]
 				}
 			])
 		}`
@@ -410,6 +420,14 @@ func TestEnd2End(t *testing.T) {
 					{ key: "psy-char:disabilities:hearing", value: "Auditiva" }
 					{ key: "psy-char:disabilities:locomotion", value: "Locomotiva" }
 					{
+						key: "psy-char:methods"
+						value: "Você utiliza quais dessas abordagens da psicologia?"
+					}
+					{ key: "psy-char:methods:psychoanalysis", value: "Psicoanálise" }
+					{ key: "psy-char:methods:behaviorism", value: "Behaviorismo" }
+					{ key: "psy-char:methods:cognitive", value: "Terapia cognitivo-comportamental" }
+					{ key: "psy-char:methods:humanistic", value: "Psicologia humanista" }
+					{
 						key: "psy-pref:gender:male"
 						value: "Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?"
 					}
@@ -465,6 +483,10 @@ func TestEnd2End(t *testing.T) {
 						key: "psy-pref:disabilities:locomotion"
 						value: "Quão confortável você se sente sendo atendido por um psicólogo com deficiência locomotiva?"
 					}
+					{ key: "psy-pref:methods:psychoanalysis", value: "Quão confortável você se sente sendo atendido por um psicólogo pela abordagem de psicoanálise?" }
+					{ key: "psy-pref:methods:behaviorism", value: "Quão confortável você se sente sendo atendido por um psicólogo pela abordagem de behaviorismo?" }
+					{ key: "psy-pref:methods:cognitive", value: "Quão confortável você se sente sendo atendido por um psicólogo pela abordagem de terapia cognitivo-comportamental?" }
+					{ key: "psy-pref:methods:humanistic", value: "Quão confortável você se sente sendo atendido por um psicólogo pela abordagem de psicologia humanista?" }
 				]
 			)
 		}`
@@ -585,6 +607,10 @@ func TestEnd2End(t *testing.T) {
 							characteristicName: "disabilities",
 							selectedValues: [%q]
 						},
+						{
+							characteristicName: "methods",
+							selectedValues: [%q]
+						},
 					])
 				}`,
 					gender,
@@ -592,6 +618,7 @@ func TestEnd2End(t *testing.T) {
 					[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
 					[]string{"true", "false"}[rand.Intn(2)],
 					[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
+					[]string{"psychoanalysis", "behaviorism", "cognitive", "humanistic"}[rand.Intn(4)],
 				)
 
 				response = gql(client, query, token)
@@ -914,8 +941,32 @@ func TestEnd2End(t *testing.T) {
 							selectedValue: "locomotion",
 							weight: %d
 						}
+						{
+							characteristicName: "methods",
+							selectedValue: "psychoanalysis",
+							weight: %d
+						}
+						{
+							characteristicName: "methods",
+							selectedValue: "behaviorism",
+							weight: %d
+						}
+						{
+							characteristicName: "methods",
+							selectedValue: "cognitive",
+							weight: %d
+						}
+						{
+							characteristicName: "methods",
+							selectedValue: "humanistic",
+							weight: %d
+						}
 					])
 				}`,
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					[]int{-1, 0, 1, 3}[rand.Intn(4)],
