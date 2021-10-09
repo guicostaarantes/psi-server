@@ -142,6 +142,51 @@ func TestEnd2End(t *testing.T) {
 					]
 				},
 				{
+					name: "issues",
+					type: MULTIPLE,
+					possibleValues: [
+						"aging",
+						"anxiety",
+						"autism",
+						"body",
+						"career",
+						"career-choice",
+						"compulsion",
+						"death-of-keen",
+						"depression",
+						"desease-in-keen",
+						"desease-in-self",
+						"discrimination",
+						"drug-abuse-keen",
+						"drug-abuse-self",
+						"existential-crisis",
+						"family-conflicts",
+						"financial",
+						"food-disorder",
+						"learning-challenges",
+						"memory-loss",
+						"mood-control",
+						"panic",
+						"parenting",
+						"partner-abuse",
+						"partner-conflicts",
+						"physical-pain",
+						"post-traumatic-stress",
+						"pre-pregnancy",
+						"pregnancy",
+						"schizophrenia",
+						"self-development",
+						"self-harm",
+						"sexual",
+						"sexuality",
+						"sleep",
+						"social-interactions",
+						"stammering",
+						"stress",
+						"unknown",
+					]
+				},
+				{
 					name: "income",
 					type: SINGLE,
 					possibleValues: [
@@ -304,6 +349,49 @@ func TestEnd2End(t *testing.T) {
 					{ key: "pat-char:disabilities:vision", value: "Visual" }
 					{ key: "pat-char:disabilities:hearing", value: "Auditiva" }
 					{ key: "pat-char:disabilities:locomotion", value: "Locomotiva" }
+					{
+						key: "pat-char:issues"
+						value: "Marque as opções que te incetivam a procurar tratamento psicológico:"
+					}
+					{ key: "pat-char:issues:aging", value: "Tenho dificuldades de aceitar o meu envelhecimento." }
+					{ key: "pat-char:issues:anxiety", value: "Sofro de crises de ansiedade." }
+					{ key: "pat-char:issues:autism", value: "Sou diagnosticado com Aspergers ou autismo." }
+					{ key: "pat-char:issues:body", value: "Sofro pela forma como meu corpo é, não o aceito ou não consigo mudá-lo." }
+					{ key: "pat-char:issues:career", value: "Sofro com assuntos relacionados à minha carreira profissional." }
+					{ key: "pat-char:issues:career-choice", value: "Tenho dificuldades em escolher uma carreira, ou gostaria de fazer uma transição de carreira." }
+					{ key: "pat-char:issues:compulsion", value: "Sofro de transtornos compulsivos." }
+					{ key: "pat-char:issues:death-of-keen", value: "Sofro pelo falecimento de um ente querido." }
+					{ key: "pat-char:issues:depression", value: "Sou diagnosticado ou acredito que tenha depressão." }
+					{ key: "pat-char:issues:desease-in-keen", value: "Sofro por uma doença que afeta um ente querido." }
+					{ key: "pat-char:issues:desease-in-self", value: "Sofro por uma doença que afeta a mim." }
+					{ key: "pat-char:issues:discrimination", value: "Sofro por perceber discriminação de raça, gênero, ou similar, dirigida a mim." }
+					{ key: "pat-char:issues:drug-abuse-keen", value: "Sofro por um ente querido que possui um vício em álcool, cigarro ou drogas psicoativas." }
+					{ key: "pat-char:issues:drug-abuse-self", value: "Sou viciado em álcool, cigarro ou drogas psicoativas e quero me libertar do vício." }
+					{ key: "pat-char:issues:existential-crisis", value: "Sofro de crises existenciais." }
+					{ key: "pat-char:issues:family-conflicts", value: "Sofro por conflitos com meus familiares." }
+					{ key: "pat-char:issues:financial", value: "Sofro de dificuldades financeiras e isso afeta o meu estado mental." }
+					{ key: "pat-char:issues:food-disorder", value: "Sofro de transtornos alimentares (ex: anorexia, bulimia, consumo compulsivo)." }
+					{ key: "pat-char:issues:learning-challenges", value: "Sofro de dificuldades de aprendizado." }
+					{ key: "pat-char:issues:memory-loss", value: "Sofro de esquecimentos ou perda de memória." }
+					{ key: "pat-char:issues:mood-control", value: "Sofro de mudanças frequentes de humor sem razão aparente." }
+					{ key: "pat-char:issues:panic", value: "Sofro de ataques de pânico." }
+					{ key: "pat-char:issues:parenting", value: "Tenho dificuldades de educar meus filhos." }
+					{ key: "pat-char:issues:partner-abuse", value: "Estou em um relacionamento mentalmente ou fisicamente abusivo." }
+					{ key: "pat-char:issues:partner-conflicts", value: "Estou passando por um momento difícil no meu casamento ou relacionamento." }
+					{ key: "pat-char:issues:physical-pain", value: "Sofro de dores físicas crônicas que podem ser atenuadas com tratamento psicológico." }
+					{ key: "pat-char:issues:post-traumatic-stress", value: "Sofro prolongadamente em razão de um evento terrível que vivenciei ou testemunhei e não consigo me recuperar." }
+					{ key: "pat-char:issues:pre-pregnancy", value: "Sofro por conflitos relacionados a novos filhos (ex: dificuldade de engravidar, adoção, reprodução assistida)." }
+					{ key: "pat-char:issues:pregnancy", value: "Sofro por problemas relativos à gestação ou após a gestação (ex: luto perinatal, depressão pós-parto)." }
+					{ key: "pat-char:issues:schizophrenia", value: "Sou diagnosticado com esquizofrenia." }
+					{ key: "pat-char:issues:self-development", value: "Procuro desenvolver habilidades pessoais e profissionais por meio do tratamento psicológico." }
+					{ key: "pat-char:issues:self-harm", value: "Frequentemente tenho vontade de cometer suicídio ou me auto-mutilar." }
+					{ key: "pat-char:issues:sexual", value: "Sofro de problemas de desempenho sexual (ex: impotência, perda de libido)." }
+					{ key: "pat-char:issues:sexuality", value: "Tenho dificuldades de entender ou aceitar a minha sexualidade." }
+					{ key: "pat-char:issues:sleep", value: "Sofro de insônia ou outros problemas psicológicos relacionados ao sono." }
+					{ key: "pat-char:issues:stammering", value: "Sofro de gagueira ou outros problemas psicológicos relacionados à fala." }
+					{ key: "pat-char:issues:social-interactions", value: "Tenho dificuldades de me relacionar socialmente (ex: timidez, insegurança)." }
+					{ key: "pat-char:issues:stress", value: "Tenho estado estressado e nervoso de forma recorrente ou constante." }
+					{ key: "pat-char:issues:unknown", value: "Busco um diagnóstico e entendo que o tratamento psicológico pode me auxiliar." }
 					{ key: "pat-char:income", value: "Qual é a renda mensal da sua família por cada membro?" }
 					{ key: "pat-char:income:D", value: "De 0 a 1000 reais" }
 					{ key: "pat-char:income:C", value: "De 1000 a 2000 reais" }
@@ -385,6 +473,45 @@ func TestEnd2End(t *testing.T) {
 						key: "pat-pref:disabilities:locomotion"
 						value: "Quão interessado você está em atender pacientes com deficiência locomotiva?"
 					}
+					{ key: "pat-pref:issues:aging", value: "Quão interessado você está em tratar pacientes com dificuldades de aceitar o seu envelhecimento." }
+					{ key: "pat-pref:issues:anxiety", value: "Quão interessado você está em tratar pacientes que sofrem de crises de ansiedade." }
+					{ key: "pat-pref:issues:autism", value: "Quão interessado você está em tratar pacientes que são diagnosticados com Aspergers ou autismo." }
+					{ key: "pat-pref:issues:body", value: "Quão interessado você está em tratar pacientes que sofrem pela forma como seu corpo é, não o aceita ou não consegue mudá-lo." }
+					{ key: "pat-pref:issues:career", value: "Quão interessado você está em tratar pacientes que sofrem com assuntos relacionados à carreira profissional." }
+					{ key: "pat-pref:issues:career-choice", value: "Quão interessado você está em tratar pacientes que têm dificuldades em escolher uma carreira, ou gostariam de fazer uma transição de carreira." }
+					{ key: "pat-pref:issues:compulsion", value: "Quão interessado você está em tratar pacientes que sofrem de transtornos compulsivos." }
+					{ key: "pat-pref:issues:death-of-keen", value: "Quão interessado você está em tratar pacientes que sofrem pelo falecimento de um ente querido." }
+					{ key: "pat-pref:issues:depression", value: "Quão interessado você está em tratar pacientes que são diagnosticados ou acreditam ter depressão." }
+					{ key: "pat-pref:issues:desease-in-keen", value: "Quão interessado você está em tratar pacientes que sofrem por uma doença que afeta um ente querido." }
+					{ key: "pat-pref:issues:desease-in-self", value: "Quão interessado você está em tratar pacientes que sofrem por uma doença que afeta a si próprios." }
+					{ key: "pat-pref:issues:discrimination", value: "Quão interessado você está em tratar pacientes que sofrem por perceber discriminação de raça, gênero, ou similar, dirigida a si próprios." }
+					{ key: "pat-pref:issues:drug-abuse-keen", value: "Quão interessado você está em tratar pacientes que sofrem por um ente querido que possui um vício em álcool, cigarro ou drogas psicoativas." }
+					{ key: "pat-pref:issues:drug-abuse-self", value: "Quão interessado você está em tratar pacientes que são viciados em álcool, cigarro ou drogas psicoativas e querem se libertar do vício." }
+					{ key: "pat-pref:issues:existential-crisis", value: "Quão interessado você está em tratar pacientes que sofrem de crises existenciais." }
+					{ key: "pat-pref:issues:family-conflicts", value: "Quão interessado você está em tratar pacientes que sofrem por conflitos com seus familiares." }
+					{ key: "pat-pref:issues:financial", value: "Quão interessado você está em tratar pacientes que sofrem de dificuldades financeiras e isso afeta o seu estado mental." }
+					{ key: "pat-pref:issues:food-disorder", value: "Quão interessado você está em tratar pacientes que sofrem de transtornos alimentares (ex: anorexia, bulimia, consumo compulsivo)." }
+					{ key: "pat-pref:issues:learning-challenges", value: "Quão interessado você está em tratar pacientes que sofrem de dificuldades de aprendizado." }
+					{ key: "pat-pref:issues:memory-loss", value: "Quão interessado você está em tratar pacientes que sofrem de esquecimentos ou perda de memória." }
+					{ key: "pat-pref:issues:mood-control", value: "Quão interessado você está em tratar pacientes que sofrem de mudanças frequentes de humor sem razão aparente." }
+					{ key: "pat-pref:issues:panic", value: "Quão interessado você está em tratar pacientes que sofrem de ataques de pânico." }
+					{ key: "pat-pref:issues:parenting", value: "Quão interessado você está em tratar pacientes que têm dificuldades de educar seus filhos." }
+					{ key: "pat-pref:issues:partner-abuse", value: "Quão interessado você está em tratar pacientes que estão em um relacionamento mentalmente ou fisicamente abusivo." }
+					{ key: "pat-pref:issues:partner-conflicts", value: "Quão interessado você está em tratar pacientes que estão passando por um momento difícil no seu casamento ou relacionamento." }
+					{ key: "pat-pref:issues:physical-pain", value: "Quão interessado você está em tratar pacientes que sofrem de dores físicas crônicas que podem ser atenuadas com tratamento psicológico." }
+					{ key: "pat-pref:issues:post-traumatic-stress", value: "Quão interessado você está em tratar pacientes que sofrem prolongadamente em razão de um evento terrível que vivenciaram ou testemunharam e não conseguem se recuperar." }
+					{ key: "pat-pref:issues:pre-pregnancy", value: "Quão interessado você está em tratar pacientes que sofrem por conflitos relacionados a novos filhos (ex: dificuldade de engravidar, adoção, reprodução assistida)." }
+					{ key: "pat-pref:issues:pregnancy", value: "Quão interessado você está em tratar pacientes que sofrem por problemas relativos à gestação ou após a gestação (ex: luto perinatal, depressão pós-parto)." }
+					{ key: "pat-pref:issues:schizophrenia", value: "Quão interessado você está em tratar pacientes que são diagnosticados com esquizofrenia." }
+					{ key: "pat-pref:issues:self-development", value: "Quão interessado você está em tratar pacientes que procuram desenvolver habilidades pessoais e profissionais por meio do tratamento psicológico." }
+					{ key: "pat-pref:issues:self-harm", value: "Quão interessado você está em tratar pacientes que frequentemente têm vontade de cometer suicídio ou se auto-mutilar." }
+					{ key: "pat-pref:issues:sexual", value: "Quão interessado você está em tratar pacientes que sofrem de problemas de desempenho sexual (ex: impotência, perda de libido)." }
+					{ key: "pat-pref:issues:sexuality", value: "Quão interessado você está em tratar pacientes que têm dificuldades de entender ou aceitar a sua sexualidade." }
+					{ key: "pat-pref:issues:sleep", value: "Quão interessado você está em tratar pacientes que sofrem de insônia ou outros problemas psicológicos relacionados ao sono." }
+					{ key: "pat-pref:issues:stammering", value: "Quão interessado você está em tratar pacientes que sofrem de gagueira ou outros problemas psicológicos relacionados à fala." }
+					{ key: "pat-pref:issues:social-interactions", value: "Quão interessado você está em tratar pacientes que têm dificuldades de se relacionar socialmente (ex: timidez, insegurança)." }
+					{ key: "pat-pref:issues:stress", value: "Quão interessado você está em tratar pacientes que têm estado estressados e nervosos de forma recorrente ou constante." }
+					{ key: "pat-pref:issues:unknown", value: "Quão interessado você está em tratar pacientes que buscam um diagnóstico e entendem que o tratamento psicológico podem os auxiliar." }
 					{
 						key: "psy-char:gender"
 						value: "Com qual desses gêneros você mais se identifica?"
@@ -723,8 +850,242 @@ func TestEnd2End(t *testing.T) {
 							selectedValue: "locomotion",
 							weight: %d
 						}
+						{
+							characteristicName: "issues",
+							selectedValue: "aging",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "anxiety",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "autism",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "body",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "career",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "career-choice",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "compulsion",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "death-of-keen",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "depression",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "desease-in-keen",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "desease-in-self",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "discrimination",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "drug-abuse-keen",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "drug-abuse-self",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "existential-crisis",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "family-conflicts",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "financial",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "food-disorder",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "learning-challenges",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "memory-loss",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "mood-control",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "panic",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "parenting",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "partner-abuse",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "partner-conflicts",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "physical-pain",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "post-traumatic-stress",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "pre-pregnancy",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "pregnancy",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "schizophrenia",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "self-development",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "self-harm",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "sexual",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "sexuality",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "sleep",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "social-interactions",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "stammering",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "stress",
+							weight: %d
+						}
+						{
+							characteristicName: "issues",
+							selectedValue: "unknown",
+							weight: %d
+						}
 					])
 				}`,
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
+					[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					[]int{-1, 0, 1, 3}[rand.Intn(4)],
@@ -850,6 +1211,10 @@ func TestEnd2End(t *testing.T) {
 							selectedValues: [%q]
 						},
 						{
+							characteristicName: "issues",
+							selectedValues: [%q]
+						},
+						{
 							characteristicName: "income",
 							selectedValues: [%q]
 						}
@@ -861,6 +1226,7 @@ func TestEnd2End(t *testing.T) {
 					[]string{"true", "false"}[rand.Intn(2)],
 					[]string{"black", "red", "yellow", "white"}[rand.Intn(4)],
 					[]string{"vision", "hearing", "locomotion"}[rand.Intn(3)],
+					[]string{"aging", "anxiety", "autism", "body", "career", "career-choice", "compulsion", "death-of-keen", "depression", "desease-in-keen", "desease-in-self", "discrimination", "drug-abuse-keen", "drug-abuse-self", "existential-crisis", "family-conflicts", "financial", "food-disorder", "learning-challenges", "memory-loss", "mood-control", "panic", "parenting", "partner-abuse", "partner-conflicts", "physical-pain", "post-traumatic-stress", "pre-pregnancy", "pregnancy", "schizophrenia", "self-development", "self-harm", "sexual", "sexuality", "sleep", "social-interactions", "stammering", "stress", "unknown"}[rand.Intn(39)],
 					[]string{"D", "C", "B", "A"}[rand.Intn(4)],
 				)
 
