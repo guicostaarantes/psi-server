@@ -651,7 +651,7 @@ func TestEnd2End(t *testing.T) {
 		for i := 1; i <= PSYCOLOGIST_QUANTITY; i++ {
 			wg.Add(1)
 			go func(i int) {
-				email := fmt.Sprintf("psi%03d@exemplo.com", i)
+				email := fmt.Sprintf("psi%04d@exemplo.com", i)
 				gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
 				lastName := LastNames[rand.Intn(40)]
 				firstName := ""
@@ -700,9 +700,9 @@ func TestEnd2End(t *testing.T) {
 						likeName: %q,
 						birthDate: %d,
 						city: "Belo Horizonte - MG",
-						crp: "06/123%03d",
-						whatsapp: "(31) 98765-4%03d",
-						instagram: "@psi%s%s",
+						crp: "01/23%04d",
+						whatsapp: "(11) 98765-%04d",
+						instagram: "@psi.%s.%s",
 						bio: "Oi, meu nome é %s %s."
 					})
 				}`, firstName, lastName, firstName, 86400*rand.Intn(10000), i, i, strings.ToLower(firstName), strings.ToLower(lastName), firstName, lastName)
@@ -1126,7 +1126,7 @@ func TestEnd2End(t *testing.T) {
 		for i := 1; i <= PATIENT_QUANTITY; i++ {
 			wg.Add(1)
 			go func(i int) {
-				email := fmt.Sprintf("pac%03d@exemplo.com", i)
+				email := fmt.Sprintf("pac%04d@exemplo.com", i)
 				gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
 				birthDate := 86400 * rand.Intn(10000)
 				lastName := LastNames[rand.Intn(40)]
