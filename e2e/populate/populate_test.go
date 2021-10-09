@@ -551,9 +551,12 @@ func TestEnd2End(t *testing.T) {
 						likeName: %q,
 						birthDate: %d,
 						city: "Belo Horizonte - MG",
+						crp: "06/123%03d",
+						whatsapp: "(31) 98765-4%03d",
+						instagram: "@psi%s%s",
 						bio: "Oi, meu nome é %s %s."
 					})
-				}`, firstName, lastName, firstName, 86400*rand.Intn(10000), firstName, lastName)
+				}`, firstName, lastName, firstName, 86400*rand.Intn(10000), i, i, strings.ToLower(firstName), strings.ToLower(lastName), firstName, lastName)
 
 				response = gql(client, query, token)
 				body, _ = ioutil.ReadAll(response.Body)
