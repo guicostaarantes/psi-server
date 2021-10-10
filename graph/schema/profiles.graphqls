@@ -13,6 +13,9 @@ input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarant
     likeName: String!
     birthDate: Int!
     city: String!
+    crp: String!
+    whatsapp: String!
+    instagram: String!
     bio: String!
     avatar: Upload
 }
@@ -36,6 +39,9 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     likeName: String!
     birthDate: Int!
     city: String!
+    crp: String!
+    whatsapp: String!
+    instagram: String!
     bio: String!
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
@@ -61,6 +67,9 @@ type PublicPsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-s
     fullName: String!
     likeName: String!
     city: String!
+    crp: String!
+    whatsapp: String!
+    instagram: String!
     bio: String!
     avatar: String!
     pendingTreatments: [PsychologistTreatment!]! @goField(forceResolver: true)

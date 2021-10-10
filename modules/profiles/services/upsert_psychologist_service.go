@@ -31,6 +31,9 @@ func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPs
 		existantPsy.LikeName = input.LikeName
 		existantPsy.BirthDate = input.BirthDate
 		existantPsy.City = input.City
+		existantPsy.Crp = input.Crp
+		existantPsy.Whatsapp = input.Whatsapp
+		existantPsy.Instagram = input.Instagram
 		existantPsy.Bio = input.Bio
 
 		if input.Avatar != nil {
@@ -81,6 +84,9 @@ func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPs
 		LikeName:  input.LikeName,
 		BirthDate: input.BirthDate,
 		City:      input.City,
+		Crp:       input.Crp,
+		Whatsapp:  input.Whatsapp,
+		Instagram: input.Instagram,
 		Bio:       input.Bio,
 		Avatar:    avatar,
 	}
