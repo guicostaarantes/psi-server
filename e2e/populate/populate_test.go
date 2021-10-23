@@ -645,6 +645,129 @@ func TestPopulateScript(t *testing.T) {
 
 	})
 
+	t.Run("should create terms", func(t *testing.T) {
+
+		query := `mutation {
+			upsertTerm(input: {
+				name: "emergency",
+				version: 1,
+				profileType: PATIENT,
+				active: true
+			})
+			setTranslations(lang: "pt-BR", input: [
+				{
+					key: "pat-term:emergency:1",
+					value: "Compreendo que este portal não é um serviço de atendimento de emergência.\nEm caso de necessidade de atendimento emergencial, devo procurar uma UPA (Unidade de Pronto Atendimento) ou entrar em contato com o CVV (Centro de Valorização à Vida) discando 188."
+				}
+			])
+		}`
+
+		response := gql(client, query, storedVariables["coordinator_token"])
+		body, _ := ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
+
+		query = `mutation {
+			upsertTerm(input: {
+				name: "price",
+				version: 1,
+				profileType: PATIENT,
+				active: true
+			})
+			setTranslations(lang: "pt-BR", input: [
+				{
+					key: "pat-term:price:1",
+					value: "Compreendo que não constitui objetivo da Saúde Mental Para Todos desvalorizar o profissional da Psicologia ou os preços cobrados em suas consultas.\n\nO objetivo da ONG é providenciar saúde mental de forma acessível aos pacientes de acordo com sua renda familiar e condições financeiras, contando com a sua boa-fé na veracidade das informações providenciadas à ONG."
+				}
+			])
+		}`
+
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
+
+		query = `mutation {
+			upsertTerm(input: {
+				name: "minor",
+				version: 1,
+				profileType: PATIENT,
+				active: true
+			})
+			setTranslations(lang: "pt-BR", input: [
+				{
+					key: "pat-term:minor:1",
+					value: "Compreendo que, caso eu seja menor de idade, vou precisar da autorização de um responsável legal para iniciar um tratamento psicológico."
+				}
+			])
+		}`
+
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
+
+		query = `mutation {
+			upsertTerm(input: {
+				name: "online",
+				version: 1,
+				profileType: PATIENT,
+				active: true
+			})
+			setTranslations(lang: "pt-BR", input: [
+				{
+					key: "pat-term:online:1",
+					value: "Compreendo que as consultas serão realizadas de forma online, e me comprometo a buscar um local confortável, privado e com conexão à Internet para que a consulta ocorra adequadamente."
+				}
+			])
+		}`
+
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
+
+		query = `mutation {
+			upsertTerm(input: {
+				name: "discrimination",
+				version: 1,
+				profileType: PSYCHOLOGIST,
+				active: true
+			})
+			setTranslations(lang: "pt-BR", input: [
+				{
+					key: "psy-term:discrimination:1",
+					value: "Compreendo que a Saúde Mental Para Todos não tolera a participação de psicólogos que exerçam ou manifestem discriminação de pessoas por etnia, orientação sexual, capacidade, entre outras formas.\n\nMe comprometo a ativamente combater e denunciar tais comportamentos dentro e fora deste portal."
+				}
+			])
+		}`
+
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
+
+		query = `mutation {
+			upsertTerm(input: {
+				name: "price",
+				version: 1,
+				profileType: PSYCHOLOGIST,
+				active: true
+			})
+			setTranslations(lang: "pt-BR", input: [
+				{
+					key: "psy-term:price:1",
+					value: "Compreendo que não constitui objetivo da Saúde Mental Para Todos desvalorizar o profissional da Psicologia ou os preços cobrados em suas consultas.\n\nO objetivo da ONG é providenciar saúde mental de forma acessível aos pacientes de acordo com sua renda familiar e condições financeiras, contando com a sua boa-fé na veracidade das informações providenciadas à ONG."
+				}
+			])
+		}`
+
+		response = gql(client, query, storedVariables["coordinator_token"])
+		body, _ = ioutil.ReadAll(response.Body)
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
+	})
+
 	t.Run("should create psychologists", func(t *testing.T) {
 
 		var wg sync.WaitGroup
@@ -1114,6 +1237,32 @@ func TestPopulateScript(t *testing.T) {
 
 					assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
 
+					query = `mutation {
+						upsertPsychologistAgreement(input: {
+							termName: "discrimination",
+							termVersion: 1,
+							agreed: true,
+						})
+					}`
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"upsertPsychologistAgreement\":null}}", string(body))
+
+					query = `mutation {
+						upsertPsychologistAgreement(input: {
+							termName: "price",
+							termVersion: 1,
+							agreed: true,
+						})
+					}`
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"upsertPsychologistAgreement\":null}}", string(body))
+
 					for j := 0; j < TREATMENTS_PER_PSYCHOLOGIST; j++ {
 						query = fmt.Sprintf(`mutation {
 							createTreatment(
@@ -1377,6 +1526,58 @@ func TestPopulateScript(t *testing.T) {
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
+
+					query = `mutation {
+						upsertPatientAgreement(input: {
+							termName: "emergency",
+							termVersion: 1,
+							agreed: true,
+						})
+					}`
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
+
+					query = `mutation {
+						upsertPatientAgreement(input: {
+							termName: "price",
+							termVersion: 1,
+							agreed: true,
+						})
+					}`
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
+
+					query = `mutation {
+						upsertPatientAgreement(input: {
+							termName: "minor",
+							termVersion: 1,
+							agreed: true,
+						})
+					}`
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
+
+					query = `mutation {
+						upsertPatientAgreement(input: {
+							termName: "online",
+							termVersion: 1,
+							agreed: true,
+						})
+					}`
+
+					response = gql(client, query, token)
+					body, _ = ioutil.ReadAll(response.Body)
+
+					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
 
 					query = `{
 					myPatientTopAffinities {
