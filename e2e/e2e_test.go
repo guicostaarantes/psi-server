@@ -677,7 +677,10 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Tom Brady",
 				birthDate: 239414400,
 				city: "Boston - MA",
-				bio: "Hey there, my name is Tom"
+				bio: "Hey there, my name is Tom",
+				crp: "01/123456",
+				whatsapp: "(11) 2345-6789",
+				instagram: "@tombrady"
 			})
 		}`
 
@@ -699,7 +702,10 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
 				city: "Indianapolis - IN",
-				bio: "Hey there, my name is Peyton"
+				bio: "Hey there, my name is Peyton",
+				crp: "01/123457",
+				whatsapp: "(11) 2345-6780",
+				instagram: "@peytonmanning"
 			})
 		}`
 
@@ -759,7 +765,10 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Tom Brady",
 				birthDate: 239414400,
 				city: "Tampa - FL",
-				bio: "Hey there, my name is Tom"
+				bio: "Hey there, my name is Tom",
+				crp: "01/123456",
+				whatsapp: "(11) 2345-6789",
+				instagram: "@tombrady"
 			})
 		}`
 
@@ -781,7 +790,10 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
 				city: "Denver - CO",
-				bio: "Hey there, my name is Peyton"
+				bio: "Hey there, my name is Peyton",
+				crp: "01/123457",
+				whatsapp: "(11) 2345-6780",
+				instagram: "@peytonmanning"
 			})
 		}`
 
