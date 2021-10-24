@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
+	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -107,6 +108,10 @@ func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
+func (r *patientProfileResolver) Agreements(ctx context.Context, obj *profiles_models.Patient) ([]*agreements_models.TermWithAgreement, error) {
+	return r.GetTermsWithAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Patient)
+}
+
 func (r *patientProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientTreatmentsResponse, error) {
 	return r.GetPatientTreatmentsService().Execute(obj.ID)
 }
@@ -121,6 +126,10 @@ func (r *psychologistProfileResolver) Characteristics(ctx context.Context, obj *
 
 func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *profiles_models.Psychologist) ([]*characteristics_models.PreferenceResponse, error) {
 	return r.GetPreferencesByIDService().Execute(obj.ID)
+}
+
+func (r *psychologistProfileResolver) Agreements(ctx context.Context, obj *profiles_models.Psychologist) ([]*agreements_models.TermWithAgreement, error) {
+	return r.GetTermsWithAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Psychologist)
 }
 
 func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {

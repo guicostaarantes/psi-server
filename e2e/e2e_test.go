@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -677,7 +676,10 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Tom Brady",
 				birthDate: 239414400,
 				city: "Boston - MA",
-				bio: "Hey there, my name is Tom"
+				bio: "Hey there, my name is Tom",
+				crp: "01/123456",
+				whatsapp: "(11) 2345-6789",
+				instagram: "@tombrady"
 			})
 		}`
 
@@ -699,16 +701,16 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
 				city: "Indianapolis - IN",
-				bio: "Hey there, my name is Peyton"
+				bio: "Hey there, my name is Peyton",
+				crp: "01/123457",
+				whatsapp: "(11) 2345-6780",
+				instagram: "@peytonmanning"
 			})
 		}`
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", response.Body.String())
-
-		db, _ := res.DatabaseUtil.GetMockedDatabases()
-		ioutil.WriteFile("./db.json", db, 0644)
 
 		query = `{
 			myPsychologistProfile {
@@ -759,7 +761,10 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Tom Brady",
 				birthDate: 239414400,
 				city: "Tampa - FL",
-				bio: "Hey there, my name is Tom"
+				bio: "Hey there, my name is Tom",
+				crp: "01/123456",
+				whatsapp: "(11) 2345-6789",
+				instagram: "@tombrady"
 			})
 		}`
 
@@ -781,7 +786,10 @@ func TestEnd2End(t *testing.T) {
 				likeName: "Peyton Manning",
 				birthDate: 196484400,
 				city: "Denver - CO",
-				bio: "Hey there, my name is Peyton"
+				bio: "Hey there, my name is Peyton",
+				crp: "01/123457",
+				whatsapp: "(11) 2345-6780",
+				instagram: "@peytonmanning"
 			})
 		}`
 
@@ -1672,6 +1680,204 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":3},{\"characteristicName\":\"gender\",\"selectedValue\":\"non-binary\",\"weight\":4},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"hearing\",\"weight\":5}]}}}", response.Body.String())
+
+	})
+
+	t.Run("should set terms only if user is coordinator", func(t *testing.T) {
+
+		query := `mutation {
+			upsertTerm(input: {
+				name: "emergency",
+				version: 1,
+				profileType: PATIENT,
+				active: true
+			})
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertTerm\"]}],\"data\":{\"upsertTerm\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertTerm\"]}],\"data\":{\"upsertTerm\":null}}", response.Body.String())
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"upsertTerm\"]}],\"data\":{\"upsertTerm\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null}}", response.Body.String())
+
+		query = `mutation {
+			upsertTerm(input: {
+				name: "price",
+				version: 1,
+				profileType: PSYCHOLOGIST,
+				active: true
+			})
+		}`
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertTerm\":null}}", response.Body.String())
+
+	})
+
+	t.Run("should get own patient agreements if logged in", func(t *testing.T) {
+
+		query := `mutation {
+			upsertPatientAgreement(input: {
+				termName: "emergency",
+				termVersion: 1,
+				agreed: true,
+			})
+		}`
+
+		response := gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", response.Body.String())
+
+		query = `{
+			myPatientProfile {
+				agreements {
+					term {
+						name
+						version
+						active
+					}
+					agreement {
+						termName
+					}
+				}
+			}
+		}`
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPatientProfile\"]}],\"data\":{\"myPatientProfile\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":{\"termName\":\"emergency\"}}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+
+		query = `mutation {
+			upsertPatientAgreement(input: {
+				termName: "emergency",
+				termVersion: 1,
+				agreed: false,
+			})
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", response.Body.String())
+
+		query = `{
+			myPatientProfile {
+				agreements {
+					term {
+						name
+						version
+						active
+					}
+					agreement {
+						termName
+					}
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+
+	})
+
+	t.Run("should get own psychologist agreements if logged in", func(t *testing.T) {
+
+		query := `mutation {
+			upsertPsychologistAgreement(input: {
+				termName: "price",
+				termVersion: 1,
+				agreed: true,
+			})
+		}`
+
+		response := gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertPsychologistAgreement\":null}}", response.Body.String())
+
+		query = `{
+			myPsychologistProfile {
+				agreements {
+					term {
+						name
+						version
+						active
+					}
+					agreement {
+						termName
+					}
+				}
+			}
+		}`
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":{\"myPsychologistProfile\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"myPsychologistProfile\"]}],\"data\":{\"myPsychologistProfile\":null}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[{\"term\":{\"name\":\"price\",\"version\":1,\"active\":true},\"agreement\":{\"termName\":\"price\"}}]}}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[{\"term\":{\"name\":\"price\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+
+		query = `mutation {
+			upsertPsychologistAgreement(input: {
+				termName: "price",
+				termVersion: 1,
+				agreed: false,
+			})
+		}`
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertPsychologistAgreement\":null}}", response.Body.String())
+
+		query = `{
+			myPsychologistProfile {
+				agreements {
+					term {
+						name
+						version
+						active
+					}
+					agreement {
+						termName
+					}
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[{\"term\":{\"name\":\"price\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
 
 	})
 

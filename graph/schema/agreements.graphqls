@@ -1,0 +1,47 @@
+enum TermProfileType @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.TermProfileType") {
+    PATIENT
+    PSYCHOLOGIST
+}
+
+input UpsertTermInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.Term") {
+    name: String!
+    version: Int!
+    profileType: TermProfileType!
+    active: Boolean!
+}
+
+input UpsertAgreementInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.UpsertAgreementInput") {
+    termName: String!
+    termVersion: Int!
+    agreed: Boolean!
+}
+
+type Term @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.Term") {
+    name: String!
+    version: Int!
+    active: Boolean!
+}
+
+type Agreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.Agreement") {
+    id: ID!
+    termName: String!
+    termVersion: Int!
+    profileId: String!
+    signedAt: Int!
+}
+
+type TermWithAgreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.TermWithAgreement") {
+    term: Term!
+    agreement: Agreement
+}
+
+extend type Mutation {
+    """The upsertPatientAgreement mutation allows a user to create or update an agreement to a term for patients."""
+    upsertPatientAgreement(input: UpsertAgreementInput!): Boolean @hasRole(role: [PATIENT])
+
+    """The upsertPsychologistAgreement mutation allows a user to create or update an agreement to a term for psychologists."""
+    upsertPsychologistAgreement(input: UpsertAgreementInput!): Boolean @hasRole(role: [PSYCHOLOGIST])
+    
+    """The upsertTerm mutation allows a user to create or update a term."""
+    upsertTerm(input: UpsertTermInput!): Boolean @hasRole(role: [COORDINATOR])
+}

@@ -1,6 +1,7 @@
 package resolvers
 
 import (
+	agreements_services "github.com/guicostaarantes/psi-server/modules/agreements/services"
 	appointments_services "github.com/guicostaarantes/psi-server/modules/appointments/services"
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
@@ -70,6 +71,7 @@ type Resolver struct {
 	getPsychologistPendingTreatmentsService   *treatments_services.GetPsychologistPendingTreatmentsService
 	getPsychologistPriceRangeOfferingsService *treatments_services.GetPsychologistPriceRangeOfferingsService
 	getPsychologistTreatmentsService          *treatments_services.GetPsychologistTreatmentsService
+	getTermsWithAgreementsByProfileIdService  *agreements_services.GetTermsWithAgreementsByProfileIdService
 	getTopAffinitiesForPatientService         *characteristics_services.GetTopAffinitiesForPatientService
 	getTranslationsService                    *translations_services.GetTranslationsService
 	getTreatmentForPatientService             *treatments_services.GetTreatmentForPatientService
@@ -93,8 +95,10 @@ type Resolver struct {
 	updateTreatmentService                    *treatments_services.UpdateTreatmentService
 	updateUserService                         *users_services.UpdateUserService
 	uploadAvatarFileService                   *files_services.UploadAvatarFileService
+	upsertAgreementService                    *agreements_services.UpsertAgreementService
 	upsertPatientService                      *profiles_services.UpsertPatientService
 	upsertPsychologistService                 *profiles_services.UpsertPsychologistService
+	upsertTermService                         *agreements_services.UpsertTermService
 	validateUserTokenService                  *users_services.ValidateUserTokenService
 }
 
@@ -449,6 +453,16 @@ func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPs
 	return r.getPsychologistTreatmentsService
 }
 
+// GetTermsWithAgreementsByProfileIdService gets or sets the service with same name
+func (r *Resolver) GetTermsWithAgreementsByProfileIdService() *agreements_services.GetTermsWithAgreementsByProfileIdService {
+	if r.getTermsWithAgreementsByProfileIdService == nil {
+		r.getTermsWithAgreementsByProfileIdService = &agreements_services.GetTermsWithAgreementsByProfileIdService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getTermsWithAgreementsByProfileIdService
+}
+
 // GetTopAffinitiesForPatientService gets or sets the service with same name
 func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services.GetTopAffinitiesForPatientService {
 	if r.getTopAffinitiesForPatientService == nil {
@@ -661,6 +675,17 @@ func (r *Resolver) UploadAvatarFileService() *files_services.UploadAvatarFileSer
 	return r.uploadAvatarFileService
 }
 
+// UpsertAgreementService gets or sets the service with same name
+func (r *Resolver) UpsertAgreementService() *agreements_services.UpsertAgreementService {
+	if r.upsertAgreementService == nil {
+		r.upsertAgreementService = &agreements_services.UpsertAgreementService{
+			DatabaseUtil:   r.DatabaseUtil,
+			IdentifierUtil: r.IdentifierUtil,
+		}
+	}
+	return r.upsertAgreementService
+}
+
 // UpsertPatientService gets or sets the service with same name
 func (r *Resolver) UpsertPatientService() *profiles_services.UpsertPatientService {
 	if r.upsertPatientService == nil {
@@ -683,6 +708,16 @@ func (r *Resolver) UpsertPsychologistService() *profiles_services.UpsertPsycholo
 		}
 	}
 	return r.upsertPsychologistService
+}
+
+// UpsertTermService gets or sets the service with same name
+func (r *Resolver) UpsertTermService() *agreements_services.UpsertTermService {
+	if r.upsertTermService == nil {
+		r.upsertTermService = &agreements_services.UpsertTermService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.upsertTermService
 }
 
 // ValidateUserTokenService gets or sets the service with same name
