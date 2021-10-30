@@ -57,6 +57,7 @@ type Resolver struct {
 	editAppointmentByPatientService           *appointments_services.EditAppointmentByPatientService
 	editAppointmentByPsychologistService      *appointments_services.EditAppointmentByPsychologistService
 	finalizeTreatmentService                  *treatments_services.FinalizeTreatmentService
+	getAgreementsByProfileIdService           *agreements_services.GetAgreementsByProfileIdService
 	getAppointmentsOfPatientService           *appointments_services.GetAppointmentsOfPatientService
 	getAppointmentsOfPsychologistService      *appointments_services.GetAppointmentsOfPsychologistService
 	getCharacteristicsByIDService             *characteristics_services.GetCharacteristicsByIDService
@@ -71,7 +72,7 @@ type Resolver struct {
 	getPsychologistPendingTreatmentsService   *treatments_services.GetPsychologistPendingTreatmentsService
 	getPsychologistPriceRangeOfferingsService *treatments_services.GetPsychologistPriceRangeOfferingsService
 	getPsychologistTreatmentsService          *treatments_services.GetPsychologistTreatmentsService
-	getTermsWithAgreementsByProfileIdService  *agreements_services.GetTermsWithAgreementsByProfileIdService
+	getTermsByProfileTypeService              *agreements_services.GetTermsByProfileTypeService
 	getTopAffinitiesForPatientService         *characteristics_services.GetTopAffinitiesForPatientService
 	getTranslationsService                    *translations_services.GetTranslationsService
 	getTreatmentForPatientService             *treatments_services.GetTreatmentForPatientService
@@ -283,6 +284,16 @@ func (r *Resolver) FinalizeTreatmentService() *treatments_services.FinalizeTreat
 	return r.finalizeTreatmentService
 }
 
+// GetAgreementsByProfileIdService gets or sets the service with same name
+func (r *Resolver) GetAgreementsByProfileIdService() *agreements_services.GetAgreementsByProfileIdService {
+	if r.getAgreementsByProfileIdService == nil {
+		r.getAgreementsByProfileIdService = &agreements_services.GetAgreementsByProfileIdService{
+			DatabaseUtil: r.DatabaseUtil,
+		}
+	}
+	return r.getAgreementsByProfileIdService
+}
+
 // GetAppointmentsOfPatientService gets or sets the service with same name
 func (r *Resolver) GetAppointmentsOfPatientService() *appointments_services.GetAppointmentsOfPatientService {
 	if r.getAppointmentsOfPatientService == nil {
@@ -453,14 +464,14 @@ func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPs
 	return r.getPsychologistTreatmentsService
 }
 
-// GetTermsWithAgreementsByProfileIdService gets or sets the service with same name
-func (r *Resolver) GetTermsWithAgreementsByProfileIdService() *agreements_services.GetTermsWithAgreementsByProfileIdService {
-	if r.getTermsWithAgreementsByProfileIdService == nil {
-		r.getTermsWithAgreementsByProfileIdService = &agreements_services.GetTermsWithAgreementsByProfileIdService{
+// GetTermsByProfileTypeService gets or sets the service with same name
+func (r *Resolver) GetTermsByProfileTypeService() *agreements_services.GetTermsByProfileTypeService {
+	if r.getTermsByProfileTypeService == nil {
+		r.getTermsByProfileTypeService = &agreements_services.GetTermsByProfileTypeService{
 			DatabaseUtil: r.DatabaseUtil,
 		}
 	}
-	return r.getTermsWithAgreementsByProfileIdService
+	return r.getTermsByProfileTypeService
 }
 
 // GetTopAffinitiesForPatientService gets or sets the service with same name

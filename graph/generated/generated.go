@@ -237,8 +237,10 @@ type ComplexityRoot struct {
 		MyUser                      func(childComplexity int) int
 		PatientCharacteristics      func(childComplexity int) int
 		PatientProfile              func(childComplexity int, id string) int
+		PatientTerms                func(childComplexity int) int
 		PsychologistCharacteristics func(childComplexity int) int
 		PsychologistProfile         func(childComplexity int, id string) int
+		PsychologistTerms           func(childComplexity int) int
 		Time                        func(childComplexity int) int
 		Translations                func(childComplexity int, lang string, keys []string) int
 		TreatmentPriceRanges        func(childComplexity int) int
@@ -250,11 +252,6 @@ type ComplexityRoot struct {
 		Active  func(childComplexity int) int
 		Name    func(childComplexity int) int
 		Version func(childComplexity int) int
-	}
-
-	TermWithAgreement struct {
-		Agreement func(childComplexity int) int
-		Term      func(childComplexity int) int
 	}
 
 	Token struct {
@@ -334,7 +331,7 @@ type PatientAppointmentResolver interface {
 type PatientProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models5.Patient) ([]*models3.CharacteristicChoiceResponse, error)
 	Preferences(ctx context.Context, obj *models5.Patient) ([]*models3.PreferenceResponse, error)
-	Agreements(ctx context.Context, obj *models5.Patient) ([]*models6.TermWithAgreement, error)
+	Agreements(ctx context.Context, obj *models5.Patient) ([]*models6.Agreement, error)
 	Treatments(ctx context.Context, obj *models5.Patient) ([]*models1.GetPatientTreatmentsResponse, error)
 	Appointments(ctx context.Context, obj *models5.Patient) ([]*models2.Appointment, error)
 }
@@ -351,7 +348,7 @@ type PsychologistAppointmentResolver interface {
 type PsychologistProfileResolver interface {
 	Characteristics(ctx context.Context, obj *models5.Psychologist) ([]*models3.CharacteristicChoiceResponse, error)
 	Preferences(ctx context.Context, obj *models5.Psychologist) ([]*models3.PreferenceResponse, error)
-	Agreements(ctx context.Context, obj *models5.Psychologist) ([]*models6.TermWithAgreement, error)
+	Agreements(ctx context.Context, obj *models5.Psychologist) ([]*models6.Agreement, error)
 	Treatments(ctx context.Context, obj *models5.Psychologist) ([]*models1.GetPsychologistTreatmentsResponse, error)
 	PriceRangeOfferings(ctx context.Context, obj *models5.Psychologist) ([]*models1.TreatmentPriceRangeOffering, error)
 	Appointments(ctx context.Context, obj *models5.Psychologist) ([]*models2.Appointment, error)
@@ -373,6 +370,8 @@ type QueryResolver interface {
 	MyUser(ctx context.Context) (*models.User, error)
 	User(ctx context.Context, id string) (*models.User, error)
 	UsersByRole(ctx context.Context, role models.Role) ([]*models.User, error)
+	PatientTerms(ctx context.Context) ([]*models6.Term, error)
+	PsychologistTerms(ctx context.Context) ([]*models6.Term, error)
 	PatientCharacteristics(ctx context.Context) ([]*models3.CharacteristicResponse, error)
 	PsychologistCharacteristics(ctx context.Context) ([]*models3.CharacteristicResponse, error)
 	MyPatientTopAffinities(ctx context.Context) ([]*models3.Affinity, error)
@@ -1504,6 +1503,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.PatientProfile(childComplexity, args["id"].(string)), true
 
+	case "Query.patientTerms":
+		if e.complexity.Query.PatientTerms == nil {
+			break
+		}
+
+		return e.complexity.Query.PatientTerms(childComplexity), true
+
 	case "Query.psychologistCharacteristics":
 		if e.complexity.Query.PsychologistCharacteristics == nil {
 			break
@@ -1522,6 +1528,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.PsychologistProfile(childComplexity, args["id"].(string)), true
+
+	case "Query.psychologistTerms":
+		if e.complexity.Query.PsychologistTerms == nil {
+			break
+		}
+
+		return e.complexity.Query.PsychologistTerms(childComplexity), true
 
 	case "Query.time":
 		if e.complexity.Query.Time == nil {
@@ -1593,20 +1606,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Term.Version(childComplexity), true
-
-	case "TermWithAgreement.agreement":
-		if e.complexity.TermWithAgreement.Agreement == nil {
-			break
-		}
-
-		return e.complexity.TermWithAgreement.Agreement(childComplexity), true
-
-	case "TermWithAgreement.term":
-		if e.complexity.TermWithAgreement.Term == nil {
-			break
-		}
-
-		return e.complexity.TermWithAgreement.Term(childComplexity), true
 
 	case "Token.expiresAt":
 		if e.complexity.Token.ExpiresAt == nil {
@@ -1802,9 +1801,12 @@ type Agreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/ag
     signedAt: Int!
 }
 
-type TermWithAgreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.TermWithAgreement") {
-    term: Term!
-    agreement: Agreement
+extend type Query {
+    """The patientProfile query allows a user to get a patient profile from other user."""
+    patientTerms: [Term!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The psychologistProfile query allows a user to get a psychologist profile from other user."""
+    psychologistTerms: [Term!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 extend type Mutation {
@@ -1987,7 +1989,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
-    agreements: [TermWithAgreement!]! @goField(forceResolver: true)
+    agreements: [Agreement!]! @goField(forceResolver: true)
     treatments: [PatientTreatment!]! @goField(forceResolver: true)
     appointments: [PatientAppointment!]! @goField(forceResolver: true)
 }
@@ -2005,7 +2007,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
     preferences: [Preference!]! @goField(forceResolver: true)
-    agreements: [TermWithAgreement!]! @goField(forceResolver: true)
+    agreements: [Agreement!]! @goField(forceResolver: true)
     treatments: [PsychologistTreatment!]! @goField(forceResolver: true)
     priceRangeOfferings: [TreatmentPriceRangeOffering!]! @goField(forceResolver: true)
     appointments: [PsychologistAppointment!]! @goField(forceResolver: true)
@@ -6153,9 +6155,9 @@ func (ec *executionContext) _PatientProfile_agreements(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models6.TermWithAgreement)
+	res := resTmp.([]*models6.Agreement)
 	fc.Result = res
-	return ec.marshalNTermWithAgreement2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermWithAgreementᚄ(ctx, field.Selections, res)
+	return ec.marshalNAgreement2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐAgreementᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientProfile_treatments(ctx context.Context, field graphql.CollectedField, obj *models5.Patient) (ret graphql.Marshaler) {
@@ -7302,9 +7304,9 @@ func (ec *executionContext) _PsychologistProfile_agreements(ctx context.Context,
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models6.TermWithAgreement)
+	res := resTmp.([]*models6.Agreement)
 	fc.Result = res
-	return ec.marshalNTermWithAgreement2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermWithAgreementᚄ(ctx, field.Selections, res)
+	return ec.marshalNAgreement2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐAgreementᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistProfile_treatments(ctx context.Context, field graphql.CollectedField, obj *models5.Psychologist) (ret graphql.Marshaler) {
@@ -8514,6 +8516,124 @@ func (ec *executionContext) _Query_usersByRole(ctx context.Context, field graphq
 	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐUserᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_patientTerms(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().PatientTerms(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST", "PATIENT"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*models6.Term); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/agreements/models.Term`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models6.Term)
+	fc.Result = res
+	return ec.marshalNTerm2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_psychologistTerms(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().PsychologistTerms(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2ᚕgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐRoleᚄ(ctx, []interface{}{"COORDINATOR", "PSYCHOLOGIST"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*models6.Term); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/guicostaarantes/psi-server/modules/agreements/models.Term`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models6.Term)
+	fc.Result = res
+	return ec.marshalNTerm2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_patientCharacteristics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -9239,73 +9359,6 @@ func (ec *executionContext) _Term_active(ctx context.Context, field graphql.Coll
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TermWithAgreement_term(ctx context.Context, field graphql.CollectedField, obj *models6.TermWithAgreement) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TermWithAgreement",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Term, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*models6.Term)
-	fc.Result = res
-	return ec.marshalNTerm2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTerm(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TermWithAgreement_agreement(ctx context.Context, field graphql.CollectedField, obj *models6.TermWithAgreement) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TermWithAgreement",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Agreement, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*models6.Agreement)
-	fc.Result = res
-	return ec.marshalOAgreement2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐAgreement(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Token_token(ctx context.Context, field graphql.CollectedField, obj *models.Authentication) (ret graphql.Marshaler) {
@@ -12678,6 +12731,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "patientTerms":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_patientTerms(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "psychologistTerms":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_psychologistTerms(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "patientCharacteristics":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -12847,35 +12928,6 @@ func (ec *executionContext) _Term(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var termWithAgreementImplementors = []string{"TermWithAgreement"}
-
-func (ec *executionContext) _TermWithAgreement(ctx context.Context, sel ast.SelectionSet, obj *models6.TermWithAgreement) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, termWithAgreementImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("TermWithAgreement")
-		case "term":
-			out.Values[i] = ec._TermWithAgreement_term(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "agreement":
-			out.Values[i] = ec._TermWithAgreement_agreement(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -13363,6 +13415,53 @@ func (ec *executionContext) marshalNAffinity2ᚖgithubᚗcomᚋguicostaarantes�
 		return graphql.Null
 	}
 	return ec._Affinity(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNAgreement2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐAgreementᚄ(ctx context.Context, sel ast.SelectionSet, v []*models6.Agreement) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAgreement2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐAgreement(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNAgreement2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐAgreement(ctx context.Context, sel ast.SelectionSet, v *models6.Agreement) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Agreement(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNAppointmentStatus2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋappointmentsᚋmodelsᚐAppointmentStatus(ctx context.Context, v interface{}) (models2.AppointmentStatus, error) {
@@ -14051,6 +14150,43 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 	return ret
 }
 
+func (ec *executionContext) marshalNTerm2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermᚄ(ctx context.Context, sel ast.SelectionSet, v []*models6.Term) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTerm2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTerm(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) marshalNTerm2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTerm(ctx context.Context, sel ast.SelectionSet, v *models6.Term) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -14075,53 +14211,6 @@ func (ec *executionContext) marshalNTermProfileType2githubᚗcomᚋguicostaarant
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNTermWithAgreement2ᚕᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermWithAgreementᚄ(ctx context.Context, sel ast.SelectionSet, v []*models6.TermWithAgreement) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNTermWithAgreement2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermWithAgreement(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNTermWithAgreement2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermWithAgreement(ctx context.Context, sel ast.SelectionSet, v *models6.TermWithAgreement) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._TermWithAgreement(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNToken2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋusersᚋmodelsᚐAuthentication(ctx context.Context, sel ast.SelectionSet, v models.Authentication) graphql.Marshaler {
@@ -14629,13 +14718,6 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalOAgreement2ᚖgithubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐAgreement(ctx context.Context, sel ast.SelectionSet, v *models6.Agreement) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Agreement(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

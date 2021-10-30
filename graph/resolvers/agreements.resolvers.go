@@ -40,3 +40,11 @@ func (r *mutationResolver) UpsertTerm(ctx context.Context, input models.Term) (*
 
 	return nil, serviceErr
 }
+
+func (r *queryResolver) PatientTerms(ctx context.Context) ([]*models.Term, error) {
+	return r.GetTermsByProfileTypeService().Execute(models.Patient)
+}
+
+func (r *queryResolver) PsychologistTerms(ctx context.Context) ([]*models.Term, error) {
+	return r.GetTermsByProfileTypeService().Execute(models.Psychologist)
+}
