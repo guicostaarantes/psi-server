@@ -7,6 +7,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: pass
     volumes:
       - ./.tmp/mongodb:/data/db
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
   mongo-express:
     image: mongo-express:0.54.0
     restart: on-failure:3
@@ -19,10 +23,18 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: pass
     depends_on:
       - mongo
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
   mailhog:
     image: mailhog/mailhog:v1.0.1
     ports:
       - 7072:8025
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
   app:
     build:
       context: .
@@ -44,6 +56,10 @@ services:
       - ./.tmp/files:/data/files
     depends_on:
       - mongo
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
   jobs:
     build: ./jobs
     environment:
@@ -55,3 +71,7 @@ services:
       PSI_CREATE_PENDING_APPOINTMENTS_FREQUENCY: 60s
     depends_on:
       - app
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
