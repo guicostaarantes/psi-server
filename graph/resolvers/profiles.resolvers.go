@@ -108,8 +108,8 @@ func (r *patientProfileResolver) Preferences(ctx context.Context, obj *profiles_
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *patientProfileResolver) Agreements(ctx context.Context, obj *profiles_models.Patient) ([]*agreements_models.TermWithAgreement, error) {
-	return r.GetTermsWithAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Patient)
+func (r *patientProfileResolver) Agreements(ctx context.Context, obj *profiles_models.Patient) ([]*agreements_models.Agreement, error) {
+	return r.GetAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Patient)
 }
 
 func (r *patientProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientTreatmentsResponse, error) {
@@ -128,8 +128,8 @@ func (r *psychologistProfileResolver) Preferences(ctx context.Context, obj *prof
 	return r.GetPreferencesByIDService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) Agreements(ctx context.Context, obj *profiles_models.Psychologist) ([]*agreements_models.TermWithAgreement, error) {
-	return r.GetTermsWithAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Psychologist)
+func (r *psychologistProfileResolver) Agreements(ctx context.Context, obj *profiles_models.Psychologist) ([]*agreements_models.Agreement, error) {
+	return r.GetAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Psychologist)
 }
 
 func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {

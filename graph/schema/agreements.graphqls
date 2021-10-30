@@ -30,9 +30,12 @@ type Agreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/ag
     signedAt: Int!
 }
 
-type TermWithAgreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/agreements/models.TermWithAgreement") {
-    term: Term!
-    agreement: Agreement
+extend type Query {
+    """The patientProfile query allows a user to get a patient profile from other user."""
+    patientTerms: [Term!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST,PATIENT])
+
+    """The psychologistProfile query allows a user to get a psychologist profile from other user."""
+    psychologistTerms: [Term!]! @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }
 
 extend type Mutation {

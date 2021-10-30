@@ -1725,6 +1725,58 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should get terms", func(t *testing.T) {
+
+		query := `{
+			patientTerms {
+				name
+				version
+				active
+			}
+		}`
+
+		response := gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"patientTerms\"]}],\"data\":null}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"data\":{\"patientTerms\":[{\"name\":\"emergency\",\"version\":1,\"active\":true}]}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"patientTerms\":[{\"name\":\"emergency\",\"version\":1,\"active\":true}]}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"patientTerms\":[{\"name\":\"emergency\",\"version\":1,\"active\":true}]}}", response.Body.String())
+
+		query = `{
+			psychologistTerms {
+				name
+				version
+				active
+			}
+		}`
+
+		response = gql(router, query, "")
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"psychologistTerms\"]}],\"data\":null}", response.Body.String())
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"psychologistTerms\"]}],\"data\":null}", response.Body.String())
+
+		response = gql(router, query, storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"psychologistTerms\":[{\"name\":\"price\",\"version\":1,\"active\":true}]}}", response.Body.String())
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"psychologistTerms\":[{\"name\":\"price\",\"version\":1,\"active\":true}]}}", response.Body.String())
+
+	})
+
 	t.Run("should get own patient agreements if logged in", func(t *testing.T) {
 
 		query := `mutation {
@@ -1742,14 +1794,8 @@ func TestEnd2End(t *testing.T) {
 		query = `{
 			myPatientProfile {
 				agreements {
-					term {
-						name
-						version
-						active
-					}
-					agreement {
-						termName
-					}
+					termName
+					termVersion
 				}
 			}
 		}`
@@ -1760,15 +1806,15 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":{\"termName\":\"emergency\"}}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"termName\":\"emergency\",\"termVersion\":1}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[]}}}", response.Body.String())
 
 		query = `mutation {
 			upsertPatientAgreement(input: {
@@ -1785,21 +1831,15 @@ func TestEnd2End(t *testing.T) {
 		query = `{
 			myPatientProfile {
 				agreements {
-					term {
-						name
-						version
-						active
-					}
-					agreement {
-						termName
-					}
+					termName
+					termVersion
 				}
 			}
 		}`
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[{\"term\":{\"name\":\"emergency\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"agreements\":[]}}}", response.Body.String())
 
 	})
 
@@ -1820,14 +1860,8 @@ func TestEnd2End(t *testing.T) {
 		query = `{
 			myPsychologistProfile {
 				agreements {
-					term {
-						name
-						version
-						active
-					}
-					agreement {
-						termName
-					}
+					termName
+					termVersion
 				}
 			}
 		}`
@@ -1842,11 +1876,11 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[{\"term\":{\"name\":\"price\",\"version\":1,\"active\":true},\"agreement\":{\"termName\":\"price\"}}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[{\"termName\":\"price\",\"termVersion\":1}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[{\"term\":{\"name\":\"price\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[]}}}", response.Body.String())
 
 		query = `mutation {
 			upsertPsychologistAgreement(input: {
@@ -1863,21 +1897,15 @@ func TestEnd2End(t *testing.T) {
 		query = `{
 			myPsychologistProfile {
 				agreements {
-					term {
-						name
-						version
-						active
-					}
-					agreement {
-						termName
-					}
+					termName
+					termVersion
 				}
 			}
 		}`
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[{\"term\":{\"name\":\"price\",\"version\":1,\"active\":true},\"agreement\":null}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"agreements\":[]}}}", response.Body.String())
 
 	})
 
