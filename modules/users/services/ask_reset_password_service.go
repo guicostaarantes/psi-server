@@ -9,15 +9,16 @@ import (
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/modules/users/templates"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/token"
+	"gorm.io/gorm"
 )
 
 // AskResetPasswordService is a service that sends a token to the user's email so that they can reset their password
 type AskResetPasswordService struct {
-	DatabaseUtil      database.IDatabaseUtil
 	IdentifierUtil    identifier.IIdentifierUtil
+	OrmUtil           orm.IOrmUtil
 	TokenUtil         token.ITokenUtil
 	SecondsToCooldown int64
 	SecondsToExpire   int64
@@ -28,9 +29,9 @@ func (s AskResetPasswordService) Execute(email string) error {
 
 	user := &models.User{}
 
-	findUserErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"email": email}, user)
-	if findUserErr != nil {
-		return findUserErr
+	result := s.OrmUtil.Db().Where("email = ?", email).Limit(1).Find(&user)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+		return result.Error
 	}
 
 	if user.ID == "" || !user.Active {
@@ -39,9 +40,9 @@ func (s AskResetPasswordService) Execute(email string) error {
 
 	existsReset := &models.ResetPassword{}
 
-	findTokenErr := s.DatabaseUtil.FindOne("resets", map[string]interface{}{"userId": user.ID}, existsReset)
-	if findTokenErr != nil {
-		return findTokenErr
+	result = s.OrmUtil.Db().Where("user_id = ?", user.ID).Limit(1).Find(&existsReset)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if existsReset.UserID != "" && existsReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(s.SecondsToCooldown)).Unix() {
@@ -82,22 +83,22 @@ func (s AskResetPasswordService) Execute(email string) error {
 		ID:          mailID,
 		FromAddress: "relacionamento@psi.com.br",
 		FromName:    "Relacionamento PSI",
-		To:          []string{user.Email},
-		Cc:          []string{},
-		Cco:         []string{},
+		To:          user.Email,
+		Cc:          "",
+		Cco:         "",
 		Subject:     "Redfinir senha do PSI",
 		Html:        buff.String(),
 		Processed:   false,
 	}
 
-	writeMailErr := s.DatabaseUtil.InsertOne("mails", mail)
-	if writeMailErr != nil {
-		return writeMailErr
+	result = s.OrmUtil.Db().Create(&mail)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	writeResetErr := s.DatabaseUtil.InsertOne("resets", reset)
-	if writeResetErr != nil {
-		return writeResetErr
+	result = s.OrmUtil.Db().Create(&reset)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

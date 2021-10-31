@@ -72,7 +72,7 @@ func TestEnd2End(t *testing.T) {
 	}
 
 	ormUtil := orm.SqliteOrmUtil{}
-	ormUtil.Connect("./test.db")
+	ormUtil.Connect(fmt.Sprintf("./test-%d.db", time.Now().Unix()))
 
 	serializingUtil := serializing.JsonSerializingUtil{
 		LoggingUtil: loggingUtil,

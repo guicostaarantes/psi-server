@@ -3,6 +3,7 @@ package orm
 import (
 	"time"
 
+	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -22,7 +23,15 @@ func (p *PostgresOrmUtil) Connect(dsn string) error {
 
 		if err == nil {
 			p.dbConn = db
-			db.AutoMigrate(&users_models.Authentication{})
+			migrateErr := db.AutoMigrate(
+				&mails_models.TransientMailMessage{},
+				&users_models.Authentication{},
+				&users_models.ResetPassword{},
+				&users_models.User{},
+			)
+			if migrateErr != nil {
+				panic(migrateErr)
+			}
 			break
 		}
 

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/guicostaarantes/psi-server/modules/users/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
@@ -14,7 +13,6 @@ import (
 
 // AuthenticateUserService is a service that exchanges credentials for an access token
 type AuthenticateUserService struct {
-	DatabaseUtil    database.IDatabaseUtil
 	HashUtil        hash.IHashUtil
 	OrmUtil         orm.IOrmUtil
 	SerializingUtil serializing.ISerializingUtil
@@ -27,9 +25,9 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 
 	user := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"email": authInput.Email}, &user)
-	if findErr != nil {
-		return nil, findErr
+	result := s.OrmUtil.Db().Where("email = ?", authInput.Email).Limit(1).Find(&user)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	if user.ID == "" || !user.Active {
@@ -56,7 +54,7 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 		Token:     token,
 	}
 
-	result := s.OrmUtil.Db().Where("user_id = ?", auth.UserID).Delete(&models.Authentication{})
+	result = s.OrmUtil.Db().Where("user_id = ?", auth.UserID).Delete(&models.Authentication{})
 	if result.Error != nil {
 		return nil, result.Error
 	}

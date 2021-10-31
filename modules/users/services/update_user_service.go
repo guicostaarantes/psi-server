@@ -4,12 +4,12 @@ import (
 	"errors"
 
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpdateUserService is a service that can change data from a user
 type UpdateUserService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -17,9 +17,9 @@ func (s UpdateUserService) Execute(userID string, input *models.UpdateUserInput)
 
 	user := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"id": userID}, &user)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ?", userID).Limit(1).Find(&user)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if user.ID == "" {
@@ -29,9 +29,9 @@ func (s UpdateUserService) Execute(userID string, input *models.UpdateUserInput)
 	user.Active = input.Active
 	user.Role = input.Role
 
-	updateErr := s.DatabaseUtil.UpdateOne("users", map[string]interface{}{"id": userID}, user)
-	if updateErr != nil {
-		return updateErr
+	result = s.OrmUtil.Db().Save(&user)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

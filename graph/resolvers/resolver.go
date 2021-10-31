@@ -109,8 +109,8 @@ type Resolver struct {
 func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordService {
 	if r.askResetPasswordService == nil {
 		r.askResetPasswordService = &users_services.AskResetPasswordService{
-			DatabaseUtil:    r.DatabaseUtil,
 			IdentifierUtil:  r.IdentifierUtil,
+			OrmUtil:         r.OrmUtil,
 			TokenUtil:       r.TokenUtil,
 			SecondsToExpire: r.SecondsToExpire,
 		}
@@ -132,7 +132,6 @@ func (r *Resolver) AssignTreatmentService() *treatments_services.AssignTreatment
 func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserService {
 	if r.authenticateUserService == nil {
 		r.authenticateUserService = &users_services.AuthenticateUserService{
-			DatabaseUtil:    r.DatabaseUtil,
 			HashUtil:        r.HashUtil,
 			OrmUtil:         r.OrmUtil,
 			SerializingUtil: r.SerializingUtil,
@@ -222,9 +221,9 @@ func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatment
 func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 	if r.createUserService == nil {
 		r.createUserService = &users_services.CreateUserService{
-			DatabaseUtil:    r.DatabaseUtil,
 			IdentifierUtil:  r.IdentifierUtil,
 			MatchUtil:       r.MatchUtil,
+			OrmUtil:         r.OrmUtil,
 			SerializingUtil: r.SerializingUtil,
 			TokenUtil:       r.TokenUtil,
 			SecondsToExpire: r.SecondsToExpireReset,
@@ -237,10 +236,10 @@ func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWithPasswordService {
 	if r.createUserWithPasswordService == nil {
 		r.createUserWithPasswordService = &users_services.CreateUserWithPasswordService{
-			DatabaseUtil:    r.DatabaseUtil,
 			HashUtil:        r.HashUtil,
 			IdentifierUtil:  r.IdentifierUtil,
 			MatchUtil:       r.MatchUtil,
+			OrmUtil:         r.OrmUtil,
 			SerializingUtil: r.SerializingUtil,
 		}
 	}
@@ -514,7 +513,7 @@ func (r *Resolver) GetTreatmentPriceRangesService() *treatments_services.GetTrea
 func (r *Resolver) GetUsersByRoleService() *users_services.GetUsersByRoleService {
 	if r.getUsersByRoleService == nil {
 		r.getUsersByRoleService = &users_services.GetUsersByRoleService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getUsersByRoleService
@@ -524,7 +523,7 @@ func (r *Resolver) GetUsersByRoleService() *users_services.GetUsersByRoleService
 func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService {
 	if r.getUserByIDService == nil {
 		r.getUserByIDService = &users_services.GetUserByIDService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getUserByIDService
@@ -554,8 +553,8 @@ func (r *Resolver) InterruptTreatmentByPsychologistService() *treatments_service
 func (r *Resolver) ProcessPendingMailsService() *mails_services.ProcessPendingMailsService {
 	if r.processPendingMailsService == nil {
 		r.processPendingMailsService = &mails_services.ProcessPendingMailsService{
-			DatabaseUtil: r.DatabaseUtil,
-			MailUtil:     r.MailUtil,
+			MailUtil: r.MailUtil,
+			OrmUtil:  r.OrmUtil,
 		}
 	}
 	return r.processPendingMailsService
@@ -569,6 +568,18 @@ func (r *Resolver) ReadFileService() *files_services.ReadFileService {
 		}
 	}
 	return r.readFileService
+}
+
+// ResetPasswordService gets or sets the service with same name
+func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
+	if r.resetPasswordService == nil {
+		r.resetPasswordService = &users_services.ResetPasswordService{
+			HashUtil:  r.HashUtil,
+			MatchUtil: r.MatchUtil,
+			OrmUtil:   r.OrmUtil,
+		}
+	}
+	return r.resetPasswordService
 }
 
 // SaveCooldownService gets or sets the service with same name
@@ -645,18 +656,6 @@ func (r *Resolver) SetTreatmentPriceRangesService() *treatments_services.SetTrea
 	return r.setTreatmentPriceRangesService
 }
 
-// ResetPasswordService gets or sets the service with same name
-func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
-	if r.resetPasswordService == nil {
-		r.resetPasswordService = &users_services.ResetPasswordService{
-			DatabaseUtil: r.DatabaseUtil,
-			HashUtil:     r.HashUtil,
-			MatchUtil:    r.MatchUtil,
-		}
-	}
-	return r.resetPasswordService
-}
-
 // UpdateTreatmentService gets or sets the service with same name
 func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
 	if r.updateTreatmentService == nil {
@@ -672,7 +671,7 @@ func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatment
 func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
 	if r.updateUserService == nil {
 		r.updateUserService = &users_services.UpdateUserService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.updateUserService
@@ -738,7 +737,6 @@ func (r *Resolver) UpsertTermService() *agreements_services.UpsertTermService {
 func (r *Resolver) ValidateUserTokenService() *users_services.ValidateUserTokenService {
 	if r.validateUserTokenService == nil {
 		r.validateUserTokenService = &users_services.ValidateUserTokenService{
-			DatabaseUtil:    r.DatabaseUtil,
 			OrmUtil:         r.OrmUtil,
 			SerializingUtil: r.SerializingUtil,
 			SecondsToExpire: r.SecondsToExpire,

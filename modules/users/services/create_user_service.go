@@ -9,18 +9,18 @@ import (
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/modules/users/templates"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
 
 // CreateUserService is a service that creates users and sends emails so that the owner can assign a password
 type CreateUserService struct {
-	DatabaseUtil    database.IDatabaseUtil
 	IdentifierUtil  identifier.IIdentifierUtil
 	MatchUtil       match.IMatchUtil
+	OrmUtil         orm.IOrmUtil
 	SerializingUtil serializing.ISerializingUtil
 	TokenUtil       token.ITokenUtil
 	SecondsToExpire int64
@@ -36,9 +36,9 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 
 	userWithSameEmail := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"email": userInput.Email}, &userWithSameEmail)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("email = ?", userInput.Email).Limit(1).Find(&userWithSameEmail)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	// If user with same email exists, will not send email but will succeed in order not to inform hackers what emails are in the system
@@ -92,27 +92,27 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		ID:          mailID,
 		FromAddress: "relacionamento@psi.com.br",
 		FromName:    "Relacionamento PSI",
-		To:          []string{user.Email},
-		Cc:          []string{},
-		Cco:         []string{},
+		To:          user.Email,
+		Cc:          "",
+		Cco:         "",
 		Subject:     "Bem-vindo ao PSI",
 		Html:        buff.String(),
 		Processed:   false,
 	}
 
-	writeMailErr := s.DatabaseUtil.InsertOne("mails", mail)
-	if writeMailErr != nil {
-		return writeMailErr
+	result = s.OrmUtil.Db().Create(&mail)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	writeResetErr := s.DatabaseUtil.InsertOne("resets", reset)
-	if writeResetErr != nil {
-		return writeResetErr
+	result = s.OrmUtil.Db().Create(&reset)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	writeUserErr := s.DatabaseUtil.InsertOne("users", user)
-	if writeUserErr != nil {
-		return writeUserErr
+	result = s.OrmUtil.Db().Create(&user)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil
