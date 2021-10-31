@@ -20,6 +20,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/logging"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 	"github.com/stretchr/testify/assert"
@@ -70,6 +71,9 @@ func TestEnd2End(t *testing.T) {
 		LoggingUtil: loggingUtil,
 	}
 
+	ormUtil := orm.SqliteOrmUtil{}
+	ormUtil.Connect("./test.db")
+
 	serializingUtil := serializing.JsonSerializingUtil{
 		LoggingUtil: loggingUtil,
 	}
@@ -85,6 +89,7 @@ func TestEnd2End(t *testing.T) {
 		IdentifierUtil:               identifierUtil,
 		MailUtil:                     mailUtil,
 		MatchUtil:                    matchUtil,
+		OrmUtil:                      &ormUtil,
 		SerializingUtil:              serializingUtil,
 		TokenUtil:                    tokenUtil,
 		MaxAffinityNumber:            int64(5),

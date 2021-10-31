@@ -16,6 +16,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/logging"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -28,6 +29,7 @@ func main() {
 	smtpUser := os.Getenv("PSI_SMTP_USERNAME")
 	smtpPass := os.Getenv("PSI_SMTP_PASSWORD")
 	filesBaseFolder := os.Getenv("PSI_FILES_BASE_FOLDER")
+	postgresDsn := os.Getenv("PSI_POSTGRES_DSN")
 
 	loggingUtil := logging.PrintLoggingUtil{}
 
@@ -65,6 +67,13 @@ func main() {
 		LoggingUtil: loggingUtil,
 	}
 
+	ormUtil := orm.PostgresOrmUtil{}
+
+	err := ormUtil.Connect(postgresDsn)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	serializingUtil := serializing.JsonSerializingUtil{
 		LoggingUtil: loggingUtil,
 	}
@@ -81,6 +90,7 @@ func main() {
 		IdentifierUtil:               identifierUtil,
 		MailUtil:                     mailUtil,
 		MatchUtil:                    matchUtil,
+		OrmUtil:                      &ormUtil,
 		SerializingUtil:              serializingUtil,
 		TokenUtil:                    tokenUtil,
 		MaxAffinityNumber:            int64(5),

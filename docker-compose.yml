@@ -1,5 +1,23 @@
 version: "3.8"
 services:
+  postgres:
+    image: postgres:14.0-alpine3.14
+    environment:
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - ./.tmp/postgres:/var/lib/postgresql/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
+  adminer:
+    image: adminer
+    ports:
+      - 7073:8080
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
   mongo:
     image: mongo:5.0.1
     environment:
@@ -52,10 +70,12 @@ services:
       PSI_SMTP_USERNAME:
       PSI_SMTP_PASSWORD:
       PSI_FILES_BASE_FOLDER: /data/files
+      PSI_POSTGRES_DSN: host=postgres user=postgres password=pass dbname=postgres port=5432
     volumes:
       - ./.tmp/files:/data/files
     depends_on:
       - mongo
+      - postgres
     deploy:
       restart_policy:
         condition: on-failure

@@ -4,9 +4,10 @@ import (
 	"errors"
 	"time"
 
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	"github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -15,6 +16,7 @@ import (
 type AuthenticateUserService struct {
 	DatabaseUtil    database.IDatabaseUtil
 	HashUtil        hash.IHashUtil
+	OrmUtil         orm.IOrmUtil
 	SerializingUtil serializing.ISerializingUtil
 	TokenUtil       token.ITokenUtil
 	SecondsToExpire int64
@@ -54,14 +56,14 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 		Token:     token,
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteOne("auths", map[string]interface{}{"userId": auth.UserID})
-	if deleteErr != nil {
-		return nil, deleteErr
+	result := s.OrmUtil.Db().Where("user_id = ?", auth.UserID).Delete(&models.Authentication{})
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("auths", auth)
-	if writeErr != nil {
-		return nil, writeErr
+	result = s.OrmUtil.Db().Create(&auth)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return auth, nil

@@ -17,6 +17,7 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 )
@@ -27,6 +28,7 @@ import (
 
 // Resolver receives all utils and registers all services within the application
 type Resolver struct {
+	OrmUtil                                   orm.IOrmUtil
 	DatabaseUtil                              database.IDatabaseUtil
 	FileStorageUtil                           file_storage.IFileStorageUtil
 	HashUtil                                  hash.IHashUtil
@@ -132,6 +134,7 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 		r.authenticateUserService = &users_services.AuthenticateUserService{
 			DatabaseUtil:    r.DatabaseUtil,
 			HashUtil:        r.HashUtil,
+			OrmUtil:         r.OrmUtil,
 			SerializingUtil: r.SerializingUtil,
 			TokenUtil:       r.TokenUtil,
 			SecondsToExpire: r.SecondsToExpire,
@@ -736,6 +739,7 @@ func (r *Resolver) ValidateUserTokenService() *users_services.ValidateUserTokenS
 	if r.validateUserTokenService == nil {
 		r.validateUserTokenService = &users_services.ValidateUserTokenService{
 			DatabaseUtil:    r.DatabaseUtil,
+			OrmUtil:         r.OrmUtil,
 			SerializingUtil: r.SerializingUtil,
 			SecondsToExpire: r.SecondsToExpire,
 		}
