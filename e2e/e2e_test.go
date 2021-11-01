@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 	"github.com/go-chi/chi"
 	"github.com/guicostaarantes/psi-server/graph"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
@@ -71,8 +72,26 @@ func TestEnd2End(t *testing.T) {
 		LoggingUtil: loggingUtil,
 	}
 
-	ormUtil := orm.SqliteOrmUtil{}
-	ormUtil.Connect(fmt.Sprintf("./test-%d.db", time.Now().Unix()))
+	postgres := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
+		Username("green").
+		Password("blue").
+		Database("red").
+		Port(9876).
+		Version(embeddedpostgres.V12).
+		RuntimePath(fmt.Sprintf("./test-%d", time.Now().Unix())).
+		StartTimeout(10 * time.Second))
+	err := postgres.Start()
+	if err != nil {
+		panic(err)
+	}
+
+	defer postgres.Stop()
+
+	ormUtil := orm.PostgresOrmUtil{}
+	ormUtil.Connect("host=localhost user=green password=blue dbname=red port=9876")
+
+	// ormUtil := orm.SqliteOrmUtil{}
+	// ormUtil.Connect(fmt.Sprintf("./test-%d.db", time.Now().Unix()))
 
 	serializingUtil := serializing.JsonSerializingUtil{
 		LoggingUtil: loggingUtil,
