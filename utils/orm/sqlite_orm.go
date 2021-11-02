@@ -2,6 +2,7 @@ package orm
 
 import (
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -18,6 +19,8 @@ func (p *SqliteOrmUtil) Connect(dsn string) error {
 		p.dbConn = db
 		migrateErr := db.AutoMigrate(
 			&mails_models.TransientMailMessage{},
+			&profiles_models.Patient{},
+			&profiles_models.Psychologist{},
 			&users_models.Authentication{},
 			&users_models.ResetPassword{},
 			&users_models.User{},

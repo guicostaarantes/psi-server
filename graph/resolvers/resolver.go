@@ -321,6 +321,7 @@ func (r *Resolver) GetCharacteristicsByIDService() *characteristics_services.Get
 	if r.getCharacteristicsByIDService == nil {
 		r.getCharacteristicsByIDService = &characteristics_services.GetCharacteristicsByIDService{
 			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil:      r.OrmUtil,
 		}
 	}
 	return r.getCharacteristicsByIDService
@@ -380,7 +381,7 @@ func (r *Resolver) GetTreatmentForPsychologistService() *treatments_services.Get
 func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUserIDService {
 	if r.getPatientByUserIDService == nil {
 		r.getPatientByUserIDService = &profiles_services.GetPatientByUserIDService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPatientByUserIDService
@@ -390,7 +391,7 @@ func (r *Resolver) GetPatientByUserIDService() *profiles_services.GetPatientByUs
 func (r *Resolver) GetPsychologistService() *profiles_services.GetPsychologistService {
 	if r.getPsychologistService == nil {
 		r.getPsychologistService = &profiles_services.GetPsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPsychologistService
@@ -420,7 +421,7 @@ func (r *Resolver) GetPreferencesByIDService() *characteristics_services.GetPref
 func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsychologistByUserIDService {
 	if r.getPsychologistByUserIDService == nil {
 		r.getPsychologistByUserIDService = &profiles_services.GetPsychologistByUserIDService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPsychologistByUserIDService
@@ -430,7 +431,7 @@ func (r *Resolver) GetPsychologistByUserIDService() *profiles_services.GetPsycho
 func (r *Resolver) GetPatientService() *profiles_services.GetPatientService {
 	if r.getPatientService == nil {
 		r.getPatientService = &profiles_services.GetPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPatientService
@@ -599,6 +600,7 @@ func (r *Resolver) SetCharacteristicChoicesService() *characteristics_services.S
 	if r.setCharacteristicChoicesService == nil {
 		r.setCharacteristicChoicesService = &characteristics_services.SetCharacteristicChoicesService{
 			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil:      r.OrmUtil,
 		}
 	}
 	return r.setCharacteristicChoicesService
@@ -629,6 +631,7 @@ func (r *Resolver) SetPreferencesService() *characteristics_services.SetPreferen
 	if r.setPreferencesService == nil {
 		r.setPreferencesService = &characteristics_services.SetPreferencesService{
 			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil:      r.OrmUtil,
 		}
 	}
 	return r.setPreferencesService
@@ -694,6 +697,7 @@ func (r *Resolver) UpsertAgreementService() *agreements_services.UpsertAgreement
 		r.upsertAgreementService = &agreements_services.UpsertAgreementService{
 			DatabaseUtil:   r.DatabaseUtil,
 			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.upsertAgreementService
@@ -705,6 +709,7 @@ func (r *Resolver) UpsertPatientService() *profiles_services.UpsertPatientServic
 		r.upsertPatientService = &profiles_services.UpsertPatientService{
 			DatabaseUtil:            r.DatabaseUtil,
 			IdentifierUtil:          r.IdentifierUtil,
+			OrmUtil:                 r.OrmUtil,
 			UploadAvatarFileService: r.UploadAvatarFileService(),
 		}
 	}
@@ -717,6 +722,7 @@ func (r *Resolver) UpsertPsychologistService() *profiles_services.UpsertPsycholo
 		r.upsertPsychologistService = &profiles_services.UpsertPsychologistService{
 			DatabaseUtil:            r.DatabaseUtil,
 			IdentifierUtil:          r.IdentifierUtil,
+			OrmUtil:                 r.OrmUtil,
 			UploadAvatarFileService: r.UploadAvatarFileService(),
 		}
 	}

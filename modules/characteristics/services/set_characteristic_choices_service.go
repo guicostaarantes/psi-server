@@ -8,11 +8,13 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetCharacteristicChoicesService is a service that assigns a characteristic to a patient profile
 type SetCharacteristicChoicesService struct {
 	DatabaseUtil database.IDatabaseUtil
+	OrmUtil      orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -22,16 +24,16 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"id": id}, &pat)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&pat)
+	if result.Error != nil {
+		return result.Error
 	}
 	if pat.ID != "" {
 		target = models.PatientTarget
 	} else {
-		findErr = s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"id": id}, &psy)
-		if findErr != nil {
-			return findErr
+		result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&psy)
+		if result.Error != nil {
+			return result.Error
 		}
 		if psy.ID != "" {
 			target = models.PsychologistTarget

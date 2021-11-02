@@ -9,12 +9,14 @@ import (
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpsertAgreementService is a service that creates an agreement or updates an existing one
 type UpsertAgreementService struct {
 	DatabaseUtil   database.IDatabaseUtil
 	IdentifierUtil identifier.IIdentifierUtil
+	OrmUtil        orm.IOrmUtil
 }
 
 func (s UpsertAgreementService) Execute(profileID string, input *models.UpsertAgreementInput) error {
@@ -23,16 +25,16 @@ func (s UpsertAgreementService) Execute(profileID string, input *models.UpsertAg
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"id": profileID}, &pat)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ?", profileID).Limit(1).Find(&pat)
+	if result.Error != nil {
+		return result.Error
 	}
 	if pat.ID != "" {
 		profileType = models.Patient
 	} else {
-		findErr = s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"id": profileID}, &psy)
-		if findErr != nil {
-			return findErr
+		result := s.OrmUtil.Db().Where("id = ?", profileID).Limit(1).Find(&psy)
+		if result.Error != nil {
+			return result.Error
 		}
 		if psy.ID != "" {
 			profileType = models.Psychologist
@@ -43,7 +45,7 @@ func (s UpsertAgreementService) Execute(profileID string, input *models.UpsertAg
 
 	signingTerm := models.Term{}
 
-	findErr = s.DatabaseUtil.FindOne("terms", map[string]interface{}{"name": input.TermName, "version": float64(input.TermVersion), "profileType": string(profileType)}, &signingTerm)
+	findErr := s.DatabaseUtil.FindOne("terms", map[string]interface{}{"name": input.TermName, "version": float64(input.TermVersion), "profileType": string(profileType)}, &signingTerm)
 	if findErr != nil {
 		return findErr
 	}

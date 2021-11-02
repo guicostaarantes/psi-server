@@ -7,30 +7,32 @@ import (
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpsertPatientService is a service that creates or updates a patient profile
 type UpsertPatientService struct {
 	DatabaseUtil            database.IDatabaseUtil
 	IdentifierUtil          identifier.IIdentifierUtil
+	OrmUtil                 orm.IOrmUtil
 	UploadAvatarFileService *files_services.UploadAvatarFileService
 }
 
 // Execute is the method that runs the business logic of the service
 func (s UpsertPatientService) Execute(userID string, input *models.UpsertPatientInput) error {
 
-	existantPatient := models.Patient{}
+	existingPatient := models.Patient{}
 
-	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"userId": userID}, &existantPatient)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("user_id = ?", userID).Limit(1).Find(&existingPatient)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	if existantPatient.ID != "" {
-		existantPatient.FullName = input.FullName
-		existantPatient.LikeName = input.LikeName
-		existantPatient.BirthDate = input.BirthDate
-		existantPatient.City = input.City
+	if existingPatient.ID != "" {
+		existingPatient.FullName = input.FullName
+		existingPatient.LikeName = input.LikeName
+		existingPatient.BirthDate = input.BirthDate
+		existingPatient.City = input.City
 
 		if input.Avatar != nil {
 			data, readErr := io.ReadAll(input.Avatar.File)
@@ -43,12 +45,12 @@ func (s UpsertPatientService) Execute(userID string, input *models.UpsertPatient
 				return writeErr
 			}
 
-			existantPatient.Avatar = fileName
+			existingPatient.Avatar = fileName
 		}
 
-		writeErr := s.DatabaseUtil.UpdateOne("patients", map[string]interface{}{"id": existantPatient.ID}, existantPatient)
-		if writeErr != nil {
-			return writeErr
+		result = s.OrmUtil.Db().Save(&existingPatient)
+		if result.Error != nil {
+			return result.Error
 		}
 
 		return nil
@@ -74,7 +76,7 @@ func (s UpsertPatientService) Execute(userID string, input *models.UpsertPatient
 		avatar = fileName
 	}
 
-	patient := &models.Patient{
+	newPatient := models.Patient{
 		ID:        patientID,
 		UserID:    userID,
 		FullName:  input.FullName,
@@ -84,9 +86,9 @@ func (s UpsertPatientService) Execute(userID string, input *models.UpsertPatient
 		Avatar:    avatar,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("patients", patient)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Create(&newPatient)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil
