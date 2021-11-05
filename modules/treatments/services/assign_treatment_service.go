@@ -9,11 +9,13 @@ import (
 	characteristic_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // AssignTreatmentService is a service that assigns a patient to a treatment and changes its status to active
 type AssignTreatmentService struct {
 	DatabaseUtil database.IDatabaseUtil
+	OrmUtil      orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -23,18 +25,18 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 
 	patientInOtherTreatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"patientId": patientID, "status": string(models.Active)}, &patientInOtherTreatment)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("patient_id = ? AND status = ?", patientID, models.Active).Limit(1).Find(&patientInOtherTreatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if patientInOtherTreatment.ID != "" {
 		return errors.New("patient is already in an active treatment")
 	}
 
-	findErr = s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id}, &treatment)
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if treatment.ID == "" {
@@ -47,7 +49,7 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 
 	treatmentPriceRangeOffering := models.TreatmentPriceRangeOffering{}
 
-	findErr = s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"psychologistId": treatment.PsychologistID, "priceRangeName": priceRangeName}, &treatmentPriceRangeOffering)
+	findErr := s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"psychologistId": treatment.PsychologistID, "priceRangeName": priceRangeName}, &treatmentPriceRangeOffering)
 	if findErr != nil {
 		return findErr
 	}
@@ -96,9 +98,9 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 	treatment.Status = models.Active
 	treatment.PriceRangeName = priceRangeName
 
-	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Save(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	deleteErr := s.DatabaseUtil.DeleteOne("treatment_price_range_offerings", map[string]interface{}{"id": treatmentPriceRangeOffering.ID})

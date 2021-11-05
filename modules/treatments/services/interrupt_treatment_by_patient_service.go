@@ -1,19 +1,18 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"time"
 
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // InterruptTreatmentByPatientService is a service that interrupts a treatment, changing its status to interrupted by patient
 type InterruptTreatmentByPatientService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -21,9 +20,9 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 
 	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id, "patientId": patientID}, &treatment)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ? AND patient_id = ?", id, patientID).Limit(1).Find(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if treatment.ID == "" {
@@ -34,28 +33,21 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 		return fmt.Errorf("treatments can only be interrupted if their current status is ACTIVE. current status is %s", string(treatment.Status))
 	}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("appointments", map[string]interface{}{"treatmentId": id})
-	if findErr != nil {
-		return findErr
+	appointments := []*appointments_models.Appointment{}
+
+	result = s.OrmUtil.Db().Where("treatment_id = ? AND start > ?", id, time.Now().Unix()).Find(&appointments)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		appointment := appointments_models.Appointment{}
-
-		decodeErr := cursor.Decode(&appointment)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		if appointment.Start > time.Now().Unix() && appointment.Status != appointments_models.CanceledByPsychologist {
+	for _, appointment := range appointments {
+		if appointment.Status != appointments_models.CanceledByPsychologist {
 			appointment.Status = appointments_models.TreatmentInterruptedByPatient
 			appointment.Reason = reason
 
-			writeErr := s.DatabaseUtil.UpdateOne("appointments", map[string]interface{}{"id": appointment.ID}, appointment)
-			if writeErr != nil {
-				return writeErr
+			result = s.OrmUtil.Db().Save(&appointment)
+			if result.Error != nil {
+				return result.Error
 			}
 		}
 	}
@@ -64,9 +56,9 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 	treatment.Status = models.InterruptedByPatient
 	treatment.Reason = reason
 
-	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Save(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

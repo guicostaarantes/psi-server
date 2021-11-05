@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 // AppointmentStatus represents the status of an appointment
 type AppointmentStatus string
 
@@ -30,14 +32,15 @@ const (
 
 // Appointment represents the mutual promise of psychologist and patient to meet at a specific time
 type Appointment struct {
-	ID             string            `json:"id" bson:"id"`
-	TreatmentID    string            `json:"treatmentId" bson:"treatmentId"`
-	PatientID      string            `json:"patientId" bson:"patientId"`
-	PsychologistID string            `json:"psychologistId" bson:"psychologistId"`
-	Start          int64             `json:"start" bson:"start"`
-	End            int64             `json:"end" bson:"end"`
-	PriceRangeName string            `json:"priceRangeName" bson:"priceRangeName"`
-	Status         AppointmentStatus `json:"status" bson:"status"`
-	Reason         string            `json:"reason" bson:"reason"`
-	Link           string            `json:"link" bson:"link"`
+	gorm.Model
+	ID             string            `json:"id"`
+	TreatmentID    string            `json:"treatmentId"`
+	PatientID      string            `json:"patientId"`
+	PsychologistID string            `json:"psychologistId"`
+	Start          int64             `json:"start"`
+	End            int64             `json:"end"`
+	PriceRangeName string            `json:"priceRangeName"`
+	Status         AppointmentStatus `json:"status"`
+	Reason         string            `json:"reason"`
+	Link           string            `json:"link"`
 }

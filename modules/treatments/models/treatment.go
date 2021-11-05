@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 // TreatmentStatus represents the status of a treatment
 type TreatmentStatus string
 
@@ -19,15 +21,16 @@ const (
 // Treatment represents the intention from a psychologist to treat a patient, defining the sessions' duration, price, interval and phase.
 // The next session of a specific treatment will be scheduled to the UNIX timestamp T, where T = (ScheduleIntervalSeconds * Frequency * N) + Phase, and N is the smallest natural number that makes T superior to the current timestamp.
 type Treatment struct {
-	ID             string          `json:"id" bson:"id"`
-	PsychologistID string          `json:"psychologistId" bson:"psychologistId"`
-	PatientID      string          `json:"patientId" bson:"patientId"`
-	Frequency      int64           `json:"frequency" bson:"frequency"`
-	Phase          int64           `json:"phase" bson:"phase"`
-	Duration       int64           `json:"duration" bson:"duration"`
-	PriceRangeName string          `json:"priceRangeName" bson:"priceRangeName"`
-	Status         TreatmentStatus `json:"status" bson:"status"`
-	StartDate      int64           `json:"startDate" bson:"startDate"`
-	EndDate        int64           `json:"endDate" bson:"endDate"`
-	Reason         string          `json:"reason" bson:"reason"`
+	gorm.Model
+	ID             string          `json:"id"`
+	PsychologistID string          `json:"psychologistId"`
+	PatientID      string          `json:"patientId"`
+	Frequency      int64           `json:"frequency"`
+	Phase          int64           `json:"phase"`
+	Duration       int64           `json:"duration"`
+	PriceRangeName string          `json:"priceRangeName"`
+	Status         TreatmentStatus `json:"status"`
+	StartDate      int64           `json:"startDate"`
+	EndDate        int64           `json:"endDate"`
+	Reason         string          `json:"reason"`
 }

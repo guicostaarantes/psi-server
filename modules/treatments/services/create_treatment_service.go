@@ -6,12 +6,14 @@ import (
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // CreateTreatmentService is a service that creates a new treatment for a psychologist
 type CreateTreatmentService struct {
 	DatabaseUtil                   database.IDatabaseUtil
 	IdentifierUtil                 identifier.IIdentifierUtil
+	OrmUtil                        orm.IOrmUtil
 	CheckTreatmentCollisionService *CheckTreatmentCollisionService
 }
 
@@ -48,9 +50,9 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		Status:         models.Pending,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("treatments", treatment)
-	if writeErr != nil {
-		return writeErr
+	result := s.OrmUtil.Db().Create(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	_, treatmentPriceOfferingID, treatmentPriceOfferingIDErr := s.IdentifierUtil.GenerateIdentifier()
@@ -64,7 +66,7 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		PriceRangeName: input.PriceRangeName,
 	}
 
-	writeErr = s.DatabaseUtil.InsertOne("treatment_price_range_offerings", treatmentPriceOffering)
+	writeErr := s.DatabaseUtil.InsertOne("treatment_price_range_offerings", treatmentPriceOffering)
 	if writeErr != nil {
 		return writeErr
 	}

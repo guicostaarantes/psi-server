@@ -123,6 +123,7 @@ func (r *Resolver) AssignTreatmentService() *treatments_services.AssignTreatment
 	if r.assignTreatmentService == nil {
 		r.assignTreatmentService = &treatments_services.AssignTreatmentService{
 			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil:      r.OrmUtil,
 		}
 	}
 	return r.assignTreatmentService
@@ -146,7 +147,7 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 func (r *Resolver) CancelAppointmentByPatientService() *appointments_services.CancelAppointmentByPatientService {
 	if r.cancelAppointmentByPatientService == nil {
 		r.cancelAppointmentByPatientService = &appointments_services.CancelAppointmentByPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.cancelAppointmentByPatientService
@@ -156,7 +157,7 @@ func (r *Resolver) CancelAppointmentByPatientService() *appointments_services.Ca
 func (r *Resolver) CancelAppointmentByPsychologistService() *appointments_services.CancelAppointmentByPsychologistService {
 	if r.cancelAppointmentByPsychologistService == nil {
 		r.cancelAppointmentByPsychologistService = &appointments_services.CancelAppointmentByPsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.cancelAppointmentByPsychologistService
@@ -166,7 +167,7 @@ func (r *Resolver) CancelAppointmentByPsychologistService() *appointments_servic
 func (r *Resolver) CheckTreatmentCollisionService() *treatments_services.CheckTreatmentCollisionService {
 	if r.checkTreatmentCollisionService == nil {
 		r.checkTreatmentCollisionService = &treatments_services.CheckTreatmentCollisionService{
-			DatabaseUtil:            r.DatabaseUtil,
+			OrmUtil:                 r.OrmUtil,
 			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
 		}
 	}
@@ -177,7 +178,7 @@ func (r *Resolver) CheckTreatmentCollisionService() *treatments_services.CheckTr
 func (r *Resolver) ConfirmAppointmentByPatientService() *appointments_services.ConfirmAppointmentByPatientService {
 	if r.confirmAppointmentByPatientService == nil {
 		r.confirmAppointmentByPatientService = &appointments_services.ConfirmAppointmentByPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.confirmAppointmentByPatientService
@@ -187,7 +188,7 @@ func (r *Resolver) ConfirmAppointmentByPatientService() *appointments_services.C
 func (r *Resolver) ConfirmAppointmentByPsychologistService() *appointments_services.ConfirmAppointmentByPsychologistService {
 	if r.confirmAppointmentByPsychologistService == nil {
 		r.confirmAppointmentByPsychologistService = &appointments_services.ConfirmAppointmentByPsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.confirmAppointmentByPsychologistService
@@ -197,8 +198,8 @@ func (r *Resolver) ConfirmAppointmentByPsychologistService() *appointments_servi
 func (r *Resolver) CreatePendingAppointmentsService() *appointments_services.CreatePendingAppointmentsService {
 	if r.createPendingAppointmentsService == nil {
 		r.createPendingAppointmentsService = &appointments_services.CreatePendingAppointmentsService{
-			DatabaseUtil:            r.DatabaseUtil,
 			IdentifierUtil:          r.IdentifierUtil,
+			OrmUtil:                 r.OrmUtil,
 			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
 		}
 	}
@@ -211,6 +212,7 @@ func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatment
 		r.createTreatmentService = &treatments_services.CreateTreatmentService{
 			DatabaseUtil:                   r.DatabaseUtil,
 			IdentifierUtil:                 r.IdentifierUtil,
+			OrmUtil:                        r.OrmUtil,
 			CheckTreatmentCollisionService: r.CheckTreatmentCollisionService(),
 		}
 	}
@@ -251,6 +253,7 @@ func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatment
 	if r.deleteTreatmentService == nil {
 		r.deleteTreatmentService = &treatments_services.DeleteTreatmentService{
 			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil:      r.OrmUtil,
 		}
 	}
 	return r.deleteTreatmentService
@@ -260,7 +263,7 @@ func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatment
 func (r *Resolver) EditAppointmentByPatientService() *appointments_services.EditAppointmentByPatientService {
 	if r.editAppointmentByPatientService == nil {
 		r.editAppointmentByPatientService = &appointments_services.EditAppointmentByPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.editAppointmentByPatientService
@@ -270,7 +273,7 @@ func (r *Resolver) EditAppointmentByPatientService() *appointments_services.Edit
 func (r *Resolver) EditAppointmentByPsychologistService() *appointments_services.EditAppointmentByPsychologistService {
 	if r.editAppointmentByPsychologistService == nil {
 		r.editAppointmentByPsychologistService = &appointments_services.EditAppointmentByPsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.editAppointmentByPsychologistService
@@ -280,7 +283,7 @@ func (r *Resolver) EditAppointmentByPsychologistService() *appointments_services
 func (r *Resolver) FinalizeTreatmentService() *treatments_services.FinalizeTreatmentService {
 	if r.finalizeTreatmentService == nil {
 		r.finalizeTreatmentService = &treatments_services.FinalizeTreatmentService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.finalizeTreatmentService
@@ -300,7 +303,7 @@ func (r *Resolver) GetAgreementsByProfileIdService() *agreements_services.GetAgr
 func (r *Resolver) GetAppointmentsOfPatientService() *appointments_services.GetAppointmentsOfPatientService {
 	if r.getAppointmentsOfPatientService == nil {
 		r.getAppointmentsOfPatientService = &appointments_services.GetAppointmentsOfPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getAppointmentsOfPatientService
@@ -310,7 +313,7 @@ func (r *Resolver) GetAppointmentsOfPatientService() *appointments_services.GetA
 func (r *Resolver) GetAppointmentsOfPsychologistService() *appointments_services.GetAppointmentsOfPsychologistService {
 	if r.getAppointmentsOfPsychologistService == nil {
 		r.getAppointmentsOfPsychologistService = &appointments_services.GetAppointmentsOfPsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getAppointmentsOfPsychologistService
@@ -361,7 +364,7 @@ func (r *Resolver) GetTranslationsService() *translations_services.GetTranslatio
 func (r *Resolver) GetTreatmentForPatientService() *treatments_services.GetTreatmentForPatientService {
 	if r.getTreatmentForPatientService == nil {
 		r.getTreatmentForPatientService = &treatments_services.GetTreatmentForPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getTreatmentForPatientService
@@ -371,7 +374,7 @@ func (r *Resolver) GetTreatmentForPatientService() *treatments_services.GetTreat
 func (r *Resolver) GetTreatmentForPsychologistService() *treatments_services.GetTreatmentForPsychologistService {
 	if r.getTreatmentForPsychologistService == nil {
 		r.getTreatmentForPsychologistService = &treatments_services.GetTreatmentForPsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getTreatmentForPsychologistService
@@ -401,7 +404,7 @@ func (r *Resolver) GetPsychologistService() *profiles_services.GetPsychologistSe
 func (r *Resolver) GetPatientTreatmentsService() *treatments_services.GetPatientTreatmentsService {
 	if r.getPatientTreatmentsService == nil {
 		r.getPatientTreatmentsService = &treatments_services.GetPatientTreatmentsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPatientTreatmentsService
@@ -441,7 +444,7 @@ func (r *Resolver) GetPatientService() *profiles_services.GetPatientService {
 func (r *Resolver) GetPsychologistPendingTreatmentsService() *treatments_services.GetPsychologistPendingTreatmentsService {
 	if r.getPsychologistPendingTreatmentsService == nil {
 		r.getPsychologistPendingTreatmentsService = &treatments_services.GetPsychologistPendingTreatmentsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPsychologistPendingTreatmentsService
@@ -461,7 +464,7 @@ func (r *Resolver) GetPsychologistPriceRangeOfferingsService() *treatments_servi
 func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPsychologistTreatmentsService {
 	if r.getPsychologistTreatmentsService == nil {
 		r.getPsychologistTreatmentsService = &treatments_services.GetPsychologistTreatmentsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPsychologistTreatmentsService
@@ -534,7 +537,7 @@ func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService {
 func (r *Resolver) InterruptTreatmentByPatientService() *treatments_services.InterruptTreatmentByPatientService {
 	if r.interruptTreatmentByPatientService == nil {
 		r.interruptTreatmentByPatientService = &treatments_services.InterruptTreatmentByPatientService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.interruptTreatmentByPatientService
@@ -544,7 +547,7 @@ func (r *Resolver) InterruptTreatmentByPatientService() *treatments_services.Int
 func (r *Resolver) InterruptTreatmentByPsychologistService() *treatments_services.InterruptTreatmentByPsychologistService {
 	if r.interruptTreatmentByPsychologistService == nil {
 		r.interruptTreatmentByPsychologistService = &treatments_services.InterruptTreatmentByPsychologistService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.interruptTreatmentByPsychologistService
@@ -663,7 +666,7 @@ func (r *Resolver) SetTreatmentPriceRangesService() *treatments_services.SetTrea
 func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
 	if r.updateTreatmentService == nil {
 		r.updateTreatmentService = &treatments_services.UpdateTreatmentService{
-			DatabaseUtil:                   r.DatabaseUtil,
+			OrmUtil:                        r.OrmUtil,
 			CheckTreatmentCollisionService: r.CheckTreatmentCollisionService(),
 		}
 	}

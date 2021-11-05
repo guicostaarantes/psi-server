@@ -1,16 +1,15 @@
 package services
 
 import (
-	"context"
 	"errors"
 
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // CheckTreatmentCollisionService is a service that checks if a treatment period collides with others from the same psychologist
 type CheckTreatmentCollisionService struct {
-	DatabaseUtil            database.IDatabaseUtil
+	OrmUtil                 orm.IOrmUtil
 	ScheduleIntervalSeconds int64
 }
 
@@ -32,21 +31,14 @@ func (s CheckTreatmentCollisionService) Execute(psychologistID string, frequency
 		return errors.New("phase cannot be bigger than the schedule interval")
 	}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("treatments", map[string]interface{}{"psychologistId": psychologistID})
-	if findErr != nil {
-		return findErr
+	psychologistTreatments := []*models.Treatment{}
+
+	result := s.OrmUtil.Db().Where("psychologist_id = ?", psychologistID).Find(&psychologistTreatments)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		treatment := models.Treatment{}
-
-		decodeErr := cursor.Decode(&treatment)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
+	for _, treatment := range psychologistTreatments {
 		if treatment.Status != models.Pending && treatment.Status != models.Active {
 			continue
 		}
