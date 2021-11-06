@@ -1,15 +1,13 @@
 package services
 
 import (
-	"context"
-
 	"github.com/guicostaarantes/psi-server/modules/translations/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetTranslationsService is a service that gets translated translations
 type GetTranslationsService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -17,26 +15,9 @@ func (s GetTranslationsService) Execute(lang string, keys []string) ([]*models.T
 
 	translations := []*models.Translation{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("translations", map[string]interface{}{"lang": lang})
-	if findErr != nil {
-		return nil, findErr
-	}
-
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		msg := models.Translation{}
-
-		decodeErr := cursor.Decode(&msg)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		for _, key := range keys {
-			if key == msg.Key {
-				translations = append(translations, &msg)
-			}
-		}
+	result := s.OrmUtil.Db().Where("lang = ? AND key IN ?", lang, keys).Find(&translations)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return translations, nil

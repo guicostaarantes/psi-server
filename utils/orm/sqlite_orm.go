@@ -7,6 +7,7 @@ import (
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	translations_models "github.com/guicostaarantes/psi-server/modules/translations/models"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"gorm.io/driver/sqlite"
@@ -34,6 +35,7 @@ func (p *SqliteOrmUtil) Connect(dsn string) error {
 			&mails_models.TransientMailMessage{},
 			&profiles_models.Patient{},
 			&profiles_models.Psychologist{},
+			&translations_models.Translation{},
 			&treatments_models.Treatment{},
 			&treatments_models.TreatmentPriceRange{},
 			&treatments_models.TreatmentPriceRangeOffering{},

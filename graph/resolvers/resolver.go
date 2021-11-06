@@ -353,7 +353,7 @@ func (r *Resolver) GetCooldownService() *cooldowns_services.GetCooldownService {
 func (r *Resolver) GetTranslationsService() *translations_services.GetTranslationsService {
 	if r.getTranslationsService == nil {
 		r.getTranslationsService = &translations_services.GetTranslationsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getTranslationsService
@@ -621,7 +621,7 @@ func (r *Resolver) SetCharacteristicsService() *characteristics_services.SetChar
 func (r *Resolver) SetTranslationsService() *translations_services.SetTranslationsService {
 	if r.setTranslationsService == nil {
 		r.setTranslationsService = &translations_services.SetTranslationsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.setTranslationsService
