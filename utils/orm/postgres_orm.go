@@ -4,6 +4,7 @@ import (
 	"time"
 
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
+	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
@@ -28,6 +29,9 @@ func (p *PostgresOrmUtil) Connect(dsn string) error {
 			p.dbConn = db
 			migrateErr := db.AutoMigrate(
 				&appointments_models.Appointment{},
+				&characteristics_models.Characteristic{},
+				&characteristics_models.CharacteristicChoice{},
+				&characteristics_models.Preference{},
 				&mails_models.TransientMailMessage{},
 				&profiles_models.Patient{},
 				&profiles_models.Psychologist{},

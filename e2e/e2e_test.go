@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -1610,11 +1611,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":6},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":6}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":8},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":7}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":7},{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":8}]}}}", response.Body.String())
 
 	})
 
@@ -2355,11 +2356,6 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		appointmentID := fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "id")
-		storedVariables["appointment_1_id"] = appointmentID
-		appointmentID = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "id")
-		storedVariables["appointment_2_id"] = appointmentID
-
 		appointmentStatus := fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "status")
 		assert.Equal(t, "CREATED", appointmentStatus)
 		appointmentStatus = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "status")
@@ -2376,6 +2372,29 @@ func TestEnd2End(t *testing.T) {
 		appointmentStart = int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "start"))
 		intervalDuration = res.ScheduleIntervalSeconds * appointmentFrequency
 		assert.Equal(t, appointmentStart%intervalDuration, appointmentPhase)
+
+		query = `query {
+			myPatientProfile {
+				appointments {
+					id
+					start
+					status
+					treatment {
+						frequency
+						phase
+					}
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		storedVariables["appointment_1_id"] = fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "id")
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		storedVariables["appointment_2_id"] = fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "id")
+
 	})
 
 	t.Run("should confirm appointment by patient", func(t *testing.T) {
@@ -2829,6 +2848,9 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, storedVariables["psychologist_1_id"], fastjson.GetString(response.Body.Bytes(), "data", "myPatientTopAffinities", "0", "psychologist", "id"))
+
+		db, _ := res.DatabaseUtil.GetMockedDatabases()
+		ioutil.WriteFile("./db.json", db, 0644)
 
 	})
 

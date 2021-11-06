@@ -60,9 +60,9 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 
 	incomeChar := characteristic_models.CharacteristicChoice{}
 
-	findErr = s.DatabaseUtil.FindOne("characteristic_choices", map[string]interface{}{"profileId": patientID, "characteristicName": "income"}, &incomeChar)
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("profile_id = ? AND characteristic_name = ?", patientID, "income").Limit(1).Find(&incomeChar)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if incomeChar.SelectedValue == "" {

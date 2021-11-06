@@ -8,16 +8,17 @@ import (
 	"time"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
-	characteristic_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetTopAffinitiesForPatientService is a service that calculates the affinity between a given patient and all psychologists with pending treatments, and saves the most relevant ones to a table
 type SetTopAffinitiesForPatientService struct {
 	DatabaseUtil        database.IDatabaseUtil
+	OrmUtil             orm.IOrmUtil
 	MaxAffinityNumber   int64
 	SaveCooldownService *cooldowns_services.SaveCooldownService
 }
@@ -25,17 +26,28 @@ type SetTopAffinitiesForPatientService struct {
 // Execute is the method that runs the business logic of the service
 func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 
-	result := map[string]*models.AffinityScore{}
+	affinityResult := map[string]*models.AffinityScore{}
 
-	// Get possible price ranges
-	incomeChar := characteristic_models.CharacteristicChoice{}
+	// Get patient characteristics choices
+	patientCharacteristicChoices := []*models.CharacteristicChoice{}
 
-	findErr := s.DatabaseUtil.FindOne("characteristic_choices", map[string]interface{}{"profileId": patientID, "characteristicName": "income"}, &incomeChar)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("profile_id = ?", patientID).Find(&patientCharacteristicChoices)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	if incomeChar.SelectedValue == "" {
+	// patientChoices[characteristicName][selectedValue] = true if exists, undefined otherwise
+	patientChoices := map[string]map[string]bool{}
+
+	for _, choice := range patientCharacteristicChoices {
+		if _, exists := patientChoices[choice.CharacteristicName]; !exists {
+			patientChoices[choice.CharacteristicName] = map[string]bool{}
+		}
+		patientChoices[choice.CharacteristicName][choice.SelectedValue] = true
+	}
+
+	// Get possible price ranges
+	if len(patientChoices["income"]) == 0 {
 		return errors.New("missing income for patient")
 	}
 
@@ -57,8 +69,8 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 			return decodeErr
 		}
 
-		for _, v := range strings.Split(priceRange.EligibleFor, ",") {
-			if v == incomeChar.SelectedValue {
+		for _, pr := range strings.Split(priceRange.EligibleFor, ",") {
+			if _, exists := patientChoices["income"][pr]; exists {
 				possiblePriceRanges = append(possiblePriceRanges, priceRange.Name)
 			}
 		}
@@ -85,121 +97,69 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		for _, v := range possiblePriceRanges {
 			if v == priceRangeOffering.PriceRangeName {
 				// If there is, add psychologist to list
-				_, ok := result[priceRangeOffering.PsychologistID]
+				_, ok := affinityResult[priceRangeOffering.PsychologistID]
 				if !ok {
-					result[priceRangeOffering.PsychologistID] = &models.AffinityScore{}
+					affinityResult[priceRangeOffering.PsychologistID] = &models.AffinityScore{}
 				}
 			}
 		}
-
-	}
-
-	// Get patient characteristics choices
-	patientCharacteristicChoices := []models.CharacteristicChoice{}
-
-	patientChoicesCursor, findErr := s.DatabaseUtil.FindMany("characteristic_choices", map[string]interface{}{"profileId": patientID})
-	if findErr != nil {
-		return findErr
-	}
-
-	defer patientChoicesCursor.Close(context.Background())
-
-	for patientChoicesCursor.Next(context.Background()) {
-
-		choice := models.CharacteristicChoice{}
-
-		decodeErr := patientChoicesCursor.Decode(&choice)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		patientCharacteristicChoices = append(patientCharacteristicChoices, choice)
 
 	}
 
 	// Get all psychologists preferences and calculate score for psychologist
-	preferencesCursor, findErr := s.DatabaseUtil.FindMany("preferences", map[string]interface{}{"target": string(models.PsychologistTarget)})
-	if findErr != nil {
-		return findErr
+	psychologistPreferences := []*models.Preference{}
+
+	result = s.OrmUtil.Db().Where("target = ?", models.PsychologistTarget).Find(&psychologistPreferences)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer preferencesCursor.Close(context.Background())
-
-	for preferencesCursor.Next(context.Background()) {
-
-		preference := models.Preference{}
-
-		decodeErr := preferencesCursor.Decode(&preference)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		_, ok := result[preference.ProfileID]
-		if ok {
-			for _, char := range patientCharacteristicChoices {
-				if char.CharacteristicName == preference.CharacteristicName && char.SelectedValue == preference.SelectedValue {
-					result[preference.ProfileID].ScoreForPsychologist += preference.Weight
-				}
+	for _, preference := range psychologistPreferences {
+		if _, exists := affinityResult[preference.ProfileID]; exists {
+			if _, exists := patientChoices[preference.CharacteristicName][preference.SelectedValue]; exists {
+				affinityResult[preference.ProfileID].ScoreForPsychologist += preference.Weight
 			}
 		}
-
 	}
 
 	// Get patient preferences
-	patientPreferences := []models.Preference{}
+	patientPreferences := []*models.Preference{}
 
-	patientPreferencesCursor, findErr := s.DatabaseUtil.FindMany("preferences", map[string]interface{}{"profileId": patientID})
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("profile_id = ?", patientID).Find(&patientPreferences)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer patientPreferencesCursor.Close(context.Background())
+	// patientPrefs[characteristicName][selectedValue] = weight
+	patientPrefs := map[string]map[string]int64{}
 
-	for patientPreferencesCursor.Next(context.Background()) {
-
-		preference := models.Preference{}
-
-		decodeErr := patientPreferencesCursor.Decode(&preference)
-		if decodeErr != nil {
-			return decodeErr
+	for _, pref := range patientPreferences {
+		if _, exists := patientPrefs[pref.CharacteristicName]; !exists {
+			patientPrefs[pref.CharacteristicName] = map[string]int64{}
 		}
-
-		patientPreferences = append(patientPreferences, preference)
-
+		patientPrefs[pref.CharacteristicName][pref.SelectedValue] = pref.Weight
 	}
 
 	// Get all psychologists characteristic choices and calculate score for patient
-	choicesCursor, findErr := s.DatabaseUtil.FindMany("characteristic_choices", map[string]interface{}{"target": string(models.PsychologistTarget)})
-	if findErr != nil {
-		return findErr
+	psychologistChoices := []*models.CharacteristicChoice{}
+
+	result = s.OrmUtil.Db().Where("target = ?", models.PsychologistTarget).Find(&psychologistChoices)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer choicesCursor.Close(context.Background())
-
-	for choicesCursor.Next(context.Background()) {
-
-		characteristicChoice := models.CharacteristicChoice{}
-
-		decodeErr := choicesCursor.Decode(&characteristicChoice)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		_, ok := result[characteristicChoice.ProfileID]
-		if ok {
-			for _, pref := range patientPreferences {
-				if pref.CharacteristicName == characteristicChoice.CharacteristicName && pref.SelectedValue == characteristicChoice.SelectedValue {
-					result[characteristicChoice.ProfileID].ScoreForPatient += pref.Weight
-				}
+	for _, choice := range psychologistChoices {
+		if _, exists := affinityResult[choice.ProfileID]; exists {
+			if weight, exists := patientPrefs[choice.CharacteristicName][choice.SelectedValue]; exists {
+				affinityResult[choice.ProfileID].ScoreForPatient += weight
 			}
 		}
-
 	}
 
 	resultSlice := []models.Affinity{}
 
 	// Transform result map in result slice
-	for psychologistID, re := range result {
+	for psychologistID, re := range affinityResult {
 
 		if re.ScoreForPatient >= 0 && re.ScoreForPsychologist >= 0 {
 			resultSlice = append(resultSlice, models.Affinity{

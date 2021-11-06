@@ -323,8 +323,7 @@ func (r *Resolver) GetAppointmentsOfPsychologistService() *appointments_services
 func (r *Resolver) GetCharacteristicsByIDService() *characteristics_services.GetCharacteristicsByIDService {
 	if r.getCharacteristicsByIDService == nil {
 		r.getCharacteristicsByIDService = &characteristics_services.GetCharacteristicsByIDService{
-			DatabaseUtil: r.DatabaseUtil,
-			OrmUtil:      r.OrmUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getCharacteristicsByIDService
@@ -334,7 +333,7 @@ func (r *Resolver) GetCharacteristicsByIDService() *characteristics_services.Get
 func (r *Resolver) GetCharacteristicsService() *characteristics_services.GetCharacteristicsService {
 	if r.getCharacteristicsService == nil {
 		r.getCharacteristicsService = &characteristics_services.GetCharacteristicsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getCharacteristicsService
@@ -414,7 +413,7 @@ func (r *Resolver) GetPatientTreatmentsService() *treatments_services.GetPatient
 func (r *Resolver) GetPreferencesByIDService() *characteristics_services.GetPreferencesByIDService {
 	if r.getPreferencesByIDService == nil {
 		r.getPreferencesByIDService = &characteristics_services.GetPreferencesByIDService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPreferencesByIDService
@@ -602,8 +601,7 @@ func (r *Resolver) SaveCooldownService() *cooldowns_services.SaveCooldownService
 func (r *Resolver) SetCharacteristicChoicesService() *characteristics_services.SetCharacteristicChoicesService {
 	if r.setCharacteristicChoicesService == nil {
 		r.setCharacteristicChoicesService = &characteristics_services.SetCharacteristicChoicesService{
-			DatabaseUtil: r.DatabaseUtil,
-			OrmUtil:      r.OrmUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.setCharacteristicChoicesService
@@ -613,7 +611,7 @@ func (r *Resolver) SetCharacteristicChoicesService() *characteristics_services.S
 func (r *Resolver) SetCharacteristicsService() *characteristics_services.SetCharacteristicsService {
 	if r.setCharacteristicsService == nil {
 		r.setCharacteristicsService = &characteristics_services.SetCharacteristicsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.setCharacteristicsService
@@ -633,8 +631,7 @@ func (r *Resolver) SetTranslationsService() *translations_services.SetTranslatio
 func (r *Resolver) SetPreferencesService() *characteristics_services.SetPreferencesService {
 	if r.setPreferencesService == nil {
 		r.setPreferencesService = &characteristics_services.SetPreferencesService{
-			DatabaseUtil: r.DatabaseUtil,
-			OrmUtil:      r.OrmUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.setPreferencesService
@@ -645,6 +642,7 @@ func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services
 	if r.setTopAffinitiesForPatientService == nil {
 		r.setTopAffinitiesForPatientService = &characteristics_services.SetTopAffinitiesForPatientService{
 			DatabaseUtil:        r.DatabaseUtil,
+			OrmUtil:             r.OrmUtil,
 			MaxAffinityNumber:   r.MaxAffinityNumber,
 			SaveCooldownService: r.SaveCooldownService(),
 		}

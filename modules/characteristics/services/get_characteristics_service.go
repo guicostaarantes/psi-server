@@ -1,47 +1,36 @@
 package services
 
 import (
-	"context"
 	"strings"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetCharacteristicsService is a service that gets all possible characteristic based on the target
 type GetCharacteristicsService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
 func (s GetCharacteristicsService) Execute(target models.CharacteristicTarget) ([]*models.CharacteristicResponse, error) {
 
-	characteristics := []*models.CharacteristicResponse{}
+	response := []*models.CharacteristicResponse{}
+	characteristics := []*models.Characteristic{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
-	if findErr != nil {
-		return nil, findErr
+	result := s.OrmUtil.Db().Where("target = ?", target).Find(&characteristics)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		characteristic := models.Characteristic{}
-
-		decodeErr := cursor.Decode(&characteristic)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		characteristicResponse := models.CharacteristicResponse{
-			Name:           characteristic.Name,
-			Type:           characteristic.Type,
-			PossibleValues: strings.Split(characteristic.PossibleValues, ","),
-		}
-
-		characteristics = append(characteristics, &characteristicResponse)
+	for _, char := range characteristics {
+		response = append(response, &models.CharacteristicResponse{
+			Name:           char.Name,
+			Type:           char.Type,
+			PossibleValues: strings.Split(char.PossibleValues, ","),
+		})
 	}
 
-	return characteristics, nil
+	return response, nil
 
 }

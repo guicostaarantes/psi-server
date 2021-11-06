@@ -1,20 +1,18 @@
 package services
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetPreferencesService is a service that allows a profile to submit their preferences
 type SetPreferencesService struct {
-	DatabaseUtil database.IDatabaseUtil
-	OrmUtil      orm.IOrmUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -45,51 +43,47 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 		}
 	}
 
-	preferences := []interface{}{}
+	characteristics := []*models.Characteristic{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("target = ?", target).Find(&characteristics)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer cursor.Close(context.Background())
+	possibleValues := map[string]map[string]bool{}
 
-	for cursor.Next(context.Background()) {
-
-		characteristic := models.Characteristic{}
-
-		decodeErr := cursor.Decode(&characteristic)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		for _, i := range input {
-			if characteristic.Name == i.CharacteristicName {
-				possibleValues := strings.Split(characteristic.PossibleValues, ",")
-				for _, p := range possibleValues {
-					if i.SelectedValue == p {
-						preferences = append(preferences, models.Preference{
-							ProfileID:          id,
-							Target:             profileType,
-							CharacteristicName: i.CharacteristicName,
-							SelectedValue:      i.SelectedValue,
-							Weight:             i.Weight,
-						})
-					}
-				}
+	for _, char := range characteristics {
+		for _, pv := range strings.Split(char.PossibleValues, ",") {
+			if _, exists := possibleValues[char.Name]; !exists {
+				possibleValues[char.Name] = map[string]bool{}
 			}
+			possibleValues[char.Name][pv] = true
 		}
-
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("preferences", map[string]interface{}{"profileId": id})
-	if deleteErr != nil {
-		return deleteErr
+	preferencesToCreate := []*models.Preference{}
+
+	for _, i := range input {
+		if _, exists := possibleValues[i.CharacteristicName][i.SelectedValue]; !exists {
+			return fmt.Errorf("option '%s' is not possible in characteristic %s", i.SelectedValue, i.CharacteristicName)
+		}
+		preferencesToCreate = append(preferencesToCreate, &models.Preference{
+			ProfileID:          id,
+			Target:             profileType,
+			CharacteristicName: i.CharacteristicName,
+			SelectedValue:      i.SelectedValue,
+			Weight:             i.Weight,
+		})
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("preferences", preferences)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Delete(&models.Preference{}, "profile_id = ?", id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	result = s.OrmUtil.Db().Create(&preferencesToCreate)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil
