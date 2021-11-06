@@ -15,7 +15,7 @@ func (s GetTranslationsService) Execute(lang string, keys []string) ([]*models.T
 
 	translations := []*models.Translation{}
 
-	result := s.OrmUtil.Db().Where("lang = ? AND key IN ?", lang, keys).Find(&translations)
+	result := s.OrmUtil.Db().Where("lang = ? AND key IN ?", lang, keys).Order("key ASC").Find(&translations)
 	if result.Error != nil {
 		return nil, result.Error
 	}
