@@ -4,6 +4,7 @@ import (
 	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
@@ -29,6 +30,7 @@ func (p *SqliteOrmUtil) Connect(dsn string) error {
 			&characteristics_models.Characteristic{},
 			&characteristics_models.CharacteristicChoice{},
 			&characteristics_models.Preference{},
+			&cooldowns_models.Cooldown{},
 			&mails_models.TransientMailMessage{},
 			&profiles_models.Patient{},
 			&profiles_models.Psychologist{},

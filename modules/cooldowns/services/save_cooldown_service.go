@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/guicostaarantes/psi-server/modules/cooldowns/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SaveCooldownService is a service that stores a cooldown in a database
 type SaveCooldownService struct {
-	DatabaseUtil                 database.IDatabaseUtil
 	IdentifierUtil               identifier.IIdentifierUtil
+	OrmUtil                      orm.IOrmUtil
 	TopAffinitiesCooldownSeconds int64
 }
 
@@ -42,9 +42,9 @@ func (s SaveCooldownService) Execute(profileID string, profileType models.Cooldo
 		ValidUntil:   validUntil,
 	}
 
-	insertErr := s.DatabaseUtil.InsertOne("cooldowns", cooldown)
-	if insertErr != nil {
-		return insertErr
+	result := s.OrmUtil.Db().Create(&cooldown)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

@@ -1,38 +1,34 @@
 package services
 
 import (
-	"context"
 	"time"
 
 	"github.com/guicostaarantes/psi-server/modules/cooldowns/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetCooldownService is a service that retrieves a cooldown in a database
 type GetCooldownService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 func (s GetCooldownService) Execute(profileID string, profileType models.CooldownProfileType, cooldownType models.CooldownType) (*models.Cooldown, error) {
-	cursor, findErr := s.DatabaseUtil.FindMany("cooldowns", map[string]interface{}{"profileId": profileID, "profileType": profileType, "cooldownType": cooldownType})
-	if findErr != nil {
-		return nil, findErr
+	cooldown := &models.Cooldown{}
+
+	result := s.OrmUtil.Db().Where(
+		"profile_id = ? AND profile_type = ? AND cooldown_type = ? AND valid_until > ?",
+		profileID,
+		profileType,
+		cooldownType,
+		time.Now().Unix(),
+	).Limit(1).Find(&cooldown)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		cooldown := models.Cooldown{}
-
-		decodeErr := cursor.Decode(&cooldown)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		if cooldown.ValidUntil > time.Now().Unix() {
-			return &cooldown, nil
-		}
+	if cooldown.ID == "" {
+		return nil, nil
 	}
 
-	return nil, nil
+	return cooldown, nil
 }

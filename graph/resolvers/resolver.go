@@ -343,7 +343,7 @@ func (r *Resolver) GetCharacteristicsService() *characteristics_services.GetChar
 func (r *Resolver) GetCooldownService() *cooldowns_services.GetCooldownService {
 	if r.getCooldownService == nil {
 		r.getCooldownService = &cooldowns_services.GetCooldownService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getCooldownService
@@ -589,8 +589,8 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 func (r *Resolver) SaveCooldownService() *cooldowns_services.SaveCooldownService {
 	if r.saveCooldownService == nil {
 		r.saveCooldownService = &cooldowns_services.SaveCooldownService{
-			DatabaseUtil:                 r.DatabaseUtil,
 			IdentifierUtil:               r.IdentifierUtil,
+			OrmUtil:                      r.OrmUtil,
 			TopAffinitiesCooldownSeconds: r.TopAffinitiesCooldownSeconds,
 		}
 	}

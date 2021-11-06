@@ -20,10 +20,10 @@ const (
 
 // Cooldown holds information about the usage of the system
 type Cooldown struct {
-	ID           string              `json:"id" bson:"id"`
-	ProfileID    string              `json:"profileId" bson:"profileId"`
-	ProfileType  CooldownProfileType `json:"profileType" bson:"profileType"`
-	CooldownType CooldownType        `json:"cooldownType" bson:"cooldownType"`
-	CreatedAt    int64               `json:"createdAt" bson:"createdAt"`
-	ValidUntil   int64               `json:"validUntil" bson:"validUntil"`
+	ID           string              `json:"id"`
+	ProfileID    string              `json:"profileId"`
+	ProfileType  CooldownProfileType `json:"profileType"`
+	CooldownType CooldownType        `json:"cooldownType"`
+	CreatedAt    int64               `json:"createdAt"`
+	ValidUntil   int64               `json:"validUntil"`
 }
