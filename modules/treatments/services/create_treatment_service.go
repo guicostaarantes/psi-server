@@ -4,14 +4,12 @@ import (
 	"errors"
 
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // CreateTreatmentService is a service that creates a new treatment for a psychologist
 type CreateTreatmentService struct {
-	DatabaseUtil                   database.IDatabaseUtil
 	IdentifierUtil                 identifier.IIdentifierUtil
 	OrmUtil                        orm.IOrmUtil
 	CheckTreatmentCollisionService *CheckTreatmentCollisionService

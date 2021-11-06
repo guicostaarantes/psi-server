@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,7 +15,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/guicostaarantes/psi-server/graph"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/logging"
@@ -51,10 +49,6 @@ func TestEnd2End(t *testing.T) {
 	storedVariables := map[string]string{}
 
 	loggingUtil := logging.PrintLoggingUtil{}
-
-	databaseUtil := database.FakeDatabaseUtil{
-		Client: database.FakeDBClientFactory(),
-	}
 
 	hashUtil := hash.BcryptHashUtil{
 		Cost:        4,
@@ -104,7 +98,6 @@ func TestEnd2End(t *testing.T) {
 	}
 
 	res := &resolvers.Resolver{
-		DatabaseUtil:                 &databaseUtil,
 		HashUtil:                     hashUtil,
 		IdentifierUtil:               identifierUtil,
 		MailUtil:                     mailUtil,
@@ -2848,9 +2841,6 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, storedVariables["psychologist_1_id"], fastjson.GetString(response.Body.Bytes(), "data", "myPatientTopAffinities", "0", "psychologist", "id"))
-
-		db, _ := res.DatabaseUtil.GetMockedDatabases()
-		ioutil.WriteFile("./db.json", db, 0644)
 
 	})
 

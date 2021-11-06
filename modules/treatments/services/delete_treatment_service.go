@@ -4,14 +4,12 @@ import (
 	"errors"
 
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // DeleteTreatmentService is a service that changes data from a treatment
 type DeleteTreatmentService struct {
-	DatabaseUtil database.IDatabaseUtil
-	OrmUtil      orm.IOrmUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service

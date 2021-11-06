@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net/http"
 	"os"
@@ -9,7 +8,6 @@ import (
 
 	"github.com/guicostaarantes/psi-server/graph"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/file_storage"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
@@ -23,7 +21,6 @@ import (
 
 func main() {
 	port := os.Getenv("PSI_APP_PORT")
-	mongoUri := os.Getenv("PSI_MONGO_URI")
 	smtpHost := os.Getenv("PSI_SMTP_HOST")
 	smtpPort, _ := strconv.Atoi(os.Getenv("PSI_SMTP_PORT"))
 	smtpUser := os.Getenv("PSI_SMTP_USERNAME")
@@ -32,14 +29,6 @@ func main() {
 	postgresDsn := os.Getenv("PSI_POSTGRES_DSN")
 
 	loggingUtil := logging.PrintLoggingUtil{}
-
-	databaseUtil := database.MongoDatabaseUtil{
-		Context:      context.Background(),
-		DatabaseName: "psi_db",
-		LoggingUtil:  loggingUtil,
-	}
-
-	databaseUtil.Connect(mongoUri)
 
 	fileStorageUtil := file_storage.DiskFileStorageUtil{
 		BaseFolder:  filesBaseFolder,
@@ -84,7 +73,6 @@ func main() {
 	}
 
 	res := &resolvers.Resolver{
-		DatabaseUtil:                 &databaseUtil,
 		FileStorageUtil:              fileStorageUtil,
 		HashUtil:                     hashUtil,
 		IdentifierUtil:               identifierUtil,

@@ -2,45 +2,12 @@ version: "3.8"
 services:
   postgres:
     image: postgres:14.0-alpine3.14
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: pass
     volumes:
       - ./.tmp/postgres:/var/lib/postgresql/data
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 10
-  adminer:
-    image: adminer
-    ports:
-      - 7073:8080
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 10
-  mongo:
-    image: mongo:5.0.1
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: pass
-    volumes:
-      - ./.tmp/mongodb:/data/db
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 10
-  mongo-express:
-    image: mongo-express:0.54.0
-    restart: on-failure:3
-    ports:
-      - 7071:8081
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
-    depends_on:
-      - mongo
     deploy:
       restart_policy:
         condition: on-failure
@@ -63,7 +30,6 @@ services:
     environment:
       PSI_APP_PORT: 8080
       PSI_BOOTSTRAP_USER: coordinator@psi.com.br|Abc123!@#
-      PSI_MONGO_URI: mongodb://root:pass@mongo
       PSI_SITE_URL: http://localhost:7007
       PSI_SMTP_HOST: mailhog
       PSI_SMTP_PORT: 1025

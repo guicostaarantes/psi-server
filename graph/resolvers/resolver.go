@@ -11,7 +11,6 @@ import (
 	translations_services "github.com/guicostaarantes/psi-server/modules/translations/services"
 	treatments_services "github.com/guicostaarantes/psi-server/modules/treatments/services"
 	users_services "github.com/guicostaarantes/psi-server/modules/users/services"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/file_storage"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
@@ -29,7 +28,6 @@ import (
 // Resolver receives all utils and registers all services within the application
 type Resolver struct {
 	OrmUtil                                   orm.IOrmUtil
-	DatabaseUtil                              database.IDatabaseUtil
 	FileStorageUtil                           file_storage.IFileStorageUtil
 	HashUtil                                  hash.IHashUtil
 	IdentifierUtil                            identifier.IIdentifierUtil
@@ -122,8 +120,7 @@ func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordSer
 func (r *Resolver) AssignTreatmentService() *treatments_services.AssignTreatmentService {
 	if r.assignTreatmentService == nil {
 		r.assignTreatmentService = &treatments_services.AssignTreatmentService{
-			DatabaseUtil: r.DatabaseUtil,
-			OrmUtil:      r.OrmUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.assignTreatmentService
@@ -210,7 +207,6 @@ func (r *Resolver) CreatePendingAppointmentsService() *appointments_services.Cre
 func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatmentService {
 	if r.createTreatmentService == nil {
 		r.createTreatmentService = &treatments_services.CreateTreatmentService{
-			DatabaseUtil:                   r.DatabaseUtil,
 			IdentifierUtil:                 r.IdentifierUtil,
 			OrmUtil:                        r.OrmUtil,
 			CheckTreatmentCollisionService: r.CheckTreatmentCollisionService(),
@@ -252,8 +248,7 @@ func (r *Resolver) CreateUserWithPasswordService() *users_services.CreateUserWit
 func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatmentService {
 	if r.deleteTreatmentService == nil {
 		r.deleteTreatmentService = &treatments_services.DeleteTreatmentService{
-			DatabaseUtil: r.DatabaseUtil,
-			OrmUtil:      r.OrmUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.deleteTreatmentService
@@ -684,7 +679,6 @@ func (r *Resolver) UpdateUserService() *users_services.UpdateUserService {
 func (r *Resolver) UploadAvatarFileService() *files_services.UploadAvatarFileService {
 	if r.uploadAvatarFileService == nil {
 		r.uploadAvatarFileService = &files_services.UploadAvatarFileService{
-			DatabaseUtil:    r.DatabaseUtil,
 			FileStorageUtil: r.FileStorageUtil,
 		}
 	}
@@ -706,7 +700,6 @@ func (r *Resolver) UpsertAgreementService() *agreements_services.UpsertAgreement
 func (r *Resolver) UpsertPatientService() *profiles_services.UpsertPatientService {
 	if r.upsertPatientService == nil {
 		r.upsertPatientService = &profiles_services.UpsertPatientService{
-			DatabaseUtil:            r.DatabaseUtil,
 			IdentifierUtil:          r.IdentifierUtil,
 			OrmUtil:                 r.OrmUtil,
 			UploadAvatarFileService: r.UploadAvatarFileService(),
@@ -719,7 +712,6 @@ func (r *Resolver) UpsertPatientService() *profiles_services.UpsertPatientServic
 func (r *Resolver) UpsertPsychologistService() *profiles_services.UpsertPsychologistService {
 	if r.upsertPsychologistService == nil {
 		r.upsertPsychologistService = &profiles_services.UpsertPsychologistService{
-			DatabaseUtil:            r.DatabaseUtil,
 			IdentifierUtil:          r.IdentifierUtil,
 			OrmUtil:                 r.OrmUtil,
 			UploadAvatarFileService: r.UploadAvatarFileService(),

@@ -5,14 +5,12 @@ import (
 
 	files_services "github.com/guicostaarantes/psi-server/modules/files/services"
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpsertPatientService is a service that creates or updates a patient profile
 type UpsertPatientService struct {
-	DatabaseUtil            database.IDatabaseUtil
 	IdentifierUtil          identifier.IIdentifierUtil
 	OrmUtil                 orm.IOrmUtil
 	UploadAvatarFileService *files_services.UploadAvatarFileService

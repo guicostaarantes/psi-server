@@ -8,14 +8,12 @@ import (
 
 	characteristic_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // AssignTreatmentService is a service that assigns a patient to a treatment and changes its status to active
 type AssignTreatmentService struct {
-	DatabaseUtil database.IDatabaseUtil
-	OrmUtil      orm.IOrmUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
