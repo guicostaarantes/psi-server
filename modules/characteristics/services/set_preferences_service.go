@@ -81,9 +81,11 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 		return result.Error
 	}
 
-	result = s.OrmUtil.Db().Create(&preferencesToCreate)
-	if result.Error != nil {
-		return result.Error
+	if len(preferencesToCreate) > 0 {
+		result = s.OrmUtil.Db().Create(&preferencesToCreate)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 
 	return nil

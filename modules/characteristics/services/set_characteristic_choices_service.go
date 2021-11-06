@@ -116,9 +116,11 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 		return result.Error
 	}
 
-	result = s.OrmUtil.Db().Create(&choicesToCreate)
-	if result.Error != nil {
-		return result.Error
+	if len(choicesToCreate) > 0 {
+		result = s.OrmUtil.Db().Create(&choicesToCreate)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 
 	return nil

@@ -40,7 +40,6 @@ services:
     volumes:
       - ./.tmp/files:/data/files
     depends_on:
-      - mongo
       - postgres
     deploy:
       restart_policy:

@@ -160,9 +160,11 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		return result.Error
 	}
 
-	result = s.OrmUtil.Db().Create(&topAffinities)
-	if result.Error != nil {
-		return result.Error
+	if len(topAffinities) > 0 {
+		result = s.OrmUtil.Db().Create(&topAffinities)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 
 	saveErr := s.SaveCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TopAffinitiesSet)

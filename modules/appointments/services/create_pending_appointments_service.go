@@ -61,9 +61,11 @@ func (s CreatePendingAppointmentsService) Execute() error {
 		appointmentsToCreate = append(appointmentsToCreate, &newAppointment)
 	}
 
-	result = s.OrmUtil.Db().Create(&appointmentsToCreate)
-	if result.Error != nil {
-		return result.Error
+	if len(appointmentsToCreate) > 0 {
+		result = s.OrmUtil.Db().Create(&appointmentsToCreate)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 
 	return nil

@@ -33,9 +33,11 @@ func (s SetCharacteristicsService) Execute(target models.CharacteristicTarget, i
 		return result.Error
 	}
 
-	result = s.OrmUtil.Db().Create(&newCharacteristics)
-	if result.Error != nil {
-		return result.Error
+	if len(newCharacteristics) > 0 {
+		result = s.OrmUtil.Db().Create(&newCharacteristics)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 
 	return nil
