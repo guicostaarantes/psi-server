@@ -22,6 +22,7 @@ func (p *SqliteOrmUtil) Connect(dsn string) error {
 		p.dbConn = db
 		migrateErr := db.AutoMigrate(
 			&appointments_models.Appointment{},
+			&characteristics_models.Affinity{},
 			&characteristics_models.Characteristic{},
 			&characteristics_models.CharacteristicChoice{},
 			&characteristics_models.Preference{},
@@ -29,6 +30,8 @@ func (p *SqliteOrmUtil) Connect(dsn string) error {
 			&profiles_models.Patient{},
 			&profiles_models.Psychologist{},
 			&treatments_models.Treatment{},
+			&treatments_models.TreatmentPriceRange{},
+			&treatments_models.TreatmentPriceRangeOffering{},
 			&users_models.Authentication{},
 			&users_models.ResetPassword{},
 			&users_models.User{},

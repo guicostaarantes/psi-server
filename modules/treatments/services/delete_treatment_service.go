@@ -34,9 +34,9 @@ func (s DeleteTreatmentService) Execute(id string, psychologistID string, priceR
 
 	priceRangeOffering := models.TreatmentPriceRangeOffering{}
 
-	findErr := s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"priceRangeName": priceRangeName, "psychologistId": psychologistID}, &priceRangeOffering)
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("psychologist_id = ? AND price_range_name = ?", treatment.PsychologistID, priceRangeName).Limit(1).Find(&priceRangeOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if priceRangeOffering.ID == "" {
@@ -48,9 +48,9 @@ func (s DeleteTreatmentService) Execute(id string, psychologistID string, priceR
 		return result.Error
 	}
 
-	writeErr := s.DatabaseUtil.DeleteOne("treatment_price_range_offerings", map[string]interface{}{"id": priceRangeOffering.ID})
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Delete(&priceRangeOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

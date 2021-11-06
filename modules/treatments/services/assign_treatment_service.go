@@ -49,9 +49,9 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 
 	treatmentPriceRangeOffering := models.TreatmentPriceRangeOffering{}
 
-	findErr := s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"psychologistId": treatment.PsychologistID, "priceRangeName": priceRangeName}, &treatmentPriceRangeOffering)
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("psychologist_id = ? AND price_range_name = ?", treatment.PsychologistID, priceRangeName).Limit(1).Find(&treatmentPriceRangeOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if treatmentPriceRangeOffering.ID == "" {
@@ -71,9 +71,9 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 
 	priceRange := models.TreatmentPriceRange{}
 
-	findErr = s.DatabaseUtil.FindOne("treatment_price_ranges", map[string]interface{}{"name": priceRangeName}, &priceRange)
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("name = ?", priceRangeName).Limit(1).Find(&priceRange)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if priceRange.EligibleFor == "" {
@@ -103,9 +103,9 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 		return result.Error
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteOne("treatment_price_range_offerings", map[string]interface{}{"id": treatmentPriceRangeOffering.ID})
-	if deleteErr != nil {
-		return deleteErr
+	result = s.OrmUtil.Db().Delete(&treatmentPriceRangeOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

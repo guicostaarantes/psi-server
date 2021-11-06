@@ -1,18 +1,15 @@
 package services
 
 import (
-	"context"
-	"time"
-
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetTopAffinitiesForPatientService is a service that sets the top affinities for a specific patient profile if the cache is old enough, and returns them
 type GetTopAffinitiesForPatientService struct {
-	DatabaseUtil                      database.IDatabaseUtil
+	OrmUtil                           orm.IOrmUtil
 	TopAffinitiesCooldownSeconds      int64
 	GetCooldownService                *cooldowns_services.GetCooldownService
 	SetTopAffinitiesForPatientService *SetTopAffinitiesForPatientService
@@ -34,24 +31,9 @@ func (s GetTopAffinitiesForPatientService) Execute(patientID string) ([]*models.
 
 	topAffinities := []*models.Affinity{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("top_affinities", map[string]interface{}{"patientId": patientID})
-	if findErr != nil {
-		return nil, findErr
-	}
-
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		affinity := models.Affinity{}
-
-		decodeErr := cursor.Decode(&affinity)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		if affinity.CreatedAt+s.TopAffinitiesCooldownSeconds > time.Now().Unix() {
-			topAffinities = append(topAffinities, &affinity)
-		}
+	result := s.OrmUtil.Db().Where("patient_id = ?", patientID).Find(&topAffinities)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return topAffinities, nil

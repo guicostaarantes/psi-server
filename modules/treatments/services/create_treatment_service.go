@@ -27,9 +27,9 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 
 	priceRange := models.TreatmentPriceRange{}
 
-	findErr := s.DatabaseUtil.FindOne("treatment_price_ranges", map[string]interface{}{"name": input.PriceRangeName}, &priceRange)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("name = ?", input.PriceRangeName).Limit(1).Find(&priceRange)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if priceRange.Name == "" {
@@ -50,7 +50,7 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		Status:         models.Pending,
 	}
 
-	result := s.OrmUtil.Db().Create(&treatment)
+	result = s.OrmUtil.Db().Create(&treatment)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -66,9 +66,9 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		PriceRangeName: input.PriceRangeName,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("treatment_price_range_offerings", treatmentPriceOffering)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Create(&treatmentPriceOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

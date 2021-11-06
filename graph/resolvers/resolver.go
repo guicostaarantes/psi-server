@@ -453,7 +453,7 @@ func (r *Resolver) GetPsychologistPendingTreatmentsService() *treatments_service
 func (r *Resolver) GetPsychologistPriceRangeOfferingsService() *treatments_services.GetPsychologistPriceRangeOfferingsService {
 	if r.getPsychologistPriceRangeOfferingsService == nil {
 		r.getPsychologistPriceRangeOfferingsService = &treatments_services.GetPsychologistPriceRangeOfferingsService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getPsychologistPriceRangeOfferingsService
@@ -483,7 +483,7 @@ func (r *Resolver) GetTermsByProfileTypeService() *agreements_services.GetTermsB
 func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services.GetTopAffinitiesForPatientService {
 	if r.getTopAffinitiesForPatientService == nil {
 		r.getTopAffinitiesForPatientService = &characteristics_services.GetTopAffinitiesForPatientService{
-			DatabaseUtil:                      r.DatabaseUtil,
+			OrmUtil:                           r.OrmUtil,
 			TopAffinitiesCooldownSeconds:      r.TopAffinitiesCooldownSeconds,
 			GetCooldownService:                r.GetCooldownService(),
 			SetTopAffinitiesForPatientService: r.SetTopAffinitiesForPatientService(),
@@ -496,7 +496,7 @@ func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services
 func (r *Resolver) GetTreatmentPriceRangeByNameService() *treatments_services.GetTreatmentPriceRangeByNameService {
 	if r.getTreatmentPriceRangeByNameService == nil {
 		r.getTreatmentPriceRangeByNameService = &treatments_services.GetTreatmentPriceRangeByNameService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getTreatmentPriceRangeByNameService
@@ -506,7 +506,7 @@ func (r *Resolver) GetTreatmentPriceRangeByNameService() *treatments_services.Ge
 func (r *Resolver) GetTreatmentPriceRangesService() *treatments_services.GetTreatmentPriceRangesService {
 	if r.getTreatmentPriceRangesService == nil {
 		r.getTreatmentPriceRangesService = &treatments_services.GetTreatmentPriceRangesService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getTreatmentPriceRangesService
@@ -641,7 +641,6 @@ func (r *Resolver) SetPreferencesService() *characteristics_services.SetPreferen
 func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services.SetTopAffinitiesForPatientService {
 	if r.setTopAffinitiesForPatientService == nil {
 		r.setTopAffinitiesForPatientService = &characteristics_services.SetTopAffinitiesForPatientService{
-			DatabaseUtil:        r.DatabaseUtil,
 			OrmUtil:             r.OrmUtil,
 			MaxAffinityNumber:   r.MaxAffinityNumber,
 			SaveCooldownService: r.SaveCooldownService(),
@@ -654,7 +653,7 @@ func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services
 func (r *Resolver) SetTreatmentPriceRangesService() *treatments_services.SetTreatmentPriceRangesService {
 	if r.setTreatmentPriceRangesService == nil {
 		r.setTreatmentPriceRangesService = &treatments_services.SetTreatmentPriceRangesService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.setTreatmentPriceRangesService

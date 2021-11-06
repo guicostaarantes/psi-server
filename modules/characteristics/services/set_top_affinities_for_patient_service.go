@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"sort"
 	"strings"
@@ -11,13 +10,11 @@ import (
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetTopAffinitiesForPatientService is a service that calculates the affinity between a given patient and all psychologists with pending treatments, and saves the most relevant ones to a table
 type SetTopAffinitiesForPatientService struct {
-	DatabaseUtil        database.IDatabaseUtil
 	OrmUtil             orm.IOrmUtil
 	MaxAffinityNumber   int64
 	SaveCooldownService *cooldowns_services.SaveCooldownService
@@ -51,59 +48,36 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		return errors.New("missing income for patient")
 	}
 
-	possiblePriceRanges := []string{}
+	possiblePriceRanges := map[string]bool{}
+	priceRanges := []*treatments_models.TreatmentPriceRange{}
 
-	priceRangesCursor, findErr := s.DatabaseUtil.FindMany("treatment_price_ranges", map[string]interface{}{})
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Find(&priceRanges)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer priceRangesCursor.Close(context.Background())
-
-	for priceRangesCursor.Next(context.Background()) {
-
-		priceRange := treatments_models.TreatmentPriceRange{}
-
-		decodeErr := priceRangesCursor.Decode(&priceRange)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
+	for _, priceRange := range priceRanges {
 		for _, pr := range strings.Split(priceRange.EligibleFor, ",") {
 			if _, exists := patientChoices["income"][pr]; exists {
-				possiblePriceRanges = append(possiblePriceRanges, priceRange.Name)
+				possiblePriceRanges[priceRange.Name] = true
 			}
 		}
-
 	}
 
 	// Check if psychologist has at least one treatment price range offering with a possible price range
-	priceRangeOfferingsCursor, findErr := s.DatabaseUtil.FindMany("treatment_price_range_offerings", map[string]interface{}{})
-	if findErr != nil {
-		return findErr
+	priceRangesOfferings := []*treatments_models.TreatmentPriceRangeOffering{}
+
+	result = s.OrmUtil.Db().Find(&priceRangesOfferings)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer priceRangeOfferingsCursor.Close(context.Background())
-
-	for priceRangeOfferingsCursor.Next(context.Background()) {
-
-		priceRangeOffering := treatments_models.TreatmentPriceRangeOffering{}
-
-		decodeErr := priceRangeOfferingsCursor.Decode(&priceRangeOffering)
-		if decodeErr != nil {
-			return decodeErr
-		}
-
-		for _, v := range possiblePriceRanges {
-			if v == priceRangeOffering.PriceRangeName {
-				// If there is, add psychologist to list
-				_, ok := affinityResult[priceRangeOffering.PsychologistID]
-				if !ok {
-					affinityResult[priceRangeOffering.PsychologistID] = &models.AffinityScore{}
-				}
+	for _, priceRangeOffering := range priceRangesOfferings {
+		if _, exists := possiblePriceRanges[priceRangeOffering.PriceRangeName]; exists {
+			if _, exists := affinityResult[priceRangeOffering.PsychologistID]; !exists {
+				affinityResult[priceRangeOffering.PsychologistID] = &models.AffinityScore{}
 			}
 		}
-
 	}
 
 	// Get all psychologists preferences and calculate score for psychologist
@@ -156,13 +130,13 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		}
 	}
 
-	resultSlice := []models.Affinity{}
+	topAffinities := []*models.Affinity{}
 
 	// Transform result map in result slice
 	for psychologistID, re := range affinityResult {
 
 		if re.ScoreForPatient >= 0 && re.ScoreForPsychologist >= 0 {
-			resultSlice = append(resultSlice, models.Affinity{
+			topAffinities = append(topAffinities, &models.Affinity{
 				PatientID:            patientID,
 				PsychologistID:       psychologistID,
 				CreatedAt:            time.Now().Unix(),
@@ -174,27 +148,21 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	}
 
 	// Sort based on sum of points and cut only the most relevant limited to s.MaxAffinityNumber
-	sort.SliceStable(resultSlice, func(i int, j int) bool {
-		return resultSlice[i].ScoreForPatient+resultSlice[i].ScoreForPsychologist > resultSlice[j].ScoreForPatient+resultSlice[j].ScoreForPsychologist
+	sort.SliceStable(topAffinities, func(i int, j int) bool {
+		return topAffinities[i].ScoreForPatient+topAffinities[i].ScoreForPsychologist > topAffinities[j].ScoreForPatient+topAffinities[j].ScoreForPsychologist
 	})
-	if len(resultSlice) > int(s.MaxAffinityNumber) {
-		resultSlice = resultSlice[:s.MaxAffinityNumber]
+	if len(topAffinities) > int(s.MaxAffinityNumber) {
+		topAffinities = topAffinities[:s.MaxAffinityNumber]
 	}
 
-	// Transferring to []interface{} in order to add to database
-	topAffinities := []interface{}{}
-	for _, slice := range resultSlice {
-		topAffinities = append(topAffinities, slice)
+	result = s.OrmUtil.Db().Delete(&models.Affinity{}, "patient_id = ?", patientID)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("top_affinities", map[string]interface{}{"patientId": patientID})
-	if deleteErr != nil {
-		return deleteErr
-	}
-
-	writeErr := s.DatabaseUtil.InsertMany("top_affinities", topAffinities)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Create(&topAffinities)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	saveErr := s.SaveCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TopAffinitiesSet)
