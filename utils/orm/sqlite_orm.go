@@ -1,6 +1,7 @@
 package orm
 
 import (
+	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
@@ -21,6 +22,8 @@ func (p *SqliteOrmUtil) Connect(dsn string) error {
 	if err == nil {
 		p.dbConn = db
 		migrateErr := db.AutoMigrate(
+			&agreements_models.Agreement{},
+			&agreements_models.Term{},
 			&appointments_models.Appointment{},
 			&characteristics_models.Affinity{},
 			&characteristics_models.Characteristic{},

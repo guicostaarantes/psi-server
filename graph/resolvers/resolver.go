@@ -293,7 +293,7 @@ func (r *Resolver) FinalizeTreatmentService() *treatments_services.FinalizeTreat
 func (r *Resolver) GetAgreementsByProfileIdService() *agreements_services.GetAgreementsByProfileIdService {
 	if r.getAgreementsByProfileIdService == nil {
 		r.getAgreementsByProfileIdService = &agreements_services.GetAgreementsByProfileIdService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getAgreementsByProfileIdService
@@ -473,7 +473,7 @@ func (r *Resolver) GetPsychologistTreatmentsService() *treatments_services.GetPs
 func (r *Resolver) GetTermsByProfileTypeService() *agreements_services.GetTermsByProfileTypeService {
 	if r.getTermsByProfileTypeService == nil {
 		r.getTermsByProfileTypeService = &agreements_services.GetTermsByProfileTypeService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.getTermsByProfileTypeService
@@ -695,7 +695,6 @@ func (r *Resolver) UploadAvatarFileService() *files_services.UploadAvatarFileSer
 func (r *Resolver) UpsertAgreementService() *agreements_services.UpsertAgreementService {
 	if r.upsertAgreementService == nil {
 		r.upsertAgreementService = &agreements_services.UpsertAgreementService{
-			DatabaseUtil:   r.DatabaseUtil,
 			IdentifierUtil: r.IdentifierUtil,
 			OrmUtil:        r.OrmUtil,
 		}
@@ -733,7 +732,7 @@ func (r *Resolver) UpsertPsychologistService() *profiles_services.UpsertPsycholo
 func (r *Resolver) UpsertTermService() *agreements_services.UpsertTermService {
 	if r.upsertTermService == nil {
 		r.upsertTermService = &agreements_services.UpsertTermService{
-			DatabaseUtil: r.DatabaseUtil,
+			OrmUtil: r.OrmUtil,
 		}
 	}
 	return r.upsertTermService

@@ -12,10 +12,10 @@ const (
 
 // Term is a group of rules and instructions that users should agree in order to use the platform
 type Term struct {
-	Name        string          `json:"name" bson:"name"`
-	Version     int64           `json:"version" bson:"version"`
-	ProfileType TermProfileType `json:"profileType" bson:"profileType"`
-	Active      bool            `json:"active" bson:"active"`
+	Name        string          `json:"name"`
+	Version     int64           `json:"version"`
+	ProfileType TermProfileType `json:"profileType"`
+	Active      bool            `json:"active"`
 }
 
 // Legible content of the term should be available in translations collection under key {ProfileType (psy | pat)}-term:{Name}:{Version}

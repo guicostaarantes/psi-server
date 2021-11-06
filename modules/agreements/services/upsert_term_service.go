@@ -4,30 +4,30 @@ import (
 	"fmt"
 
 	"github.com/guicostaarantes/psi-server/modules/agreements/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpsertTermService is a service that creates a new term or updates an existing one
 type UpsertTermService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 func (s UpsertTermService) Execute(name string, version int64, profileType models.TermProfileType, active bool) error {
 
 	existingTerm := models.Term{}
 
-	findErr := s.DatabaseUtil.FindOne("terms", map[string]interface{}{"name": name, "version": version, "profileType": profileType}, &existingTerm)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("name = ? AND version = ? AND profile_type = ?", name, version, profileType).Limit(1).Find(&existingTerm)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if existingTerm.Name != "" {
 
 		existingTerm.Active = active
 
-		updateErr := s.DatabaseUtil.UpdateOne("terms", map[string]interface{}{"name": name, "version": version, "profileType": profileType}, existingTerm)
-		if updateErr != nil {
-			return updateErr
+		result = s.OrmUtil.Db().Save(&existingTerm)
+		if result.Error != nil {
+			return result.Error
 		}
 
 		return nil
@@ -37,9 +37,9 @@ func (s UpsertTermService) Execute(name string, version int64, profileType model
 	if version > 1 {
 		previousTerm := models.Term{}
 
-		findErr := s.DatabaseUtil.FindOne("terms", map[string]interface{}{"name": name, "version": version - 1, "profileType": profileType}, &previousTerm)
-		if findErr != nil {
-			return findErr
+		result := s.OrmUtil.Db().Where("name = ? AND version = ? AND profile_type = ?", name, version-1, profileType).Limit(1).Find(&previousTerm)
+		if result.Error != nil {
+			return result.Error
 		}
 
 		if previousTerm.Name == "" {
@@ -54,9 +54,9 @@ func (s UpsertTermService) Execute(name string, version int64, profileType model
 		Active:      active,
 	}
 
-	insertErr := s.DatabaseUtil.InsertOne("terms", newTerm)
-	if insertErr != nil {
-		return insertErr
+	result = s.OrmUtil.Db().Create(&newTerm)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil
