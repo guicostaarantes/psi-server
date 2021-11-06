@@ -3,7 +3,6 @@ package populate
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -20,27 +19,27 @@ import (
 
 // Edit the parameters below. Since this a public repository, ALWAYS change the passwords
 // before running this in a production environment
-var API_URL = "http://localhost:7070/gql"
+var API_URL = "https://psiapi.guicostaarantes.dev/gql"
 var COORDINATOR_USERNAME = "coordinator@psi.com.br"
 var COORDINATOR_PASSWORD = "Abc123!@#"
 var NEW_JOBRUNNER_USERNAME = "jobrunner@psi.com.br"
 var NEW_JOBRUNNER_PASSWORD = "Abc123!@#"
-var BATCH_SIZE = 20
-var PSYCOLOGIST_START = 1
-var PSYCOLOGIST_BATCHES = 50
-var PATIENT_START = 1
-var PATIENT_BATCHES = 50
+var BATCH_SIZE = 10
+var PSYCOLOGIST_START = 201
+var PSYCOLOGIST_BATCHES = 20
+var PATIENT_START = 201
+var PATIENT_BATCHES = 20
 var NEW_PSYCHOLOGISTS_PASSWORD = "Abc123!@#"
 var NEW_PATIENTS_PASSWORD = "Abc123!@#"
 var TREATMENTS_PER_PSYCHOLOGIST = 2
 
-func gql(client *http.Client, query string, token string) *http.Response {
+func gql(client *http.Client, query string, token string) (*http.Response, error) {
 
 	body := fmt.Sprintf(`{"query": %q}`, query)
 
 	request, err := http.NewRequest(http.MethodPost, API_URL, strings.NewReader(body))
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	request.Header["Authorization"] = []string{token}
@@ -48,10 +47,10 @@ func gql(client *http.Client, query string, token string) *http.Response {
 
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
-	return response
+	return response, nil
 
 }
 
@@ -76,7 +75,10 @@ func TestPopulateScript(t *testing.T) {
 			}
 		}`, COORDINATOR_USERNAME, COORDINATOR_PASSWORD)
 
-		response := gql(client, query, "")
+		response, err := gql(client, query, "")
+		if err != nil {
+			panic(err)
+		}
 		body, _ := ioutil.ReadAll(response.Body)
 
 		token := fastjson.GetString(body, "data", "authenticateUser", "token")
@@ -98,7 +100,10 @@ func TestPopulateScript(t *testing.T) {
 			)
 		}`, NEW_JOBRUNNER_USERNAME, NEW_JOBRUNNER_PASSWORD)
 
-		gql(client, query, storedVariables["coordinator_token"])
+		_, err := gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 
 	})
 
@@ -219,7 +224,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response := gql(client, query, storedVariables["coordinator_token"])
+		response, err := gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ := ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"setPatientCharacteristics\":null}}", string(body))
@@ -283,7 +291,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"setPsychologistCharacteristics\":null}}", string(body))
@@ -317,7 +328,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"setTreatmentPriceRanges\":null}}", string(body))
@@ -638,7 +652,10 @@ func TestPopulateScript(t *testing.T) {
 			)
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"setTranslations\":null}}", string(body))
@@ -662,7 +679,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response := gql(client, query, storedVariables["coordinator_token"])
+		response, err := gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ := ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
@@ -682,7 +702,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
@@ -702,7 +725,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
@@ -722,7 +748,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
@@ -742,7 +771,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
@@ -762,7 +794,10 @@ func TestPopulateScript(t *testing.T) {
 			])
 		}`
 
-		response = gql(client, query, storedVariables["coordinator_token"])
+		response, err = gql(client, query, storedVariables["coordinator_token"])
+		if err != nil {
+			panic(err)
+		}
 		body, _ = ioutil.ReadAll(response.Body)
 
 		assert.Equal(t, "{\"data\":{\"upsertTerm\":null,\"setTranslations\":null}}", string(body))
@@ -799,7 +834,12 @@ func TestPopulateScript(t *testing.T) {
 						)
 					}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
 
-					response := gql(client, query, storedVariables["coordinator_token"])
+					response, err := gql(client, query, storedVariables["coordinator_token"])
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ := ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
@@ -813,7 +853,12 @@ func TestPopulateScript(t *testing.T) {
 						}
 					}`, email, NEW_PSYCHOLOGISTS_PASSWORD)
 
-					response = gql(client, query, "")
+					response, err = gql(client, query, "")
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					token := fastjson.GetString(body, "data", "authenticateUser", "token")
@@ -832,7 +877,12 @@ func TestPopulateScript(t *testing.T) {
 						})
 					}`, firstName, lastName, firstName, 86400*rand.Intn(10000), i, i, strings.ToLower(firstName), strings.ToLower(lastName), firstName, lastName)
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertMyPsychologistProfile\":null}}", string(body))
@@ -873,7 +923,12 @@ func TestPopulateScript(t *testing.T) {
 						[]string{"psychoanalysis", "behaviorism", "cognitive", "humanistic"}[rand.Intn(4)],
 					)
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"setMyPsychologistCharacteristicChoices\":null}}", string(body))
@@ -1232,7 +1287,12 @@ func TestPopulateScript(t *testing.T) {
 						[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					)
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"setMyPsychologistPreferences\":null}}", string(body))
@@ -1245,7 +1305,12 @@ func TestPopulateScript(t *testing.T) {
 						})
 					}`
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertPsychologistAgreement\":null}}", string(body))
@@ -1258,7 +1323,12 @@ func TestPopulateScript(t *testing.T) {
 						})
 					}`
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertPsychologistAgreement\":null}}", string(body))
@@ -1275,7 +1345,12 @@ func TestPopulateScript(t *testing.T) {
 							)
 						}`, 3600*rand.Intn(168), []string{"free", "low", "medium", "high"}[rand.Intn(4)])
 
-						response = gql(client, query, token)
+						response, err = gql(client, query, token)
+						if err != nil {
+							fmt.Println(err)
+							wg.Done()
+							return
+						}
 						body, _ = ioutil.ReadAll(response.Body)
 
 						if string(body) != "{\"data\":{\"createTreatment\":null}}" {
@@ -1323,7 +1398,12 @@ func TestPopulateScript(t *testing.T) {
 					)
 				}`, email, NEW_PATIENTS_PASSWORD)
 
-					response := gql(client, query, storedVariables["coordinator_token"])
+					response, err := gql(client, query, storedVariables["coordinator_token"])
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ := ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", string(body))
@@ -1337,7 +1417,12 @@ func TestPopulateScript(t *testing.T) {
 					}
 				}`, email, NEW_PATIENTS_PASSWORD)
 
-					response = gql(client, query, "")
+					response, err = gql(client, query, "")
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					token := fastjson.GetString(body, "data", "authenticateUser", "token")
@@ -1352,7 +1437,12 @@ func TestPopulateScript(t *testing.T) {
 					})
 				}`, firstName, lastName, firstName, birthDate)
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", string(body))
@@ -1403,7 +1493,12 @@ func TestPopulateScript(t *testing.T) {
 						[]string{"D", "C", "B", "A"}[rand.Intn(4)],
 					)
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", string(body))
@@ -1522,7 +1617,12 @@ func TestPopulateScript(t *testing.T) {
 						[]int{-1, 0, 1, 3}[rand.Intn(4)],
 					)
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", string(body))
@@ -1535,7 +1635,12 @@ func TestPopulateScript(t *testing.T) {
 						})
 					}`
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
@@ -1548,7 +1653,12 @@ func TestPopulateScript(t *testing.T) {
 						})
 					}`
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
@@ -1561,7 +1671,12 @@ func TestPopulateScript(t *testing.T) {
 						})
 					}`
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
@@ -1574,7 +1689,12 @@ func TestPopulateScript(t *testing.T) {
 						})
 					}`
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					assert.Equal(t, "{\"data\":{\"upsertPatientAgreement\":null}}", string(body))
@@ -1594,15 +1714,20 @@ func TestPopulateScript(t *testing.T) {
 					}
 				}`
 
-					response = gql(client, query, token)
+					response, err = gql(client, query, token)
+					if err != nil {
+						fmt.Println(err)
+						wg.Done()
+						return
+					}
 					body, _ = ioutil.ReadAll(response.Body)
 
 					treatmentId := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "pendingTreatments", "0", "id")
 					priceRangeName := fastjson.GetString(body, "data", "myPatientTopAffinities", "0", "psychologist", "priceRangeOfferings", "0", "priceRange", "name")
 
 					query = fmt.Sprintf(`mutation {
-					assignTreatment(id: %q, priceRangeName: %q)
-				}`, treatmentId, priceRangeName)
+						assignTreatment(id: %q, priceRangeName: %q)
+					}`, treatmentId, priceRangeName)
 
 					gql(client, query, token)
 
