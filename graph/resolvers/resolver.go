@@ -596,7 +596,8 @@ func (r *Resolver) SaveCooldownService() *cooldowns_services.SaveCooldownService
 func (r *Resolver) SetCharacteristicChoicesService() *characteristics_services.SetCharacteristicChoicesService {
 	if r.setCharacteristicChoicesService == nil {
 		r.setCharacteristicChoicesService = &characteristics_services.SetCharacteristicChoicesService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.setCharacteristicChoicesService
@@ -606,7 +607,8 @@ func (r *Resolver) SetCharacteristicChoicesService() *characteristics_services.S
 func (r *Resolver) SetCharacteristicsService() *characteristics_services.SetCharacteristicsService {
 	if r.setCharacteristicsService == nil {
 		r.setCharacteristicsService = &characteristics_services.SetCharacteristicsService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.setCharacteristicsService
@@ -636,6 +638,7 @@ func (r *Resolver) SetPreferencesService() *characteristics_services.SetPreferen
 func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services.SetTopAffinitiesForPatientService {
 	if r.setTopAffinitiesForPatientService == nil {
 		r.setTopAffinitiesForPatientService = &characteristics_services.SetTopAffinitiesForPatientService{
+			IdentifierUtil:      r.IdentifierUtil,
 			OrmUtil:             r.OrmUtil,
 			MaxAffinityNumber:   r.MaxAffinityNumber,
 			SaveCooldownService: r.SaveCooldownService(),
@@ -648,7 +651,8 @@ func (r *Resolver) SetTopAffinitiesForPatientService() *characteristics_services
 func (r *Resolver) SetTreatmentPriceRangesService() *treatments_services.SetTreatmentPriceRangesService {
 	if r.setTreatmentPriceRangesService == nil {
 		r.setTreatmentPriceRangesService = &treatments_services.SetTreatmentPriceRangesService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.setTreatmentPriceRangesService
@@ -724,7 +728,8 @@ func (r *Resolver) UpsertPsychologistService() *profiles_services.UpsertPsycholo
 func (r *Resolver) UpsertTermService() *agreements_services.UpsertTermService {
 	if r.upsertTermService == nil {
 		r.upsertTermService = &agreements_services.UpsertTermService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.upsertTermService

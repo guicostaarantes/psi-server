@@ -7,12 +7,14 @@ import (
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetCharacteristicChoicesService is a service that assigns a characteristic to a patient profile
 type SetCharacteristicChoicesService struct {
-	OrmUtil orm.IOrmUtil
+	IdentifierUtil identifier.IIdentifierUtil
+	OrmUtil        orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -70,7 +72,12 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 			if len(newChoices.SelectedValues) != 1 || (newChoices.SelectedValues[0] != "true" && newChoices.SelectedValues[0] != "false") {
 				return fmt.Errorf("characteristic '%s' must be either true or false", newChoices.CharacteristicName)
 			}
+			_, choID, choIDErr := s.IdentifierUtil.GenerateIdentifier()
+			if choIDErr != nil {
+				return choIDErr
+			}
 			choicesToCreate = append(choicesToCreate, &models.CharacteristicChoice{
+				ID:                 choID,
 				ProfileID:          id,
 				Target:             target,
 				CharacteristicName: newChoices.CharacteristicName,
@@ -84,7 +91,12 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 			if _, exists := possibleValues[newChoices.CharacteristicName][newChoices.SelectedValues[0]]; !exists {
 				return fmt.Errorf("option '%s' is not possible in characteristic %s", newChoices.SelectedValues[0], newChoices.CharacteristicName)
 			}
+			_, choID, choIDErr := s.IdentifierUtil.GenerateIdentifier()
+			if choIDErr != nil {
+				return choIDErr
+			}
 			choicesToCreate = append(choicesToCreate, &models.CharacteristicChoice{
+				ID:                 choID,
 				ProfileID:          id,
 				Target:             target,
 				CharacteristicName: newChoices.CharacteristicName,
@@ -96,7 +108,12 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 				if _, exists := possibleValues[newChoices.CharacteristicName][sv]; !exists {
 					return fmt.Errorf("option %s is not possible in characteristic %s", sv, newChoices.CharacteristicName)
 				}
+				_, choID, choIDErr := s.IdentifierUtil.GenerateIdentifier()
+				if choIDErr != nil {
+					return choIDErr
+				}
 				choicesToCreate = append(choicesToCreate, &models.CharacteristicChoice{
+					ID:                 choID,
 					ProfileID:          id,
 					Target:             target,
 					CharacteristicName: newChoices.CharacteristicName,

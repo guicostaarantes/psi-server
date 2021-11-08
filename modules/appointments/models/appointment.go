@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 // AppointmentStatus represents the status of an appointment
 type AppointmentStatus string
@@ -32,8 +36,10 @@ const (
 
 // Appointment represents the mutual promise of psychologist and patient to meet at a specific time
 type Appointment struct {
-	gorm.Model
-	ID             string            `json:"id"`
+	ID             string            `json:"id" gorm:"primaryKey"`
+	CreatedAt      time.Time         `json:"createdAt`
+	UpdatedAt      time.Time         `json:"updatedAt`
+	DeletedAt      gorm.DeletedAt    `gorm:"index"`
 	TreatmentID    string            `json:"treatmentId"`
 	PatientID      string            `json:"patientId"`
 	PsychologistID string            `json:"psychologistId"`

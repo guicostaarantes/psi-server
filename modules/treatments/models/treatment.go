@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 // TreatmentStatus represents the status of a treatment
 type TreatmentStatus string
@@ -21,8 +25,10 @@ const (
 // Treatment represents the intention from a psychologist to treat a patient, defining the sessions' duration, price, interval and phase.
 // The next session of a specific treatment will be scheduled to the UNIX timestamp T, where T = (ScheduleIntervalSeconds * Frequency * N) + Phase, and N is the smallest natural number that makes T superior to the current timestamp.
 type Treatment struct {
-	gorm.Model
-	ID             string          `json:"id"`
+	ID             string          `json:"id" gorm:"primaryKey"`
+	CreatedAt      time.Time       `json:"createdAt`
+	UpdatedAt      time.Time       `json:"updatedAt`
+	DeletedAt      gorm.DeletedAt  `gorm:"index"`
 	PsychologistID string          `json:"psychologistId"`
 	PatientID      string          `json:"patientId"`
 	Frequency      int64           `json:"frequency"`

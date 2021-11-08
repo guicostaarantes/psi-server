@@ -4,37 +4,70 @@ import (
 	"strings"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetCharacteristicsService is a service that sets all possible patient characteristics
 type SetCharacteristicsService struct {
-	OrmUtil orm.IOrmUtil
+	IdentifierUtil identifier.IIdentifierUtil
+	OrmUtil        orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
 func (s SetCharacteristicsService) Execute(target models.CharacteristicTarget, input []*models.SetCharacteristicInput) error {
 
-	newCharacteristics := []*models.Characteristic{}
+	currentCharacteristics := []*models.Characteristic{}
 
-	for _, char := range input {
-		characteristic := models.Characteristic{
-			Name:           char.Name,
-			Type:           char.Type,
-			Target:         target,
-			PossibleValues: strings.Join(char.PossibleValues, ","),
-		}
-
-		newCharacteristics = append(newCharacteristics, &characteristic)
-	}
-
-	result := s.OrmUtil.Db().Delete(&models.Characteristic{}, "target = ?", target)
+	result := s.OrmUtil.Db().Where("target = ?", target).Find(&currentCharacteristics)
 	if result.Error != nil {
 		return result.Error
 	}
 
-	if len(newCharacteristics) > 0 {
-		result = s.OrmUtil.Db().Create(&newCharacteristics)
+	currentChars := map[string]*models.Characteristic{}
+
+	for _, char := range currentCharacteristics {
+		currentChars[char.Name] = char
+	}
+
+	for _, char := range input {
+		if _, exists := currentChars[char.Name]; exists {
+
+			currentChars[char.Name].Type = char.Type
+			currentChars[char.Name].PossibleValues = strings.Join(char.PossibleValues, ",")
+
+			result := s.OrmUtil.Db().Save(currentChars[char.Name])
+			if result.Error != nil {
+				return result.Error
+			}
+
+			delete(currentChars, char.Name)
+
+		} else {
+
+			_, charID, charIDErr := s.IdentifierUtil.GenerateIdentifier()
+			if charIDErr != nil {
+				return charIDErr
+			}
+
+			result := s.OrmUtil.Db().Create(&models.Characteristic{
+				ID:             charID,
+				Name:           char.Name,
+				Type:           char.Type,
+				Target:         target,
+				PossibleValues: strings.Join(char.PossibleValues, ","),
+			})
+			if result.Error != nil {
+				return result.Error
+			}
+
+		}
+
+	}
+
+	// Deleting remaining chars
+	for _, char := range currentChars {
+		result := s.OrmUtil.Db().Delete(&char)
 		if result.Error != nil {
 			return result.Error
 		}

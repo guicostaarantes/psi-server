@@ -1,5 +1,9 @@
 package models
 
+import (
+	"time"
+)
+
 // CooldownProfileType represents the possible profiles responsible for a cooldown
 type CooldownProfileType string
 
@@ -20,10 +24,11 @@ const (
 
 // Cooldown holds information about the usage of the system
 type Cooldown struct {
-	ID           string              `json:"id"`
+	ID           string              `json:"id" gorm:"primaryKey"`
+	CreatedAt    time.Time           `json:"createdAt"`
+	UpdatedAt    time.Time           `json:"updatedAt"`
 	ProfileID    string              `json:"profileId"`
 	ProfileType  CooldownProfileType `json:"profileType"`
 	CooldownType CooldownType        `json:"cooldownType"`
-	CreatedAt    int64               `json:"createdAt"`
 	ValidUntil   int64               `json:"validUntil"`
 }

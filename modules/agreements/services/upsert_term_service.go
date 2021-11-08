@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/guicostaarantes/psi-server/modules/agreements/models"
+	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpsertTermService is a service that creates a new term or updates an existing one
 type UpsertTermService struct {
-	OrmUtil orm.IOrmUtil
+	IdentifierUtil identifier.IIdentifierUtil
+	OrmUtil        orm.IOrmUtil
 }
 
 func (s UpsertTermService) Execute(name string, version int64, profileType models.TermProfileType, active bool) error {
@@ -47,7 +49,13 @@ func (s UpsertTermService) Execute(name string, version int64, profileType model
 		}
 	}
 
+	_, termID, termIDErr := s.IdentifierUtil.GenerateIdentifier()
+	if termIDErr != nil {
+		return termIDErr
+	}
+
 	newTerm := models.Term{
+		ID:          termID,
 		Name:        name,
 		Version:     version,
 		ProfileType: profileType,

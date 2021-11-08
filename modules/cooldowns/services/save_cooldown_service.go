@@ -30,15 +30,13 @@ func (s SaveCooldownService) Execute(profileID string, profileType models.Cooldo
 		return errors.New("cooldownType does not have a duration")
 	}
 
-	createdAt := time.Now().Unix()
-	validUntil := createdAt + duration
+	validUntil := time.Now().Unix() + duration
 
 	cooldown := models.Cooldown{
 		ID:           cooldownID,
 		ProfileID:    profileID,
 		ProfileType:  profileType,
 		CooldownType: cooldownType,
-		CreatedAt:    createdAt,
 		ValidUntil:   validUntil,
 	}
 

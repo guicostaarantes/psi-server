@@ -4,17 +4,18 @@ import (
 	"errors"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
+	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetTopAffinitiesForPatientService is a service that calculates the affinity between a given patient and all psychologists with pending treatments, and saves the most relevant ones to a table
 type SetTopAffinitiesForPatientService struct {
+	IdentifierUtil      identifier.IIdentifierUtil
 	OrmUtil             orm.IOrmUtil
 	MaxAffinityNumber   int64
 	SaveCooldownService *cooldowns_services.SaveCooldownService
@@ -136,10 +137,15 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	for psychologistID, re := range affinityResult {
 
 		if re.ScoreForPatient >= 0 && re.ScoreForPsychologist >= 0 {
+			_, affID, affIDErr := s.IdentifierUtil.GenerateIdentifier()
+			if affIDErr != nil {
+				return affIDErr
+			}
+
 			topAffinities = append(topAffinities, &models.Affinity{
+				ID:                   affID,
 				PatientID:            patientID,
 				PsychologistID:       psychologistID,
-				CreatedAt:            time.Now().Unix(),
 				ScoreForPatient:      re.ScoreForPatient,
 				ScoreForPsychologist: re.ScoreForPsychologist,
 			})

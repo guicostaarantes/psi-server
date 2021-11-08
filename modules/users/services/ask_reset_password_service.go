@@ -38,15 +38,22 @@ func (s AskResetPasswordService) Execute(email string) error {
 		return nil
 	}
 
-	existsReset := &models.ResetPassword{}
+	existingReset := &models.ResetPassword{}
 
-	result = s.OrmUtil.Db().Where("user_id = ?", user.ID).Limit(1).Find(&existsReset)
+	result = s.OrmUtil.Db().Where("user_id = ?", user.ID).Limit(1).Find(&existingReset)
 	if result.Error != nil {
 		return result.Error
 	}
 
-	if existsReset.UserID != "" && existsReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(s.SecondsToCooldown)).Unix() {
-		return nil
+	if existingReset.UserID != "" {
+		if existingReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(s.SecondsToCooldown)).Unix() {
+			return nil
+		}
+
+		result := s.OrmUtil.Db().Delete(&existingReset)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 
 	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToCooldown)

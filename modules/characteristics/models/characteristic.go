@@ -1,5 +1,11 @@
 package models
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 // CharacteristicType represents the possible inputs and choices of a characteristic
 type CharacteristicType string
 
@@ -24,6 +30,10 @@ const (
 
 // Characteristic is the schema for a characteristic and its possible values
 type Characteristic struct {
+	ID             string               `json:"id" gorm:"primaryKey"`
+	CreatedAt      time.Time            `json:"createdAt`
+	UpdatedAt      time.Time            `json:"updatedAt`
+	DeletedAt      gorm.DeletedAt       `gorm:"index"`
 	Name           string               `json:"name"`
 	Type           CharacteristicType   `json:"type"`
 	Target         CharacteristicTarget `json:"target"`
@@ -32,7 +42,8 @@ type Characteristic struct {
 
 // CharacteristicChoice is the schema for a choice of characteristics made by a profile
 type CharacteristicChoice struct {
-	ProfileID          string               `json:"profileId"`
+	ID                 string               `json:"id" gorm:"primaryKey"`
+	ProfileID          string               `json:"profileId" gorm:"index"`
 	Target             CharacteristicTarget `json:"target"`
 	CharacteristicName string               `json:"characteristicName"`
 	SelectedValue      string               `json:"selectedValue"`
@@ -40,7 +51,7 @@ type CharacteristicChoice struct {
 
 // Preference is the schema for the fact that a patient prefers working with a certain kind of psychologist, and vice-versa
 type Preference struct {
-	ProfileID          string               `json:"profileId"`
+	ProfileID          string               `json:"profileId" gorm:"index"`
 	Target             CharacteristicTarget `json:"target"`
 	CharacteristicName string               `json:"characteristicName"`
 	SelectedValue      string               `json:"selectedValue"`

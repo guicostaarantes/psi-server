@@ -1,5 +1,11 @@
 package models
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 // TermProfileType represents the possible profiles responsible for an agreement
 type TermProfileType string
 
@@ -12,6 +18,10 @@ const (
 
 // Term is a group of rules and instructions that users should agree in order to use the platform
 type Term struct {
+	ID          string          `json:"id" gorm:"primaryKey"`
+	CreatedAt   time.Time       `json:"createdAt`
+	UpdatedAt   time.Time       `json:"updatedAt`
+	DeletedAt   gorm.DeletedAt  `gorm:"index"`
 	Name        string          `json:"name"`
 	Version     int64           `json:"version"`
 	ProfileType TermProfileType `json:"profileType"`
