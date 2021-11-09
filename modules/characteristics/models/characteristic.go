@@ -52,7 +52,7 @@ type CharacteristicChoice struct {
 // Preference is the schema for the fact that a patient prefers working with a certain kind of psychologist, and vice-versa
 type Preference struct {
 	ProfileID          string               `json:"profileId" gorm:"index"`
-	Target             CharacteristicTarget `json:"target"`
+	Target             CharacteristicTarget `json:"target" gorm:"index"`
 	CharacteristicName string               `json:"characteristicName"`
 	SelectedValue      string               `json:"selectedValue"`
 	Weight             int64                `json:"weight"`
