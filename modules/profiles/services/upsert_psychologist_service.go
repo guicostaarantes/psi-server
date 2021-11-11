@@ -5,36 +5,36 @@ import (
 
 	files_services "github.com/guicostaarantes/psi-server/modules/files/services"
 	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpsertPsychologistService is a service that creates a psychologist profile
 type UpsertPsychologistService struct {
-	DatabaseUtil            database.IDatabaseUtil
 	IdentifierUtil          identifier.IIdentifierUtil
+	OrmUtil                 orm.IOrmUtil
 	UploadAvatarFileService *files_services.UploadAvatarFileService
 }
 
 // Execute is the method that runs the business logic of the service
 func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPsychologistInput) error {
 
-	existantPsy := models.Psychologist{}
+	existingPsy := models.Psychologist{}
 
-	findErr := s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"userId": userID}, &existantPsy)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("user_id = ?", userID).Limit(1).Find(&existingPsy)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	if existantPsy.ID != "" {
-		existantPsy.FullName = input.FullName
-		existantPsy.LikeName = input.LikeName
-		existantPsy.BirthDate = input.BirthDate
-		existantPsy.City = input.City
-		existantPsy.Crp = input.Crp
-		existantPsy.Whatsapp = input.Whatsapp
-		existantPsy.Instagram = input.Instagram
-		existantPsy.Bio = input.Bio
+	if existingPsy.ID != "" {
+		existingPsy.FullName = input.FullName
+		existingPsy.LikeName = input.LikeName
+		existingPsy.BirthDate = input.BirthDate
+		existingPsy.City = input.City
+		existingPsy.Crp = input.Crp
+		existingPsy.Whatsapp = input.Whatsapp
+		existingPsy.Instagram = input.Instagram
+		existingPsy.Bio = input.Bio
 
 		if input.Avatar != nil {
 			data, readErr := io.ReadAll(input.Avatar.File)
@@ -46,12 +46,12 @@ func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPs
 			if writeErr != nil {
 				return writeErr
 			}
-			existantPsy.Avatar = fileName
+			existingPsy.Avatar = fileName
 		}
 
-		writeErr := s.DatabaseUtil.UpdateOne("psychologists", map[string]interface{}{"id": existantPsy.ID}, existantPsy)
-		if writeErr != nil {
-			return writeErr
+		result = s.OrmUtil.Db().Save(&existingPsy)
+		if result.Error != nil {
+			return result.Error
 		}
 
 		return nil
@@ -77,7 +77,7 @@ func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPs
 		avatar = fileName
 	}
 
-	psy := &models.Psychologist{
+	newPsy := models.Psychologist{
 		ID:        psyID,
 		UserID:    userID,
 		FullName:  input.FullName,
@@ -91,9 +91,9 @@ func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPs
 		Avatar:    avatar,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("psychologists", psy)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Create(&newPsy)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

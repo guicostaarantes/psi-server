@@ -1,44 +1,23 @@
 package services
 
 import (
-	"context"
-
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
-	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetPatientTreatmentsService is a service that gets all the treatments of a psychologist
 type GetPatientTreatmentsService struct {
-	DatabaseUtil   database.IDatabaseUtil
-	IdentifierUtil identifier.IIdentifierUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
 func (s GetPatientTreatmentsService) Execute(patientID string) ([]*models.GetPatientTreatmentsResponse, error) {
 
-	filter := map[string]interface{}{"patientId": patientID}
-
-	cursor, findErr := s.DatabaseUtil.FindMany("treatments", filter)
-	if findErr != nil {
-		return nil, findErr
-	}
-
 	treatments := []*models.GetPatientTreatmentsResponse{}
 
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-
-		treatment := models.GetPatientTreatmentsResponse{}
-
-		decodeErr := cursor.Decode(&treatment)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		treatments = append(treatments, &treatment)
-
+	result := s.OrmUtil.Db().Model(&models.Treatment{}).Where("patient_id = ?", patientID).Order("created_at ASC").Find(&treatments)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return treatments, nil

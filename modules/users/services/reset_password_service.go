@@ -5,16 +5,16 @@ import (
 	"time"
 
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // ResetPasswordService is a service that (re)sets the password for a user based on a token sent to their email
 type ResetPasswordService struct {
-	DatabaseUtil database.IDatabaseUtil
-	MatchUtil    match.IMatchUtil
-	HashUtil     hash.IHashUtil
+	MatchUtil match.IMatchUtil
+	HashUtil  hash.IHashUtil
+	OrmUtil   orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -27,9 +27,9 @@ func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 
 	reset := &models.ResetPassword{}
 
-	findTokenErr := s.DatabaseUtil.FindOne("resets", map[string]interface{}{"token": resetInput.Token}, reset)
-	if findTokenErr != nil {
-		return findTokenErr
+	result := s.OrmUtil.Db().Where("token = ?", resetInput.Token).Limit(1).Find(&reset)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if reset.UserID == "" || reset.ExpiresAt < time.Now().Unix() || reset.Redeemed {
@@ -38,9 +38,9 @@ func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 
 	user := &models.User{}
 
-	findUserErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"id": reset.UserID}, user)
-	if findUserErr != nil {
-		return findUserErr
+	result = s.OrmUtil.Db().Where("id = ?", reset.UserID).Limit(1).Find(&user)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if user.ID == "" || !user.Active {
@@ -54,16 +54,16 @@ func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 
 	user.Password = hashedPwd
 
-	updateUserErr := s.DatabaseUtil.UpdateOne("users", map[string]interface{}{"id": reset.UserID}, user)
-	if updateUserErr != nil {
-		return updateUserErr
+	result = s.OrmUtil.Db().Save(&user)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	reset.Redeemed = true
 
-	expireTokenErr := s.DatabaseUtil.UpdateOne("resets", map[string]interface{}{"token": resetInput.Token}, reset)
-	if expireTokenErr != nil {
-		return expireTokenErr
+	result = s.OrmUtil.Db().Save(&reset)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

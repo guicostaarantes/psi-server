@@ -8,11 +8,11 @@ type IMailUtil interface {
 
 // Message holds the payload of a mail message
 type Message struct {
-	FromAddress string   `json:"fromAddress" bson:"fromAddress"`
-	FromName    string   `json:"fromName" bson:"fromName"`
-	To          []string `json:"to" bson:"to"`
-	Cc          []string `json:"cc" bson:"cc"`
-	Cco         []string `json:"cco" bson:"cco"`
-	Subject     string   `json:"subject" bson:"subject"`
-	HTML        string   `json:"html" bson:"html"`
+	FromAddress string   `json:"fromAddress"`
+	FromName    string   `json:"fromName"`
+	To          []string `json:"to"`
+	Cc          []string `json:"cc"`
+	Cco         []string `json:"cco"`
+	Subject     string   `json:"subject"`
+	HTML        string   `json:"html"`
 }

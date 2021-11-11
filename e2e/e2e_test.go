@@ -11,15 +11,16 @@ import (
 	"testing"
 	"time"
 
+	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 	"github.com/go-chi/chi"
 	"github.com/guicostaarantes/psi-server/graph"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/logging"
 	"github.com/guicostaarantes/psi-server/utils/mail"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 	"github.com/guicostaarantes/psi-server/utils/token"
 	"github.com/stretchr/testify/assert"
@@ -49,10 +50,6 @@ func TestEnd2End(t *testing.T) {
 
 	loggingUtil := logging.PrintLoggingUtil{}
 
-	databaseUtil := database.FakeDatabaseUtil{
-		Client: database.FakeDBClientFactory(),
-	}
-
 	hashUtil := hash.BcryptHashUtil{
 		Cost:        4,
 		LoggingUtil: loggingUtil,
@@ -70,6 +67,27 @@ func TestEnd2End(t *testing.T) {
 		LoggingUtil: loggingUtil,
 	}
 
+	postgres := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
+		Username("green").
+		Password("blue").
+		Database("red").
+		Port(9876).
+		Version(embeddedpostgres.V12).
+		RuntimePath(fmt.Sprintf("./test-%d", time.Now().Unix())).
+		StartTimeout(10 * time.Second))
+	err := postgres.Start()
+	if err != nil {
+		panic(err)
+	}
+
+	defer postgres.Stop()
+
+	ormUtil := orm.PostgresOrmUtil{}
+	ormUtil.Connect("host=localhost user=green password=blue dbname=red port=9876")
+
+	// ormUtil := orm.SqliteOrmUtil{}
+	// ormUtil.Connect(fmt.Sprintf("./test-%d.db", time.Now().Unix()))
+
 	serializingUtil := serializing.JsonSerializingUtil{
 		LoggingUtil: loggingUtil,
 	}
@@ -80,11 +98,11 @@ func TestEnd2End(t *testing.T) {
 	}
 
 	res := &resolvers.Resolver{
-		DatabaseUtil:                 &databaseUtil,
 		HashUtil:                     hashUtil,
 		IdentifierUtil:               identifierUtil,
 		MailUtil:                     mailUtil,
 		MatchUtil:                    matchUtil,
+		OrmUtil:                      &ormUtil,
 		SerializingUtil:              serializingUtil,
 		TokenUtil:                    tokenUtil,
 		MaxAffinityNumber:            int64(5),
@@ -1586,11 +1604,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":6},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":6}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":8},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":7}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":7},{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":8}]}}}", response.Body.String())
 
 	})
 
@@ -2331,11 +2349,6 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		appointmentID := fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "id")
-		storedVariables["appointment_1_id"] = appointmentID
-		appointmentID = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "id")
-		storedVariables["appointment_2_id"] = appointmentID
-
 		appointmentStatus := fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "status")
 		assert.Equal(t, "CREATED", appointmentStatus)
 		appointmentStatus = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "status")
@@ -2352,6 +2365,29 @@ func TestEnd2End(t *testing.T) {
 		appointmentStart = int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "start"))
 		intervalDuration = res.ScheduleIntervalSeconds * appointmentFrequency
 		assert.Equal(t, appointmentStart%intervalDuration, appointmentPhase)
+
+		query = `query {
+			myPatientProfile {
+				appointments {
+					id
+					start
+					status
+					treatment {
+						frequency
+						phase
+					}
+				}
+			}
+		}`
+
+		response = gql(router, query, storedVariables["patient_token"])
+
+		storedVariables["appointment_1_id"] = fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "id")
+
+		response = gql(router, query, storedVariables["coordinator_token"])
+
+		storedVariables["appointment_2_id"] = fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "id")
+
 	})
 
 	t.Run("should confirm appointment by patient", func(t *testing.T) {
@@ -2948,19 +2984,19 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, "")
 
-		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"}]}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"}]}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"}]}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"}]}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"}]}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"}]}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"}]}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"translations\":[{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:female\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero feminino?\"},{\"lang\":\"pt-BR\",\"key\":\"psy-pref:gender:male\",\"value\":\"Quão confortável você se sente sendo atendido por um psicólogo do gênero masculino?\"}]}}", response.Body.String())
 
 	})
 

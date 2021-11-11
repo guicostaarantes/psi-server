@@ -1,18 +1,17 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"strings"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetCharacteristicsByIDService is a service that gets the characteristics of a profile based on its id
 type GetCharacteristicsByIDService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -22,16 +21,16 @@ func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.Characteris
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"id": id}, &pat)
-	if findErr != nil {
-		return nil, findErr
+	result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&pat)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 	if pat.ID != "" {
 		target = models.PatientTarget
 	} else {
-		findErr = s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"id": id}, &psy)
-		if findErr != nil {
-			return nil, findErr
+		result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&psy)
+		if result.Error != nil {
+			return nil, result.Error
 		}
 		if psy.ID != "" {
 			target = models.PsychologistTarget
@@ -40,55 +39,37 @@ func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.Characteris
 		}
 	}
 
-	characteristics := []*models.CharacteristicChoiceResponse{}
+	response := []*models.CharacteristicChoiceResponse{}
+	characteristics := []*models.Characteristic{}
+	characteristicsChoices := []*models.CharacteristicChoice{}
 
-	charCursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
-	if findErr != nil {
-		return nil, findErr
+	result = s.OrmUtil.Db().Where("target = ?", target).Find(&characteristics)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	defer charCursor.Close(context.Background())
+	result = s.OrmUtil.Db().Where("profile_id = ?", id).Find(&characteristicsChoices)
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
-	for charCursor.Next(context.Background()) {
-		characteristic := models.Characteristic{}
-
-		decodeErr := charCursor.Decode(&characteristic)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		characteristicResponse := models.CharacteristicChoiceResponse{
-			Name:           characteristic.Name,
-			Type:           characteristic.Type,
+	for _, char := range characteristics {
+		response = append(response, &models.CharacteristicChoiceResponse{
+			Name:           char.Name,
+			Type:           char.Type,
 			SelectedValues: []string{},
-			PossibleValues: strings.Split(characteristic.PossibleValues, ","),
-		}
-
-		characteristics = append(characteristics, &characteristicResponse)
+			PossibleValues: strings.Split(char.PossibleValues, ","),
+		})
 	}
 
-	choiceCursor, findErr := s.DatabaseUtil.FindMany("characteristic_choices", map[string]interface{}{"profileId": id})
-	if findErr != nil {
-		return nil, findErr
-	}
-
-	defer choiceCursor.Close(context.Background())
-
-	for choiceCursor.Next(context.Background()) {
-		choice := models.CharacteristicChoice{}
-
-		decodeErr := choiceCursor.Decode(&choice)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		for _, char := range characteristics {
+	for _, choice := range characteristicsChoices {
+		for _, char := range response {
 			if char.Name == choice.CharacteristicName {
 				char.SelectedValues = append(char.SelectedValues, choice.SelectedValue)
 			}
 		}
 	}
 
-	return characteristics, nil
+	return response, nil
 
 }

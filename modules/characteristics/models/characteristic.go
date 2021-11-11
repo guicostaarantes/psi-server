@@ -1,5 +1,11 @@
 package models
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 // CharacteristicType represents the possible inputs and choices of a characteristic
 type CharacteristicType string
 
@@ -24,25 +30,30 @@ const (
 
 // Characteristic is the schema for a characteristic and its possible values
 type Characteristic struct {
-	Name           string               `json:"name" bson:"name"`
-	Type           CharacteristicType   `json:"type" bson:"type"`
-	Target         CharacteristicTarget `json:"target" bson:"target"`
-	PossibleValues string               `json:"possibleValues" bson:"possibleValues"`
+	ID             string               `json:"id" gorm:"primaryKey"`
+	CreatedAt      time.Time            `json:"createdAt`
+	UpdatedAt      time.Time            `json:"updatedAt`
+	DeletedAt      gorm.DeletedAt       `gorm:"index"`
+	Name           string               `json:"name"`
+	Type           CharacteristicType   `json:"type"`
+	Target         CharacteristicTarget `json:"target"`
+	PossibleValues string               `json:"possibleValues"`
 }
 
 // CharacteristicChoice is the schema for a choice of characteristics made by a profile
 type CharacteristicChoice struct {
-	ProfileID          string               `json:"profileId" bson:"profileId"`
-	Target             CharacteristicTarget `json:"target" bson:"target"`
-	CharacteristicName string               `json:"characteristicName" bson:"characteristicName"`
-	SelectedValue      string               `json:"selectedValue" bson:"selectedValue"`
+	ID                 string               `json:"id" gorm:"primaryKey"`
+	ProfileID          string               `json:"profileId" gorm:"index"`
+	Target             CharacteristicTarget `json:"target"`
+	CharacteristicName string               `json:"characteristicName"`
+	SelectedValue      string               `json:"selectedValue"`
 }
 
 // Preference is the schema for the fact that a patient prefers working with a certain kind of psychologist, and vice-versa
 type Preference struct {
-	ProfileID          string               `json:"profileId" bson:"profileId"`
-	Target             CharacteristicTarget `json:"target" bson:"target"`
-	CharacteristicName string               `json:"characteristicName" bson:"characteristicName"`
-	SelectedValue      string               `json:"selectedValue" bson:"selectedValue"`
-	Weight             int64                `json:"weight" bson:"weight"`
+	ProfileID          string               `json:"profileId" gorm:"index"`
+	Target             CharacteristicTarget `json:"target" gorm:"index"`
+	CharacteristicName string               `json:"characteristicName"`
+	SelectedValue      string               `json:"selectedValue"`
+	Weight             int64                `json:"weight"`
 }

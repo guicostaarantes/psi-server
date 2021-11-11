@@ -4,12 +4,12 @@ import (
 	"errors"
 
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // DeleteTreatmentService is a service that changes data from a treatment
 type DeleteTreatmentService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -17,9 +17,9 @@ func (s DeleteTreatmentService) Execute(id string, psychologistID string, priceR
 
 	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ? AND psychologist_id = ?", id, psychologistID).Limit(1).Find(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if treatment.ID == "" {
@@ -32,23 +32,23 @@ func (s DeleteTreatmentService) Execute(id string, psychologistID string, priceR
 
 	priceRangeOffering := models.TreatmentPriceRangeOffering{}
 
-	findErr = s.DatabaseUtil.FindOne("treatment_price_range_offerings", map[string]interface{}{"priceRangeName": priceRangeName, "psychologistId": psychologistID}, &priceRangeOffering)
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("psychologist_id = ? AND price_range_name = ?", treatment.PsychologistID, priceRangeName).Limit(1).Find(&priceRangeOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if priceRangeOffering.ID == "" {
 		return errors.New("price range offering not found")
 	}
 
-	writeErr := s.DatabaseUtil.DeleteOne("treatments", map[string]interface{}{"id": id})
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Delete(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	writeErr = s.DatabaseUtil.DeleteOne("treatment_price_range_offerings", map[string]interface{}{"id": priceRangeOffering.ID})
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Delete(&priceRangeOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

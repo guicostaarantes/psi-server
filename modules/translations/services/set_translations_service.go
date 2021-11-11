@@ -2,37 +2,56 @@ package services
 
 import (
 	"github.com/guicostaarantes/psi-server/modules/translations/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetTranslationsService is a service that sets translations
 type SetTranslationsService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
 func (s SetTranslationsService) Execute(lang string, input []*models.TranslationInput) error {
 
-	translations := []interface{}{}
+	keys := []string{}
+	inputs := map[string]string{}
 
 	for _, msg := range input {
-		deleteErr := s.DatabaseUtil.DeleteMany("translations", map[string]interface{}{"lang": lang, "key": msg.Key})
-		if deleteErr != nil {
-			return deleteErr
-		}
-
-		newTranslation := models.Translation{
-			Lang:  lang,
-			Key:   msg.Key,
-			Value: msg.Value,
-		}
-
-		translations = append(translations, newTranslation)
+		keys = append(keys, msg.Key)
+		inputs[msg.Key] = msg.Value
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("translations", translations)
-	if writeErr != nil {
-		return writeErr
+	translationResults := []*models.Translation{}
+
+	result := s.OrmUtil.Db().Where("lang = ? AND key IN ?", lang, keys).Find(&translationResults)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	translations := map[string]*models.Translation{}
+
+	for _, trans := range translationResults {
+		translations[trans.Key] = trans
+	}
+
+	for _, key := range keys {
+		if _, exists := translations[key]; exists {
+			translations[key].Value = inputs[key]
+			result := s.OrmUtil.Db().Save(translations[key])
+			if result.Error != nil {
+				return result.Error
+			}
+		} else {
+			newTranslation := models.Translation{
+				Lang:  lang,
+				Key:   key,
+				Value: inputs[key],
+			}
+			result := s.OrmUtil.Db().Create(&newTranslation)
+			if result.Error != nil {
+				return result.Error
+			}
+		}
 	}
 
 	return nil

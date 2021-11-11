@@ -1,13 +1,11 @@
 package files_services
 
 import (
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/file_storage"
 )
 
 // UploadAvatarFileService is a service that uploads a new avatar file to the storage
 type UploadAvatarFileService struct {
-	DatabaseUtil    database.IDatabaseUtil
 	FileStorageUtil file_storage.IFileStorageUtil
 }
 

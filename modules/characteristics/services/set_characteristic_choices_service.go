@@ -1,18 +1,20 @@
 package services
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // SetCharacteristicChoicesService is a service that assigns a characteristic to a patient profile
 type SetCharacteristicChoicesService struct {
-	DatabaseUtil database.IDatabaseUtil
+	IdentifierUtil identifier.IIdentifierUtil
+	OrmUtil        orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -22,16 +24,16 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
-	findErr := s.DatabaseUtil.FindOne("patients", map[string]interface{}{"id": id}, &pat)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&pat)
+	if result.Error != nil {
+		return result.Error
 	}
 	if pat.ID != "" {
 		target = models.PatientTarget
 	} else {
-		findErr = s.DatabaseUtil.FindOne("psychologists", map[string]interface{}{"id": id}, &psy)
-		if findErr != nil {
-			return findErr
+		result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&psy)
+		if result.Error != nil {
+			return result.Error
 		}
 		if psy.ID != "" {
 			target = models.PsychologistTarget
@@ -40,115 +42,102 @@ func (s SetCharacteristicChoicesService) Execute(id string, input []*models.SetC
 		}
 	}
 
-	choices := []interface{}{}
+	characteristics := []*models.Characteristic{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("characteristics", map[string]interface{}{"target": string(target)})
-	if findErr != nil {
-		return findErr
+	result = s.OrmUtil.Db().Where("target = ?", target).Find(&characteristics)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	defer cursor.Close(context.Background())
+	characteristicsTypes := map[string]models.CharacteristicType{}
+	possibleValues := map[string]map[string]bool{}
 
-	for cursor.Next(context.Background()) {
-		characteristic := models.Characteristic{}
-
-		decodeErr := cursor.Decode(&characteristic)
-		if decodeErr != nil {
-			return decodeErr
+	for _, char := range characteristics {
+		characteristicsTypes[char.Name] = char.Type
+		for _, pv := range strings.Split(char.PossibleValues, ",") {
+			if _, exists := possibleValues[char.Name]; !exists {
+				possibleValues[char.Name] = map[string]bool{}
+			}
+			possibleValues[char.Name][pv] = true
 		}
+	}
 
-		for _, i := range input {
+	choicesToCreate := []*models.CharacteristicChoice{}
 
-			if characteristic.Name == i.CharacteristicName {
+	for _, newChoices := range input {
 
-				if characteristic.Type == models.Boolean {
+		switch characteristicsTypes[newChoices.CharacteristicName] {
 
-					if len(i.SelectedValues) != 1 || (i.SelectedValues[0] != "true" && i.SelectedValues[0] != "false") {
-						return errors.New("characteristic '" + characteristic.Name + "' must be either true or false")
-					}
+		case models.Boolean:
+			if len(newChoices.SelectedValues) != 1 || (newChoices.SelectedValues[0] != "true" && newChoices.SelectedValues[0] != "false") {
+				return fmt.Errorf("characteristic '%s' must be either true or false", newChoices.CharacteristicName)
+			}
+			_, choID, choIDErr := s.IdentifierUtil.GenerateIdentifier()
+			if choIDErr != nil {
+				return choIDErr
+			}
+			choicesToCreate = append(choicesToCreate, &models.CharacteristicChoice{
+				ID:                 choID,
+				ProfileID:          id,
+				Target:             target,
+				CharacteristicName: newChoices.CharacteristicName,
+				SelectedValue:      newChoices.SelectedValues[0],
+			})
 
-					choices = append(choices, models.CharacteristicChoice{
-						ProfileID:          id,
-						Target:             target,
-						CharacteristicName: i.CharacteristicName,
-						SelectedValue:      i.SelectedValues[0],
-					})
+		case models.Single:
+			if len(newChoices.SelectedValues) != 1 {
+				return fmt.Errorf("characteristic '%s' needs exactly one value", newChoices.CharacteristicName)
+			}
+			if _, exists := possibleValues[newChoices.CharacteristicName][newChoices.SelectedValues[0]]; !exists {
+				return fmt.Errorf("option '%s' is not possible in characteristic %s", newChoices.SelectedValues[0], newChoices.CharacteristicName)
+			}
+			_, choID, choIDErr := s.IdentifierUtil.GenerateIdentifier()
+			if choIDErr != nil {
+				return choIDErr
+			}
+			choicesToCreate = append(choicesToCreate, &models.CharacteristicChoice{
+				ID:                 choID,
+				ProfileID:          id,
+				Target:             target,
+				CharacteristicName: newChoices.CharacteristicName,
+				SelectedValue:      newChoices.SelectedValues[0],
+			})
 
-					continue
-
+		case models.Multiple:
+			for _, sv := range newChoices.SelectedValues {
+				if _, exists := possibleValues[newChoices.CharacteristicName][sv]; !exists {
+					return fmt.Errorf("option %s is not possible in characteristic %s", sv, newChoices.CharacteristicName)
 				}
-
-				if characteristic.Type == models.Single {
-
-					if len(i.SelectedValues) != 1 {
-						return errors.New("characteristic '" + characteristic.Name + "' needs exactly one value")
-					}
-
-					possibleValues := strings.Split(characteristic.PossibleValues, ",")
-
-					var valueExists = false
-					for _, posValue := range possibleValues {
-						if posValue == i.SelectedValues[0] {
-							valueExists = true
-						}
-					}
-
-					if !valueExists {
-						return errors.New("option '" + i.SelectedValues[0] + "' is not possible in characteristic " + i.CharacteristicName)
-					}
-
-					choices = append(choices, models.CharacteristicChoice{
-						ProfileID:          id,
-						Target:             target,
-						CharacteristicName: i.CharacteristicName,
-						SelectedValue:      i.SelectedValues[0],
-					})
-
-					continue
-
+				_, choID, choIDErr := s.IdentifierUtil.GenerateIdentifier()
+				if choIDErr != nil {
+					return choIDErr
 				}
-
-				if characteristic.Type == models.Multiple {
-
-					possibleValues := strings.Split(characteristic.PossibleValues, ",")
-
-					for _, value := range i.SelectedValues {
-						var valueExists = false
-						for _, posValue := range possibleValues {
-							if posValue == value {
-								valueExists = true
-							}
-						}
-						if !valueExists {
-							return errors.New("option '" + value + "' is not possible in characteristic " + i.CharacteristicName)
-						}
-
-						choices = append(choices, models.CharacteristicChoice{
-							ProfileID:          id,
-							Target:             target,
-							CharacteristicName: i.CharacteristicName,
-							SelectedValue:      value,
-						})
-					}
-
-					continue
-
-				}
-
+				choicesToCreate = append(choicesToCreate, &models.CharacteristicChoice{
+					ID:                 choID,
+					ProfileID:          id,
+					Target:             target,
+					CharacteristicName: newChoices.CharacteristicName,
+					SelectedValue:      sv,
+				})
 			}
 
+		default:
+			return fmt.Errorf("characteristic has unknown type %s", newChoices.CharacteristicName)
+
 		}
 
 	}
 
-	deleteErr := s.DatabaseUtil.DeleteMany("characteristic_choices", map[string]interface{}{"profileId": id})
-	if deleteErr != nil {
-		return deleteErr
+	result = s.OrmUtil.Db().Delete(&models.CharacteristicChoice{}, "profile_id = ?", id)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	writeErr := s.DatabaseUtil.InsertMany("characteristic_choices", choices)
-	if writeErr != nil {
-		return writeErr
+	if len(choicesToCreate) > 0 {
+		result = s.OrmUtil.Db().Create(&choicesToCreate)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 
 	return nil

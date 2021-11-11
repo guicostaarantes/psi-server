@@ -1,38 +1,22 @@
 package services
 
 import (
-	"context"
-
 	"github.com/guicostaarantes/psi-server/modules/agreements/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetAgreementsByProfileIdService is a service that gets the agreements for a specific profileId
 type GetAgreementsByProfileIdService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
-func (s GetAgreementsByProfileIdService) Execute(profileId string, profileType models.TermProfileType) ([]*models.Agreement, error) {
+func (s GetAgreementsByProfileIdService) Execute(profileID string, profileType models.TermProfileType) ([]*models.Agreement, error) {
 
 	agreements := []*models.Agreement{}
 
-	cursor, findErr := s.DatabaseUtil.FindMany("agreements", map[string]interface{}{"profileId": profileId})
-	if findErr != nil {
-		return nil, findErr
-	}
-
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		agreement := models.Agreement{}
-
-		decodeErr := cursor.Decode(&agreement)
-		if decodeErr != nil {
-			return nil, decodeErr
-		}
-
-		agreements = append(agreements, &agreement)
-
+	result := s.OrmUtil.Db().Where("profile_id = ?", profileID).Find(&agreements)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return agreements, nil

@@ -2,12 +2,12 @@ package services
 
 import (
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // GetTreatmentForPatientService is a service that gets a treatment based on its id
 type GetTreatmentForPatientService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -15,9 +15,9 @@ func (s GetTreatmentForPatientService) Execute(id string) (*models.GetPatientTre
 
 	treatment := &models.GetPatientTreatmentsResponse{}
 
-	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id}, &treatment)
-	if findErr != nil {
-		return nil, findErr
+	result := s.OrmUtil.Db().Model(&models.Treatment{}).Where("id = ?", id).Limit(1).Find(&treatment)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return treatment, nil

@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	"github.com/guicostaarantes/psi-server/modules/appointments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // ConfirmAppointmentByPsychologistService is a service that the psychologist will use to confirm an appointment
 type ConfirmAppointmentByPsychologistService struct {
-	DatabaseUtil database.IDatabaseUtil
+	OrmUtil orm.IOrmUtil
 }
 
 // Execute is the method that runs the business logic of the service
@@ -18,9 +18,9 @@ func (s ConfirmAppointmentByPsychologistService) Execute(id string, psychologist
 
 	appointment := models.Appointment{}
 
-	findErr := s.DatabaseUtil.FindOne("appointments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &appointment)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ? AND psychologist_id = ?", id, psychologistID).Limit(1).Find(&appointment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if appointment.ID == "" {
@@ -39,9 +39,9 @@ func (s ConfirmAppointmentByPsychologistService) Execute(id string, psychologist
 
 	appointment.Reason = ""
 
-	writeErr := s.DatabaseUtil.UpdateOne("appointments", map[string]interface{}{"id": id}, appointment)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Save(&appointment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

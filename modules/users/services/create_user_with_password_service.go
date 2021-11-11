@@ -4,19 +4,19 @@ import (
 	"errors"
 
 	models "github.com/guicostaarantes/psi-server/modules/users/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
 )
 
 // CreateUserWithPasswordService is a service that creates users and assigns them a password immediately
 type CreateUserWithPasswordService struct {
-	DatabaseUtil    database.IDatabaseUtil
 	HashUtil        hash.IHashUtil
 	IdentifierUtil  identifier.IIdentifierUtil
 	MatchUtil       match.IMatchUtil
+	OrmUtil         orm.IOrmUtil
 	SerializingUtil serializing.ISerializingUtil
 }
 
@@ -35,9 +35,9 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 
 	userWithSameEmail := models.User{}
 
-	findErr := s.DatabaseUtil.FindOne("users", map[string]interface{}{"email": userInput.Email}, &userWithSameEmail)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("email = ?", userInput.Email).Limit(1).Find(&userWithSameEmail)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if userWithSameEmail.ID != "" {
@@ -63,9 +63,9 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 
 	user.Password = hashedPwd
 
-	writeErr := s.DatabaseUtil.InsertOne("users", user)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Create(&user)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

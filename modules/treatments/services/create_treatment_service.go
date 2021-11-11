@@ -4,14 +4,14 @@ import (
 	"errors"
 
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // CreateTreatmentService is a service that creates a new treatment for a psychologist
 type CreateTreatmentService struct {
-	DatabaseUtil                   database.IDatabaseUtil
 	IdentifierUtil                 identifier.IIdentifierUtil
+	OrmUtil                        orm.IOrmUtil
 	CheckTreatmentCollisionService *CheckTreatmentCollisionService
 }
 
@@ -25,9 +25,9 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 
 	priceRange := models.TreatmentPriceRange{}
 
-	findErr := s.DatabaseUtil.FindOne("treatment_price_ranges", map[string]interface{}{"name": input.PriceRangeName}, &priceRange)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("name = ?", input.PriceRangeName).Limit(1).Find(&priceRange)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if priceRange.Name == "" {
@@ -48,9 +48,9 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		Status:         models.Pending,
 	}
 
-	writeErr := s.DatabaseUtil.InsertOne("treatments", treatment)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Create(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	_, treatmentPriceOfferingID, treatmentPriceOfferingIDErr := s.IdentifierUtil.GenerateIdentifier()
@@ -64,9 +64,9 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		PriceRangeName: input.PriceRangeName,
 	}
 
-	writeErr = s.DatabaseUtil.InsertOne("treatment_price_range_offerings", treatmentPriceOffering)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Create(&treatmentPriceOffering)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil

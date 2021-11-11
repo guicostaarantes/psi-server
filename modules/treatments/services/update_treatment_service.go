@@ -4,12 +4,12 @@ import (
 	"errors"
 
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
-	"github.com/guicostaarantes/psi-server/utils/database"
+	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // UpdateTreatmentService is a service that changes data from a treatment
 type UpdateTreatmentService struct {
-	DatabaseUtil                   database.IDatabaseUtil
+	OrmUtil                        orm.IOrmUtil
 	CheckTreatmentCollisionService *CheckTreatmentCollisionService
 }
 
@@ -18,9 +18,9 @@ func (s UpdateTreatmentService) Execute(id string, psychologistID string, input 
 
 	treatment := models.Treatment{}
 
-	findErr := s.DatabaseUtil.FindOne("treatments", map[string]interface{}{"id": id, "psychologistId": psychologistID}, &treatment)
-	if findErr != nil {
-		return findErr
+	result := s.OrmUtil.Db().Where("id = ? AND psychologist_id = ?", id, psychologistID).Limit(1).Find(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	if treatment.ID == "" {
@@ -45,9 +45,9 @@ func (s UpdateTreatmentService) Execute(id string, psychologistID string, input 
 	treatment.Duration = input.Duration
 	treatment.PriceRangeName = input.PriceRangeName
 
-	writeErr := s.DatabaseUtil.UpdateOne("treatments", map[string]interface{}{"id": id}, treatment)
-	if writeErr != nil {
-		return writeErr
+	result = s.OrmUtil.Db().Save(&treatment)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil
