@@ -2,3 +2,4 @@ cover.out
 coverage.html
 db.json
 test-*
+populate/report-*
