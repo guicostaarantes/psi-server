@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
@@ -17,7 +19,16 @@ type GetTopAffinitiesForPatientService struct {
 
 // Execute is the method that runs the business logic of the service
 func (s GetTopAffinitiesForPatientService) Execute(patientID string) ([]*models.Affinity, error) {
-	cooldown, getErr := s.GetCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TopAffinitiesSet)
+	cooldown, getErr := s.GetCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TreatmentInterrupted)
+	if getErr != nil {
+		return nil, getErr
+	}
+
+	if cooldown != nil {
+		return nil, fmt.Errorf("assign treatment is blocked for this user until %d", cooldown.ValidUntil)
+	}
+
+	cooldown, getErr = s.GetCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TopAffinitiesSet)
 	if getErr != nil {
 		return nil, getErr
 	}

@@ -5,11 +5,16 @@ package resolvers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 )
+
+func (r *affinityResolver) CreatedAt(ctx context.Context, obj *characteristics_models.Affinity) (int64, error) {
+	panic(fmt.Errorf("not implemented"))
+}
 
 func (r *affinityResolver) Psychologist(ctx context.Context, obj *characteristics_models.Affinity) (*profiles_models.Psychologist, error) {
 	return r.GetPsychologistService().Execute(obj.PsychologistID)

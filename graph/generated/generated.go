@@ -285,6 +285,7 @@ type ComplexityRoot struct {
 }
 
 type AffinityResolver interface {
+	CreatedAt(ctx context.Context, obj *models3.Affinity) (int64, error)
 	Psychologist(ctx context.Context, obj *models3.Affinity) (*models5.Psychologist, error)
 }
 type MutationResolver interface {
@@ -3036,14 +3037,14 @@ func (ec *executionContext) _Affinity_createdAt(ctx context.Context, field graph
 		Object:     "Affinity",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
+		return ec.resolvers.Affinity().CreatedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -11643,10 +11644,19 @@ func (ec *executionContext) _Affinity(ctx context.Context, sel ast.SelectionSet,
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Affinity")
 		case "createdAt":
-			out.Values[i] = ec._Affinity_createdAt(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Affinity_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "psychologist":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {

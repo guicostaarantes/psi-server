@@ -73,20 +73,21 @@ func main() {
 	}
 
 	res := &resolvers.Resolver{
-		FileStorageUtil:              fileStorageUtil,
-		HashUtil:                     hashUtil,
-		IdentifierUtil:               identifierUtil,
-		MailUtil:                     mailUtil,
-		MatchUtil:                    matchUtil,
-		OrmUtil:                      &ormUtil,
-		SerializingUtil:              serializingUtil,
-		TokenUtil:                    tokenUtil,
-		MaxAffinityNumber:            int64(5),
-		ScheduleIntervalSeconds:      int64(604800),
-		SecondsToCooldownReset:       int64(86400),
-		SecondsToExpire:              int64(28800),
-		SecondsToExpireReset:         int64(86400),
-		TopAffinitiesCooldownSeconds: int64(86400),
+		FileStorageUtil:                   fileStorageUtil,
+		HashUtil:                          hashUtil,
+		IdentifierUtil:                    identifierUtil,
+		MailUtil:                          mailUtil,
+		MatchUtil:                         matchUtil,
+		OrmUtil:                           &ormUtil,
+		SerializingUtil:                   serializingUtil,
+		TokenUtil:                         tokenUtil,
+		MaxAffinityNumber:                 int64(5),
+		ScheduleIntervalSeconds:           int64(604800),
+		SecondsToCooldownReset:            int64(86400),
+		SecondsToExpire:                   int64(28800),
+		SecondsToExpireReset:              int64(86400),
+		InterruptTreatmentCooldownSeconds: int64(259200),
+		TopAffinitiesCooldownSeconds:      int64(86400),
 	}
 
 	router := graph.CreateServer(res)

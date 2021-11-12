@@ -7,6 +7,7 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/guicostaarantes/psi-server/graph"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/logging"
@@ -98,24 +100,21 @@ func TestEnd2End(t *testing.T) {
 	}
 
 	res := &resolvers.Resolver{
-		HashUtil:                     hashUtil,
-		IdentifierUtil:               identifierUtil,
-		MailUtil:                     mailUtil,
-		MatchUtil:                    matchUtil,
-		OrmUtil:                      &ormUtil,
-		SerializingUtil:              serializingUtil,
-		TokenUtil:                    tokenUtil,
-		MaxAffinityNumber:            int64(5),
-		ScheduleIntervalSeconds:      int64(604800),
-		SecondsToCooldownReset:       int64(86400),
-		SecondsToExpire:              int64(1800),
-		SecondsToExpireReset:         int64(86400),
-		TopAffinitiesCooldownSeconds: int64(86400),
+		HashUtil:                          hashUtil,
+		IdentifierUtil:                    identifierUtil,
+		MailUtil:                          mailUtil,
+		MatchUtil:                         matchUtil,
+		OrmUtil:                           &ormUtil,
+		SerializingUtil:                   serializingUtil,
+		TokenUtil:                         tokenUtil,
+		MaxAffinityNumber:                 int64(5),
+		ScheduleIntervalSeconds:           int64(604800),
+		SecondsToCooldownReset:            int64(86400),
+		SecondsToExpire:                   int64(1800),
+		SecondsToExpireReset:              int64(86400),
+		InterruptTreatmentCooldownSeconds: int64(259200),
+		TopAffinitiesCooldownSeconds:      int64(86400),
 	}
-
-	// If you need to debug the contents of the database at a specific point, insert this code:
-	// db, _ := res.DatabaseUtil.GetMockedDatabases()
-	// ioutil.WriteFile("./db.json", db, 0644);
 
 	os.Setenv("PSI_BOOTSTRAP_USER", "coordinator@psi.com.br|Abc123!@#")
 
@@ -234,11 +233,11 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, "")
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
-		response = gql(router, query, storedVariables["psychologist_token"])
+		response = gql(router, query, storedVariables["jobruuner_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createPsychologistUser\"]}],\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
@@ -259,7 +258,11 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"createPsychologistUser\":null}}", response.Body.String())
 
-		// TODO: navigate GetMockedDatabases to check if there is only one tom.brady@psi.com.br
+		users := []users_models.User{}
+
+		ormUtil.Db().Where("email = ?", "tom.brady@psi.com.br").Limit(2).Find(&users)
+
+		assert.Equal(t, 1, len(users))
 	})
 
 	t.Run("should reset password with token sent via email", func(t *testing.T) {
@@ -1927,6 +1930,294 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should create patient 2", func(t *testing.T) {
+
+		query := `mutation {
+			createUserWithPassword(
+			  input: {
+				email: "patient2@psi.com.br"
+				password: "Xyz*()890"
+				role: PATIENT
+			  }
+			)
+		}`
+
+		response := gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+
+		query = `{
+			authenticateUser(input: { 
+				email: "patient2@psi.com.br", 
+				password: "Xyz*()890"
+			}) { 
+				token 
+				expiresAt 
+			} 
+		}`
+
+		response = gql(router, query, "")
+
+		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		assert.NotEqual(t, "", token)
+
+		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
+		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+
+		storedVariables["patient_2_token"] = token
+
+		query = `mutation {
+			upsertMyPatientProfile(input: {
+				fullName: "Patient Two"
+				likeName: "Two",
+				birthDate: 239414400,
+				city: "Boston - MA"
+			})
+		}`
+
+		response = gql(router, query, storedVariables["patient_2_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+
+		query = `mutation {
+			setMyPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					selectedValues: [
+						"true"
+					]
+				},
+				{
+					characteristicName: "gender",
+					selectedValues: [
+						"female"
+					]
+				},
+				{
+					characteristicName: "income",
+					selectedValues: [
+						"D"
+					]
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["patient_2_token"])
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+
+		query = `mutation {
+			setMyPatientPreferences(input: [
+				{
+					characteristicName: "black",
+					selectedValue: "true",
+					weight: 3
+				},
+				{
+					characteristicName: "gender",
+					selectedValue: "female",
+					weight: 4
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["patient_2_token"])
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+	})
+
+	t.Run("should create patient 3", func(t *testing.T) {
+
+		query := `mutation {
+			createUserWithPassword(
+			  input: {
+				email: "patient3@psi.com.br"
+				password: "Xyz*()890"
+				role: PATIENT
+			  }
+			)
+		}`
+
+		response := gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+
+		query = `{
+			authenticateUser(input: { 
+				email: "patient3@psi.com.br", 
+				password: "Xyz*()890"
+			}) { 
+				token 
+				expiresAt 
+			} 
+		}`
+
+		response = gql(router, query, "")
+
+		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		assert.NotEqual(t, "", token)
+
+		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
+		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+
+		storedVariables["patient_3_token"] = token
+
+		query = `mutation {
+			upsertMyPatientProfile(input: {
+				fullName: "Patient Three"
+				likeName: "Three",
+				birthDate: 239414400,
+				city: "Boston - MA"
+			})
+		}`
+
+		response = gql(router, query, storedVariables["patient_3_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+
+		query = `mutation {
+			setMyPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					selectedValues: [
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					selectedValues: [
+						"male"
+					]
+				},
+				{
+					characteristicName: "income",
+					selectedValues: [
+						"B"
+					]
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["patient_3_token"])
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+
+		query = `mutation {
+			setMyPatientPreferences(input: [
+				{
+					characteristicName: "black",
+					selectedValue: "true",
+					weight: 6
+				},
+				{
+					characteristicName: "gender",
+					selectedValue: "female",
+					weight: 5
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["patient_3_token"])
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+	})
+
+	t.Run("should create patient 4", func(t *testing.T) {
+
+		query := `mutation {
+			createUserWithPassword(
+			  input: {
+				email: "patient4@psi.com.br"
+				password: "Xyz*()890"
+				role: PATIENT
+			  }
+			)
+		}`
+
+		response := gql(router, query, storedVariables["coordinator_token"])
+
+		assert.Equal(t, "{\"data\":{\"createUserWithPassword\":null}}", response.Body.String())
+
+		query = `{
+			authenticateUser(input: { 
+				email: "patient4@psi.com.br", 
+				password: "Xyz*()890"
+			}) { 
+				token 
+				expiresAt 
+			} 
+		}`
+
+		response = gql(router, query, "")
+
+		token := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "token")
+		assert.NotEqual(t, "", token)
+
+		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
+		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+
+		storedVariables["patient_4_token"] = token
+
+		query = `mutation {
+			upsertMyPatientProfile(input: {
+				fullName: "Patient Four"
+				likeName: "Four",
+				birthDate: 239414400,
+				city: "Boston - MA"
+			})
+		}`
+
+		response = gql(router, query, storedVariables["patient_4_token"])
+
+		assert.Equal(t, "{\"data\":{\"upsertMyPatientProfile\":null}}", response.Body.String())
+
+		query = `mutation {
+			setMyPatientCharacteristicChoices(input: [
+				{
+					characteristicName: "has-consulted-before",
+					selectedValues: [
+						"false"
+					]
+				},
+				{
+					characteristicName: "gender",
+					selectedValues: [
+						"male"
+					]
+				},
+				{
+					characteristicName: "income",
+					selectedValues: [
+						"B"
+					]
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["patient_4_token"])
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientCharacteristicChoices\":null}}", response.Body.String())
+
+		query = `mutation {
+			setMyPatientPreferences(input: [
+				{
+					characteristicName: "black",
+					selectedValue: "true",
+					weight: 6
+				},
+				{
+					characteristicName: "gender",
+					selectedValue: "female",
+					weight: 5
+				}
+			])
+		}`
+
+		response = gql(router, query, storedVariables["patient_4_token"])
+
+		assert.Equal(t, "{\"data\":{\"setMyPatientPreferences\":null}}", response.Body.String())
+	})
+
 	t.Run("should create treatment only if coordinator or psychologist", func(t *testing.T) {
 
 		query := `mutation {
@@ -2256,13 +2547,27 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
-	t.Run("should interrupt by psychologist if user owns the psychologist profile of the treatment", func(t *testing.T) {
+	t.Run("should not be able to assign a new treatment due to interrupt cooldown", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {
 			assignTreatment(id: %q, priceRangeName: "low")
 		}`, storedVariables["coordinator_treatment_2_id"])
 
 		response := gql(router, query, storedVariables["patient_token"])
+
+		storedVariables["interrupt_cooldown"] = strconv.FormatInt(time.Now().Unix()+res.InterruptTreatmentCooldownSeconds, 10)
+
+		assert.Equal(t, fmt.Sprintf("assign treatment is blocked for this user until %s", storedVariables["interrupt_cooldown"]), fastjson.GetString(response.Body.Bytes(), "errors", "0", "message"))
+
+	})
+
+	t.Run("should interrupt by psychologist if user owns the psychologist profile of the treatment", func(t *testing.T) {
+
+		query := fmt.Sprintf(`mutation {
+			assignTreatment(id: %q, priceRangeName: "low")
+		}`, storedVariables["coordinator_treatment_2_id"])
+
+		response := gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"assignTreatment\":null}}", response.Body.String())
 
@@ -2297,11 +2602,11 @@ func TestEnd2End(t *testing.T) {
 			assignTreatment(id: %q, priceRangeName: %q)
 		}`
 
-		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_5_id"], "high"), storedVariables["patient_token"])
+		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_5_id"], "high"), storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"treatment price range offering not found\",\"path\":[\"assignTreatment\"]}],\"data\":{\"assignTreatment\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_5_id"], "low"), storedVariables["patient_token"])
+		response = gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_5_id"], "low"), storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"assignTreatment\":null}}", response.Body.String())
 
@@ -2380,7 +2685,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		storedVariables["appointment_1_id"] = fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "id")
 
@@ -2403,7 +2708,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"confirmAppointmentByPatient\"]}],\"data\":{\"confirmAppointmentByPatient\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"]), storedVariables["patient_token"])
+		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"]), storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"confirmAppointmentByPatient\":null}}", response.Body.String())
 
@@ -2415,7 +2720,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "CONFIRMED_BY_PATIENT", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "status"))
 	})
@@ -2445,7 +2750,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "CONFIRMED_BY_BOTH", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "status"))
 	})
@@ -2489,7 +2794,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
 	})
@@ -2533,7 +2838,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
 	})
@@ -2551,7 +2856,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"cancelAppointmentByPatient\"]}],\"data\":{\"cancelAppointmentByPatient\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"]), storedVariables["patient_token"])
+		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"]), storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"cancelAppointmentByPatient\":null}}", response.Body.String())
 
@@ -2564,7 +2869,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"CANCELED_BY_PATIENT\",\"reason\":\"Maybe it's better to skip this week.\"}]}}}", response.Body.String())
 	})
@@ -2603,7 +2908,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"CANCELED_BY_PATIENT\",\"reason\":\"Maybe it's better to skip this week.\"}]}}}", response.Body.String())
 	})
@@ -2626,7 +2931,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"editAppointmentByPatient\"]}],\"data\":{\"editAppointmentByPatient\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start), storedVariables["patient_token"])
+		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start), storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"editAppointmentByPatient\":null}}", response.Body.String())
 
@@ -2644,7 +2949,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PATIENT\",\"start\":%d,\"end\":%d,\"reason\":\"I can only do it this time in that day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, start+int64(3600)), response.Body.String())
 	})
@@ -2675,7 +2980,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"CANCELED_BY_PSYCHOLOGIST\",\"reason\":\"I had a problem and will not be able to do it this week.\"}]}}}", response.Body.String())
 	})
@@ -2690,7 +2995,7 @@ func TestEnd2End(t *testing.T) {
 
 		start := time.Now().Add(24 * time.Hour).Unix()
 
-		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start), storedVariables["patient_token"])
+		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start), storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"appointment status cannot change from CANCELED_BY_PSYCHOLOGIST to EDITED_BY_PATIENT\",\"path\":[\"editAppointmentByPatient\"]}],\"data\":{\"editAppointmentByPatient\":null}}", response.Body.String())
 
@@ -2698,7 +3003,7 @@ func TestEnd2End(t *testing.T) {
 			confirmAppointmentByPatient(id: %q)
 		}`
 
-		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"]), storedVariables["patient_token"])
+		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"]), storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"appointment status cannot change from CANCELED_BY_PSYCHOLOGIST to CONFIRMED_BY_PATIENT\",\"path\":[\"confirmAppointmentByPatient\"]}],\"data\":{\"confirmAppointmentByPatient\":null}}", response.Body.String())
 
@@ -2711,7 +3016,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"CANCELED_BY_PSYCHOLOGIST\",\"reason\":\"I had a problem and will not be able to do it this week.\"}]}}}", response.Body.String())
 	})
@@ -2730,7 +3035,7 @@ func TestEnd2End(t *testing.T) {
 			interruptTreatmentByPatient(id: %q, reason: "Synergy with psychologist was not good.")
 		}`, storedVariables["psychologist_treatment_5_id"])
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"interruptTreatmentByPatient\":null}}", response.Body.String())
 
@@ -2743,7 +3048,7 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"TREATMENT_INTERRUPTED_BY_PATIENT\",\"reason\":\"Synergy with psychologist was not good.\"}]}}}", response.Body.String())
 
@@ -2780,7 +3085,7 @@ func TestEnd2End(t *testing.T) {
 			assignTreatment(id: %q, priceRangeName: "medium")
 		}`
 
-		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_4_id"]), storedVariables["patient_token"])
+		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_4_id"]), storedVariables["patient_3_token"])
 
 		assert.Equal(t, "{\"data\":{\"assignTreatment\":null}}", response.Body.String())
 
@@ -2809,10 +3114,10 @@ func TestEnd2End(t *testing.T) {
 			}
 		}`
 
-		response = gql(router, query, storedVariables["patient_token"])
+		response = gql(router, query, storedVariables["patient_3_token"])
 
-		assert.Equal(t, "TREATMENT_FINALIZED", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "1", "status"))
-		assert.Equal(t, "Tratamento finalizado", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "1", "reason"))
+		assert.Equal(t, "TREATMENT_FINALIZED", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "status"))
+		assert.Equal(t, "Tratamento finalizado", fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "reason"))
 
 	})
 
@@ -2832,7 +3137,11 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, storedVariables["psychologist_2_id"], fastjson.GetString(response.Body.Bytes(), "data", "myPatientTopAffinities", "0", "psychologist", "id"))
+		assert.Equal(t, fmt.Sprintf("assign treatment is blocked for this user until %s", storedVariables["interrupt_cooldown"]), fastjson.GetString(response.Body.Bytes(), "errors", "0", "message"))
+
+		response = gql(router, query, storedVariables["patient_3_token"])
+
+		assert.Equal(t, storedVariables["psychologist_1_id"], fastjson.GetString(response.Body.Bytes(), "data", "myPatientTopAffinities", "0", "psychologist", "id"))
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 

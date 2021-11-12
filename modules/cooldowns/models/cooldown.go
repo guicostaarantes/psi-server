@@ -18,6 +18,8 @@ const (
 type CooldownType string
 
 const (
+	// TreatmentInterrupted means that the user has interrupted a treatment
+	TreatmentInterrupted CooldownType = "TREATMENT_INTERRUPTED"
 	// TopAffinitiesSet means that the user set their top affinities for a psychologist
 	TopAffinitiesSet CooldownType = "TOP_AFFINITIES_SET"
 )

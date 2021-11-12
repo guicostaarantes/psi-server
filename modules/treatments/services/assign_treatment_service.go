@@ -7,17 +7,29 @@ import (
 	"time"
 
 	characteristic_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
+	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // AssignTreatmentService is a service that assigns a patient to a treatment and changes its status to active
 type AssignTreatmentService struct {
-	OrmUtil orm.IOrmUtil
+	OrmUtil            orm.IOrmUtil
+	GetCooldownService *cooldowns_services.GetCooldownService
 }
 
 // Execute is the method that runs the business logic of the service
 func (s AssignTreatmentService) Execute(id string, priceRangeName string, patientID string) error {
+
+	cooldown, getErr := s.GetCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TreatmentInterrupted)
+	if getErr != nil {
+		return getErr
+	}
+
+	if cooldown != nil {
+		return fmt.Errorf("assign treatment is blocked for this user until %d", cooldown.ValidUntil)
+	}
 
 	treatment := models.Treatment{}
 

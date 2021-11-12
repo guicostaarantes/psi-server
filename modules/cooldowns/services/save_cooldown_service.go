@@ -11,9 +11,10 @@ import (
 
 // SaveCooldownService is a service that stores a cooldown in a database
 type SaveCooldownService struct {
-	IdentifierUtil               identifier.IIdentifierUtil
-	OrmUtil                      orm.IOrmUtil
-	TopAffinitiesCooldownSeconds int64
+	IdentifierUtil                    identifier.IIdentifierUtil
+	OrmUtil                           orm.IOrmUtil
+	InterruptTreatmentCooldownSeconds int64
+	TopAffinitiesCooldownSeconds      int64
 }
 
 func (s SaveCooldownService) Execute(profileID string, profileType models.CooldownProfileType, cooldownType models.CooldownType) error {
@@ -24,6 +25,8 @@ func (s SaveCooldownService) Execute(profileID string, profileType models.Cooldo
 
 	var duration int64
 	switch cooldownType {
+	case models.TreatmentInterrupted:
+		duration = s.InterruptTreatmentCooldownSeconds
 	case models.TopAffinitiesSet:
 		duration = s.TopAffinitiesCooldownSeconds
 	default:
