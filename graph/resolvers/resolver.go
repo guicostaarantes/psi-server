@@ -40,6 +40,7 @@ type Resolver struct {
 	SecondsToCooldownReset                    int64
 	SecondsToExpire                           int64
 	SecondsToExpireReset                      int64
+	InterruptTreatmentCooldownSeconds         int64
 	TopAffinitiesCooldownSeconds              int64
 	askResetPasswordService                   *users_services.AskResetPasswordService
 	assignTreatmentService                    *treatments_services.AssignTreatmentService
@@ -120,7 +121,8 @@ func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordSer
 func (r *Resolver) AssignTreatmentService() *treatments_services.AssignTreatmentService {
 	if r.assignTreatmentService == nil {
 		r.assignTreatmentService = &treatments_services.AssignTreatmentService{
-			OrmUtil: r.OrmUtil,
+			OrmUtil:            r.OrmUtil,
+			GetCooldownService: r.GetCooldownService(),
 		}
 	}
 	return r.assignTreatmentService
@@ -531,7 +533,8 @@ func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService {
 func (r *Resolver) InterruptTreatmentByPatientService() *treatments_services.InterruptTreatmentByPatientService {
 	if r.interruptTreatmentByPatientService == nil {
 		r.interruptTreatmentByPatientService = &treatments_services.InterruptTreatmentByPatientService{
-			OrmUtil: r.OrmUtil,
+			OrmUtil:             r.OrmUtil,
+			SaveCooldownService: r.SaveCooldownService(),
 		}
 	}
 	return r.interruptTreatmentByPatientService
@@ -584,9 +587,10 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 func (r *Resolver) SaveCooldownService() *cooldowns_services.SaveCooldownService {
 	if r.saveCooldownService == nil {
 		r.saveCooldownService = &cooldowns_services.SaveCooldownService{
-			IdentifierUtil:               r.IdentifierUtil,
-			OrmUtil:                      r.OrmUtil,
-			TopAffinitiesCooldownSeconds: r.TopAffinitiesCooldownSeconds,
+			IdentifierUtil:                    r.IdentifierUtil,
+			OrmUtil:                           r.OrmUtil,
+			InterruptTreatmentCooldownSeconds: r.InterruptTreatmentCooldownSeconds,
+			TopAffinitiesCooldownSeconds:      r.TopAffinitiesCooldownSeconds,
 		}
 	}
 	return r.saveCooldownService

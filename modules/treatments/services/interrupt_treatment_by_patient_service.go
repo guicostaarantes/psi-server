@@ -6,13 +6,16 @@ import (
 	"time"
 
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
+	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
+	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	"github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
 // InterruptTreatmentByPatientService is a service that interrupts a treatment, changing its status to interrupted by patient
 type InterruptTreatmentByPatientService struct {
-	OrmUtil orm.IOrmUtil
+	OrmUtil             orm.IOrmUtil
+	SaveCooldownService *cooldowns_services.SaveCooldownService
 }
 
 // Execute is the method that runs the business logic of the service
@@ -59,6 +62,11 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 	result = s.OrmUtil.Db().Save(&treatment)
 	if result.Error != nil {
 		return result.Error
+	}
+
+	saveErr := s.SaveCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TreatmentInterrupted)
+	if saveErr != nil {
+		return saveErr
 	}
 
 	return nil
