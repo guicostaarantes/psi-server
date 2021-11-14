@@ -4,7 +4,7 @@ import (
 	"io"
 
 	files_services "github.com/guicostaarantes/psi-server/modules/files/services"
-	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -17,9 +17,9 @@ type UpsertPatientService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpsertPatientService) Execute(userID string, input *models.UpsertPatientInput) error {
+func (s UpsertPatientService) Execute(userID string, input *profiles_models.UpsertPatientInput) error {
 
-	existingPatient := models.Patient{}
+	existingPatient := profiles_models.Patient{}
 
 	result := s.OrmUtil.Db().Where("user_id = ?", userID).Limit(1).Find(&existingPatient)
 	if result.Error != nil {
@@ -74,7 +74,7 @@ func (s UpsertPatientService) Execute(userID string, input *models.UpsertPatient
 		avatar = fileName
 	}
 
-	newPatient := models.Patient{
+	newPatient := profiles_models.Patient{
 		ID:        patientID,
 		UserID:    userID,
 		FullName:  input.FullName,

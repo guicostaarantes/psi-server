@@ -1,7 +1,7 @@
-package services
+package agreements_services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/agreements/models"
+	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -10,9 +10,9 @@ type GetAgreementsByProfileIdService struct {
 	OrmUtil orm.IOrmUtil
 }
 
-func (s GetAgreementsByProfileIdService) Execute(profileID string, profileType models.TermProfileType) ([]*models.Agreement, error) {
+func (s GetAgreementsByProfileIdService) Execute(profileID string, profileType agreements_models.TermProfileType) ([]*agreements_models.Agreement, error) {
 
-	agreements := []*models.Agreement{}
+	agreements := []*agreements_models.Agreement{}
 
 	result := s.OrmUtil.Db().Where("profile_id = ?", profileID).Find(&agreements)
 	if result.Error != nil {

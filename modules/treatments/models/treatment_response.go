@@ -1,4 +1,4 @@
-package models
+package treatments_models
 
 // GetPsychologistTreatmentsResponse is the schema for information needed to be sent to the psychologist about their treatments
 type GetPsychologistTreatmentsResponse struct {

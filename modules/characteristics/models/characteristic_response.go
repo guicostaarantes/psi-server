@@ -1,4 +1,4 @@
-package models
+package characteristics_models
 
 // CharacteristicResponse is the schema for a characteristic and its possible values to be returned to the user
 type CharacteristicResponse struct {

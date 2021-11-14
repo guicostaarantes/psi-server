@@ -1,9 +1,9 @@
-package services
+package treatments_services
 
 import (
 	"errors"
 
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -16,14 +16,14 @@ type CreateTreatmentService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreateTreatmentService) Execute(psychologistID string, input models.CreateTreatmentInput) error {
+func (s CreateTreatmentService) Execute(psychologistID string, input treatments_models.CreateTreatmentInput) error {
 
 	checkErr := s.CheckTreatmentCollisionService.Execute(psychologistID, input.Frequency, input.Phase, input.Duration, "")
 	if checkErr != nil {
 		return checkErr
 	}
 
-	priceRange := models.TreatmentPriceRange{}
+	priceRange := treatments_models.TreatmentPriceRange{}
 
 	result := s.OrmUtil.Db().Where("name = ?", input.PriceRangeName).Limit(1).Find(&priceRange)
 	if result.Error != nil {
@@ -39,13 +39,13 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		return treatmentIDErr
 	}
 
-	treatment := models.Treatment{
+	treatment := treatments_models.Treatment{
 		ID:             treatmentID,
 		PsychologistID: psychologistID,
 		Frequency:      input.Frequency,
 		Phase:          input.Phase,
 		Duration:       input.Duration,
-		Status:         models.Pending,
+		Status:         treatments_models.Pending,
 	}
 
 	result = s.OrmUtil.Db().Create(&treatment)
@@ -58,7 +58,7 @@ func (s CreateTreatmentService) Execute(psychologistID string, input models.Crea
 		return treatmentPriceOfferingIDErr
 	}
 
-	treatmentPriceOffering := models.TreatmentPriceRangeOffering{
+	treatmentPriceOffering := treatments_models.TreatmentPriceRangeOffering{
 		ID:             treatmentPriceOfferingID,
 		PsychologistID: psychologistID,
 		PriceRangeName: input.PriceRangeName,

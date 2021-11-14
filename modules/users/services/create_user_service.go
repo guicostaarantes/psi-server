@@ -1,4 +1,4 @@
-package services
+package users_services
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/modules/users/templates"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
@@ -27,14 +27,14 @@ type CreateUserService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
+func (s CreateUserService) Execute(userInput *users_models.CreateUserInput) error {
 
 	emailErr := s.MatchUtil.IsEmailValid(userInput.Email)
 	if emailErr != nil {
 		return emailErr
 	}
 
-	userWithSameEmail := models.User{}
+	userWithSameEmail := users_models.User{}
 
 	result := s.OrmUtil.Db().Where("email = ?", userInput.Email).Limit(1).Find(&userWithSameEmail)
 	if result.Error != nil {
@@ -51,7 +51,7 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		return userIDErr
 	}
 
-	user := &models.User{
+	user := &users_models.User{
 		ID:     userID,
 		Active: true,
 		Email:  userInput.Email,
@@ -63,7 +63,7 @@ func (s CreateUserService) Execute(userInput *models.CreateUserInput) error {
 		return tokenErr
 	}
 
-	reset := &models.ResetPassword{
+	reset := &users_models.ResetPassword{
 		UserID:    userID,
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),

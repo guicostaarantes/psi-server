@@ -1,11 +1,11 @@
-package services
+package appointments_services
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/guicostaarantes/psi-server/modules/appointments/models"
+	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -15,9 +15,9 @@ type EditAppointmentByPatientService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s EditAppointmentByPatientService) Execute(id string, patientID string, input models.EditAppointmentByPatientInput) error {
+func (s EditAppointmentByPatientService) Execute(id string, patientID string, input appointments_models.EditAppointmentByPatientInput) error {
 
-	appointment := models.Appointment{}
+	appointment := appointments_models.Appointment{}
 
 	result := s.OrmUtil.Db().Where("id = ? AND patient_id = ?", id, patientID).Limit(1).Find(&appointment)
 	if result.Error != nil {
@@ -28,7 +28,7 @@ func (s EditAppointmentByPatientService) Execute(id string, patientID string, in
 		return errors.New("resource not found")
 	}
 
-	if appointment.Status == models.CanceledByPsychologist {
+	if appointment.Status == appointments_models.CanceledByPsychologist {
 		return fmt.Errorf("appointment status cannot change from %s to EDITED_BY_PATIENT", string(appointment.Status))
 	}
 
@@ -36,7 +36,7 @@ func (s EditAppointmentByPatientService) Execute(id string, patientID string, in
 		return errors.New("appointment cannot be scheduled to the past")
 	}
 
-	appointment.Status = models.EditedByPatient
+	appointment.Status = appointments_models.EditedByPatient
 	appointment.End += input.Start - appointment.Start
 	appointment.Start = input.Start
 	appointment.Reason = input.Reason

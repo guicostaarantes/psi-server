@@ -1,7 +1,7 @@
-package services
+package agreements_services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/agreements/models"
+	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -10,9 +10,9 @@ type GetTermsByProfileTypeService struct {
 	OrmUtil orm.IOrmUtil
 }
 
-func (s GetTermsByProfileTypeService) Execute(profileType models.TermProfileType) ([]*models.Term, error) {
+func (s GetTermsByProfileTypeService) Execute(profileType agreements_models.TermProfileType) ([]*agreements_models.Term, error) {
 
-	terms := []*models.Term{}
+	terms := []*agreements_models.Term{}
 
 	result := s.OrmUtil.Db().Where("profile_type = ?", profileType).Find(&terms)
 	if result.Error != nil {

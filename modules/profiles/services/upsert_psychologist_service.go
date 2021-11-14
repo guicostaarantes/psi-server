@@ -4,7 +4,7 @@ import (
 	"io"
 
 	files_services "github.com/guicostaarantes/psi-server/modules/files/services"
-	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -17,9 +17,9 @@ type UpsertPsychologistService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPsychologistInput) error {
+func (s UpsertPsychologistService) Execute(userID string, input *profiles_models.UpsertPsychologistInput) error {
 
-	existingPsy := models.Psychologist{}
+	existingPsy := profiles_models.Psychologist{}
 
 	result := s.OrmUtil.Db().Where("user_id = ?", userID).Limit(1).Find(&existingPsy)
 	if result.Error != nil {
@@ -77,7 +77,7 @@ func (s UpsertPsychologistService) Execute(userID string, input *models.UpsertPs
 		avatar = fileName
 	}
 
-	newPsy := models.Psychologist{
+	newPsy := profiles_models.Psychologist{
 		ID:        psyID,
 		UserID:    userID,
 		FullName:  input.FullName,

@@ -1,4 +1,4 @@
-package models
+package users_models
 
 // ResetPasswordInput is the schema for information needed to reset a password
 type ResetPasswordInput struct {

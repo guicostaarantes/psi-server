@@ -1,4 +1,4 @@
-package models
+package users_models
 
 // CreateUserInput is the schema for information needed to create a user
 type CreateUserInput struct {

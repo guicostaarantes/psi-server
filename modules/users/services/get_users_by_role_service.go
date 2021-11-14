@@ -1,7 +1,7 @@
-package services
+package users_services
 
 import (
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,9 +11,9 @@ type GetUsersByRoleService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetUsersByRoleService) Execute(role string) ([]*models.User, error) {
+func (s GetUsersByRoleService) Execute(role string) ([]*users_models.User, error) {
 
-	users := []*models.User{}
+	users := []*users_models.User{}
 
 	result := s.OrmUtil.Db().Where("role = ?", role).Find(&users)
 	if result.Error != nil {

@@ -1,9 +1,9 @@
-package services
+package treatments_services
 
 import (
 	"errors"
 
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -14,9 +14,9 @@ type UpdateTreatmentService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpdateTreatmentService) Execute(id string, psychologistID string, input models.UpdateTreatmentInput) error {
+func (s UpdateTreatmentService) Execute(id string, psychologistID string, input treatments_models.UpdateTreatmentInput) error {
 
-	treatment := models.Treatment{}
+	treatment := treatments_models.Treatment{}
 
 	result := s.OrmUtil.Db().Where("id = ? AND psychologist_id = ?", id, psychologistID).Limit(1).Find(&treatment)
 	if result.Error != nil {
@@ -27,11 +27,11 @@ func (s UpdateTreatmentService) Execute(id string, psychologistID string, input 
 		return errors.New("resource not found")
 	}
 
-	if input.PriceRangeName != "" && treatment.Status == models.Pending {
+	if input.PriceRangeName != "" && treatment.Status == treatments_models.Pending {
 		return errors.New("pending treatments are not allowed to have a price range")
 	}
 
-	if input.PriceRangeName == "" && treatment.Status != models.Pending {
+	if input.PriceRangeName == "" && treatment.Status != treatments_models.Pending {
 		return errors.New("non-pending treatments must have a price range")
 	}
 

@@ -1,4 +1,4 @@
-package models
+package users_models
 
 // AuthenticateUserInput is the schema for information needed to authenticate a user
 type AuthenticateUserInput struct {

@@ -1,10 +1,10 @@
-package services
+package appointments_services
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/guicostaarantes/psi-server/modules/appointments/models"
+	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -16,7 +16,7 @@ type ConfirmAppointmentByPsychologistService struct {
 // Execute is the method that runs the business logic of the service
 func (s ConfirmAppointmentByPsychologistService) Execute(id string, psychologistID string) error {
 
-	appointment := models.Appointment{}
+	appointment := appointments_models.Appointment{}
 
 	result := s.OrmUtil.Db().Where("id = ? AND psychologist_id = ?", id, psychologistID).Limit(1).Find(&appointment)
 	if result.Error != nil {
@@ -27,14 +27,14 @@ func (s ConfirmAppointmentByPsychologistService) Execute(id string, psychologist
 		return errors.New("resource not found")
 	}
 
-	if appointment.Status == models.EditedByPsychologist || appointment.Status == models.ConfirmedByPsychologist || appointment.Status == models.CanceledByPatient {
+	if appointment.Status == appointments_models.EditedByPsychologist || appointment.Status == appointments_models.ConfirmedByPsychologist || appointment.Status == appointments_models.CanceledByPatient {
 		return fmt.Errorf("appointment status cannot change from %s to CONFIRMED_BY_PSYCHOLOGIST", string(appointment.Status))
 	}
 
-	if appointment.Status == models.EditedByPatient || appointment.Status == models.ConfirmedByPatient {
-		appointment.Status = models.ConfirmedByBoth
+	if appointment.Status == appointments_models.EditedByPatient || appointment.Status == appointments_models.ConfirmedByPatient {
+		appointment.Status = appointments_models.ConfirmedByBoth
 	} else {
-		appointment.Status = models.ConfirmedByPsychologist
+		appointment.Status = appointments_models.ConfirmedByPsychologist
 	}
 
 	appointment.Reason = ""

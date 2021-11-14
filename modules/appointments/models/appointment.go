@@ -1,4 +1,4 @@
-package models
+package appointments_models
 
 import (
 	"time"

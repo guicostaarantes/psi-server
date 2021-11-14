@@ -1,9 +1,9 @@
-package services
+package agreements_services
 
 import (
 	"fmt"
 
-	"github.com/guicostaarantes/psi-server/modules/agreements/models"
+	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -14,9 +14,9 @@ type UpsertTermService struct {
 	OrmUtil        orm.IOrmUtil
 }
 
-func (s UpsertTermService) Execute(name string, version int64, profileType models.TermProfileType, active bool) error {
+func (s UpsertTermService) Execute(name string, version int64, profileType agreements_models.TermProfileType, active bool) error {
 
-	existingTerm := models.Term{}
+	existingTerm := agreements_models.Term{}
 
 	result := s.OrmUtil.Db().Where("name = ? AND version = ? AND profile_type = ?", name, version, profileType).Limit(1).Find(&existingTerm)
 	if result.Error != nil {
@@ -37,7 +37,7 @@ func (s UpsertTermService) Execute(name string, version int64, profileType model
 	}
 
 	if version > 1 {
-		previousTerm := models.Term{}
+		previousTerm := agreements_models.Term{}
 
 		result := s.OrmUtil.Db().Where("name = ? AND version = ? AND profile_type = ?", name, version-1, profileType).Limit(1).Find(&previousTerm)
 		if result.Error != nil {
@@ -54,7 +54,7 @@ func (s UpsertTermService) Execute(name string, version int64, profileType model
 		return termIDErr
 	}
 
-	newTerm := models.Term{
+	newTerm := agreements_models.Term{
 		ID:          termID,
 		Name:        name,
 		Version:     version,

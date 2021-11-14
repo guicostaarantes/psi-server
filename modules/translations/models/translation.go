@@ -1,4 +1,4 @@
-package models
+package translations_models
 
 // TranslationInput holds necessary information to add a translated value of a language-agnostic key of a specific language
 type TranslationInput struct {

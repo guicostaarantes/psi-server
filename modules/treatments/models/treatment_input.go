@@ -1,4 +1,4 @@
-package models
+package treatments_models
 
 // CreateTreatmentInput is the schema for information needed to create a new treatment
 type CreateTreatmentInput struct {

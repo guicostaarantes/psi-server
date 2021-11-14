@@ -1,7 +1,7 @@
-package services
+package characteristcs_services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,11 +11,11 @@ type GetPreferencesByIDService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPreferencesByIDService) Execute(id string) ([]*models.PreferenceResponse, error) {
+func (s GetPreferencesByIDService) Execute(id string) ([]*characteristics_models.PreferenceResponse, error) {
 
-	preferences := []*models.PreferenceResponse{}
+	preferences := []*characteristics_models.PreferenceResponse{}
 
-	result := s.OrmUtil.Db().Model(&models.Preference{}).Where("profile_id = ?", id).Find(&preferences)
+	result := s.OrmUtil.Db().Model(&characteristics_models.Preference{}).Where("profile_id = ?", id).Find(&preferences)
 	if result.Error != nil {
 		return nil, result.Error
 	}

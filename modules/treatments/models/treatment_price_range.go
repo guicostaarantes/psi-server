@@ -1,4 +1,4 @@
-package models
+package treatments_models
 
 import (
 	"time"

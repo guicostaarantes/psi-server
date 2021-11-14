@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/translations/models"
+	translations_models "github.com/guicostaarantes/psi-server/modules/translations/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,9 +11,9 @@ type GetTranslationsService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetTranslationsService) Execute(lang string, keys []string) ([]*models.Translation, error) {
+func (s GetTranslationsService) Execute(lang string, keys []string) ([]*translations_models.Translation, error) {
 
-	translations := []*models.Translation{}
+	translations := []*translations_models.Translation{}
 
 	result := s.OrmUtil.Db().Where("lang = ? AND key IN ?", lang, keys).Order("key ASC").Find(&translations)
 	if result.Error != nil {

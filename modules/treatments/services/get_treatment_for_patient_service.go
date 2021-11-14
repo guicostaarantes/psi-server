@@ -1,7 +1,7 @@
-package services
+package treatments_services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,11 +11,11 @@ type GetTreatmentForPatientService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetTreatmentForPatientService) Execute(id string) (*models.GetPatientTreatmentsResponse, error) {
+func (s GetTreatmentForPatientService) Execute(id string) (*treatments_models.GetPatientTreatmentsResponse, error) {
 
-	treatment := &models.GetPatientTreatmentsResponse{}
+	treatment := &treatments_models.GetPatientTreatmentsResponse{}
 
-	result := s.OrmUtil.Db().Model(&models.Treatment{}).Where("id = ?", id).Limit(1).Find(&treatment)
+	result := s.OrmUtil.Db().Model(&treatments_models.Treatment{}).Where("id = ?", id).Limit(1).Find(&treatment)
 	if result.Error != nil {
 		return nil, result.Error
 	}

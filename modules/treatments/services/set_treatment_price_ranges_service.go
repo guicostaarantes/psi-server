@@ -1,7 +1,7 @@
-package services
+package treatments_services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -13,16 +13,16 @@ type SetTreatmentPriceRangesService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s SetTreatmentPriceRangesService) Execute(input []*models.TreatmentPriceRange) error {
+func (s SetTreatmentPriceRangesService) Execute(input []*treatments_models.TreatmentPriceRange) error {
 
-	currentTreatmentPriceRanges := []*models.TreatmentPriceRange{}
+	currentTreatmentPriceRanges := []*treatments_models.TreatmentPriceRange{}
 
 	result := s.OrmUtil.Db().Find(&currentTreatmentPriceRanges)
 	if result.Error != nil {
 		return result.Error
 	}
 
-	currentPriceRanges := map[string]*models.TreatmentPriceRange{}
+	currentPriceRanges := map[string]*treatments_models.TreatmentPriceRange{}
 
 	for _, pr := range currentTreatmentPriceRanges {
 		currentPriceRanges[pr.Name] = pr
@@ -49,7 +49,7 @@ func (s SetTreatmentPriceRangesService) Execute(input []*models.TreatmentPriceRa
 				return prIDErr
 			}
 
-			result := s.OrmUtil.Db().Create(&models.TreatmentPriceRange{
+			result := s.OrmUtil.Db().Create(&treatments_models.TreatmentPriceRange{
 				ID:           prID,
 				Name:         pr.Name,
 				MinimumPrice: pr.MinimumPrice,

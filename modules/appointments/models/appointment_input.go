@@ -1,4 +1,4 @@
-package models
+package appointments_models
 
 // EditAppointmentByPatientInput is the schema for information needed to edit an appointment by the patient
 type EditAppointmentByPatientInput struct {

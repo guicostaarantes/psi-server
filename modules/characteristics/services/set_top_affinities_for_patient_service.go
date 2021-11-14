@@ -1,11 +1,11 @@
-package services
+package characteristcs_services
 
 import (
 	"errors"
 	"sort"
 	"strings"
 
-	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
@@ -24,10 +24,10 @@ type SetTopAffinitiesForPatientService struct {
 // Execute is the method that runs the business logic of the service
 func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 
-	affinityResult := map[string]*models.AffinityScore{}
+	affinityResult := map[string]*characteristics_models.AffinityScore{}
 
 	// Get patient characteristics choices
-	patientCharacteristicChoices := []*models.CharacteristicChoice{}
+	patientCharacteristicChoices := []*characteristics_models.CharacteristicChoice{}
 
 	result := s.OrmUtil.Db().Where("profile_id = ?", patientID).Find(&patientCharacteristicChoices)
 	if result.Error != nil {
@@ -76,15 +76,15 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	for _, priceRangeOffering := range priceRangesOfferings {
 		if _, exists := possiblePriceRanges[priceRangeOffering.PriceRangeName]; exists {
 			if _, exists := affinityResult[priceRangeOffering.PsychologistID]; !exists {
-				affinityResult[priceRangeOffering.PsychologistID] = &models.AffinityScore{}
+				affinityResult[priceRangeOffering.PsychologistID] = &characteristics_models.AffinityScore{}
 			}
 		}
 	}
 
 	// Get all psychologists preferences and calculate score for psychologist
-	psychologistPreferences := []*models.Preference{}
+	psychologistPreferences := []*characteristics_models.Preference{}
 
-	result = s.OrmUtil.Db().Where("target = ?", models.PsychologistTarget).Find(&psychologistPreferences)
+	result = s.OrmUtil.Db().Where("target = ?", characteristics_models.PsychologistTarget).Find(&psychologistPreferences)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -98,7 +98,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	}
 
 	// Get patient preferences
-	patientPreferences := []*models.Preference{}
+	patientPreferences := []*characteristics_models.Preference{}
 
 	result = s.OrmUtil.Db().Where("profile_id = ?", patientID).Find(&patientPreferences)
 	if result.Error != nil {
@@ -116,9 +116,9 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 	}
 
 	// Get all psychologists characteristic choices and calculate score for patient
-	psychologistChoices := []*models.CharacteristicChoice{}
+	psychologistChoices := []*characteristics_models.CharacteristicChoice{}
 
-	result = s.OrmUtil.Db().Where("target = ?", models.PsychologistTarget).Find(&psychologistChoices)
+	result = s.OrmUtil.Db().Where("target = ?", characteristics_models.PsychologistTarget).Find(&psychologistChoices)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -131,7 +131,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		}
 	}
 
-	topAffinities := []*models.Affinity{}
+	topAffinities := []*characteristics_models.Affinity{}
 
 	// Transform result map in result slice
 	for psychologistID, re := range affinityResult {
@@ -142,7 +142,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 				return affIDErr
 			}
 
-			topAffinities = append(topAffinities, &models.Affinity{
+			topAffinities = append(topAffinities, &characteristics_models.Affinity{
 				ID:                   affID,
 				PatientID:            patientID,
 				PsychologistID:       psychologistID,
@@ -161,7 +161,7 @@ func (s SetTopAffinitiesForPatientService) Execute(patientID string) error {
 		topAffinities = topAffinities[:s.MaxAffinityNumber]
 	}
 
-	result = s.OrmUtil.Db().Delete(&models.Affinity{}, "patient_id = ?", patientID)
+	result = s.OrmUtil.Db().Delete(&characteristics_models.Affinity{}, "patient_id = ?", patientID)
 	if result.Error != nil {
 		return result.Error
 	}

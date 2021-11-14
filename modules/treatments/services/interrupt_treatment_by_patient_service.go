@@ -1,4 +1,4 @@
-package services
+package treatments_services
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -21,7 +21,7 @@ type InterruptTreatmentByPatientService struct {
 // Execute is the method that runs the business logic of the service
 func (s InterruptTreatmentByPatientService) Execute(id string, patientID string, reason string) error {
 
-	treatment := models.Treatment{}
+	treatment := treatments_models.Treatment{}
 
 	result := s.OrmUtil.Db().Where("id = ? AND patient_id = ?", id, patientID).Limit(1).Find(&treatment)
 	if result.Error != nil {
@@ -32,7 +32,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 		return errors.New("resource not found")
 	}
 
-	if treatment.Status != models.Active {
+	if treatment.Status != treatments_models.Active {
 		return fmt.Errorf("treatments can only be interrupted if their current status is ACTIVE. current status is %s", string(treatment.Status))
 	}
 
@@ -56,7 +56,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 	}
 
 	treatment.EndDate = time.Now().Unix()
-	treatment.Status = models.InterruptedByPatient
+	treatment.Status = treatments_models.InterruptedByPatient
 	treatment.Reason = reason
 
 	result = s.OrmUtil.Db().Save(&treatment)

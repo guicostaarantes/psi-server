@@ -1,9 +1,9 @@
-package services
+package treatments_services
 
 import (
 	"errors"
 
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -31,7 +31,7 @@ func (s CheckTreatmentCollisionService) Execute(psychologistID string, frequency
 		return errors.New("phase cannot be bigger than the schedule interval")
 	}
 
-	psychologistTreatments := []*models.Treatment{}
+	psychologistTreatments := []*treatments_models.Treatment{}
 
 	result := s.OrmUtil.Db().Where("psychologist_id = ?", psychologistID).Find(&psychologistTreatments)
 	if result.Error != nil {
@@ -39,7 +39,7 @@ func (s CheckTreatmentCollisionService) Execute(psychologistID string, frequency
 	}
 
 	for _, treatment := range psychologistTreatments {
-		if treatment.Status != models.Pending && treatment.Status != models.Active {
+		if treatment.Status != treatments_models.Pending && treatment.Status != treatments_models.Active {
 			continue
 		}
 

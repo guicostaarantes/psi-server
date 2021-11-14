@@ -1,7 +1,7 @@
-package services
+package users_services
 
 import (
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,9 +11,9 @@ type GetUserByIDService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetUserByIDService) Execute(id string) (*models.User, error) {
+func (s GetUserByIDService) Execute(id string) (*users_models.User, error) {
 
-	user := &models.User{}
+	user := &users_models.User{}
 
 	result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&user)
 	if result.Error != nil {

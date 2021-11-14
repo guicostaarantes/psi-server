@@ -1,7 +1,7 @@
-package services
+package appointments_services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/appointments/models"
+	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,9 +11,9 @@ type GetAppointmentsOfPsychologistService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetAppointmentsOfPsychologistService) Execute(psychologistID string) ([]*models.Appointment, error) {
+func (s GetAppointmentsOfPsychologistService) Execute(psychologistID string) ([]*appointments_models.Appointment, error) {
 
-	appointments := []*models.Appointment{}
+	appointments := []*appointments_models.Appointment{}
 
 	result := s.OrmUtil.Db().Where("psychologist_id = ?", psychologistID).Order("created_at ASC").Find(&appointments)
 	if result.Error != nil {

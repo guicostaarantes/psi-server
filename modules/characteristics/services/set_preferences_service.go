@@ -1,11 +1,11 @@
-package services
+package characteristcs_services
 
 import (
 	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -16,10 +16,10 @@ type SetPreferencesService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceInput) error {
+func (s SetPreferencesService) Execute(id string, input []*characteristics_models.SetPreferenceInput) error {
 
-	var target models.CharacteristicTarget
-	var profileType models.CharacteristicTarget
+	var target characteristics_models.CharacteristicTarget
+	var profileType characteristics_models.CharacteristicTarget
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
@@ -28,22 +28,22 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 		return result.Error
 	}
 	if pat.ID != "" {
-		target = models.PsychologistTarget
-		profileType = models.PatientTarget
+		target = characteristics_models.PsychologistTarget
+		profileType = characteristics_models.PatientTarget
 	} else {
 		result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&psy)
 		if result.Error != nil {
 			return result.Error
 		}
 		if psy.ID != "" {
-			target = models.PatientTarget
-			profileType = models.PsychologistTarget
+			target = characteristics_models.PatientTarget
+			profileType = characteristics_models.PsychologistTarget
 		} else {
 			return errors.New("resource not found")
 		}
 	}
 
-	characteristics := []*models.Characteristic{}
+	characteristics := []*characteristics_models.Characteristic{}
 
 	result = s.OrmUtil.Db().Where("target = ?", target).Find(&characteristics)
 	if result.Error != nil {
@@ -61,13 +61,13 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 		}
 	}
 
-	preferencesToCreate := []*models.Preference{}
+	preferencesToCreate := []*characteristics_models.Preference{}
 
 	for _, i := range input {
 		if _, exists := possibleValues[i.CharacteristicName][i.SelectedValue]; !exists {
 			return fmt.Errorf("option '%s' is not possible in characteristic %s", i.SelectedValue, i.CharacteristicName)
 		}
-		preferencesToCreate = append(preferencesToCreate, &models.Preference{
+		preferencesToCreate = append(preferencesToCreate, &characteristics_models.Preference{
 			ProfileID:          id,
 			Target:             profileType,
 			CharacteristicName: i.CharacteristicName,
@@ -76,7 +76,7 @@ func (s SetPreferencesService) Execute(id string, input []*models.SetPreferenceI
 		})
 	}
 
-	result = s.OrmUtil.Db().Delete(&models.Preference{}, "profile_id = ?", id)
+	result = s.OrmUtil.Db().Delete(&characteristics_models.Preference{}, "profile_id = ?", id)
 	if result.Error != nil {
 		return result.Error
 	}

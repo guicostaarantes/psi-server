@@ -1,4 +1,4 @@
-package models
+package profiles_models
 
 import (
 	"time"

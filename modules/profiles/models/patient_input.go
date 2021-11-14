@@ -1,4 +1,4 @@
-package models
+package profiles_models
 
 import "github.com/99designs/gqlgen/graphql"
 

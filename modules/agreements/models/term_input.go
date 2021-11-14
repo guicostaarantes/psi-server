@@ -1,4 +1,4 @@
-package models
+package agreements_models
 
 // UpsertTermInput is the schema for information needed to upsert a term
 type UpsertTermInput struct {

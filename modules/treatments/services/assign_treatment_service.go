@@ -1,4 +1,4 @@
-package services
+package treatments_services
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	characteristic_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -31,11 +31,11 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 		return fmt.Errorf("assign treatment is blocked for this user until %d", cooldown.ValidUntil)
 	}
 
-	treatment := models.Treatment{}
+	treatment := treatments_models.Treatment{}
 
-	patientInOtherTreatment := models.Treatment{}
+	patientInOtherTreatment := treatments_models.Treatment{}
 
-	result := s.OrmUtil.Db().Where("patient_id = ? AND status = ?", patientID, models.Active).Limit(1).Find(&patientInOtherTreatment)
+	result := s.OrmUtil.Db().Where("patient_id = ? AND status = ?", patientID, treatments_models.Active).Limit(1).Find(&patientInOtherTreatment)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -53,11 +53,11 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 		return errors.New("resource not found")
 	}
 
-	if treatment.Status != models.Pending {
+	if treatment.Status != treatments_models.Pending {
 		return fmt.Errorf("treatments can only be assigned if their current status is PENDING. current status is %s", string(treatment.Status))
 	}
 
-	treatmentPriceRangeOffering := models.TreatmentPriceRangeOffering{}
+	treatmentPriceRangeOffering := treatments_models.TreatmentPriceRangeOffering{}
 
 	result = s.OrmUtil.Db().Where("psychologist_id = ? AND price_range_name = ?", treatment.PsychologistID, priceRangeName).Limit(1).Find(&treatmentPriceRangeOffering)
 	if result.Error != nil {
@@ -79,7 +79,7 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 		return errors.New("missing income for patient")
 	}
 
-	priceRange := models.TreatmentPriceRange{}
+	priceRange := treatments_models.TreatmentPriceRange{}
 
 	result = s.OrmUtil.Db().Where("name = ?", priceRangeName).Limit(1).Find(&priceRange)
 	if result.Error != nil {
@@ -105,7 +105,7 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 
 	treatment.PatientID = patientID
 	treatment.StartDate = time.Now().Unix()
-	treatment.Status = models.Active
+	treatment.Status = treatments_models.Active
 	treatment.PriceRangeName = priceRangeName
 
 	result = s.OrmUtil.Db().Save(&treatment)

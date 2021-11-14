@@ -7,8 +7,8 @@ import (
 	"context"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
-	models1 "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
 func (r *mutationResolver) AssignTreatment(ctx context.Context, id string, priceRangeName string) (*bool, error) {
@@ -24,7 +24,7 @@ func (r *mutationResolver) AssignTreatment(ctx context.Context, id string, price
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) CreateTreatment(ctx context.Context, input models.CreateTreatmentInput) (*bool, error) {
+func (r *mutationResolver) CreateTreatment(ctx context.Context, input treatments_models.CreateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -89,13 +89,13 @@ func (r *mutationResolver) FinalizeTreatment(ctx context.Context, id string) (*b
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) SetTreatmentPriceRanges(ctx context.Context, input []*models.TreatmentPriceRange) (*bool, error) {
+func (r *mutationResolver) SetTreatmentPriceRanges(ctx context.Context, input []*treatments_models.TreatmentPriceRange) (*bool, error) {
 	serviceErr := r.SetTreatmentPriceRangesService().Execute(input)
 
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) UpdateTreatment(ctx context.Context, id string, input models.UpdateTreatmentInput) (*bool, error) {
+func (r *mutationResolver) UpdateTreatment(ctx context.Context, id string, input treatments_models.UpdateTreatmentInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -108,27 +108,27 @@ func (r *mutationResolver) UpdateTreatment(ctx context.Context, id string, input
 	return nil, serviceErr
 }
 
-func (r *patientTreatmentResolver) PriceRange(ctx context.Context, obj *models.GetPatientTreatmentsResponse) (*models.TreatmentPriceRange, error) {
+func (r *patientTreatmentResolver) PriceRange(ctx context.Context, obj *treatments_models.GetPatientTreatmentsResponse) (*treatments_models.TreatmentPriceRange, error) {
 	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }
 
-func (r *patientTreatmentResolver) Psychologist(ctx context.Context, obj *models.GetPatientTreatmentsResponse) (*models1.Psychologist, error) {
+func (r *patientTreatmentResolver) Psychologist(ctx context.Context, obj *treatments_models.GetPatientTreatmentsResponse) (*profiles_models.Psychologist, error) {
 	return r.GetPsychologistService().Execute(obj.PsychologistID)
 }
 
-func (r *psychologistTreatmentResolver) PriceRange(ctx context.Context, obj *models.GetPsychologistTreatmentsResponse) (*models.TreatmentPriceRange, error) {
+func (r *psychologistTreatmentResolver) PriceRange(ctx context.Context, obj *treatments_models.GetPsychologistTreatmentsResponse) (*treatments_models.TreatmentPriceRange, error) {
 	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }
 
-func (r *psychologistTreatmentResolver) Patient(ctx context.Context, obj *models.GetPsychologistTreatmentsResponse) (*models1.Patient, error) {
+func (r *psychologistTreatmentResolver) Patient(ctx context.Context, obj *treatments_models.GetPsychologistTreatmentsResponse) (*profiles_models.Patient, error) {
 	return r.GetPatientService().Execute(obj.PatientID)
 }
 
-func (r *queryResolver) TreatmentPriceRanges(ctx context.Context) ([]*models.TreatmentPriceRange, error) {
+func (r *queryResolver) TreatmentPriceRanges(ctx context.Context) ([]*treatments_models.TreatmentPriceRange, error) {
 	return r.GetTreatmentPriceRangesService().Execute()
 }
 
-func (r *treatmentPriceRangeOfferingResolver) PriceRange(ctx context.Context, obj *models.TreatmentPriceRangeOffering) (*models.TreatmentPriceRange, error) {
+func (r *treatmentPriceRangeOfferingResolver) PriceRange(ctx context.Context, obj *treatments_models.TreatmentPriceRangeOffering) (*treatments_models.TreatmentPriceRange, error) {
 	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }
 

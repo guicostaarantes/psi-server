@@ -1,4 +1,4 @@
-package models
+package agreements_models
 
 // UpsertAgreementInput is the schema for information needed to upsert an agreement
 type UpsertAgreementInput struct {

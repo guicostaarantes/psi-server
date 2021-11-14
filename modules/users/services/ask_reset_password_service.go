@@ -1,4 +1,4 @@
-package services
+package users_services
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/modules/users/templates"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
@@ -27,7 +27,7 @@ type AskResetPasswordService struct {
 // Execute is the method that runs the business logic of the service
 func (s AskResetPasswordService) Execute(email string) error {
 
-	user := &models.User{}
+	user := &users_models.User{}
 
 	result := s.OrmUtil.Db().Where("email = ?", email).Limit(1).Find(&user)
 	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
@@ -38,7 +38,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 		return nil
 	}
 
-	existingReset := &models.ResetPassword{}
+	existingReset := &users_models.ResetPassword{}
 
 	result = s.OrmUtil.Db().Where("user_id = ?", user.ID).Limit(1).Find(&existingReset)
 	if result.Error != nil {
@@ -61,7 +61,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 		return tokenErr
 	}
 
-	reset := &models.ResetPassword{
+	reset := &users_models.ResetPassword{
 		UserID:    user.ID,
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToCooldown)).Unix(),

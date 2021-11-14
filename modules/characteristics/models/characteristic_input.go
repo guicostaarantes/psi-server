@@ -1,4 +1,4 @@
-package models
+package characteristics_models
 
 // SetCharacteristicInput is the schema for information needed to create a characteristic and its possible values
 type SetCharacteristicInput struct {

@@ -1,4 +1,4 @@
-package models
+package cooldowns_models
 
 import (
 	"time"

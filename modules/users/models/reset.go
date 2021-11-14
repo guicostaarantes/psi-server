@@ -1,4 +1,4 @@
-package models
+package users_models
 
 // ResetPassword is the schema for a reset password request in the database
 type ResetPassword struct {

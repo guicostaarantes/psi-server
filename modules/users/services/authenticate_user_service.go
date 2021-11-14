@@ -1,10 +1,10 @@
-package services
+package users_services
 
 import (
 	"errors"
 	"time"
 
-	"github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/serializing"
@@ -21,9 +21,9 @@ type AuthenticateUserService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput) (*models.Authentication, error) {
+func (s AuthenticateUserService) Execute(authInput *users_models.AuthenticateUserInput) (*users_models.Authentication, error) {
 
-	user := models.User{}
+	user := users_models.User{}
 
 	result := s.OrmUtil.Db().Where("email = ?", authInput.Email).Limit(1).Find(&user)
 	if result.Error != nil {
@@ -47,14 +47,14 @@ func (s AuthenticateUserService) Execute(authInput *models.AuthenticateUserInput
 		return nil, tokenErr
 	}
 
-	auth := &models.Authentication{
+	auth := &users_models.Authentication{
 		UserID:    user.ID,
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),
 		Token:     token,
 	}
 
-	result = s.OrmUtil.Db().Where("user_id = ?", auth.UserID).Delete(&models.Authentication{})
+	result = s.OrmUtil.Db().Where("user_id = ?", auth.UserID).Delete(&users_models.Authentication{})
 	if result.Error != nil {
 		return nil, result.Error
 	}

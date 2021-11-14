@@ -6,10 +6,10 @@ package resolvers
 import (
 	"context"
 
-	"github.com/guicostaarantes/psi-server/modules/agreements/models"
+	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 )
 
-func (r *mutationResolver) UpsertPatientAgreement(ctx context.Context, input models.UpsertAgreementInput) (*bool, error) {
+func (r *mutationResolver) UpsertPatientAgreement(ctx context.Context, input agreements_models.UpsertAgreementInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -22,7 +22,7 @@ func (r *mutationResolver) UpsertPatientAgreement(ctx context.Context, input mod
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) UpsertPsychologistAgreement(ctx context.Context, input models.UpsertAgreementInput) (*bool, error) {
+func (r *mutationResolver) UpsertPsychologistAgreement(ctx context.Context, input agreements_models.UpsertAgreementInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -35,16 +35,16 @@ func (r *mutationResolver) UpsertPsychologistAgreement(ctx context.Context, inpu
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) UpsertTerm(ctx context.Context, input models.Term) (*bool, error) {
+func (r *mutationResolver) UpsertTerm(ctx context.Context, input agreements_models.Term) (*bool, error) {
 	serviceErr := r.UpsertTermService().Execute(input.Name, input.Version, input.ProfileType, input.Active)
 
 	return nil, serviceErr
 }
 
-func (r *queryResolver) PatientTerms(ctx context.Context) ([]*models.Term, error) {
-	return r.GetTermsByProfileTypeService().Execute(models.Patient)
+func (r *queryResolver) PatientTerms(ctx context.Context) ([]*agreements_models.Term, error) {
+	return r.GetTermsByProfileTypeService().Execute(agreements_models.Patient)
 }
 
-func (r *queryResolver) PsychologistTerms(ctx context.Context) ([]*models.Term, error) {
-	return r.GetTermsByProfileTypeService().Execute(models.Psychologist)
+func (r *queryResolver) PsychologistTerms(ctx context.Context) ([]*agreements_models.Term, error) {
+	return r.GetTermsByProfileTypeService().Execute(agreements_models.Psychologist)
 }

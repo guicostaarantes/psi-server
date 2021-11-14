@@ -1,10 +1,10 @@
-package services
+package users_services
 
 import (
 	"errors"
 	"time"
 
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/match"
 	"github.com/guicostaarantes/psi-server/utils/orm"
@@ -18,14 +18,14 @@ type ResetPasswordService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) error {
+func (s ResetPasswordService) Execute(resetInput *users_models.ResetPasswordInput) error {
 
 	passwordErr := s.MatchUtil.IsPasswordStrong(resetInput.Password)
 	if passwordErr != nil {
 		return passwordErr
 	}
 
-	reset := &models.ResetPassword{}
+	reset := &users_models.ResetPassword{}
 
 	result := s.OrmUtil.Db().Where("token = ?", resetInput.Token).Limit(1).Find(&reset)
 	if result.Error != nil {
@@ -36,7 +36,7 @@ func (s ResetPasswordService) Execute(resetInput *models.ResetPasswordInput) err
 		return errors.New("invalid token")
 	}
 
-	user := &models.User{}
+	user := &users_models.User{}
 
 	result = s.OrmUtil.Db().Where("id = ?", reset.UserID).Limit(1).Find(&user)
 	if result.Error != nil {

@@ -1,11 +1,11 @@
-package services
+package agreements_services
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/guicostaarantes/psi-server/modules/agreements/models"
+	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
@@ -17,9 +17,9 @@ type UpsertAgreementService struct {
 	OrmUtil        orm.IOrmUtil
 }
 
-func (s UpsertAgreementService) Execute(profileID string, input *models.UpsertAgreementInput) error {
+func (s UpsertAgreementService) Execute(profileID string, input *agreements_models.UpsertAgreementInput) error {
 
-	var profileType models.TermProfileType
+	var profileType agreements_models.TermProfileType
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
@@ -28,20 +28,20 @@ func (s UpsertAgreementService) Execute(profileID string, input *models.UpsertAg
 		return result.Error
 	}
 	if pat.ID != "" {
-		profileType = models.Patient
+		profileType = agreements_models.Patient
 	} else {
 		result := s.OrmUtil.Db().Where("id = ?", profileID).Limit(1).Find(&psy)
 		if result.Error != nil {
 			return result.Error
 		}
 		if psy.ID != "" {
-			profileType = models.Psychologist
+			profileType = agreements_models.Psychologist
 		} else {
 			return errors.New("resource not found")
 		}
 	}
 
-	signingTerm := models.Term{}
+	signingTerm := agreements_models.Term{}
 
 	result = s.OrmUtil.Db().Where("name = ? AND version = ? AND profile_type = ?", input.TermName, input.TermVersion, profileType).Limit(1).Find(&signingTerm)
 	if result.Error != nil {
@@ -52,7 +52,7 @@ func (s UpsertAgreementService) Execute(profileID string, input *models.UpsertAg
 		return fmt.Errorf("version %d of term %s does not exist", input.TermVersion, input.TermName)
 	}
 
-	existingAgreement := models.Agreement{}
+	existingAgreement := agreements_models.Agreement{}
 
 	result = s.OrmUtil.Db().Where("term_name = ? AND term_version = ? AND profile_id = ?", input.TermName, input.TermVersion, profileID).Limit(1).Find(&existingAgreement)
 	if result.Error != nil {
@@ -90,7 +90,7 @@ func (s UpsertAgreementService) Execute(profileID string, input *models.UpsertAg
 		return agrIDErr
 	}
 
-	newAgreement := models.Agreement{
+	newAgreement := agreements_models.Agreement{
 		ID:          agrID,
 		TermName:    input.TermName,
 		TermVersion: input.TermVersion,

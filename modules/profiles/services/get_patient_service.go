@@ -1,7 +1,7 @@
 package services
 
 import (
-	models "github.com/guicostaarantes/psi-server/modules/profiles/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,9 +11,9 @@ type GetPatientService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetPatientService) Execute(id string) (*models.Patient, error) {
+func (s GetPatientService) Execute(id string) (*profiles_models.Patient, error) {
 
-	patient := &models.Patient{}
+	patient := &profiles_models.Patient{}
 
 	result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&patient)
 	if result.Error != nil {

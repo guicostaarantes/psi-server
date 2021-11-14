@@ -1,9 +1,9 @@
-package services
+package users_services
 
 import (
 	"errors"
 
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -13,9 +13,9 @@ type UpdateUserService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s UpdateUserService) Execute(userID string, input *models.UpdateUserInput) error {
+func (s UpdateUserService) Execute(userID string, input *users_models.UpdateUserInput) error {
 
-	user := models.User{}
+	user := users_models.User{}
 
 	result := s.OrmUtil.Db().Where("id = ?", userID).Limit(1).Find(&user)
 	if result.Error != nil {

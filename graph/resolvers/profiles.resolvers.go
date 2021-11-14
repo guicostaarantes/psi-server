@@ -11,7 +11,7 @@ import (
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
 func (r *mutationResolver) SetMyPatientCharacteristicChoices(ctx context.Context, input []*characteristics_models.SetCharacteristicChoiceInput) (*bool, error) {
@@ -112,7 +112,7 @@ func (r *patientProfileResolver) Agreements(ctx context.Context, obj *profiles_m
 	return r.GetAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Patient)
 }
 
-func (r *patientProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Patient) ([]*models.GetPatientTreatmentsResponse, error) {
+func (r *patientProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Patient) ([]*treatments_models.GetPatientTreatmentsResponse, error) {
 	return r.GetPatientTreatmentsService().Execute(obj.ID)
 }
 
@@ -132,11 +132,11 @@ func (r *psychologistProfileResolver) Agreements(ctx context.Context, obj *profi
 	return r.GetAgreementsByProfileIdService().Execute(obj.ID, agreements_models.Psychologist)
 }
 
-func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
+func (r *psychologistProfileResolver) Treatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*treatments_models.GetPsychologistTreatmentsResponse, error) {
 	return r.GetPsychologistTreatmentsService().Execute(obj.ID)
 }
 
-func (r *psychologistProfileResolver) PriceRangeOfferings(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.TreatmentPriceRangeOffering, error) {
+func (r *psychologistProfileResolver) PriceRangeOfferings(ctx context.Context, obj *profiles_models.Psychologist) ([]*treatments_models.TreatmentPriceRangeOffering, error) {
 	return r.GetPsychologistPriceRangeOfferingsService().Execute(obj.ID)
 }
 
@@ -148,11 +148,11 @@ func (r *publicPatientProfileResolver) Characteristics(ctx context.Context, obj 
 	return r.GetCharacteristicsByIDService().Execute(obj.ID)
 }
 
-func (r *publicPsychologistProfileResolver) PendingTreatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.GetPsychologistTreatmentsResponse, error) {
+func (r *publicPsychologistProfileResolver) PendingTreatments(ctx context.Context, obj *profiles_models.Psychologist) ([]*treatments_models.GetPsychologistTreatmentsResponse, error) {
 	return r.GetPsychologistPendingTreatmentsService().Execute(obj.ID)
 }
 
-func (r *publicPsychologistProfileResolver) PriceRangeOfferings(ctx context.Context, obj *profiles_models.Psychologist) ([]*models.TreatmentPriceRangeOffering, error) {
+func (r *publicPsychologistProfileResolver) PriceRangeOfferings(ctx context.Context, obj *profiles_models.Psychologist) ([]*treatments_models.TreatmentPriceRangeOffering, error) {
 	return r.GetPsychologistPriceRangeOfferingsService().Execute(obj.ID)
 }
 

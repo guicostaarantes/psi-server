@@ -1,4 +1,4 @@
-package services
+package treatments_services
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -18,7 +18,7 @@ type FinalizeTreatmentService struct {
 // Execute is the method that runs the business logic of the service
 func (s FinalizeTreatmentService) Execute(id string, psychologistID string) error {
 
-	treatment := models.Treatment{}
+	treatment := treatments_models.Treatment{}
 
 	result := s.OrmUtil.Db().Where("id = ? AND psychologist_id = ?", id, psychologistID).Limit(1).Find(&treatment)
 	if result.Error != nil {
@@ -29,7 +29,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 		return errors.New("resource not found")
 	}
 
-	if treatment.Status != models.Active {
+	if treatment.Status != treatments_models.Active {
 		return fmt.Errorf("treatments can only be finalized if their current status is ACTIVE. current status is %s", string(treatment.Status))
 	}
 
@@ -53,7 +53,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 	}
 
 	treatment.EndDate = time.Now().Unix()
-	treatment.Status = models.Finalized
+	treatment.Status = treatments_models.Finalized
 
 	result = s.OrmUtil.Db().Save(&treatment)
 	if result.Error != nil {

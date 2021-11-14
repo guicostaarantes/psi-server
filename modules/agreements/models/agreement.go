@@ -1,4 +1,4 @@
-package models
+package agreements_models
 
 import (
 	"time"

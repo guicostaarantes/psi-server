@@ -6,10 +6,10 @@ package resolvers
 import (
 	"context"
 
-	"github.com/guicostaarantes/psi-server/modules/translations/models"
+	translations_models "github.com/guicostaarantes/psi-server/modules/translations/models"
 )
 
-func (r *mutationResolver) SetTranslations(ctx context.Context, lang string, input []*models.TranslationInput) (*bool, error) {
+func (r *mutationResolver) SetTranslations(ctx context.Context, lang string, input []*translations_models.TranslationInput) (*bool, error) {
 	serviceErr := r.SetTranslationsService().Execute(lang, input)
 	if serviceErr != nil {
 		return nil, serviceErr
@@ -18,6 +18,6 @@ func (r *mutationResolver) SetTranslations(ctx context.Context, lang string, inp
 	return nil, nil
 }
 
-func (r *queryResolver) Translations(ctx context.Context, lang string, keys []string) ([]*models.Translation, error) {
+func (r *queryResolver) Translations(ctx context.Context, lang string, keys []string) ([]*translations_models.Translation, error) {
 	return r.GetTranslationsService().Execute(lang, keys)
 }

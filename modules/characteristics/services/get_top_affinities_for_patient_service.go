@@ -1,9 +1,9 @@
-package services
+package characteristcs_services
 
 import (
 	"fmt"
 
-	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	cooldowns_services "github.com/guicostaarantes/psi-server/modules/cooldowns/services"
 	"github.com/guicostaarantes/psi-server/utils/orm"
@@ -18,7 +18,7 @@ type GetTopAffinitiesForPatientService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetTopAffinitiesForPatientService) Execute(patientID string) ([]*models.Affinity, error) {
+func (s GetTopAffinitiesForPatientService) Execute(patientID string) ([]*characteristics_models.Affinity, error) {
 	cooldown, getErr := s.GetCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TreatmentInterrupted)
 	if getErr != nil {
 		return nil, getErr
@@ -40,7 +40,7 @@ func (s GetTopAffinitiesForPatientService) Execute(patientID string) ([]*models.
 		}
 	}
 
-	topAffinities := []*models.Affinity{}
+	topAffinities := []*characteristics_models.Affinity{}
 
 	result := s.OrmUtil.Db().Where("patient_id = ?", patientID).Find(&topAffinities)
 	if result.Error != nil {

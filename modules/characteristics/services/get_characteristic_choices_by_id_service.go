@@ -1,10 +1,10 @@
-package services
+package characteristcs_services
 
 import (
 	"errors"
 	"strings"
 
-	"github.com/guicostaarantes/psi-server/modules/characteristics/models"
+	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -15,9 +15,9 @@ type GetCharacteristicsByIDService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.CharacteristicChoiceResponse, error) {
+func (s GetCharacteristicsByIDService) Execute(id string) ([]*characteristics_models.CharacteristicChoiceResponse, error) {
 
-	var target models.CharacteristicTarget
+	var target characteristics_models.CharacteristicTarget
 
 	psy := profiles_models.Psychologist{}
 	pat := profiles_models.Patient{}
@@ -26,22 +26,22 @@ func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.Characteris
 		return nil, result.Error
 	}
 	if pat.ID != "" {
-		target = models.PatientTarget
+		target = characteristics_models.PatientTarget
 	} else {
 		result := s.OrmUtil.Db().Where("id = ?", id).Limit(1).Find(&psy)
 		if result.Error != nil {
 			return nil, result.Error
 		}
 		if psy.ID != "" {
-			target = models.PsychologistTarget
+			target = characteristics_models.PsychologistTarget
 		} else {
 			return nil, errors.New("resource not found")
 		}
 	}
 
-	response := []*models.CharacteristicChoiceResponse{}
-	characteristics := []*models.Characteristic{}
-	characteristicsChoices := []*models.CharacteristicChoice{}
+	response := []*characteristics_models.CharacteristicChoiceResponse{}
+	characteristics := []*characteristics_models.Characteristic{}
+	characteristicsChoices := []*characteristics_models.CharacteristicChoice{}
 
 	result = s.OrmUtil.Db().Where("target = ?", target).Find(&characteristics)
 	if result.Error != nil {
@@ -54,7 +54,7 @@ func (s GetCharacteristicsByIDService) Execute(id string) ([]*models.Characteris
 	}
 
 	for _, char := range characteristics {
-		response = append(response, &models.CharacteristicChoiceResponse{
+		response = append(response, &characteristics_models.CharacteristicChoiceResponse{
 			Name:           char.Name,
 			Type:           char.Type,
 			SelectedValues: []string{},

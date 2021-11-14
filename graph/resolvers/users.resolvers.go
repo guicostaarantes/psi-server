@@ -6,7 +6,7 @@ package resolvers
 import (
 	"context"
 
-	generated1 "github.com/guicostaarantes/psi-server/graph/generated"
+	"github.com/guicostaarantes/psi-server/graph/generated"
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 )
 
@@ -104,10 +104,10 @@ func (r *queryResolver) UsersByRole(ctx context.Context, role users_models.Role)
 }
 
 // Mutation returns generated1.MutationResolver implementation.
-func (r *Resolver) Mutation() generated1.MutationResolver { return &mutationResolver{r} }
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated1.QueryResolver implementation.
-func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

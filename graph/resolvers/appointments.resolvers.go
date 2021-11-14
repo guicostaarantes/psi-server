@@ -7,8 +7,8 @@ import (
 	"context"
 
 	"github.com/guicostaarantes/psi-server/graph/generated"
-	"github.com/guicostaarantes/psi-server/modules/appointments/models"
-	models1 "github.com/guicostaarantes/psi-server/modules/treatments/models"
+	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 )
 
 func (r *mutationResolver) CancelAppointmentByPatient(ctx context.Context, id string, reason string) (*bool, error) {
@@ -69,7 +69,7 @@ func (r *mutationResolver) CreatePendingAppointments(ctx context.Context) (*bool
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) EditAppointmentByPatient(ctx context.Context, id string, input models.EditAppointmentByPatientInput) (*bool, error) {
+func (r *mutationResolver) EditAppointmentByPatient(ctx context.Context, id string, input appointments_models.EditAppointmentByPatientInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePatient, servicePatientErr := r.GetPatientByUserIDService().Execute(userID)
@@ -82,7 +82,7 @@ func (r *mutationResolver) EditAppointmentByPatient(ctx context.Context, id stri
 	return nil, serviceErr
 }
 
-func (r *mutationResolver) EditAppointmentByPsychologist(ctx context.Context, id string, input models.EditAppointmentByPsychologistInput) (*bool, error) {
+func (r *mutationResolver) EditAppointmentByPsychologist(ctx context.Context, id string, input appointments_models.EditAppointmentByPsychologistInput) (*bool, error) {
 	userID := ctx.Value("userID").(string)
 
 	servicePsy, servicePsyErr := r.GetPsychologistByUserIDService().Execute(userID)
@@ -95,19 +95,19 @@ func (r *mutationResolver) EditAppointmentByPsychologist(ctx context.Context, id
 	return nil, serviceErr
 }
 
-func (r *patientAppointmentResolver) PriceRange(ctx context.Context, obj *models.Appointment) (*models1.TreatmentPriceRange, error) {
+func (r *patientAppointmentResolver) PriceRange(ctx context.Context, obj *appointments_models.Appointment) (*treatments_models.TreatmentPriceRange, error) {
 	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }
 
-func (r *patientAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPatientTreatmentsResponse, error) {
+func (r *patientAppointmentResolver) Treatment(ctx context.Context, obj *appointments_models.Appointment) (*treatments_models.GetPatientTreatmentsResponse, error) {
 	return r.GetTreatmentForPatientService().Execute(obj.TreatmentID)
 }
 
-func (r *psychologistAppointmentResolver) PriceRange(ctx context.Context, obj *models.Appointment) (*models1.TreatmentPriceRange, error) {
+func (r *psychologistAppointmentResolver) PriceRange(ctx context.Context, obj *appointments_models.Appointment) (*treatments_models.TreatmentPriceRange, error) {
 	return r.GetTreatmentPriceRangeByNameService().Execute(obj.PriceRangeName)
 }
 
-func (r *psychologistAppointmentResolver) Treatment(ctx context.Context, obj *models.Appointment) (*models1.GetPsychologistTreatmentsResponse, error) {
+func (r *psychologistAppointmentResolver) Treatment(ctx context.Context, obj *appointments_models.Appointment) (*treatments_models.GetPsychologistTreatmentsResponse, error) {
 	return r.GetTreatmentForPsychologistService().Execute(obj.TreatmentID)
 }
 

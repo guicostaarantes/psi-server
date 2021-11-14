@@ -1,10 +1,10 @@
-package services
+package cooldowns_services
 
 import (
 	"errors"
 	"time"
 
-	"github.com/guicostaarantes/psi-server/modules/cooldowns/models"
+	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -17,7 +17,7 @@ type SaveCooldownService struct {
 	TopAffinitiesCooldownSeconds      int64
 }
 
-func (s SaveCooldownService) Execute(profileID string, profileType models.CooldownProfileType, cooldownType models.CooldownType) error {
+func (s SaveCooldownService) Execute(profileID string, profileType cooldowns_models.CooldownProfileType, cooldownType cooldowns_models.CooldownType) error {
 	_, cooldownID, cooldownIDErr := s.IdentifierUtil.GenerateIdentifier()
 	if cooldownIDErr != nil {
 		return cooldownIDErr
@@ -25,9 +25,9 @@ func (s SaveCooldownService) Execute(profileID string, profileType models.Cooldo
 
 	var duration int64
 	switch cooldownType {
-	case models.TreatmentInterrupted:
+	case cooldowns_models.TreatmentInterrupted:
 		duration = s.InterruptTreatmentCooldownSeconds
-	case models.TopAffinitiesSet:
+	case cooldowns_models.TopAffinitiesSet:
 		duration = s.TopAffinitiesCooldownSeconds
 	default:
 		return errors.New("cooldownType does not have a duration")
@@ -35,7 +35,7 @@ func (s SaveCooldownService) Execute(profileID string, profileType models.Cooldo
 
 	validUntil := time.Now().Unix() + duration
 
-	cooldown := models.Cooldown{
+	cooldown := cooldowns_models.Cooldown{
 		ID:           cooldownID,
 		ProfileID:    profileID,
 		ProfileType:  profileType,

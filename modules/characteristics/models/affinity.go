@@ -1,4 +1,4 @@
-package models
+package characteristics_models
 
 import (
 	"time"

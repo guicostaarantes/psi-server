@@ -1,9 +1,9 @@
-package services
+package appointments_services
 
 import (
 	"time"
 
-	"github.com/guicostaarantes/psi-server/modules/appointments/models"
+	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
@@ -30,7 +30,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 		return result.Error
 	}
 
-	appointmentsToCreate := []*models.Appointment{}
+	appointmentsToCreate := []*appointments_models.Appointment{}
 
 	for _, treatment := range activeTreatmentsWithoutFutureAppointments {
 		currentTime := time.Now().Unix()
@@ -47,7 +47,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 			return appoIDErr
 		}
 
-		newAppointment := models.Appointment{
+		newAppointment := appointments_models.Appointment{
 			ID:             appoID,
 			TreatmentID:    treatment.ID,
 			PatientID:      treatment.PatientID,
@@ -55,7 +55,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 			Start:          nextAppointmentStart,
 			End:            nextAppointmentStart + treatment.Duration,
 			PriceRangeName: treatment.PriceRangeName,
-			Status:         models.Created,
+			Status:         appointments_models.Created,
 		}
 
 		appointmentsToCreate = append(appointmentsToCreate, &newAppointment)

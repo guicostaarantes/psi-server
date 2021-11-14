@@ -1,7 +1,7 @@
-package services
+package treatments_services
 
 import (
-	"github.com/guicostaarantes/psi-server/modules/treatments/models"
+	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -11,9 +11,9 @@ type GetTreatmentPriceRangesService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s GetTreatmentPriceRangesService) Execute() ([]*models.TreatmentPriceRange, error) {
+func (s GetTreatmentPriceRangesService) Execute() ([]*treatments_models.TreatmentPriceRange, error) {
 
-	priceRanges := []*models.TreatmentPriceRange{}
+	priceRanges := []*treatments_models.TreatmentPriceRange{}
 
 	result := s.OrmUtil.Db().Find(&priceRanges)
 	if result.Error != nil {

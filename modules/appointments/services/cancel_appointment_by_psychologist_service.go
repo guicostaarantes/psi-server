@@ -1,10 +1,10 @@
-package services
+package appointments_services
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/guicostaarantes/psi-server/modules/appointments/models"
+	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
 
@@ -16,7 +16,7 @@ type CancelAppointmentByPsychologistService struct {
 // Execute is the method that runs the business logic of the service
 func (s CancelAppointmentByPsychologistService) Execute(id string, psychologistID string, reason string) error {
 
-	appointment := models.Appointment{}
+	appointment := appointments_models.Appointment{}
 
 	result := s.OrmUtil.Db().Where("id = ? AND psychologist_id = ?", id, psychologistID).Limit(1).Find(&appointment)
 	if result.Error != nil {
@@ -27,11 +27,11 @@ func (s CancelAppointmentByPsychologistService) Execute(id string, psychologistI
 		return errors.New("resource not found")
 	}
 
-	if appointment.Status == models.CanceledByPatient || appointment.Status == models.CanceledByPsychologist {
+	if appointment.Status == appointments_models.CanceledByPatient || appointment.Status == appointments_models.CanceledByPsychologist {
 		return fmt.Errorf("appointment status cannot change from %s to CANCELED_BY_PSYCHOLOGIST", string(appointment.Status))
 	}
 
-	appointment.Status = models.CanceledByPsychologist
+	appointment.Status = appointments_models.CanceledByPsychologist
 	appointment.Reason = reason
 
 	result = s.OrmUtil.Db().Save(&appointment)

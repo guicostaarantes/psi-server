@@ -1,9 +1,9 @@
-package services
+package users_services
 
 import (
 	"errors"
 
-	models "github.com/guicostaarantes/psi-server/modules/users/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/hash"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
@@ -21,7 +21,7 @@ type CreateUserWithPasswordService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithPasswordInput) error {
+func (s CreateUserWithPasswordService) Execute(userInput *users_models.CreateUserWithPasswordInput) error {
 
 	emailErr := s.MatchUtil.IsEmailValid(userInput.Email)
 	if emailErr != nil {
@@ -33,7 +33,7 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 		return passwordErr
 	}
 
-	userWithSameEmail := models.User{}
+	userWithSameEmail := users_models.User{}
 
 	result := s.OrmUtil.Db().Where("email = ?", userInput.Email).Limit(1).Find(&userWithSameEmail)
 	if result.Error != nil {
@@ -54,7 +54,7 @@ func (s CreateUserWithPasswordService) Execute(userInput *models.CreateUserWithP
 		return hashErr
 	}
 
-	user := &models.User{
+	user := &users_models.User{
 		ID:     id,
 		Active: true,
 		Email:  userInput.Email,
