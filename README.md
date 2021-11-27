@@ -55,12 +55,13 @@ Feel free to open an issue or create a pull request. Please follow the rules:
 
 - The instructions for docker to run all the containers we need is inside `./docker-compose.yml`. If you have docker installed in your PC, run `docker-compose up --build` and it will build this app and run it alongside the other containers needed.
 - The containers that run in this file are:
-  - `mongo`: the database for our application
-  - `mongo-express`: a web application to explore mongo collections
+  - `postgres`: the database for the application
   - `mailhog`: a SMTP server that will intercept all mails sent by it and show in a web application
+  - `app`: the application itself
+  - `jobs`: an application that sends commands to the application in given periods
 - After docker compose is up and running, go to your web browser and open 3 tabs:
   - `localhost:7070`: GraphQL Playground to execute queries/mutations/subscriptions
-  - `localhost:7071`: Mongo Express Web Application to monitor mongo collections
+  - `localhost:7071`: Adminer Web Application to manage the database directly (to login use System=PostgreSQL Server=postgres Username=postgres Password=pass)
   - `localhost:7072`: Mailhog Web Application to monitor mails being sent
 
 ### Debugging locally

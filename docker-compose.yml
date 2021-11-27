@@ -12,6 +12,12 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 10
+  adminer:
+    image: adminer:4
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - 7071:8080
   mailhog:
     image: mailhog/mailhog:v1.0.1
     ports:
