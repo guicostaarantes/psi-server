@@ -29,8 +29,12 @@ func (s SmtpMailUtil) Send(msg Message) error {
 	gomsg := gomail.NewMessage()
 	gomsg.SetHeader("From", gomsg.FormatAddress(msg.FromAddress, msg.FromName))
 	gomsg.SetHeader("To", msg.To...)
-	gomsg.SetHeader("Cc", msg.Cc...)
-	gomsg.SetHeader("Cco", msg.Cco...)
+	if msg.Cc[0] != "" {
+		gomsg.SetHeader("Cc", msg.Cc...)
+	}
+	if msg.Cco[0] != "" {
+		gomsg.SetHeader("Cco", msg.Cco...)
+	}
 	gomsg.SetHeader("Subject", msg.Subject)
 	gomsg.SetBody("text/html", msg.HTML)
 

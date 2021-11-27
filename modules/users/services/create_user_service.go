@@ -2,6 +2,7 @@ package users_services
 
 import (
 	"bytes"
+	"errors"
 	"html/template"
 	"os"
 	"time"
@@ -27,7 +28,7 @@ type CreateUserService struct {
 }
 
 // Execute is the method that runs the business logic of the service
-func (s CreateUserService) Execute(userInput *users_models.CreateUserInput) error {
+func (s CreateUserService) Execute(userInput *users_models.CreateUserInput, whichTemplate string) error {
 
 	emailErr := s.MatchUtil.IsEmailValid(userInput.Email)
 	if emailErr != nil {
@@ -76,7 +77,18 @@ func (s CreateUserService) Execute(userInput *users_models.CreateUserInput) erro
 		return mailIDErr
 	}
 
-	templ, templErr := template.New("CreateUserEmail").Parse(templates.CreateUserEmailTemplate)
+	templateToUse := ""
+
+	switch whichTemplate {
+	case "CREATE_PATIENT":
+		templateToUse = templates.CreateUserEmailTemplate
+	case "INVITE_PSYCHOLOGIST":
+		templateToUse = templates.InvitePsychologistEmailTemplate
+	default:
+		return errors.New("template not found")
+	}
+
+	templ, templErr := template.New("CreateUserEmail").Parse(templateToUse)
 	if templErr != nil {
 		return templErr
 	}
