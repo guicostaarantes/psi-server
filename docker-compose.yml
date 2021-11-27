@@ -26,7 +26,7 @@ services:
       dockerfile: prod.Dockerfile
     ports:
       - 7070:8080
-      - 40000:40000
+      # - 40000:40000 # only valid for debug.Dockerfile
     environment:
       PSI_APP_PORT: 8080
       PSI_BOOTSTRAP_USER: coordinator@psi.com.br|Abc123!@#
