@@ -41,7 +41,7 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 	}
 
 	for _, appointment := range appointmentsOfTreatment {
-		if appointment.Start > time.Now().Unix() && appointment.Status != appointments_models.CanceledByPatient {
+		if appointment.Start.After(time.Now()) && appointment.Status != appointments_models.CanceledByPatient {
 			appointment.Status = appointments_models.TreatmentFinalized
 			appointment.Reason = "Tratamento finalizado"
 
@@ -52,7 +52,8 @@ func (s FinalizeTreatmentService) Execute(id string, psychologistID string) erro
 		}
 	}
 
-	treatment.EndDate = time.Now().Unix()
+	now := time.Now()
+	treatment.EndDate = &now
 	treatment.Status = treatments_models.Finalized
 
 	result = s.OrmUtil.Db().Save(&treatment)

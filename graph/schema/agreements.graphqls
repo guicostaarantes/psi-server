@@ -27,7 +27,6 @@ type Agreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/ag
     termName: String!
     termVersion: Int!
     profileId: String!
-    signedAt: Int!
 }
 
 extend type Query {

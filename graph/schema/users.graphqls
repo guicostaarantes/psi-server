@@ -38,7 +38,7 @@ type User @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/m
 
 type Token @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.Authentication") {
     token: String!
-    expiresAt: Int!
+    expiresAt: Time!
 }
 
 type Query {

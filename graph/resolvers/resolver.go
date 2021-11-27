@@ -1,6 +1,8 @@
 package resolvers
 
 import (
+	"time"
+
 	agreements_services "github.com/guicostaarantes/psi-server/modules/agreements/services"
 	appointments_services "github.com/guicostaarantes/psi-server/modules/appointments/services"
 	characteristics_services "github.com/guicostaarantes/psi-server/modules/characteristics/services"
@@ -36,12 +38,11 @@ type Resolver struct {
 	SerializingUtil                           serializing.ISerializingUtil
 	TokenUtil                                 token.ITokenUtil
 	MaxAffinityNumber                         int64
-	ScheduleIntervalSeconds                   int64
-	SecondsToCooldownReset                    int64
-	SecondsToExpire                           int64
-	SecondsToExpireReset                      int64
-	InterruptTreatmentCooldownSeconds         int64
-	TopAffinitiesCooldownSeconds              int64
+	ScheduleIntervalDuration                  time.Duration
+	ExpireAuthTokenDuration                   time.Duration
+	ExpireResetTokenDuration                  time.Duration
+	InterruptTreatmentCooldownDuration        time.Duration
+	TopAffinitiesCooldownDuration             time.Duration
 	askResetPasswordService                   *users_services.AskResetPasswordService
 	assignTreatmentService                    *treatments_services.AssignTreatmentService
 	authenticateUserService                   *users_services.AuthenticateUserService
@@ -108,10 +109,10 @@ type Resolver struct {
 func (r *Resolver) AskResetPasswordService() *users_services.AskResetPasswordService {
 	if r.askResetPasswordService == nil {
 		r.askResetPasswordService = &users_services.AskResetPasswordService{
-			IdentifierUtil:  r.IdentifierUtil,
-			OrmUtil:         r.OrmUtil,
-			TokenUtil:       r.TokenUtil,
-			SecondsToExpire: r.SecondsToExpire,
+			IdentifierUtil:           r.IdentifierUtil,
+			OrmUtil:                  r.OrmUtil,
+			TokenUtil:                r.TokenUtil,
+			ExpireResetTokenDuration: r.ExpireResetTokenDuration,
 		}
 	}
 	return r.askResetPasswordService
@@ -132,11 +133,11 @@ func (r *Resolver) AssignTreatmentService() *treatments_services.AssignTreatment
 func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserService {
 	if r.authenticateUserService == nil {
 		r.authenticateUserService = &users_services.AuthenticateUserService{
-			HashUtil:        r.HashUtil,
-			OrmUtil:         r.OrmUtil,
-			SerializingUtil: r.SerializingUtil,
-			TokenUtil:       r.TokenUtil,
-			SecondsToExpire: r.SecondsToExpire,
+			HashUtil:                r.HashUtil,
+			OrmUtil:                 r.OrmUtil,
+			SerializingUtil:         r.SerializingUtil,
+			TokenUtil:               r.TokenUtil,
+			ExpireAuthTokenDuration: r.ExpireAuthTokenDuration,
 		}
 	}
 	return r.authenticateUserService
@@ -166,8 +167,8 @@ func (r *Resolver) CancelAppointmentByPsychologistService() *appointments_servic
 func (r *Resolver) CheckTreatmentCollisionService() *treatments_services.CheckTreatmentCollisionService {
 	if r.checkTreatmentCollisionService == nil {
 		r.checkTreatmentCollisionService = &treatments_services.CheckTreatmentCollisionService{
-			OrmUtil:                 r.OrmUtil,
-			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
+			OrmUtil:                  r.OrmUtil,
+			ScheduleIntervalDuration: r.ScheduleIntervalDuration,
 		}
 	}
 	return r.checkTreatmentCollisionService
@@ -197,9 +198,9 @@ func (r *Resolver) ConfirmAppointmentByPsychologistService() *appointments_servi
 func (r *Resolver) CreatePendingAppointmentsService() *appointments_services.CreatePendingAppointmentsService {
 	if r.createPendingAppointmentsService == nil {
 		r.createPendingAppointmentsService = &appointments_services.CreatePendingAppointmentsService{
-			IdentifierUtil:          r.IdentifierUtil,
-			OrmUtil:                 r.OrmUtil,
-			ScheduleIntervalSeconds: r.ScheduleIntervalSeconds,
+			IdentifierUtil:           r.IdentifierUtil,
+			OrmUtil:                  r.OrmUtil,
+			ScheduleIntervalDuration: r.ScheduleIntervalDuration,
 		}
 	}
 	return r.createPendingAppointmentsService
@@ -221,12 +222,12 @@ func (r *Resolver) CreateTreatmentService() *treatments_services.CreateTreatment
 func (r *Resolver) CreateUserService() *users_services.CreateUserService {
 	if r.createUserService == nil {
 		r.createUserService = &users_services.CreateUserService{
-			IdentifierUtil:  r.IdentifierUtil,
-			MatchUtil:       r.MatchUtil,
-			OrmUtil:         r.OrmUtil,
-			SerializingUtil: r.SerializingUtil,
-			TokenUtil:       r.TokenUtil,
-			SecondsToExpire: r.SecondsToExpireReset,
+			IdentifierUtil:          r.IdentifierUtil,
+			MatchUtil:               r.MatchUtil,
+			OrmUtil:                 r.OrmUtil,
+			SerializingUtil:         r.SerializingUtil,
+			TokenUtil:               r.TokenUtil,
+			ExpireAuthTokenDuration: r.ExpireResetTokenDuration,
 		}
 	}
 	return r.createUserService
@@ -481,7 +482,6 @@ func (r *Resolver) GetTopAffinitiesForPatientService() *characteristics_services
 	if r.getTopAffinitiesForPatientService == nil {
 		r.getTopAffinitiesForPatientService = &characteristics_services.GetTopAffinitiesForPatientService{
 			OrmUtil:                           r.OrmUtil,
-			TopAffinitiesCooldownSeconds:      r.TopAffinitiesCooldownSeconds,
 			GetCooldownService:                r.GetCooldownService(),
 			SetTopAffinitiesForPatientService: r.SetTopAffinitiesForPatientService(),
 		}
@@ -587,10 +587,10 @@ func (r *Resolver) ResetPasswordService() *users_services.ResetPasswordService {
 func (r *Resolver) SaveCooldownService() *cooldowns_services.SaveCooldownService {
 	if r.saveCooldownService == nil {
 		r.saveCooldownService = &cooldowns_services.SaveCooldownService{
-			IdentifierUtil:                    r.IdentifierUtil,
-			OrmUtil:                           r.OrmUtil,
-			InterruptTreatmentCooldownSeconds: r.InterruptTreatmentCooldownSeconds,
-			TopAffinitiesCooldownSeconds:      r.TopAffinitiesCooldownSeconds,
+			IdentifierUtil:                     r.IdentifierUtil,
+			OrmUtil:                            r.OrmUtil,
+			InterruptTreatmentCooldownDuration: r.InterruptTreatmentCooldownDuration,
+			TopAffinitiesCooldownDuration:      r.TopAffinitiesCooldownDuration,
 		}
 	}
 	return r.saveCooldownService
@@ -743,9 +743,9 @@ func (r *Resolver) UpsertTermService() *agreements_services.UpsertTermService {
 func (r *Resolver) ValidateUserTokenService() *users_services.ValidateUserTokenService {
 	if r.validateUserTokenService == nil {
 		r.validateUserTokenService = &users_services.ValidateUserTokenService{
-			OrmUtil:         r.OrmUtil,
-			SerializingUtil: r.SerializingUtil,
-			SecondsToExpire: r.SecondsToExpire,
+			OrmUtil:                 r.OrmUtil,
+			SerializingUtil:         r.SerializingUtil,
+			ExpireAuthTokenDuration: r.ExpireAuthTokenDuration,
 		}
 	}
 	return r.validateUserTokenService

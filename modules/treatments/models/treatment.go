@@ -23,7 +23,7 @@ const (
 )
 
 // Treatment represents the intention from a psychologist to treat a patient, defining the sessions' duration, price, interval and phase.
-// The next session of a specific treatment will be scheduled to the UNIX timestamp T, where T = (ScheduleIntervalSeconds * Frequency * N) + Phase, and N is the smallest natural number that makes T superior to the current timestamp.
+// The next session of a specific treatment will be scheduled to the UNIX timestamp T, where T = (ScheduleIntervalDuration * Frequency * N) + Phase, and N is the smallest natural number that makes T superior to the current timestamp.
 type Treatment struct {
 	ID             string          `json:"id" gorm:"primaryKey"`
 	CreatedAt      time.Time       `json:"createdAt`
@@ -36,7 +36,7 @@ type Treatment struct {
 	Duration       int64           `json:"duration"`
 	PriceRangeName string          `json:"priceRangeName"`
 	Status         TreatmentStatus `json:"status"`
-	StartDate      int64           `json:"startDate"`
-	EndDate        int64           `json:"endDate"`
+	StartDate      *time.Time      `json:"startDate"`
+	EndDate        *time.Time      `json:"endDate"`
 	Reason         string          `json:"reason"`
 }

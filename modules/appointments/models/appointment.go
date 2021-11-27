@@ -43,8 +43,8 @@ type Appointment struct {
 	TreatmentID    string            `json:"treatmentId"`
 	PatientID      string            `json:"patientId"`
 	PsychologistID string            `json:"psychologistId"`
-	Start          int64             `json:"start"`
-	End            int64             `json:"end"`
+	Start          time.Time         `json:"start"`
+	End            time.Time         `json:"end"`
 	PriceRangeName string            `json:"priceRangeName"`
 	Status         AppointmentStatus `json:"status"`
 	Reason         string            `json:"reason"`

@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
-func (r *queryResolver) Time(ctx context.Context) (int64, error) {
-	return time.Now().Unix(), nil
+func (r *queryResolver) Time(ctx context.Context) (*time.Time, error) {
+	now := time.Now()
+
+	return &now, nil
 }

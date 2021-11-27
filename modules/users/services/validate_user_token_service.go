@@ -11,9 +11,9 @@ import (
 
 // ValidateUserTokenService is a service that checks the validity of a token
 type ValidateUserTokenService struct {
-	OrmUtil         orm.IOrmUtil
-	SerializingUtil serializing.ISerializingUtil
-	SecondsToExpire int64
+	OrmUtil                 orm.IOrmUtil
+	SerializingUtil         serializing.ISerializingUtil
+	ExpireAuthTokenDuration time.Duration
 }
 
 // Execute is the method that runs the business logic of the service
@@ -26,11 +26,11 @@ func (s ValidateUserTokenService) Execute(token string) (string, error) {
 		return "", result.Error
 	}
 
-	if auth.UserID == "" || auth.ExpiresAt < time.Now().Unix() {
+	if auth.UserID == "" || auth.ExpiresAt.Before(time.Now()) {
 		return "", errors.New("invalid token")
 	}
 
-	auth.ExpiresAt = time.Now().Unix() + s.SecondsToExpire
+	auth.ExpiresAt = time.Now().Add(s.ExpireAuthTokenDuration)
 
 	result = s.OrmUtil.Db().Save(&auth)
 	if result.Error != nil {

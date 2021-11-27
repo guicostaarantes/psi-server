@@ -32,5 +32,5 @@ type Cooldown struct {
 	ProfileID    string              `json:"profileId"`
 	ProfileType  CooldownProfileType `json:"profileType"`
 	CooldownType CooldownType        `json:"cooldownType"`
-	ValidUntil   int64               `json:"validUntil"`
+	ValidUntil   time.Time           `json:"validUntil"`
 }

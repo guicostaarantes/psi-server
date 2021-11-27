@@ -3,7 +3,7 @@ scalar Upload
 input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPatientInput") {
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     avatar: Upload
 }
@@ -11,7 +11,7 @@ input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/ps
 input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPsychologistInput") {
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     crp: String!
     whatsapp: String!
@@ -24,7 +24,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     id: ID!
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
@@ -38,7 +38,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     id: ID!
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     crp: String!
     whatsapp: String!
@@ -57,7 +57,7 @@ type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server
     id: ID!
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)

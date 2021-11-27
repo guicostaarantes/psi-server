@@ -103,10 +103,10 @@ func (r *queryResolver) UsersByRole(ctx context.Context, role users_models.Role)
 	return r.GetUsersByRoleService().Execute(string(role))
 }
 
-// Mutation returns generated1.MutationResolver implementation.
+// Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated1.QueryResolver implementation.
+// Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }

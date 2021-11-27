@@ -2,6 +2,7 @@ package token
 
 import (
 	"crypto/rand"
+	"time"
 )
 
 type RngTokenUtil struct {
@@ -9,7 +10,7 @@ type RngTokenUtil struct {
 	Size  int
 }
 
-func (r RngTokenUtil) GenerateToken(payload string, secondsToExpire int64) (string, error) {
+func (r RngTokenUtil) GenerateToken(payload string, secondsToExpire time.Duration) (string, error) {
 	bytes := make([]byte, r.Size)
 
 	_, err := rand.Read(bytes)

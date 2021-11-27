@@ -15,7 +15,7 @@ type Patient struct {
 	UserID    string         `json:"userId" gorm:"index"`
 	FullName  string         `json:"fullName"`
 	LikeName  string         `json:"likeName"`
-	BirthDate int64          `json:"birthDate"`
+	BirthDate time.Time      `json:"birthDate"`
 	City      string         `json:"city"`
 	Avatar    string         `json:"avatar"`
 }
