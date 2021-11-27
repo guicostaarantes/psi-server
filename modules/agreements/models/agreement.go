@@ -15,5 +15,4 @@ type Agreement struct {
 	TermName    string         `json:"termName"`
 	TermVersion int64          `json:"termVersion"`
 	ProfileID   string         `json:"profileId"`
-	SignedAt    int64          `json:"signedAt"`
 }

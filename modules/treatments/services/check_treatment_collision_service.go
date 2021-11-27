@@ -2,6 +2,7 @@ package treatments_services
 
 import (
 	"errors"
+	"time"
 
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
 	"github.com/guicostaarantes/psi-server/utils/orm"
@@ -9,8 +10,8 @@ import (
 
 // CheckTreatmentCollisionService is a service that checks if a treatment period collides with others from the same psychologist
 type CheckTreatmentCollisionService struct {
-	OrmUtil                 orm.IOrmUtil
-	ScheduleIntervalSeconds int64
+	OrmUtil                  orm.IOrmUtil
+	ScheduleIntervalDuration time.Duration
 }
 
 func LCM(a, b int64) int64 {
@@ -27,7 +28,7 @@ func LCM(a, b int64) int64 {
 // Execute is the method that runs the business logic of the service
 func (s CheckTreatmentCollisionService) Execute(psychologistID string, frequency int64, phase int64, duration int64, updatingID string) error {
 
-	if phase >= s.ScheduleIntervalSeconds*frequency {
+	if phase >= int64(s.ScheduleIntervalDuration/time.Second)*frequency {
 		return errors.New("phase cannot be bigger than the schedule interval")
 	}
 
@@ -50,13 +51,13 @@ func (s CheckTreatmentCollisionService) Execute(psychologistID string, frequency
 
 		for counter := int64(0); counter < lcm; counter++ {
 			if counter%frequency == 0 {
-				candidateStart := counter*s.ScheduleIntervalSeconds + phase
-				candidateEnd := (candidateStart + duration) % (lcm * s.ScheduleIntervalSeconds)
+				candidateStart := counter*int64(s.ScheduleIntervalDuration/time.Second) + phase
+				candidateEnd := (candidateStart + duration) % (lcm * int64(s.ScheduleIntervalDuration/time.Second))
 				candidateDates = append(candidateDates, []int64{candidateStart, candidateEnd})
 			}
 			if counter%treatment.Frequency == 0 {
-				treatmentStart := counter*s.ScheduleIntervalSeconds + treatment.Phase
-				treatmentEnd := (treatmentStart + treatment.Duration) % (lcm * s.ScheduleIntervalSeconds)
+				treatmentStart := counter*int64(s.ScheduleIntervalDuration/time.Second) + treatment.Phase
+				treatmentEnd := (treatmentStart + treatment.Duration) % (lcm * int64(s.ScheduleIntervalDuration/time.Second))
 				treatmentDates = append(treatmentDates, []int64{treatmentStart, treatmentEnd})
 			}
 		}

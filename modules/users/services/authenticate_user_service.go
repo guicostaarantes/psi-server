@@ -13,11 +13,11 @@ import (
 
 // AuthenticateUserService is a service that exchanges credentials for an access token
 type AuthenticateUserService struct {
-	HashUtil        hash.IHashUtil
-	OrmUtil         orm.IOrmUtil
-	SerializingUtil serializing.ISerializingUtil
-	TokenUtil       token.ITokenUtil
-	SecondsToExpire int64
+	HashUtil                hash.IHashUtil
+	OrmUtil                 orm.IOrmUtil
+	SerializingUtil         serializing.ISerializingUtil
+	TokenUtil               token.ITokenUtil
+	ExpireAuthTokenDuration time.Duration
 }
 
 // Execute is the method that runs the business logic of the service
@@ -42,15 +42,15 @@ func (s AuthenticateUserService) Execute(authInput *users_models.AuthenticateUse
 		return nil, compareErr
 	}
 
-	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToExpire)
+	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.ExpireAuthTokenDuration)
 	if tokenErr != nil {
 		return nil, tokenErr
 	}
 
 	auth := &users_models.Authentication{
 		UserID:    user.ID,
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),
+		IssuedAt:  time.Now(),
+		ExpiresAt: time.Now().Add(s.ExpireAuthTokenDuration),
 		Token:     token,
 	}
 

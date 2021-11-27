@@ -18,12 +18,12 @@ import (
 
 // CreateUserService is a service that creates users and sends emails so that the owner can assign a password
 type CreateUserService struct {
-	IdentifierUtil  identifier.IIdentifierUtil
-	MatchUtil       match.IMatchUtil
-	OrmUtil         orm.IOrmUtil
-	SerializingUtil serializing.ISerializingUtil
-	TokenUtil       token.ITokenUtil
-	SecondsToExpire int64
+	IdentifierUtil          identifier.IIdentifierUtil
+	MatchUtil               match.IMatchUtil
+	OrmUtil                 orm.IOrmUtil
+	SerializingUtil         serializing.ISerializingUtil
+	TokenUtil               token.ITokenUtil
+	ExpireAuthTokenDuration time.Duration
 }
 
 // Execute is the method that runs the business logic of the service
@@ -58,15 +58,15 @@ func (s CreateUserService) Execute(userInput *users_models.CreateUserInput) erro
 		Role:   userInput.Role,
 	}
 
-	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToExpire)
+	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.ExpireAuthTokenDuration)
 	if tokenErr != nil {
 		return tokenErr
 	}
 
 	reset := &users_models.ResetPassword{
 		UserID:    userID,
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToExpire)).Unix(),
+		IssuedAt:  time.Now(),
+		ExpiresAt: time.Now().Add(s.ExpireAuthTokenDuration),
 		Token:     token,
 		Redeemed:  false,
 	}

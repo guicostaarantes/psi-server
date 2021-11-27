@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -69,7 +70,6 @@ type ComplexityRoot struct {
 	Agreement struct {
 		ID          func(childComplexity int) int
 		ProfileID   func(childComplexity int) int
-		SignedAt    func(childComplexity int) int
 		TermName    func(childComplexity int) int
 		TermVersion func(childComplexity int) int
 	}
@@ -285,7 +285,6 @@ type ComplexityRoot struct {
 }
 
 type AffinityResolver interface {
-	CreatedAt(ctx context.Context, obj *characteristics_models.Affinity) (int64, error)
 	Psychologist(ctx context.Context, obj *characteristics_models.Affinity) (*profiles_models.Psychologist, error)
 }
 type MutationResolver interface {
@@ -380,7 +379,7 @@ type QueryResolver interface {
 	MyPsychologistProfile(ctx context.Context) (*profiles_models.Psychologist, error)
 	PatientProfile(ctx context.Context, id string) (*profiles_models.Patient, error)
 	PsychologistProfile(ctx context.Context, id string) (*profiles_models.Psychologist, error)
-	Time(ctx context.Context) (int64, error)
+	Time(ctx context.Context) (*time.Time, error)
 	Translations(ctx context.Context, lang string, keys []string) ([]*translations_models.Translation, error)
 	TreatmentPriceRanges(ctx context.Context) ([]*treatments_models.TreatmentPriceRange, error)
 }
@@ -430,13 +429,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Agreement.ProfileID(childComplexity), true
-
-	case "Agreement.signedAt":
-		if e.complexity.Agreement.SignedAt == nil {
-			break
-		}
-
-		return e.complexity.Agreement.SignedAt(childComplexity), true
 
 	case "Agreement.termName":
 		if e.complexity.Agreement.TermName == nil {
@@ -1799,7 +1791,6 @@ type Agreement @goModel(model: "github.com/guicostaarantes/psi-server/modules/ag
     termName: String!
     termVersion: Int!
     profileId: String!
-    signedAt: Int!
 }
 
 extend type Query {
@@ -1835,21 +1826,21 @@ extend type Mutation {
 }
 
 input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPatientInput") {
-    start: Int!
+    start: Time!
     reason: String!
 }
 
 input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
-    start: Int!
-    end: Int!
+    start: Time!
+    end: Time!
     priceRangeName: String!
     reason: String!
 }
 
 type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
     id: ID!
-    start: Int!
-    end: Int!
+    start: Time!
+    end: Time!
     priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: AppointmentStatus!
     reason: String!
@@ -1859,8 +1850,8 @@ type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/m
 
 type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
     id: ID!
-    start: Int!
-    end: Int!
+    start: Time!
+    end: Time!
     priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: AppointmentStatus!
     reason: String!
@@ -1914,7 +1905,7 @@ input SetProfileCharacteristicInput @goModel(model: "github.com/guicostaarantes/
 }
 
 type Affinity @goModel(model: "github.com/guicostaarantes/psi-server/modules/characteristics/models.Affinity") {
-    createdAt: Int!
+    createdAt: Time!
     psychologist: PublicPsychologistProfile @goField(forceResolver: true)
 }
 
@@ -1964,7 +1955,7 @@ extend type Mutation {
 input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPatientInput") {
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     avatar: Upload
 }
@@ -1972,7 +1963,7 @@ input UpsertMyPatientProfileInput @goModel(model: "github.com/guicostaarantes/ps
 input UpsertMyPsychologistProfileInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/profiles/models.UpsertPsychologistInput") {
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     crp: String!
     whatsapp: String!
@@ -1985,7 +1976,7 @@ type PatientProfile @goModel(model: "github.com/guicostaarantes/psi-server/modul
     id: ID!
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
@@ -1999,7 +1990,7 @@ type PsychologistProfile @goModel(model: "github.com/guicostaarantes/psi-server/
     id: ID!
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     crp: String!
     whatsapp: String!
@@ -2018,7 +2009,7 @@ type PublicPatientProfile @goModel(model: "github.com/guicostaarantes/psi-server
     id: ID!
     fullName: String!
     likeName: String!
-    birthDate: Int!
+    birthDate: Time!
     city: String!
     avatar: String!
     characteristics: [CharacteristicChoice!]! @goField(forceResolver: true)
@@ -2072,9 +2063,11 @@ extend type Mutation {
     """The upsertMyPsychologistProfile mutation allows a user to create or make changes to their psychologist profile."""
     upsertMyPsychologistProfile(input: UpsertMyPsychologistProfileInput!): Boolean @hasRole(role: [COORDINATOR,PSYCHOLOGIST])
 }`, BuiltIn: false},
-	{Name: "graph/schema/time.graphqls", Input: `extend type Query {
+	{Name: "graph/schema/time.graphqls", Input: `scalar Time
+
+extend type Query {
     """The time query allows the user to know the timestamp of the server."""
-    time: Int!
+    time: Time!
 }`, BuiltIn: false},
 	{Name: "graph/schema/translations.graphqls", Input: `input TranslationInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/translations/models.TranslationInput") {
     key: String!
@@ -2227,7 +2220,7 @@ type User @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/m
 
 type Token @goModel(model: "github.com/guicostaarantes/psi-server/modules/users/models.Authentication") {
     token: String!
-    expiresAt: Int!
+    expiresAt: Time!
 }
 
 type Query {
@@ -3037,14 +3030,14 @@ func (ec *executionContext) _Affinity_createdAt(ctx context.Context, field graph
 		Object:     "Affinity",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Affinity().CreatedAt(rctx, obj)
+		return obj.CreatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3056,9 +3049,9 @@ func (ec *executionContext) _Affinity_createdAt(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Affinity_psychologist(ctx context.Context, field graphql.CollectedField, obj *characteristics_models.Affinity) (ret graphql.Marshaler) {
@@ -3231,41 +3224,6 @@ func (ec *executionContext) _Agreement_profileId(ctx context.Context, field grap
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Agreement_signedAt(ctx context.Context, field graphql.CollectedField, obj *agreements_models.Agreement) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Agreement",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SignedAt, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int64)
-	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Characteristic_name(ctx context.Context, field graphql.CollectedField, obj *characteristics_models.CharacteristicResponse) (ret graphql.Marshaler) {
@@ -5634,9 +5592,9 @@ func (ec *executionContext) _PatientAppointment_start(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientAppointment_end(ctx context.Context, field graphql.CollectedField, obj *appointments_models.Appointment) (ret graphql.Marshaler) {
@@ -5669,9 +5627,9 @@ func (ec *executionContext) _PatientAppointment_end(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientAppointment_priceRange(ctx context.Context, field graphql.CollectedField, obj *appointments_models.Appointment) (ret graphql.Marshaler) {
@@ -5981,9 +5939,9 @@ func (ec *executionContext) _PatientProfile_birthDate(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PatientProfile_city(ctx context.Context, field graphql.CollectedField, obj *profiles_models.Patient) (ret graphql.Marshaler) {
@@ -6643,9 +6601,9 @@ func (ec *executionContext) _PsychologistAppointment_start(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistAppointment_end(ctx context.Context, field graphql.CollectedField, obj *appointments_models.Appointment) (ret graphql.Marshaler) {
@@ -6678,9 +6636,9 @@ func (ec *executionContext) _PsychologistAppointment_end(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistAppointment_priceRange(ctx context.Context, field graphql.CollectedField, obj *appointments_models.Appointment) (ret graphql.Marshaler) {
@@ -6990,9 +6948,9 @@ func (ec *executionContext) _PsychologistProfile_birthDate(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PsychologistProfile_city(ctx context.Context, field graphql.CollectedField, obj *profiles_models.Psychologist) (ret graphql.Marshaler) {
@@ -7789,9 +7747,9 @@ func (ec *executionContext) _PublicPatientProfile_birthDate(ctx context.Context,
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PublicPatientProfile_city(ctx context.Context, field graphql.CollectedField, obj *profiles_models.Patient) (ret graphql.Marshaler) {
@@ -9080,9 +9038,9 @@ func (ec *executionContext) _Query_time(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_translations(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -9427,9 +9385,9 @@ func (ec *executionContext) _Token_expiresAt(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Translation_lang(ctx context.Context, field graphql.CollectedField, obj *translations_models.Translation) (ret graphql.Marshaler) {
@@ -11074,7 +11032,7 @@ func (ec *executionContext) unmarshalInputEditAppointmentByPatientInput(ctx cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start"))
-			it.Start, err = ec.unmarshalNInt2int64(ctx, v)
+			it.Start, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11102,7 +11060,7 @@ func (ec *executionContext) unmarshalInputEditAppointmentByPsychologistInput(ctx
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start"))
-			it.Start, err = ec.unmarshalNInt2int64(ctx, v)
+			it.Start, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11110,7 +11068,7 @@ func (ec *executionContext) unmarshalInputEditAppointmentByPsychologistInput(ctx
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("end"))
-			it.End, err = ec.unmarshalNInt2int64(ctx, v)
+			it.End, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11470,7 +11428,7 @@ func (ec *executionContext) unmarshalInputUpsertMyPatientProfileInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
-			it.BirthDate, err = ec.unmarshalNInt2int64(ctx, v)
+			it.BirthDate, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11522,7 +11480,7 @@ func (ec *executionContext) unmarshalInputUpsertMyPsychologistProfileInput(ctx c
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
-			it.BirthDate, err = ec.unmarshalNInt2int64(ctx, v)
+			it.BirthDate, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11644,19 +11602,10 @@ func (ec *executionContext) _Affinity(ctx context.Context, sel ast.SelectionSet,
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Affinity")
 		case "createdAt":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Affinity_createdAt(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+			out.Values[i] = ec._Affinity_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "psychologist":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -11707,11 +11656,6 @@ func (ec *executionContext) _Agreement(ctx context.Context, sel ast.SelectionSet
 			}
 		case "profileId":
 			out.Values[i] = ec._Agreement_profileId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "signedAt":
-			out.Values[i] = ec._Agreement_signedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -14215,6 +14159,42 @@ func (ec *executionContext) unmarshalNTermProfileType2githubᚗcomᚋguicostaara
 
 func (ec *executionContext) marshalNTermProfileType2githubᚗcomᚋguicostaarantesᚋpsiᚑserverᚋmodulesᚋagreementsᚋmodelsᚐTermProfileType(ctx context.Context, sel ast.SelectionSet, v agreements_models.TermProfileType) graphql.Marshaler {
 	res := graphql.MarshalString(string(v))
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

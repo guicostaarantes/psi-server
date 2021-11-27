@@ -35,7 +35,7 @@ func (s InterruptTreatmentByPsychologistService) Execute(id string, psychologist
 
 	appointments := []*appointments_models.Appointment{}
 
-	result = s.OrmUtil.Db().Where("treatment_id = ? AND start > ?", id, time.Now().Unix()).Find(&appointments)
+	result = s.OrmUtil.Db().Where("treatment_id = ? AND start > ?", id, time.Now()).Find(&appointments)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -52,7 +52,8 @@ func (s InterruptTreatmentByPsychologistService) Execute(id string, psychologist
 		}
 	}
 
-	treatment.EndDate = time.Now().Unix()
+	now := time.Now()
+	treatment.EndDate = &now
 	treatment.Status = treatments_models.InterruptedByPsychologist
 	treatment.Reason = reason
 

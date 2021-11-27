@@ -12,16 +12,14 @@ import (
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 	"github.com/guicostaarantes/psi-server/utils/token"
-	"gorm.io/gorm"
 )
 
 // AskResetPasswordService is a service that sends a token to the user's email so that they can reset their password
 type AskResetPasswordService struct {
-	IdentifierUtil    identifier.IIdentifierUtil
-	OrmUtil           orm.IOrmUtil
-	TokenUtil         token.ITokenUtil
-	SecondsToCooldown int64
-	SecondsToExpire   int64
+	IdentifierUtil           identifier.IIdentifierUtil
+	OrmUtil                  orm.IOrmUtil
+	TokenUtil                token.ITokenUtil
+	ExpireResetTokenDuration time.Duration
 }
 
 // Execute is the method that runs the business logic of the service
@@ -30,7 +28,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 	user := &users_models.User{}
 
 	result := s.OrmUtil.Db().Where("email = ?", email).Limit(1).Find(&user)
-	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+	if result.Error != nil {
 		return result.Error
 	}
 
@@ -46,7 +44,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 	}
 
 	if existingReset.UserID != "" {
-		if existingReset.IssuedAt > time.Now().Add(-time.Second*time.Duration(s.SecondsToCooldown)).Unix() {
+		if existingReset.ExpiresAt.Before(time.Now()) {
 			return nil
 		}
 
@@ -56,15 +54,15 @@ func (s AskResetPasswordService) Execute(email string) error {
 		}
 	}
 
-	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.SecondsToCooldown)
+	token, tokenErr := s.TokenUtil.GenerateToken(user.ID, s.ExpireResetTokenDuration)
 	if tokenErr != nil {
 		return tokenErr
 	}
 
 	reset := &users_models.ResetPassword{
 		UserID:    user.ID,
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Second * time.Duration(s.SecondsToCooldown)).Unix(),
+		IssuedAt:  time.Now(),
+		ExpiresAt: time.Now().Add(s.ExpireResetTokenDuration),
 		Token:     token,
 		Redeemed:  false,
 	}

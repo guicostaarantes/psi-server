@@ -12,10 +12,6 @@ import (
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 )
 
-func (r *affinityResolver) CreatedAt(ctx context.Context, obj *characteristics_models.Affinity) (int64, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
 func (r *affinityResolver) Psychologist(ctx context.Context, obj *characteristics_models.Affinity) (*profiles_models.Psychologist, error) {
 	return r.GetPsychologistService().Execute(obj.PsychologistID)
 }
@@ -61,3 +57,13 @@ func (r *queryResolver) MyPatientTopAffinities(ctx context.Context) ([]*characte
 func (r *Resolver) Affinity() generated.AffinityResolver { return &affinityResolver{r} }
 
 type affinityResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *affinityResolver) CreatedAt(ctx context.Context, obj *characteristics_models.Affinity) (int64, error) {
+	panic(fmt.Errorf("not implemented"))
+}

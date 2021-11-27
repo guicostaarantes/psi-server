@@ -13,21 +13,21 @@ enum AppointmentStatus @goModel(model: "github.com/guicostaarantes/psi-server/mo
 }
 
 input EditAppointmentByPatientInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPatientInput") {
-    start: Int!
+    start: Time!
     reason: String!
 }
 
 input EditAppointmentByPsychologistInput @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.EditAppointmentByPsychologistInput") {
-    start: Int!
-    end: Int!
+    start: Time!
+    end: Time!
     priceRangeName: String!
     reason: String!
 }
 
 type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
     id: ID!
-    start: Int!
-    end: Int!
+    start: Time!
+    end: Time!
     priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: AppointmentStatus!
     reason: String!
@@ -37,8 +37,8 @@ type PatientAppointment @goModel(model: "github.com/guicostaarantes/psi-server/m
 
 type PsychologistAppointment @goModel(model: "github.com/guicostaarantes/psi-server/modules/appointments/models.Appointment") {
     id: ID!
-    start: Int!
-    end: Int!
+    start: Time!
+    end: Time!
     priceRange: TreatmentPriceRange @goField(forceResolver: true)
     status: AppointmentStatus!
     reason: String!

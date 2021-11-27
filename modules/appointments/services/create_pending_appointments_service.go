@@ -11,9 +11,9 @@ import (
 
 // CreatePendingAppointmentsService is a service that creates appointments for all active treatments that have no appointments scheduled to the future
 type CreatePendingAppointmentsService struct {
-	IdentifierUtil          identifier.IIdentifierUtil
-	OrmUtil                 orm.IOrmUtil
-	ScheduleIntervalSeconds int64
+	IdentifierUtil           identifier.IIdentifierUtil
+	OrmUtil                  orm.IOrmUtil
+	ScheduleIntervalDuration time.Duration
 }
 
 // Execute is the method that runs the business logic of the service
@@ -24,7 +24,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 	result := s.OrmUtil.Db().Raw(
 		"SELECT * FROM treatments WHERE id IN (SELECT DISTINCT treatments.id FROM treatments LEFT JOIN appointments ON appointments.treatment_id = treatments.id WHERE treatments.status = ? EXCEPT SELECT treatment_id FROM appointments WHERE start > ?)",
 		treatments_models.Active,
-		time.Now().Unix(),
+		time.Now(),
 	).Find(&activeTreatmentsWithoutFutureAppointments)
 	if result.Error != nil {
 		return result.Error
@@ -33,13 +33,13 @@ func (s CreatePendingAppointmentsService) Execute() error {
 	appointmentsToCreate := []*appointments_models.Appointment{}
 
 	for _, treatment := range activeTreatmentsWithoutFutureAppointments {
-		currentTime := time.Now().Unix()
-		intervalDuration := s.ScheduleIntervalSeconds * treatment.Frequency
-		currentInterval := currentTime / intervalDuration
-		nextAppointmentStart := intervalDuration*currentInterval + treatment.Phase
+		currentTime := time.Now()
+		intervalDuration := int64(s.ScheduleIntervalDuration/time.Second) * treatment.Frequency
+		currentInterval := currentTime.Unix() / intervalDuration
+		nextAppointmentStart := time.Unix(intervalDuration*currentInterval+treatment.Phase, 10)
 		// if the start time of the current interval has already passed, send it to the next interval
-		if nextAppointmentStart <= currentTime {
-			nextAppointmentStart += intervalDuration
+		if currentTime.After(nextAppointmentStart) {
+			nextAppointmentStart = nextAppointmentStart.Add(time.Duration(intervalDuration) * time.Second)
 		}
 
 		_, appoID, appoIDErr := s.IdentifierUtil.GenerateIdentifier()
@@ -53,7 +53,7 @@ func (s CreatePendingAppointmentsService) Execute() error {
 			PatientID:      treatment.PatientID,
 			PsychologistID: treatment.PsychologistID,
 			Start:          nextAppointmentStart,
-			End:            nextAppointmentStart + treatment.Duration,
+			End:            nextAppointmentStart.Add(time.Duration(treatment.Duration) * time.Second),
 			PriceRangeName: treatment.PriceRangeName,
 			Status:         appointments_models.Created,
 		}

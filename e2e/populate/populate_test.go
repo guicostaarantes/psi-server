@@ -29,9 +29,9 @@ var NEW_JOBRUNNER_USERNAME = "jobrunner@psi.com.br"
 var NEW_JOBRUNNER_PASSWORD = "Abc123!@#"
 var BATCH_SIZE = 10
 var PSYCOLOGIST_START = 1
-var PSYCHOLOGIST_BATCHES = 50
+var PSYCHOLOGIST_BATCHES = 5
 var PATIENT_START = 1
-var PATIENT_BATCHES = 50
+var PATIENT_BATCHES = 5
 var NEW_PSYCHOLOGISTS_PASSWORD = "Abc123!@#"
 var NEW_PATIENTS_PASSWORD = "Abc123!@#"
 var TREATMENTS_PER_PSYCHOLOGIST = 2
@@ -68,9 +68,11 @@ func gql(client *http.Client, query string, token string, report *os.File) (*htt
 
 func TestPopulateScript(t *testing.T) {
 
+	os.Setenv("TZ", "UTC")
+
 	totalStart := time.Now()
 
-	report, err := os.OpenFile(fmt.Sprintf("./report-%d", time.Now().Unix()), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	report, err := os.OpenFile(fmt.Sprintf("./report-%s.log", time.Now().Format(time.RFC3339)), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		panic(err)
 	}
@@ -792,7 +794,7 @@ func TestPopulateScript(t *testing.T) {
 							input: {
 								fullName: "%s %s",
 								likeName: %q,
-								birthDate: %d,
+								birthDate: %q,
 								city: "Belo Horizonte - MG",
 								crp: "01/23%04d",
 								whatsapp: "(11) 98765-%04d",
@@ -800,7 +802,18 @@ func TestPopulateScript(t *testing.T) {
 								bio: "Oi, meu nome é %s %s."
 							}
 						)
-					}`, firstName, lastName, firstName, 86400*rand.Intn(10000), i, i, strings.ToLower(firstName), strings.ToLower(lastName), firstName, lastName)
+					}`,
+						firstName,
+						lastName,
+						firstName,
+						time.Unix(86400*rand.Int63n(10000), 10).Format(time.RFC3339),
+						i,
+						i,
+						strings.ToLower(firstName),
+						strings.ToLower(lastName),
+						firstName,
+						lastName,
+					)
 
 					response, err = gql(client, query, token, report)
 					if err != nil {
@@ -1059,7 +1072,7 @@ func TestPopulateScript(t *testing.T) {
 				go func(i int) {
 					email := fmt.Sprintf("pac%04d@exemplo.com", i)
 					gender := []string{"female", "male", "non-binary"}[rand.Intn(3)]
-					birthDate := 86400 * rand.Intn(10000)
+					birthDate := time.Unix(86400*rand.Int63n(10000), 10).Format(time.RFC3339)
 					lastName := LastNames[rand.Intn(40)]
 					firstName := ""
 					switch gender {
@@ -1118,7 +1131,7 @@ func TestPopulateScript(t *testing.T) {
 							input: {
 								fullName: "%s %s",
 								likeName: %q,
-								birthDate: %d,
+								birthDate: %q,
 								city: "Belo Horizonte - MG"
 							}
 					)

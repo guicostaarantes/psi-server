@@ -11,10 +11,10 @@ import (
 
 // SaveCooldownService is a service that stores a cooldown in a database
 type SaveCooldownService struct {
-	IdentifierUtil                    identifier.IIdentifierUtil
-	OrmUtil                           orm.IOrmUtil
-	InterruptTreatmentCooldownSeconds int64
-	TopAffinitiesCooldownSeconds      int64
+	IdentifierUtil                     identifier.IIdentifierUtil
+	OrmUtil                            orm.IOrmUtil
+	InterruptTreatmentCooldownDuration time.Duration
+	TopAffinitiesCooldownDuration      time.Duration
 }
 
 func (s SaveCooldownService) Execute(profileID string, profileType cooldowns_models.CooldownProfileType, cooldownType cooldowns_models.CooldownType) error {
@@ -23,17 +23,17 @@ func (s SaveCooldownService) Execute(profileID string, profileType cooldowns_mod
 		return cooldownIDErr
 	}
 
-	var duration int64
+	var duration time.Duration
 	switch cooldownType {
 	case cooldowns_models.TreatmentInterrupted:
-		duration = s.InterruptTreatmentCooldownSeconds
+		duration = s.InterruptTreatmentCooldownDuration
 	case cooldowns_models.TopAffinitiesSet:
-		duration = s.TopAffinitiesCooldownSeconds
+		duration = s.TopAffinitiesCooldownDuration
 	default:
 		return errors.New("cooldownType does not have a duration")
 	}
 
-	validUntil := time.Now().Unix() + duration
+	validUntil := time.Now().Add(duration)
 
 	cooldown := cooldowns_models.Cooldown{
 		ID:           cooldownID,

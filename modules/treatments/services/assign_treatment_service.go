@@ -28,7 +28,7 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 	}
 
 	if cooldown != nil {
-		return fmt.Errorf("assign treatment is blocked for this user until %d", cooldown.ValidUntil)
+		return fmt.Errorf("assign treatment is blocked for this user until %s", cooldown.ValidUntil.Format(time.RFC3339))
 	}
 
 	treatment := treatments_models.Treatment{}
@@ -104,7 +104,8 @@ func (s AssignTreatmentService) Execute(id string, priceRangeName string, patien
 	}
 
 	treatment.PatientID = patientID
-	treatment.StartDate = time.Now().Unix()
+	now := time.Now()
+	treatment.StartDate = &now
 	treatment.Status = treatments_models.Active
 	treatment.PriceRangeName = priceRangeName
 

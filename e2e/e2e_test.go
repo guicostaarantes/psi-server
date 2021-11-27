@@ -7,7 +7,6 @@ import (
 	"os"
 	"reflect"
 	"regexp"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -48,6 +47,8 @@ func gql(router *chi.Mux, query string, token string) *httptest.ResponseRecorder
 
 func TestEnd2End(t *testing.T) {
 
+	os.Setenv("TZ", "UTC")
+
 	storedVariables := map[string]string{}
 
 	loggingUtil := logging.PrintLoggingUtil{}
@@ -75,7 +76,7 @@ func TestEnd2End(t *testing.T) {
 		Database("red").
 		Port(9876).
 		Version(embeddedpostgres.V12).
-		RuntimePath(fmt.Sprintf("./test-%d", time.Now().Unix())).
+		RuntimePath(fmt.Sprintf("./test-%s", time.Now().Format(time.RFC3339))).
 		StartTimeout(10 * time.Second))
 	err := postgres.Start()
 	if err != nil {
@@ -88,7 +89,7 @@ func TestEnd2End(t *testing.T) {
 	ormUtil.Connect("host=localhost user=green password=blue dbname=red port=9876")
 
 	// ormUtil := orm.SqliteOrmUtil{}
-	// ormUtil.Connect(fmt.Sprintf("./test-%d.db", time.Now().Unix()))
+	// ormUtil.Connect(fmt.Sprintf("./test-%s.db", time.Now().Format(time.RFC3339)))
 
 	serializingUtil := serializing.JsonSerializingUtil{
 		LoggingUtil: loggingUtil,
@@ -100,20 +101,19 @@ func TestEnd2End(t *testing.T) {
 	}
 
 	res := &resolvers.Resolver{
-		HashUtil:                          hashUtil,
-		IdentifierUtil:                    identifierUtil,
-		MailUtil:                          mailUtil,
-		MatchUtil:                         matchUtil,
-		OrmUtil:                           &ormUtil,
-		SerializingUtil:                   serializingUtil,
-		TokenUtil:                         tokenUtil,
-		MaxAffinityNumber:                 int64(5),
-		ScheduleIntervalSeconds:           int64(604800),
-		SecondsToCooldownReset:            int64(86400),
-		SecondsToExpire:                   int64(1800),
-		SecondsToExpireReset:              int64(86400),
-		InterruptTreatmentCooldownSeconds: int64(259200),
-		TopAffinitiesCooldownSeconds:      int64(86400),
+		HashUtil:                           hashUtil,
+		IdentifierUtil:                     identifierUtil,
+		MailUtil:                           mailUtil,
+		MatchUtil:                          matchUtil,
+		OrmUtil:                            &ormUtil,
+		SerializingUtil:                    serializingUtil,
+		TokenUtil:                          tokenUtil,
+		MaxAffinityNumber:                  int64(5),
+		ScheduleIntervalDuration:           time.Duration(604800) * time.Second,
+		ExpireAuthTokenDuration:            time.Duration(1800) * time.Second,
+		ExpireResetTokenDuration:           time.Duration(86400) * time.Second,
+		InterruptTreatmentCooldownDuration: time.Duration(259200) * time.Second,
+		TopAffinitiesCooldownDuration:      time.Duration(86400) * time.Second,
 	}
 
 	os.Setenv("PSI_BOOTSTRAP_USER", "coordinator@psi.com.br|Abc123!@#")
@@ -174,7 +174,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["coordinator_token"] = token
 
@@ -216,7 +216,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["jobrunner_token"] = token
 	})
@@ -342,7 +342,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 	})
 
@@ -405,7 +405,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["psychologist_token"] = token
 
@@ -492,7 +492,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["patient_token"] = token
 
@@ -566,7 +566,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["no_profile_user_token"] = token
 
@@ -695,7 +695,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPsychologistProfile(input: {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
-				birthDate: 239414400,
+				birthDate: "1977-08-03T00:00:00Z",
 				city: "Boston - MA",
 				bio: "Hey there, my name is Tom",
 				crp: "01/123456",
@@ -720,7 +720,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPsychologistProfile(input: {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
-				birthDate: 196484400,
+				birthDate: "1976-03-24T00:00:00Z",
 				city: "Indianapolis - IN",
 				bio: "Hey there, my name is Peyton",
 				crp: "01/123457",
@@ -750,11 +750,11 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Boston - MA\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Boston - MA\"}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Indianapolis - IN\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Indianapolis - IN\"}}}", response.Body.String())
 
 		query = `{
 			myPsychologistProfile {
@@ -780,7 +780,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPsychologistProfile(input: {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
-				birthDate: 239414400,
+				birthDate: "1977-08-03T00:00:00Z",
 				city: "Tampa - FL",
 				bio: "Hey there, my name is Tom",
 				crp: "01/123456",
@@ -805,7 +805,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPsychologistProfile(input: {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
-				birthDate: 196484400,
+				birthDate: "1976-03-24T00:00:00Z",
 				city: "Denver - CO",
 				bio: "Hey there, my name is Peyton",
 				crp: "01/123457",
@@ -837,11 +837,11 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Tampa - FL\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Tampa - FL\"}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Denver - CO\"}}}", response.Body.String())
 
 	})
 
@@ -1030,11 +1030,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"non-binary\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[\"hearing\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"non-binary\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[\"hearing\"]}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"characteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"true\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"female\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[\"locomotion\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Denver - CO\",\"characteristics\":[{\"name\":\"black\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"true\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"female\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[\"locomotion\"]}]}}}", response.Body.String())
 
 	})
 
@@ -1044,7 +1044,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPatientProfile(input: {
 				fullName: "Patrick Lavon Mahomes II",
 				likeName: "Patrick Mahomes",
-				birthDate: 811296000,
+				birthDate: "1995-09-27T00:00:00Z",
 				city: "Tyler - TX"
 			})
 		}`
@@ -1061,7 +1061,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPatientProfile(input: {
 				fullName: "Thomas Edward Patrick Brady, Jr."
 				likeName: "Tom Brady",
-				birthDate: 239414400,
+				birthDate: "1977-08-03T00:00:00Z",
 				city: "Boston - MA"
 			})
 		}`
@@ -1074,7 +1074,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPatientProfile(input: {
 				fullName: "Peyton Williams Manning",
 				likeName: "Peyton Manning",
-				birthDate: 196484400,
+				birthDate: "1976-03-24T00:00:00Z",
 				city: "Indianapolis - IN"
 			})
 		}`
@@ -1098,15 +1098,15 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":811296000,\"city\":\"Tyler - TX\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":\"1995-09-27T00:00:00Z\",\"city\":\"Tyler - TX\"}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Boston - MA\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Boston - MA\"}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Indianapolis - IN\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Indianapolis - IN\"}}}", response.Body.String())
 
 	})
 
@@ -1116,7 +1116,7 @@ func TestEnd2End(t *testing.T) {
 		upsertMyPatientProfile(input: {
 			fullName: "Patrick Lavon Mahomes II",
 			likeName: "Patrick Mahomes",
-			birthDate: 811296000,
+			birthDate: "1995-09-27T00:00:00Z",
 			city: "Kansas City - MS"
 		})
 	}`
@@ -1133,7 +1133,7 @@ func TestEnd2End(t *testing.T) {
 		upsertMyPatientProfile(input: {
 			fullName: "Thomas Edward Patrick Brady, Jr."
 			likeName: "Tom Brady",
-			birthDate: 239414400,
+			birthDate: "1977-08-03T00:00:00Z",
 			city: "Tampa - FL"
 		})
 	}`
@@ -1146,7 +1146,7 @@ func TestEnd2End(t *testing.T) {
 		upsertMyPatientProfile(input: {
 			fullName: "Peyton Williams Manning",
 			likeName: "Peyton Manning",
-			birthDate: 196484400,
+			birthDate: "1976-03-24T00:00:00Z",
 			city: "Denver - CO"
 		})
 	}`
@@ -1170,15 +1170,15 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":811296000,\"city\":\"Kansas City - MS\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":\"1995-09-27T00:00:00Z\",\"city\":\"Kansas City - MS\"}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Tampa - FL\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Tampa - FL\"}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\"}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Denver - CO\"}}}", response.Body.String())
 
 	})
 
@@ -1533,11 +1533,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"has-consulted-before\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"false\"],\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"non-binary\"],\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[],\"possibleValues\":[\"vision\",\"hearing\",\"locomotion\"]},{\"name\":\"income\",\"type\":\"SINGLE\",\"selectedValues\":[\"C\"],\"possibleValues\":[\"D\",\"C\",\"B\",\"A\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Tampa - FL\",\"characteristics\":[{\"name\":\"has-consulted-before\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"false\"],\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"non-binary\"],\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[],\"possibleValues\":[\"vision\",\"hearing\",\"locomotion\"]},{\"name\":\"income\",\"type\":\"SINGLE\",\"selectedValues\":[\"C\"],\"possibleValues\":[\"D\",\"C\",\"B\",\"A\"]}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"characteristics\":[{\"name\":\"has-consulted-before\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"true\"],\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"female\"],\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[\"hearing\",\"vision\"],\"possibleValues\":[\"vision\",\"hearing\",\"locomotion\"]},{\"name\":\"income\",\"type\":\"SINGLE\",\"selectedValues\":[\"C\"],\"possibleValues\":[\"D\",\"C\",\"B\",\"A\"]}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Denver - CO\",\"characteristics\":[{\"name\":\"has-consulted-before\",\"type\":\"BOOLEAN\",\"selectedValues\":[\"true\"],\"possibleValues\":[\"true\",\"false\"]},{\"name\":\"gender\",\"type\":\"SINGLE\",\"selectedValues\":[\"female\"],\"possibleValues\":[\"male\",\"female\",\"non-binary\"]},{\"name\":\"disabilities\",\"type\":\"MULTIPLE\",\"selectedValues\":[\"hearing\",\"vision\"],\"possibleValues\":[\"vision\",\"hearing\",\"locomotion\"]},{\"name\":\"income\",\"type\":\"SINGLE\",\"selectedValues\":[\"C\"],\"possibleValues\":[\"D\",\"C\",\"B\",\"A\"]}]}}}", response.Body.String())
 
 	})
 
@@ -1607,11 +1607,11 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":6}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"locomotion\",\"weight\":5},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":6}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":7},{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":8}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPsychologistProfile\":{\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"disabilities\",\"selectedValue\":\"vision\",\"weight\":7},{\"characteristicName\":\"gender\",\"selectedValue\":\"male\",\"weight\":8}]}}}", response.Body.String())
 
 	})
 
@@ -1692,15 +1692,15 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":811296000,\"city\":\"Kansas City - MS\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":1},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Patrick Lavon Mahomes II\",\"likeName\":\"Patrick Mahomes\",\"birthDate\":\"1995-09-27T00:00:00Z\",\"city\":\"Kansas City - MS\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":1},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["psychologist_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":239414400,\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":1},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Thomas Edward Patrick Brady, Jr.\",\"likeName\":\"Tom Brady\",\"birthDate\":\"1977-08-03T00:00:00Z\",\"city\":\"Tampa - FL\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":1},{\"characteristicName\":\"gender\",\"selectedValue\":\"female\",\"weight\":2}]}}}", response.Body.String())
 
 		response = gql(router, query, storedVariables["coordinator_token"])
 
-		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":196484400,\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":3},{\"characteristicName\":\"gender\",\"selectedValue\":\"non-binary\",\"weight\":4},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"hearing\",\"weight\":5}]}}}", response.Body.String())
+		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"fullName\":\"Peyton Williams Manning\",\"likeName\":\"Peyton Manning\",\"birthDate\":\"1976-03-24T00:00:00Z\",\"city\":\"Denver - CO\",\"preferences\":[{\"characteristicName\":\"black\",\"selectedValue\":\"true\",\"weight\":3},{\"characteristicName\":\"gender\",\"selectedValue\":\"non-binary\",\"weight\":4},{\"characteristicName\":\"disabilities\",\"selectedValue\":\"hearing\",\"weight\":5}]}}}", response.Body.String())
 
 	})
 
@@ -1962,7 +1962,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["patient_2_token"] = token
 
@@ -1970,7 +1970,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPatientProfile(input: {
 				fullName: "Patient Two"
 				likeName: "Two",
-				birthDate: 239414400,
+				birthDate: "1977-08-03T00:00:00Z",
 				city: "Boston - MA"
 			})
 		}`
@@ -2058,7 +2058,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["patient_3_token"] = token
 
@@ -2066,7 +2066,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPatientProfile(input: {
 				fullName: "Patient Three"
 				likeName: "Three",
-				birthDate: 239414400,
+				birthDate: "1977-08-03T00:00:00Z",
 				city: "Boston - MA"
 			})
 		}`
@@ -2154,7 +2154,7 @@ func TestEnd2End(t *testing.T) {
 		assert.NotEqual(t, "", token)
 
 		expiresAt := fastjson.GetString(response.Body.Bytes(), "data", "authenticateUser", "expiresAt")
-		assert.NotEqual(t, time.Now().Unix()+res.SecondsToExpire, expiresAt)
+		assert.NotEqual(t, time.Now().Add(res.ExpireAuthTokenDuration), expiresAt)
 
 		storedVariables["patient_4_token"] = token
 
@@ -2162,7 +2162,7 @@ func TestEnd2End(t *testing.T) {
 			upsertMyPatientProfile(input: {
 				fullName: "Patient Four"
 				likeName: "Four",
-				birthDate: 239414400,
+				birthDate: "1977-08-03T00:00:00Z",
 				city: "Boston - MA"
 			})
 		}`
@@ -2237,7 +2237,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, 1, res.ScheduleIntervalSeconds, "low"), storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 1, res.ScheduleIntervalDuration/time.Second, "low"), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"phase cannot be bigger than the schedule interval\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
 
@@ -2253,7 +2253,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"there is another treatment in the same period\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, 2, 228600+res.ScheduleIntervalSeconds, "low"), storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 2, 228600+res.ScheduleIntervalDuration/time.Second, "low"), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"there is another treatment in the same period\",\"path\":[\"createTreatment\"]}],\"data\":{\"createTreatment\":null}}", response.Body.String())
 
@@ -2261,7 +2261,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, 2, 230400+res.ScheduleIntervalSeconds, "low"), storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 2, 230400+res.ScheduleIntervalDuration/time.Second, "low"), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
@@ -2269,7 +2269,7 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
-		response = gql(router, fmt.Sprintf(query, 2, 237600+res.ScheduleIntervalSeconds, "low"), storedVariables["psychologist_token"])
+		response = gql(router, fmt.Sprintf(query, 2, 237600+res.ScheduleIntervalDuration/time.Second, "low"), storedVariables["psychologist_token"])
 
 		assert.Equal(t, "{\"data\":{\"createTreatment\":null}}", response.Body.String())
 
@@ -2555,7 +2555,7 @@ func TestEnd2End(t *testing.T) {
 
 		response := gql(router, query, storedVariables["patient_token"])
 
-		storedVariables["interrupt_cooldown"] = strconv.FormatInt(time.Now().Unix()+res.InterruptTreatmentCooldownSeconds, 10)
+		storedVariables["interrupt_cooldown"] = time.Now().Add(res.InterruptTreatmentCooldownDuration).Format(time.RFC3339)
 
 		assert.Equal(t, fmt.Sprintf("assign treatment is blocked for this user until %s", storedVariables["interrupt_cooldown"]), fastjson.GetString(response.Body.Bytes(), "errors", "0", "message"))
 
@@ -2661,15 +2661,17 @@ func TestEnd2End(t *testing.T) {
 
 		appointmentFrequency := int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "treatment", "frequency"))
 		appointmentPhase := int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "treatment", "phase"))
-		appointmentStart := int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "start"))
-		intervalDuration := res.ScheduleIntervalSeconds * appointmentFrequency
-		assert.Equal(t, appointmentStart%intervalDuration, appointmentPhase)
+		appointmentStartString := fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "0", "start")
+		appointmentStart, _ := time.Parse(time.RFC3339, appointmentStartString)
+		intervalDuration := int64(res.ScheduleIntervalDuration/time.Second) * appointmentFrequency
+		assert.Equal(t, appointmentStart.Unix()%intervalDuration, appointmentPhase)
 
 		appointmentFrequency = int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "treatment", "frequency"))
 		appointmentPhase = int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "treatment", "phase"))
-		appointmentStart = int64(fastjson.GetInt(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "start"))
-		intervalDuration = res.ScheduleIntervalSeconds * appointmentFrequency
-		assert.Equal(t, appointmentStart%intervalDuration, appointmentPhase)
+		appointmentStartString = fastjson.GetString(response.Body.Bytes(), "data", "myPsychologistProfile", "appointments", "1", "start")
+		appointmentStart, _ = time.Parse(time.RFC3339, appointmentStartString)
+		intervalDuration = int64(res.ScheduleIntervalDuration/time.Second) * appointmentFrequency
+		assert.Equal(t, appointmentStart.Unix()%intervalDuration, appointmentPhase)
 
 		query = `query {
 			myPatientProfile {
@@ -2758,15 +2760,15 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should edit appointment by psychologist", func(t *testing.T) {
 		query := `mutation {
 			editAppointmentByPsychologist(id: %q, input: {
-				start: %d
-				end: %d
+				start: %q
+				end: %q
 				priceRangeName: "medium"
 				reason: "I will be on vacations this day."
 			})
 		}`
 
-		start := time.Now().Add(24 * time.Hour).Unix()
-		end := time.Now().Add(25 * time.Hour).Unix()
+		start := time.Now().Add(24 * time.Hour).Format(time.RFC3339)
+		end := time.Now().Add(25 * time.Hour).Format(time.RFC3339)
 
 		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start, end), storedVariables["patient_token"])
 
@@ -2796,21 +2798,21 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_2_token"])
 
-		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
+		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%q,\"end\":%q,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
 	})
 
 	t.Run("should edit appointment by psychologist", func(t *testing.T) {
 		query := `mutation {
 			editAppointmentByPsychologist(id: %q, input: {
-				start: %d
-				end: %d
+				start: %q
+				end: %q
 				priceRangeName: "medium"
 				reason: "I will be on vacations this day."
 			})
 		}`
 
-		start := time.Now().Add(24 * time.Hour).Unix()
-		end := time.Now().Add(25 * time.Hour).Unix()
+		start := time.Now().Add(24 * time.Hour).Format(time.RFC3339)
+		end := time.Now().Add(25 * time.Hour).Format(time.RFC3339)
 
 		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start, end), storedVariables["patient_token"])
 
@@ -2840,7 +2842,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_2_token"])
 
-		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%d,\"end\":%d,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
+		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%q,\"end\":%q,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
 	})
 
 	t.Run("should cancel appointment by patient", func(t *testing.T) {
@@ -2877,15 +2879,15 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should not edit or confirm by psychologist if canceled by patient", func(t *testing.T) {
 		query := `mutation {
 			editAppointmentByPsychologist(id: %q, input: {
-				start: %d
-				end: %d
+				start: %q
+				end: %q
 				priceRangeName: "medium"
 				reason: "I will be on vacations this day."
 			})
 		}`
 
-		start := time.Now().Add(24 * time.Hour).Unix()
-		end := time.Now().Add(25 * time.Hour).Unix()
+		start := time.Now().Add(24 * time.Hour).Format(time.RFC3339)
+		end := time.Now().Add(25 * time.Hour).Format(time.RFC3339)
 
 		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start, end), storedVariables["psychologist_token"])
 
@@ -2916,12 +2918,13 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should edit appointment by patient", func(t *testing.T) {
 		query := `mutation {
 			editAppointmentByPatient(id: %q, input: {
-				start: %d
+				start: %q
 				reason: "I can only do it this time in that day."
 			})
 		}`
 
-		start := time.Now().Add(21 * time.Hour).Unix()
+		start := time.Now().Add(21 * time.Hour).Format(time.RFC3339)
+		end := time.Now().Add(22 * time.Hour).Format(time.RFC3339)
 
 		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start), storedVariables["psychologist_token"])
 
@@ -2951,7 +2954,7 @@ func TestEnd2End(t *testing.T) {
 
 		response = gql(router, query, storedVariables["patient_2_token"])
 
-		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PATIENT\",\"start\":%d,\"end\":%d,\"reason\":\"I can only do it this time in that day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, start+int64(3600)), response.Body.String())
+		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PATIENT\",\"start\":%q,\"end\":%q,\"reason\":\"I can only do it this time in that day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
 	})
 
 	t.Run("should cancel appointment by psychologist", func(t *testing.T) {
@@ -2988,12 +2991,12 @@ func TestEnd2End(t *testing.T) {
 	t.Run("should not edit or confirm by patient if canceled by patient", func(t *testing.T) {
 		query := `mutation {
 			editAppointmentByPatient(id: %q, input: {
-				start: %d
+				start: %q
 				reason: "I will be on vacations this day."
 			})
 		}`
 
-		start := time.Now().Add(24 * time.Hour).Unix()
+		start := time.Now().Add(24 * time.Hour).Format(time.RFC3339)
 
 		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start), storedVariables["patient_2_token"])
 

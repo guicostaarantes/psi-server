@@ -32,11 +32,11 @@ func (s EditAppointmentByPsychologistService) Execute(id string, psychologistID 
 		return fmt.Errorf("appointment status cannot change from %s to EDITED_BY_PSYCHOLOGIST", string(appointment.Status))
 	}
 
-	if input.Start < time.Now().Unix() {
+	if time.Now().After(input.Start) {
 		return errors.New("appointment cannot be scheduled to the past")
 	}
 
-	if input.Start >= input.End {
+	if !input.End.After(input.Start) {
 		return errors.New("appointment cannot have negative duration")
 	}
 

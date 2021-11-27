@@ -2,6 +2,7 @@ package characteristcs_services
 
 import (
 	"fmt"
+	"time"
 
 	characteristics_models "github.com/guicostaarantes/psi-server/modules/characteristics/models"
 	cooldowns_models "github.com/guicostaarantes/psi-server/modules/cooldowns/models"
@@ -12,7 +13,6 @@ import (
 // GetTopAffinitiesForPatientService is a service that sets the top affinities for a specific patient profile if the cache is old enough, and returns them
 type GetTopAffinitiesForPatientService struct {
 	OrmUtil                           orm.IOrmUtil
-	TopAffinitiesCooldownSeconds      int64
 	GetCooldownService                *cooldowns_services.GetCooldownService
 	SetTopAffinitiesForPatientService *SetTopAffinitiesForPatientService
 }
@@ -25,7 +25,7 @@ func (s GetTopAffinitiesForPatientService) Execute(patientID string) ([]*charact
 	}
 
 	if cooldown != nil {
-		return nil, fmt.Errorf("assign treatment is blocked for this user until %d", cooldown.ValidUntil)
+		return nil, fmt.Errorf("assign treatment is blocked for this user until %s", cooldown.ValidUntil.Format(time.RFC3339))
 	}
 
 	cooldown, getErr = s.GetCooldownService.Execute(patientID, cooldowns_models.Patient, cooldowns_models.TopAffinitiesSet)

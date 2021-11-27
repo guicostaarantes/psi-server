@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/guicostaarantes/psi-server/graph"
 	"github.com/guicostaarantes/psi-server/graph/resolvers"
@@ -73,21 +74,20 @@ func main() {
 	}
 
 	res := &resolvers.Resolver{
-		FileStorageUtil:                   fileStorageUtil,
-		HashUtil:                          hashUtil,
-		IdentifierUtil:                    identifierUtil,
-		MailUtil:                          mailUtil,
-		MatchUtil:                         matchUtil,
-		OrmUtil:                           &ormUtil,
-		SerializingUtil:                   serializingUtil,
-		TokenUtil:                         tokenUtil,
-		MaxAffinityNumber:                 int64(5),
-		ScheduleIntervalSeconds:           int64(604800),
-		SecondsToCooldownReset:            int64(86400),
-		SecondsToExpire:                   int64(28800),
-		SecondsToExpireReset:              int64(86400),
-		InterruptTreatmentCooldownSeconds: int64(259200),
-		TopAffinitiesCooldownSeconds:      int64(86400),
+		FileStorageUtil:                    fileStorageUtil,
+		HashUtil:                           hashUtil,
+		IdentifierUtil:                     identifierUtil,
+		MailUtil:                           mailUtil,
+		MatchUtil:                          matchUtil,
+		OrmUtil:                            &ormUtil,
+		SerializingUtil:                    serializingUtil,
+		TokenUtil:                          tokenUtil,
+		MaxAffinityNumber:                  int64(5),
+		ScheduleIntervalDuration:           time.Duration(604800) * time.Second,
+		ExpireAuthTokenDuration:            time.Duration(28800) * time.Second,
+		ExpireResetTokenDuration:           time.Duration(86400) * time.Second,
+		InterruptTreatmentCooldownDuration: time.Duration(259200) * time.Second,
+		TopAffinitiesCooldownDuration:      time.Duration(86400) * time.Second,
 	}
 
 	router := graph.CreateServer(res)

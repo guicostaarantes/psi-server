@@ -1,13 +1,17 @@
 package profiles_models
 
-import "github.com/99designs/gqlgen/graphql"
+import (
+	"time"
+
+	"github.com/99designs/gqlgen/graphql"
+)
 
 // UpsertPsychologistInput is the schema for information needed to create or update a psychologist
 type UpsertPsychologistInput struct {
 	UserID    string          `json:"userId"`
 	FullName  string          `json:"fullName"`
 	LikeName  string          `json:"likeName"`
-	BirthDate int64           `json:"birthDate"`
+	BirthDate time.Time       `json:"birthDate"`
 	City      string          `json:"city"`
 	Crp       string          `json:"crp"`
 	Whatsapp  string          `json:"whatsapp"`

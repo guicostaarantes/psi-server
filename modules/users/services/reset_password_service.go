@@ -32,7 +32,7 @@ func (s ResetPasswordService) Execute(resetInput *users_models.ResetPasswordInpu
 		return result.Error
 	}
 
-	if reset.UserID == "" || reset.ExpiresAt < time.Now().Unix() || reset.Redeemed {
+	if reset.UserID == "" || reset.ExpiresAt.Before(time.Now()) || reset.Redeemed {
 		return errors.New("invalid token")
 	}
 

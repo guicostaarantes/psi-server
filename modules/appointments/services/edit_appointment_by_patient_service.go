@@ -32,12 +32,12 @@ func (s EditAppointmentByPatientService) Execute(id string, patientID string, in
 		return fmt.Errorf("appointment status cannot change from %s to EDITED_BY_PATIENT", string(appointment.Status))
 	}
 
-	if input.Start < time.Now().Unix() {
+	if time.Now().After(input.Start) {
 		return errors.New("appointment cannot be scheduled to the past")
 	}
 
 	appointment.Status = appointments_models.EditedByPatient
-	appointment.End += input.Start - appointment.Start
+	appointment.End = appointment.End.Add(input.Start.Sub(appointment.Start))
 	appointment.Start = input.Start
 	appointment.Reason = input.Reason
 

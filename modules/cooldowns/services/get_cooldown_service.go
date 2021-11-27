@@ -20,7 +20,7 @@ func (s GetCooldownService) Execute(profileID string, profileType cooldowns_mode
 		profileID,
 		profileType,
 		cooldownType,
-		time.Now().Unix(),
+		time.Now(),
 	).Limit(1).Find(&cooldown)
 	if result.Error != nil {
 		return nil, result.Error

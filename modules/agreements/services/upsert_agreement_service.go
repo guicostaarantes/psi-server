@@ -3,7 +3,6 @@ package agreements_services
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	agreements_models "github.com/guicostaarantes/psi-server/modules/agreements/models"
 	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
@@ -74,8 +73,6 @@ func (s UpsertAgreementService) Execute(profileID string, input *agreements_mode
 
 	if existingAgreement.ID != "" {
 
-		existingAgreement.SignedAt = time.Now().Unix()
-
 		result = s.OrmUtil.Db().Save(&existingAgreement)
 		if result.Error != nil {
 			return result.Error
@@ -95,7 +92,6 @@ func (s UpsertAgreementService) Execute(profileID string, input *agreements_mode
 		TermName:    input.TermName,
 		TermVersion: input.TermVersion,
 		ProfileID:   profileID,
-		SignedAt:    time.Now().Unix(),
 	}
 
 	result = s.OrmUtil.Db().Create(&newAgreement)

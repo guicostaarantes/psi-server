@@ -38,7 +38,7 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 
 	appointments := []*appointments_models.Appointment{}
 
-	result = s.OrmUtil.Db().Where("treatment_id = ? AND start > ?", id, time.Now().Unix()).Find(&appointments)
+	result = s.OrmUtil.Db().Where("treatment_id = ? AND start > ?", id, time.Now()).Find(&appointments)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -55,7 +55,8 @@ func (s InterruptTreatmentByPatientService) Execute(id string, patientID string,
 		}
 	}
 
-	treatment.EndDate = time.Now().Unix()
+	now := time.Now()
+	treatment.EndDate = &now
 	treatment.Status = treatments_models.InterruptedByPatient
 	treatment.Reason = reason
 
