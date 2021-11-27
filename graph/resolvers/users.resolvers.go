@@ -24,7 +24,7 @@ func (r *mutationResolver) CreatePatientUser(ctx context.Context, input users_mo
 	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
 		Email: input.Email,
 		Role:  "PATIENT",
-	})
+	}, "CREATE_PATIENT")
 
 	if serviceErr != nil {
 		return nil, serviceErr
@@ -37,7 +37,7 @@ func (r *mutationResolver) CreatePsychologistUser(ctx context.Context, input use
 	serviceErr := r.CreateUserService().Execute(&users_models.CreateUserInput{
 		Email: input.Email,
 		Role:  "PSYCHOLOGIST",
-	})
+	}, "INVITE_PSYCHOLOGIST")
 
 	if serviceErr != nil {
 		return nil, serviceErr

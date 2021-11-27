@@ -62,7 +62,7 @@ type Mutation {
     """The createPatientUser mutation allows a non-user to create a user with the PATIENT role."""
     createPatientUser(input: CreateUserInput!): Boolean
 
-    """The createPatientUser mutation allows a user to create a user with the PSYCHOLOGIST role."""
+    """The createPsychologistUser mutation allows a user to create a user with the PSYCHOLOGIST role."""
     createPsychologistUser(input: CreateUserInput!): Boolean @hasRole(role: [COORDINATOR])
 
     """The createUserWithPassword mutation allows a user to create a user and set their password manually instead of sending an invitation email."""
