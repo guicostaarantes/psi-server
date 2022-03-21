@@ -369,7 +369,7 @@ func TestEnd2End(t *testing.T) {
 		assert.Equal(t, mailboxErr, nil)
 
 		for _, mail := range *mailbox {
-			if reflect.DeepEqual(mail["to"], []string{"tom.brady@psi.com.br"}) && mail["subject"] == "Redfinir senha do PSI" {
+			if reflect.DeepEqual(mail["to"], []string{"tom.brady@psi.com.br"}) && mail["subject"] == "Redefinir senha do PSI" {
 				mailBody = mail["body"].(string)
 				break
 			}
@@ -2497,6 +2497,27 @@ func TestEnd2End(t *testing.T) {
 
 		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"finalizeTreatment\"]}],\"data\":{\"finalizeTreatment\":null}}", response.Body.String())
 
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"patrick.mahomes@psi.com.br"}) && mail["subject"] == "Tratamento finalizado no PSI" {
+				mailFound = true
+				break
+			}
+		}
+
+		assert.Equal(t, true, mailFound)
+
 	})
 
 	t.Run("should not assign a treatment that was finalized", func(t *testing.T) {
@@ -2544,6 +2565,27 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["patient_token"])
 
 		assert.Equal(t, "{\"data\":{\"interruptTreatmentByPatient\":null}}", response.Body.String())
+
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"coordinator@psi.com.br"}) && mail["subject"] == "Tratamento interrompido no PSI" {
+				mailFound = true
+				break
+			}
+		}
+
+		assert.Equal(t, true, mailFound)
 
 	})
 
@@ -2594,6 +2636,27 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["coordinator_token"])
 
 		assert.Equal(t, "{\"data\":{\"interruptTreatmentByPsychologist\":null}}", response.Body.String())
+
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"patient2@psi.com.br"}) && mail["subject"] == "Tratamento interrompido no PSI" {
+				mailFound = true
+				break
+			}
+		}
+
+		assert.Equal(t, true, mailFound)
 
 	})
 
