@@ -2459,6 +2459,47 @@ func TestEnd2End(t *testing.T) {
 
 	})
 
+	t.Run("should send email to patient when active treatment is modified", func(t *testing.T) {
+
+		query := `mutation {
+			updateTreatment(
+				id: %q,
+				input: {
+					frequency: 2,
+					phase: 326800,
+					duration: 3600,
+					priceRangeName: "low",
+				}
+			)
+		}`
+
+		response := gql(router, fmt.Sprintf(query, storedVariables["psychologist_treatment_id"]), storedVariables["psychologist_token"])
+
+		assert.Equal(t, "{\"data\":{\"updateTreatment\":null}}", response.Body.String())
+
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"patrick.mahomes@psi.com.br"}) && mail["subject"] == "Tratamento modificado no PSI" {
+				mailFound = true
+				break
+			}
+		}
+
+		assert.Equal(t, true, mailFound)
+
+	})
+
 	t.Run("should not assign a treatment to a patient profile if they already have an active treatment taken", func(t *testing.T) {
 
 		query := fmt.Sprintf(`mutation {

@@ -669,6 +669,7 @@ func (r *Resolver) SetTreatmentPriceRangesService() *treatments_services.SetTrea
 func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
 	if r.updateTreatmentService == nil {
 		r.updateTreatmentService = &treatments_services.UpdateTreatmentService{
+			IdentifierUtil:                 r.IdentifierUtil,
 			OrmUtil:                        r.OrmUtil,
 			CheckTreatmentCollisionService: r.CheckTreatmentCollisionService(),
 		}
