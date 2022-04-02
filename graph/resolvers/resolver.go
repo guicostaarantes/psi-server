@@ -261,7 +261,8 @@ func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatment
 func (r *Resolver) EditAppointmentByPatientService() *appointments_services.EditAppointmentByPatientService {
 	if r.editAppointmentByPatientService == nil {
 		r.editAppointmentByPatientService = &appointments_services.EditAppointmentByPatientService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.editAppointmentByPatientService
@@ -271,7 +272,8 @@ func (r *Resolver) EditAppointmentByPatientService() *appointments_services.Edit
 func (r *Resolver) EditAppointmentByPsychologistService() *appointments_services.EditAppointmentByPsychologistService {
 	if r.editAppointmentByPsychologistService == nil {
 		r.editAppointmentByPsychologistService = &appointments_services.EditAppointmentByPsychologistService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.editAppointmentByPsychologistService

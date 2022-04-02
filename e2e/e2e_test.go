@@ -2903,50 +2903,27 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%q,\"end\":%q,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
-	})
 
-	t.Run("should edit appointment by psychologist", func(t *testing.T) {
-		query := `mutation {
-			editAppointmentByPsychologist(id: %q, input: {
-				start: %q
-				end: %q
-				priceRangeName: "medium"
-				reason: "I will be on vacations this day."
-			})
+		query = `mutation {
+			processPendingMail
 		}`
 
-		start := time.Now().Add(24 * time.Hour).Format(time.RFC3339)
-		end := time.Now().Add(25 * time.Hour).Format(time.RFC3339)
+		response = gql(router, query, storedVariables["jobrunner_token"])
 
-		response := gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start, end), storedVariables["patient_token"])
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
 
-		assert.Equal(t, "{\"errors\":[{\"message\":\"forbidden\",\"path\":[\"editAppointmentByPsychologist\"]}],\"data\":{\"editAppointmentByPsychologist\":null}}", response.Body.String())
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
 
-		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start, end), storedVariables["coordinator_token"])
-
-		assert.Equal(t, "{\"errors\":[{\"message\":\"resource not found\",\"path\":[\"editAppointmentByPsychologist\"]}],\"data\":{\"editAppointmentByPsychologist\":null}}", response.Body.String())
-
-		response = gql(router, fmt.Sprintf(query, storedVariables["appointment_1_id"], start, end), storedVariables["psychologist_token"])
-
-		assert.Equal(t, "{\"data\":{\"editAppointmentByPsychologist\":null}}", response.Body.String())
-
-		query = `query {
-			myPatientProfile {
-				appointments {
-					status
-					start
-					end
-					reason
-					priceRange {
-						name
-					}
-				}
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"patient2@psi.com.br"}) && mail["subject"] == "Consulta modificada no PSI" {
+				mailFound = true
+				break
 			}
-		}`
+		}
 
-		response = gql(router, query, storedVariables["patient_2_token"])
-
-		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PSYCHOLOGIST\",\"start\":%q,\"end\":%q,\"reason\":\"I will be on vacations this day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
+		assert.Equal(t, true, mailFound)
 	})
 
 	t.Run("should cancel appointment by patient", func(t *testing.T) {
@@ -3059,6 +3036,27 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, fmt.Sprintf("{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"EDITED_BY_PATIENT\",\"start\":%q,\"end\":%q,\"reason\":\"I can only do it this time in that day.\",\"priceRange\":{\"name\":\"medium\"}}]}}}", start, end), response.Body.String())
+
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"tom.brady@psi.com.br"}) && mail["subject"] == "Consulta modificada no PSI" {
+				mailFound = true
+				break
+			}
+		}
+
+		assert.Equal(t, true, mailFound)
 	})
 
 	t.Run("should cancel appointment by psychologist", func(t *testing.T) {
