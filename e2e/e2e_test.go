@@ -2799,6 +2799,34 @@ func TestEnd2End(t *testing.T) {
 
 		storedVariables["appointment_2_id"] = fastjson.GetString(response.Body.Bytes(), "data", "myPatientProfile", "appointments", "0", "id")
 
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		mailFound := false
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"patient2@psi.com.br"}) && mail["subject"] == "Consulta criada no PSI" {
+				mailFound = true
+				break
+			}
+		}
+		assert.Equal(t, true, mailFound)
+
+		mailFound = false
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"coordinator@psi.com.br"}) && mail["subject"] == "Consulta criada no PSI" {
+				mailFound = true
+				break
+			}
+		}
+		assert.Equal(t, true, mailFound)
 	})
 
 	t.Run("should confirm appointment by patient", func(t *testing.T) {
