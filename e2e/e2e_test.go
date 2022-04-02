@@ -2955,6 +2955,27 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"CANCELED_BY_PATIENT\",\"reason\":\"Maybe it's better to skip this week.\"}]}}}", response.Body.String())
+
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"tom.brady@psi.com.br"}) && mail["subject"] == "Consulta cancelada no PSI" {
+				mailFound = true
+				break
+			}
+		}
+
+		assert.Equal(t, true, mailFound)
 	})
 
 	t.Run("should not edit or confirm by psychologist if canceled by patient", func(t *testing.T) {
@@ -3088,6 +3109,27 @@ func TestEnd2End(t *testing.T) {
 		response = gql(router, query, storedVariables["patient_2_token"])
 
 		assert.Equal(t, "{\"data\":{\"myPatientProfile\":{\"appointments\":[{\"status\":\"CANCELED_BY_PSYCHOLOGIST\",\"reason\":\"I had a problem and will not be able to do it this week.\"}]}}}", response.Body.String())
+
+		query = `mutation {
+			processPendingMail
+		}`
+
+		response = gql(router, query, storedVariables["jobrunner_token"])
+
+		assert.Equal(t, "{\"data\":{\"processPendingMail\":null}}", response.Body.String())
+
+		mailFound := false
+		mailbox, mailboxErr := res.MailUtil.GetMockedMessages()
+		assert.Equal(t, mailboxErr, nil)
+
+		for _, mail := range *mailbox {
+			if reflect.DeepEqual(mail["to"], []string{"patient2@psi.com.br"}) && mail["subject"] == "Consulta cancelada no PSI" {
+				mailFound = true
+				break
+			}
+		}
+
+		assert.Equal(t, true, mailFound)
 	})
 
 	t.Run("should not edit or confirm by patient if canceled by patient", func(t *testing.T) {

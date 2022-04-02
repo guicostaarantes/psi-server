@@ -147,7 +147,8 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 func (r *Resolver) CancelAppointmentByPatientService() *appointments_services.CancelAppointmentByPatientService {
 	if r.cancelAppointmentByPatientService == nil {
 		r.cancelAppointmentByPatientService = &appointments_services.CancelAppointmentByPatientService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.cancelAppointmentByPatientService
@@ -157,7 +158,8 @@ func (r *Resolver) CancelAppointmentByPatientService() *appointments_services.Ca
 func (r *Resolver) CancelAppointmentByPsychologistService() *appointments_services.CancelAppointmentByPsychologistService {
 	if r.cancelAppointmentByPsychologistService == nil {
 		r.cancelAppointmentByPsychologistService = &appointments_services.CancelAppointmentByPsychologistService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.cancelAppointmentByPsychologistService
