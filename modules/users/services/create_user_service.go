@@ -9,7 +9,7 @@ import (
 
 	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
 	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
-	"github.com/guicostaarantes/psi-server/modules/users/templates"
+	users_templates "github.com/guicostaarantes/psi-server/modules/users/templates"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/match"
 	"github.com/guicostaarantes/psi-server/utils/orm"
@@ -81,9 +81,9 @@ func (s CreateUserService) Execute(userInput *users_models.CreateUserInput, whic
 
 	switch whichTemplate {
 	case "CREATE_PATIENT":
-		templateToUse = templates.CreateUserEmailTemplate
+		templateToUse = users_templates.CreateUserEmailTemplate
 	case "INVITE_PSYCHOLOGIST":
-		templateToUse = templates.InvitePsychologistEmailTemplate
+		templateToUse = users_templates.InvitePsychologistEmailTemplate
 	default:
 		return errors.New("template not found")
 	}

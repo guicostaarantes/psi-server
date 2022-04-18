@@ -147,7 +147,8 @@ func (r *Resolver) AuthenticateUserService() *users_services.AuthenticateUserSer
 func (r *Resolver) CancelAppointmentByPatientService() *appointments_services.CancelAppointmentByPatientService {
 	if r.cancelAppointmentByPatientService == nil {
 		r.cancelAppointmentByPatientService = &appointments_services.CancelAppointmentByPatientService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.cancelAppointmentByPatientService
@@ -157,7 +158,8 @@ func (r *Resolver) CancelAppointmentByPatientService() *appointments_services.Ca
 func (r *Resolver) CancelAppointmentByPsychologistService() *appointments_services.CancelAppointmentByPsychologistService {
 	if r.cancelAppointmentByPsychologistService == nil {
 		r.cancelAppointmentByPsychologistService = &appointments_services.CancelAppointmentByPsychologistService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.cancelAppointmentByPsychologistService
@@ -261,7 +263,8 @@ func (r *Resolver) DeleteTreatmentService() *treatments_services.DeleteTreatment
 func (r *Resolver) EditAppointmentByPatientService() *appointments_services.EditAppointmentByPatientService {
 	if r.editAppointmentByPatientService == nil {
 		r.editAppointmentByPatientService = &appointments_services.EditAppointmentByPatientService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.editAppointmentByPatientService
@@ -271,7 +274,8 @@ func (r *Resolver) EditAppointmentByPatientService() *appointments_services.Edit
 func (r *Resolver) EditAppointmentByPsychologistService() *appointments_services.EditAppointmentByPsychologistService {
 	if r.editAppointmentByPsychologistService == nil {
 		r.editAppointmentByPsychologistService = &appointments_services.EditAppointmentByPsychologistService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.editAppointmentByPsychologistService
@@ -281,7 +285,8 @@ func (r *Resolver) EditAppointmentByPsychologistService() *appointments_services
 func (r *Resolver) FinalizeTreatmentService() *treatments_services.FinalizeTreatmentService {
 	if r.finalizeTreatmentService == nil {
 		r.finalizeTreatmentService = &treatments_services.FinalizeTreatmentService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.finalizeTreatmentService
@@ -533,6 +538,7 @@ func (r *Resolver) GetUserByIDService() *users_services.GetUserByIDService {
 func (r *Resolver) InterruptTreatmentByPatientService() *treatments_services.InterruptTreatmentByPatientService {
 	if r.interruptTreatmentByPatientService == nil {
 		r.interruptTreatmentByPatientService = &treatments_services.InterruptTreatmentByPatientService{
+			IdentifierUtil:      r.IdentifierUtil,
 			OrmUtil:             r.OrmUtil,
 			SaveCooldownService: r.SaveCooldownService(),
 		}
@@ -544,7 +550,8 @@ func (r *Resolver) InterruptTreatmentByPatientService() *treatments_services.Int
 func (r *Resolver) InterruptTreatmentByPsychologistService() *treatments_services.InterruptTreatmentByPsychologistService {
 	if r.interruptTreatmentByPsychologistService == nil {
 		r.interruptTreatmentByPsychologistService = &treatments_services.InterruptTreatmentByPsychologistService{
-			OrmUtil: r.OrmUtil,
+			IdentifierUtil: r.IdentifierUtil,
+			OrmUtil:        r.OrmUtil,
 		}
 	}
 	return r.interruptTreatmentByPsychologistService
@@ -666,6 +673,7 @@ func (r *Resolver) SetTreatmentPriceRangesService() *treatments_services.SetTrea
 func (r *Resolver) UpdateTreatmentService() *treatments_services.UpdateTreatmentService {
 	if r.updateTreatmentService == nil {
 		r.updateTreatmentService = &treatments_services.UpdateTreatmentService{
+			IdentifierUtil:                 r.IdentifierUtil,
 			OrmUtil:                        r.OrmUtil,
 			CheckTreatmentCollisionService: r.CheckTreatmentCollisionService(),
 		}

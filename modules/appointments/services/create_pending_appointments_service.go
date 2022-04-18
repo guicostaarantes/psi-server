@@ -1,10 +1,17 @@
 package appointments_services
 
 import (
+	"bytes"
+	"html/template"
+	"os"
 	"time"
 
 	appointments_models "github.com/guicostaarantes/psi-server/modules/appointments/models"
+	appointments_templates "github.com/guicostaarantes/psi-server/modules/appointments/templates"
+	mails_models "github.com/guicostaarantes/psi-server/modules/mails/models"
+	profiles_models "github.com/guicostaarantes/psi-server/modules/profiles/models"
 	treatments_models "github.com/guicostaarantes/psi-server/modules/treatments/models"
+	users_models "github.com/guicostaarantes/psi-server/modules/users/models"
 	"github.com/guicostaarantes/psi-server/utils/identifier"
 	"github.com/guicostaarantes/psi-server/utils/orm"
 )
@@ -29,8 +36,6 @@ func (s CreatePendingAppointmentsService) Execute() error {
 	if result.Error != nil {
 		return result.Error
 	}
-
-	appointmentsToCreate := []*appointments_models.Appointment{}
 
 	for _, treatment := range activeTreatmentsWithoutFutureAppointments {
 		currentTime := time.Now()
@@ -58,11 +63,61 @@ func (s CreatePendingAppointmentsService) Execute() error {
 			Status:         appointments_models.Created,
 		}
 
-		appointmentsToCreate = append(appointmentsToCreate, &newAppointment)
-	}
+		psychologist := profiles_models.Psychologist{}
+		patient := profiles_models.Patient{}
+		patientUser := users_models.User{}
 
-	if len(appointmentsToCreate) > 0 {
-		result = s.OrmUtil.Db().Create(&appointmentsToCreate)
+		result = s.OrmUtil.Db().Where("id = ?", treatment.PsychologistID).Limit(1).Find(&psychologist)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		result = s.OrmUtil.Db().Where("id = ?", treatment.PatientID).Limit(1).Find(&patient)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		result = s.OrmUtil.Db().Where("id = ?", patient.UserID).Limit(1).Find(&patientUser)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		_, mailID, mailIDErr := s.IdentifierUtil.GenerateIdentifier()
+		if mailIDErr != nil {
+			return mailIDErr
+		}
+
+		templ, templErr := template.New("AppointmentCreatedEmail").Parse(appointments_templates.AppointmentCreatedEmailTemplate)
+		if templErr != nil {
+			return templErr
+		}
+
+		buff := new(bytes.Buffer)
+
+		templ.Execute(buff, map[string]string{
+			"SiteURL":     os.Getenv("PSI_SITE_URL"),
+			"LikeName":    patient.LikeName,
+			"PsyFullName": psychologist.FullName,
+		})
+
+		mail := &mails_models.TransientMailMessage{
+			ID:          mailID,
+			FromAddress: "relacionamento@psi.com.br",
+			FromName:    "Relacionamento PSI",
+			To:          patientUser.Email,
+			Cc:          "",
+			Cco:         "",
+			Subject:     "Consulta criada no PSI",
+			Html:        buff.String(),
+			Processed:   false,
+		}
+
+		result = s.OrmUtil.Db().Create(&mail)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		result = s.OrmUtil.Db().Create(&newAppointment)
 		if result.Error != nil {
 			return result.Error
 		}
