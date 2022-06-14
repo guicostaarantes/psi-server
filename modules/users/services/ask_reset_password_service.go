@@ -44,7 +44,7 @@ func (s AskResetPasswordService) Execute(email string) error {
 	}
 
 	if existingReset.UserID != "" {
-		if existingReset.ExpiresAt.Before(time.Now()) {
+		if existingReset.ExpiresAt.After(time.Now()) {
 			return nil
 		}
 
